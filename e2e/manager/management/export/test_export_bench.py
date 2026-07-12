@@ -13,11 +13,20 @@ axis. Run against a RELEASE-profile gateway/daemon or the numbers are junk.
 import pytest
 
 from manager.management.export.helpers import cases_for_tier, run_case
+from harness.catalog.declarations import e2e_test
 
 
 pytestmark = [pytest.mark.export, pytest.mark.bench, pytest.mark.slow]
 
 
+@e2e_test(
+    id='phase0.dcda9caad84fa48ad1526f7c',
+    title='Export Bench Catalog',
+    description='Validates the behavior exercised by Export Bench Catalog.',
+    features=('manager.management',),
+    validations={'assert-export-bench-catalog': 'The assertions for export bench catalog hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.parametrize("case", cases_for_tier("bench"), ids=lambda case: case["id"])
 def test_export_bench_catalog(case, export_preconditions):
     run_case(case)

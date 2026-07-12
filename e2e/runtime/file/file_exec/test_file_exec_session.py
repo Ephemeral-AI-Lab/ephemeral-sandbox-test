@@ -23,6 +23,7 @@ from runtime.file.helpers import (
     workspace_session,
     write_command_stdin,
 )
+from harness.catalog.declarations import e2e_test
 
 
 def _exec_ok(sandbox, command, *, workspace_session_id=None, **kwargs):
@@ -74,6 +75,14 @@ def _wait_for_session_file(sandbox, workspace_session_id, path):
     pytest.fail(f"{path} never became visible in {workspace_session_id}")
 
 
+@e2e_test(
+    id='phase0.6a8050471ad92538482e0970',
+    title='Session Exec File Edit Exec Round Trip Stays Unpublished',
+    description='Validates the behavior exercised by Session Exec File Edit Exec Round Trip Stays Unpublished.',
+    features=('runtime.file',),
+    validations={'assert-session-exec-file-edit-exec-round-trip-stays-unpublished': 'The assertions for session exec file edit exec round trip stays unpublished hold.'},
+    execution_surface='cli',
+)
 def test_session_exec_file_edit_exec_round_trip_stays_unpublished(sandbox, workspace_session):
     """In a created workspace session, session exec
     (`exec_command --workspace-session-id`) writes `s/notes.txt`; session
@@ -108,6 +117,14 @@ def test_session_exec_file_edit_exec_round_trip_stays_unpublished(sandbox, works
     assert_manifest_delta(sandbox, before, 0)
 
 
+@e2e_test(
+    id='phase0.3cdbb34e27217500217c35f3',
+    title='Interactive Session Shell Sees File Ops While Running',
+    description='Validates the behavior exercised by Interactive Session Shell Sees File Ops While Running.',
+    features=('runtime.file',),
+    validations={'assert-interactive-session-shell-sees-file-ops-while-running': 'The assertions for interactive session shell sees file ops while running hold.'},
+    execution_surface='cli',
+)
 def test_interactive_session_shell_sees_file_ops_while_running(sandbox, workspace_session):
     """Start a long-lived interactive shell in a session
     (`exec_command --workspace-session-id --yield-time-ms 0 "sh"` ->
@@ -173,6 +190,14 @@ def test_interactive_session_shell_sees_file_ops_while_running(sandbox, workspac
     assert_manifest_delta(sandbox, before, 0)
 
 
+@e2e_test(
+    id='phase0.465c2b951fc8fcb3f6242917',
+    title='Session Exec Remove Then Session Write Recreates Parent',
+    description='Validates the behavior exercised by Session Exec Remove Then Session Write Recreates Parent.',
+    features=('runtime.file',),
+    validations={'assert-session-exec-remove-then-session-write-recreates-parent': 'The assertions for session exec remove then session write recreates parent hold.'},
+    execution_surface='cli',
+)
 def test_session_exec_remove_then_session_write_recreates_parent(sandbox, workspace_session):
     """Session exec creates `d/x.txt`, session `file_read` confirms it, session
     exec runs `rm d/x.txt && rmdir d`; then session `file_read d/x.txt`,
@@ -207,6 +232,14 @@ def test_session_exec_remove_then_session_write_recreates_parent(sandbox, worksp
     assert_manifest_delta(sandbox, before, 0)
 
 
+@e2e_test(
+    id='phase0.5d10634d9f90eb57e014d982',
+    title='Session Fifo Is Rejected By Session File Ops',
+    description='Validates the behavior exercised by Session Fifo Is Rejected By Session File Ops.',
+    features=('runtime.file',),
+    validations={'assert-session-fifo-is-rejected-by-session-file-ops': 'The assertions for session fifo is rejected by session file ops hold.'},
+    execution_surface='cli',
+)
 def test_session_fifo_is_rejected_by_session_file_ops(sandbox, workspace_session):
     """Session exec runs `mkdir p && mkfifo p/f.fifo` (exit 0); then session
     `file_read p/f.fifo` and session `file_write p/f.fifo`.
@@ -233,6 +266,14 @@ def test_session_fifo_is_rejected_by_session_file_ops(sandbox, workspace_session
     assert_manifest_delta(sandbox, before, 0)
 
 
+@e2e_test(
+    id='phase0.5c7a36cdfc9830d44b33c097',
+    title='Session Write Preserves Existing Executable Mode',
+    description='Validates the behavior exercised by Session Write Preserves Existing Executable Mode.',
+    features=('runtime.file',),
+    validations={'assert-session-write-preserves-existing-executable-mode': 'The assertions for session write preserves existing executable mode hold.'},
+    execution_surface='cli',
+)
 def test_session_write_preserves_existing_executable_mode(sandbox, workspace_session):
     """Session `file_write` creates `run.sh` printing `v1`; session exec runs
     `chmod +x run.sh && ./run.sh` (exit 0, `v1`); session `file_write` updates
@@ -270,6 +311,14 @@ def test_session_write_preserves_existing_executable_mode(sandbox, workspace_ses
     assert_manifest_delta(sandbox, before, 0)
 
 
+@e2e_test(
+    id='phase0.1143eb8db624188a53b8db76',
+    title='Complex One Shot Capture Lifecycle Accepts File Ops Before Exit',
+    description='Validates the behavior exercised by Complex One Shot Capture Lifecycle Accepts File Ops Before Exit.',
+    features=('runtime.file',),
+    validations={'assert-complex-one-shot-capture-lifecycle-accepts-file-ops-before-exit': 'The assertions for complex one shot capture lifecycle accepts file ops before exit hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_one_shot_capture_lifecycle_accepts_file_ops_before_exit(sandbox):
     """[complex] One-shot capture lifecycle: start a sessionless
@@ -326,6 +375,14 @@ def test_complex_one_shot_capture_lifecycle_accepts_file_ops_before_exit(sandbox
     )
 
 
+@e2e_test(
+    id='phase0.b2d274e270357950a5322408',
+    title='Complex Long Interleaved Session Destroy Discards All Changes',
+    description='Validates the behavior exercised by Complex Long Interleaved Session Destroy Discards All Changes.',
+    features=('runtime.file',),
+    validations={'assert-complex-long-interleaved-session-destroy-discards-all-changes': 'The assertions for complex long interleaved session destroy discards all changes hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_long_interleaved_session_destroy_discards_all_changes(sandbox):
     """[complex] Long interleaved session then destroy: in one caller-owned
@@ -409,6 +466,14 @@ def test_complex_long_interleaved_session_destroy_discards_all_changes(sandbox):
     assert_manifest_delta(sandbox, before, 0)
 
 
+@e2e_test(
+    id='phase0.f2c24aedfd2b97064ad0a971',
+    title='Complex Large In Session Volume Supports Windowed Reads',
+    description='Validates the behavior exercised by Complex Large In Session Volume Supports Windowed Reads.',
+    features=('runtime.file',),
+    validations={'assert-complex-large-in-session-volume-supports-windowed-reads': 'The assertions for complex large in session volume supports windowed reads hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_large_in_session_volume_supports_windowed_reads(sandbox, workspace_session):
     """[complex] Large in-session volume: session exec generates 300 files

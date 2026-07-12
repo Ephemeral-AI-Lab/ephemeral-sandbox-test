@@ -30,10 +30,19 @@ from runtime.command.test_git_policy_easy import (
     start_gated_command,
 )
 from runtime.file.helpers import assert_manifest_delta
+from harness.catalog.declarations import e2e_test
 
 pytestmark = [pytest.mark.git, pytest.mark.complex]
 
 
+@e2e_test(
+    id='phase0.d5e2bb06af17a67f9ebd8c18',
+    title='Cx 01 Two Agents Commit Different Files Rejects Cleanly',
+    description='Validates the behavior exercised by Cx 01 Two Agents Commit Different Files Rejects Cleanly.',
+    features=('runtime.command',),
+    validations={'assert-cx-01-two-agents-commit-different-files-rejects-cleanly': 'The assertions for cx 01 two agents commit different files rejects cleanly hold.'},
+    execution_surface='cli',
+)
 def test_CX_01_two_agents_commit_different_files_rejects_cleanly(tmp_path):
     with GitCaseRecorder("CX-01") as rec, git_case(tmp_path, rec) as sandbox:
         seed_repo(sandbox, rec, {"base.txt": "base\n"})
@@ -78,6 +87,14 @@ def test_CX_01_two_agents_commit_different_files_rejects_cleanly(tmp_path):
         rec.axis("isolation", True, "fresh git fsck/status succeeded after discarded commit")
 
 
+@e2e_test(
+    id='phase0.c90445bb24a0350470e1dbf6',
+    title='Cx 02 Two Agents Commit Same File One Wins',
+    description='Validates the behavior exercised by Cx 02 Two Agents Commit Same File One Wins.',
+    features=('runtime.command',),
+    validations={'assert-cx-02-two-agents-commit-same-file-one-wins': 'The assertions for cx 02 two agents commit same file one wins hold.'},
+    execution_surface='cli',
+)
 def test_CX_02_two_agents_commit_same_file_one_wins(tmp_path):
     with GitCaseRecorder("CX-02") as rec, git_case(tmp_path, rec) as sandbox:
         seed_repo(sandbox, rec, {"shared.txt": "base\n"})
@@ -121,6 +138,14 @@ def test_CX_02_two_agents_commit_same_file_one_wins(tmp_path):
         rec.axis("isolation", True, "fresh git status clean after B discard")
 
 
+@e2e_test(
+    id='phase0.9010847f820f287c1535404f',
+    title='Cx 03 Concurrent Refs Heads Main Do Not Interleave',
+    description='Validates the behavior exercised by Cx 03 Concurrent Refs Heads Main Do Not Interleave.',
+    features=('runtime.command',),
+    validations={'assert-cx-03-concurrent-refs-heads-main-do-not-interleave': 'The assertions for cx 03 concurrent refs heads main do not interleave hold.'},
+    execution_surface='cli',
+)
 def test_CX_03_concurrent_refs_heads_main_do_not_interleave(tmp_path):
     with GitCaseRecorder("CX-03") as rec, git_case(tmp_path, rec) as sandbox:
         seed_repo(sandbox, rec, {"base.txt": "base\n"})
@@ -164,6 +189,14 @@ def test_CX_03_concurrent_refs_heads_main_do_not_interleave(tmp_path):
         rec.axis("isolation", True, "fresh git log succeeded after ref conflict")
 
 
+@e2e_test(
+    id='phase0.21905e7d18b8fa042ee1e3ce',
+    title='Cx 04 Git Gc Churn With Concurrent Commit Keeps Db Intact',
+    description='Validates the behavior exercised by Cx 04 Git Gc Churn With Concurrent Commit Keeps Db Intact.',
+    features=('runtime.command',),
+    validations={'assert-cx-04-git-gc-churn-with-concurrent-commit-keeps-db-intact': 'The assertions for cx 04 git gc churn with concurrent commit keeps db intact hold.'},
+    execution_surface='cli',
+)
 def test_CX_04_git_gc_churn_with_concurrent_commit_keeps_db_intact(tmp_path):
     with GitCaseRecorder("CX-04") as rec, git_case(tmp_path, rec) as sandbox:
         setup = [init_repo_cmd()]
@@ -210,6 +243,14 @@ def test_CX_04_git_gc_churn_with_concurrent_commit_keeps_db_intact(tmp_path):
         rec.axis("isolation", True, "git fsck --full/status succeeded after gc race")
 
 
+@e2e_test(
+    id='phase0.634ba5838795a836e8685625',
+    title='Cx 05 Large Repo Import Is Unforbidden',
+    description='Validates the behavior exercised by Cx 05 Large Repo Import Is Unforbidden.',
+    features=('runtime.command',),
+    validations={'assert-cx-05-large-repo-import-is-unforbidden': 'The assertions for cx 05 large repo import is unforbidden hold.'},
+    execution_surface='cli',
+)
 def test_CX_05_large_repo_import_is_unforbidden(tmp_path):
     with GitCaseRecorder("CX-05") as rec, git_case(tmp_path, rec) as sandbox:
         before = layerstack(sandbox)
@@ -249,6 +290,14 @@ def test_CX_05_large_repo_import_is_unforbidden(tmp_path):
         rec.axis("attribution", True, "fresh git log count matched imported history length")
 
 
+@e2e_test(
+    id='phase0.0ebf2d3602bc54cefe890971',
+    title='Cx 06 Stale Destructive Delete Rejects Settled Delete Allowed',
+    description='Validates the behavior exercised by Cx 06 Stale Destructive Delete Rejects Settled Delete Allowed.',
+    features=('runtime.command',),
+    validations={'assert-cx-06-stale-destructive-delete-rejects-settled-delete-allowed': 'The assertions for cx 06 stale destructive delete rejects settled delete allowed hold.'},
+    execution_surface='cli',
+)
 def test_CX_06_stale_destructive_delete_rejects_settled_delete_allowed(tmp_path):
     with GitCaseRecorder("CX-06") as rec, git_case(tmp_path, rec) as sandbox:
         seed_repo(sandbox, rec, {"victim.txt": "base\n", "settled.txt": "settled\n"})
@@ -300,6 +349,14 @@ def test_CX_06_stale_destructive_delete_rejects_settled_delete_allowed(tmp_path)
         rec.axis("isolation", True, "OCC caught only concurrent clobber")
 
 
+@e2e_test(
+    id='phase0.73992059825af398d357521d',
+    title='Cx 07 Routing Uses Base Gitignore Not Racing One',
+    description='Validates the behavior exercised by Cx 07 Routing Uses Base Gitignore Not Racing One.',
+    features=('runtime.command',),
+    validations={'assert-cx-07-routing-uses-base-gitignore-not-racing-one': 'The assertions for cx 07 routing uses base gitignore not racing one hold.'},
+    execution_surface='cli',
+)
 def test_CX_07_routing_uses_base_gitignore_not_racing_one(tmp_path):
     with GitCaseRecorder("CX-07") as rec, git_case(tmp_path, rec) as sandbox:
         init_repo(sandbox, rec)
@@ -323,6 +380,14 @@ def test_CX_07_routing_uses_base_gitignore_not_racing_one(tmp_path):
         rec.axis("isolation", True, "base-pinned ignore oracle held under race")
 
 
+@e2e_test(
+    id='phase0.25390d56855d41c1f5ba6e23',
+    title='Cx 08 Symlink Under Repo Routes As Source',
+    description='Validates the behavior exercised by Cx 08 Symlink Under Repo Routes As Source.',
+    features=('runtime.command',),
+    validations={'assert-cx-08-symlink-under-repo-routes-as-source': 'The assertions for cx 08 symlink under repo routes as source hold.'},
+    execution_surface='cli',
+)
 def test_CX_08_symlink_under_repo_routes_as_source(tmp_path):
     with GitCaseRecorder("CX-08") as rec, git_case(tmp_path, rec) as sandbox:
         before = layerstack(sandbox)
@@ -354,6 +419,14 @@ def test_CX_08_symlink_under_repo_routes_as_source(tmp_path):
         rec.axis("attribution", True, "link exists as symlink; target content and source blame match")
 
 
+@e2e_test(
+    id='phase0.54eec6bb20e42b46f120e099',
+    title='Cx 09 Interleaved Git Soak Keeps Invariants',
+    description='Validates the behavior exercised by Cx 09 Interleaved Git Soak Keeps Invariants.',
+    features=('runtime.command',),
+    validations={'assert-cx-09-interleaved-git-soak-keeps-invariants': 'The assertions for cx 09 interleaved git soak keeps invariants hold.'},
+    execution_surface='cli',
+)
 def test_CX_09_interleaved_git_soak_keeps_invariants(tmp_path):
     with GitCaseRecorder("CX-09") as rec, git_case(tmp_path, rec) as sandbox:
         seed_repo(sandbox, rec, {".gitignore": "ignored.log\n", "tracked.txt": "base\n"})
@@ -431,6 +504,14 @@ def test_CX_09_interleaved_git_soak_keeps_invariants(tmp_path):
         rec.axis("isolation", True, "git fsck/status succeeded after every iteration")
 
 
+@e2e_test(
+    id='phase0.26c7718c38e223c2e9d3e59b',
+    title='Cx 10 Destructive Policy Is Caller Prehook Not Layerstack',
+    description='Validates the behavior exercised by Cx 10 Destructive Policy Is Caller Prehook Not Layerstack.',
+    features=('runtime.command',),
+    validations={'assert-cx-10-destructive-policy-is-caller-prehook-not-layerstack': 'The assertions for cx 10 destructive policy is caller prehook not layerstack hold.'},
+    execution_surface='cli',
+)
 def test_CX_10_destructive_policy_is_caller_prehook_not_layerstack(tmp_path):
     with GitCaseRecorder("CX-10") as rec, git_case(tmp_path, rec) as sandbox:
         seed_repo(sandbox, rec, {"safe.txt": "base\n"})

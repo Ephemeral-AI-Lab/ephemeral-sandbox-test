@@ -4,8 +4,17 @@ structured JSON (never log scraping)."""
 from harness.runner.cli import is_error
 from harness.runner.config import WORKSPACE_ROOT
 from manager.management import helpers as mgmt
+from harness.catalog.declarations import e2e_test
 
 
+@e2e_test(
+    id='phase0.f84eaa24d8eb1c1cf2be32fe',
+    title='Sandbox Lifecycle',
+    description='Validates the behavior exercised by Sandbox Lifecycle.',
+    features=('manager.management',),
+    validations={'assert-sandbox-lifecycle': 'The assertions for sandbox lifecycle hold.'},
+    execution_surface='cli',
+)
 def test_sandbox_lifecycle():
     created = mgmt.create_sandbox()
     assert not is_error(created), created

@@ -17,8 +17,17 @@ from runtime.file.helpers import (
     owners_by_line,
     sandbox_from_workspace,
 )
+from harness.catalog.declarations import e2e_test
 
 
+@e2e_test(
+    id='phase0.7177e2c4f09e76f89ad08d61',
+    title='Blame Key Resolution And Unaudited Paths',
+    description='Validates the behavior exercised by Blame Key Resolution And Unaudited Paths.',
+    features=('runtime.file',),
+    validations={'assert-blame-key-resolution-and-unaudited-paths': 'The assertions for blame key resolution and unaudited paths hold.'},
+    execution_surface='cli',
+)
 def test_blame_key_resolution_and_unaudited_paths(tmp_path):
     """Blame key resolution and unaudited paths."""
     with sandbox_from_workspace(
@@ -51,6 +60,14 @@ def test_blame_key_resolution_and_unaudited_paths(tmp_path):
         assert dotted == direct
 
 
+@e2e_test(
+    id='phase0.88dc54ec45134ef5aef23d5c',
+    title='Same Owner Coalescing For Adjacent Lines Rewritten In One Edit',
+    description='Validates the behavior exercised by Same Owner Coalescing For Adjacent Lines Rewritten In One Edit.',
+    features=('runtime.file',),
+    validations={'assert-same-owner-coalescing-for-adjacent-lines-rewritten-in-one-edit': 'The assertions for same owner coalescing for adjacent lines rewritten in one edit hold.'},
+    execution_surface='cli',
+)
 def test_same_owner_coalescing_for_adjacent_lines_rewritten_in_one_edit(sandbox):
     """Same-owner coalescing."""
     path = "blame/coalesce.txt"
@@ -79,6 +96,14 @@ def test_same_owner_coalescing_for_adjacent_lines_rewritten_in_one_edit(sandbox)
     )
 
 
+@e2e_test(
+    id='phase0.b1b78bb3f7a973112b160a49',
+    title='Line Shift On Insert And Delete Preserves Untouched Owners',
+    description='Validates the behavior exercised by Line Shift On Insert And Delete Preserves Untouched Owners.',
+    features=('runtime.file',),
+    validations={'assert-line-shift-on-insert-and-delete-preserves-untouched-owners': 'The assertions for line shift on insert and delete preserves untouched owners hold.'},
+    execution_surface='cli',
+)
 def test_line_shift_on_insert_and_delete_preserves_untouched_owners(sandbox):
     """Line-shift on insert and delete."""
     path = "blame/shift.txt"
@@ -123,6 +148,14 @@ def test_line_shift_on_insert_and_delete_preserves_untouched_owners(sandbox):
     )
 
 
+@e2e_test(
+    id='phase0.0302d9621afca6e94dc65b78',
+    title='Replace All Multi Site Attribution Keeps Non Adjacent Ranges',
+    description='Validates the behavior exercised by Replace All Multi Site Attribution Keeps Non Adjacent Ranges.',
+    features=('runtime.file',),
+    validations={'assert-replace-all-multi-site-attribution-keeps-non-adjacent-ranges': 'The assertions for replace all multi site attribution keeps non adjacent ranges hold.'},
+    execution_surface='cli',
+)
 def test_replace_all_multi_site_attribution_keeps_non_adjacent_ranges(sandbox):
     """`replace_all` multi-site attribution."""
     path = "blame/replace-all.txt"
@@ -166,6 +199,14 @@ def test_replace_all_multi_site_attribution_keeps_non_adjacent_ranges(sandbox):
     )
 
 
+@e2e_test(
+    id='phase0.3d44dbfc7bfe730f5667ee22',
+    title='Complex 50 Round Insert Delete Ladder From Many Actors',
+    description='Validates the behavior exercised by Complex 50 Round Insert Delete Ladder From Many Actors.',
+    features=('runtime.file',),
+    validations={'assert-complex-50-round-insert-delete-ladder-from-many-actors': 'The assertions for complex 50 round insert delete ladder from many actors hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_50_round_insert_delete_ladder_from_many_actors(sandbox):
     """[complex] 50-round insert/delete ladder from many actors."""
@@ -206,6 +247,14 @@ def test_complex_50_round_insert_delete_ladder_from_many_actors(sandbox):
     assert set(owners) == {seed_owner}
 
 
+@e2e_test(
+    id='phase0.ac8910853ffd571b54f244b0',
+    title='Complex Owner Turnover Across 30 Wholesale Generations',
+    description='Validates the behavior exercised by Complex Owner Turnover Across 30 Wholesale Generations.',
+    features=('runtime.file',),
+    validations={'assert-complex-owner-turnover-across-30-wholesale-generations': 'The assertions for complex owner turnover across 30 wholesale generations hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_owner_turnover_across_30_wholesale_generations(sandbox):
     """[complex] Owner turnover across 30 wholesale generations."""

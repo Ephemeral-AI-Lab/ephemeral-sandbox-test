@@ -18,6 +18,7 @@ from runtime.file.helpers import (
     layerstack,
     owners_by_line,
 )
+from harness.catalog.declarations import e2e_test
 
 
 def _exec_ok(sandbox, command, **kwargs):
@@ -37,6 +38,14 @@ def _assert_window(result, content, *, total_lines):
     return result
 
 
+@e2e_test(
+    id='phase0.dd58e5523fa91a024492dcfe',
+    title='One Shot Exec Creates New File Then Sessionless Read And Blame',
+    description='Validates the behavior exercised by One Shot Exec Creates New File Then Sessionless Read And Blame.',
+    features=('runtime.file',),
+    validations={'assert-one-shot-exec-creates-new-file-then-sessionless-read-and-blame': 'The assertions for one shot exec creates new file then sessionless read and blame hold.'},
+    execution_surface='cli',
+)
 def test_one_shot_exec_creates_new_file_then_sessionless_read_and_blame(sandbox):
     """One-shot `exec_command` creates a new file
     (`printf 'alpha\nbeta' > exec/made.txt`), then sessionless `file_read` and
@@ -52,6 +61,14 @@ def test_one_shot_exec_creates_new_file_then_sessionless_read_and_blame(sandbox)
     assert_single_owner(sandbox, "exec/made.txt", prefix="workspace_session:")
 
 
+@e2e_test(
+    id='phase0.d81eaff73cc8b7fa2e01d70d',
+    title='File Write Then One Shot Sed Reassigns Only Edited Line',
+    description='Validates the behavior exercised by File Write Then One Shot Sed Reassigns Only Edited Line.',
+    features=('runtime.file',),
+    validations={'assert-file-write-then-one-shot-sed-reassigns-only-edited-line': 'The assertions for file write then one shot sed reassigns only edited line hold.'},
+    execution_surface='cli',
+)
 def test_file_write_then_one_shot_sed_reassigns_only_edited_line(sandbox):
     """Sessionless `file_write` creates a 3-line file (`operation:<request A>`),
     then a one-shot `exec_command` runs `sed -i` replacing only line 2, then
@@ -77,6 +94,14 @@ def test_file_write_then_one_shot_sed_reassigns_only_edited_line(sandbox):
     )
 
 
+@e2e_test(
+    id='phase0.81b71c5c6b2225c3a017189d',
+    title='One Shot Rm Publishes Delete Whiteout For File Ops',
+    description='Validates the behavior exercised by One Shot Rm Publishes Delete Whiteout For File Ops.',
+    features=('runtime.file',),
+    validations={'assert-one-shot-rm-publishes-delete-whiteout-for-file-ops': 'The assertions for one shot rm publishes delete whiteout for file ops hold.'},
+    execution_surface='cli',
+)
 def test_one_shot_rm_publishes_delete_whiteout_for_file_ops(sandbox):
     """Sessionless `file_write` publishes `victim.txt`; a one-shot `exec_command`
     runs `rm victim.txt` (exit 0); then sessionless `file_read` and
@@ -94,6 +119,14 @@ def test_one_shot_rm_publishes_delete_whiteout_for_file_ops(sandbox):
     assert_error(file_edit(sandbox, path, [edit("doomed", "saved")]), "not_found")
 
 
+@e2e_test(
+    id='phase0.31f8cff318391a7d355f81b5',
+    title='Rm Rf Parent Whiteout Then Recreate Child Path',
+    description='Validates the behavior exercised by Rm Rf Parent Whiteout Then Recreate Child Path.',
+    features=('runtime.file',),
+    validations={'assert-rm-rf-parent-whiteout-then-recreate-child-path': 'The assertions for rm rf parent whiteout then recreate child path hold.'},
+    execution_surface='cli',
+)
 def test_rm_rf_parent_whiteout_then_recreate_child_path(sandbox):
     """One-shot exec creates `reports/daily/r1.txt`, a second one-shot exec runs
     `rm -rf reports`, then sessionless `file_write` creates
@@ -115,6 +148,14 @@ def test_rm_rf_parent_whiteout_then_recreate_child_path(sandbox):
     assert_manifest_delta(sandbox, before, 3)
 
 
+@e2e_test(
+    id='phase0.acc9e70a0c8d0d0dacf20643',
+    title='One Shot Mv Over Published File Reassigns New Path Blame',
+    description='Validates the behavior exercised by One Shot Mv Over Published File Reassigns New Path Blame.',
+    features=('runtime.file',),
+    validations={'assert-one-shot-mv-over-published-file-reassigns-new-path-blame': 'The assertions for one shot mv over published file reassigns new path blame hold.'},
+    execution_surface='cli',
+)
 def test_one_shot_mv_over_published_file_reassigns_new_path_blame(sandbox):
     """One-shot exec runs `mv old.txt new.txt` over a previously published file,
     then sessionless reads and blame on both paths.
@@ -131,6 +172,14 @@ def test_one_shot_mv_over_published_file_reassigns_new_path_blame(sandbox):
     assert_single_owner(sandbox, "new.txt", prefix="workspace_session:")
 
 
+@e2e_test(
+    id='phase0.e3d61f29614a8f333d7ccab3',
+    title='File Write Script Then One Shot Exec Side Effect Is Published',
+    description='Validates the behavior exercised by File Write Script Then One Shot Exec Side Effect Is Published.',
+    features=('runtime.file',),
+    validations={'assert-file-write-script-then-one-shot-exec-side-effect-is-published': 'The assertions for file write script then one shot exec side effect is published hold.'},
+    execution_surface='cli',
+)
 def test_file_write_script_then_one_shot_exec_side_effect_is_published(sandbox):
     """Sessionless `file_write` creates `scripts/hello.sh` (echo + side-effect
     write to `out/result.txt`), then one one-shot `exec_command` runs
@@ -149,6 +198,14 @@ def test_file_write_script_then_one_shot_exec_side_effect_is_published(sandbox):
     assert_single_owner(sandbox, "out/result.txt", prefix="workspace_session:")
 
 
+@e2e_test(
+    id='phase0.e42cc19df900868e63039500',
+    title='Executable Bit Survives One Shot Capture And Projection',
+    description='Validates the behavior exercised by Executable Bit Survives One Shot Capture And Projection.',
+    features=('runtime.file',),
+    validations={'assert-executable-bit-survives-one-shot-capture-and-projection': 'The assertions for executable bit survives one shot capture and projection hold.'},
+    execution_surface='cli',
+)
 def test_executable_bit_survives_one_shot_capture_and_projection(sandbox):
     """One-shot exec creates an executable in one command
     (`printf '#!/bin/sh\necho tool-v1' > tool.sh && chmod +x tool.sh`); then
@@ -168,6 +225,14 @@ def test_executable_bit_survives_one_shot_capture_and_projection(sandbox):
     assert_manifest_delta(sandbox, before, 1)
 
 
+@e2e_test(
+    id='phase0.27127b15536c27a7abf880d1',
+    title='Published Symlink File Is Not Followed By File Ops',
+    description='Validates the behavior exercised by Published Symlink File Is Not Followed By File Ops.',
+    features=('runtime.file',),
+    validations={'assert-published-symlink-file-is-not-followed-by-file-ops': 'The assertions for published symlink file is not followed by file ops hold.'},
+    execution_surface='cli',
+)
 def test_published_symlink_file_is_not_followed_by_file_ops(sandbox):
     """One-shot exec creates `ln -s real.txt link.txt` next to a published
     `real.txt`; then sessionless `file_read link.txt` and
@@ -187,6 +252,14 @@ def test_published_symlink_file_is_not_followed_by_file_ops(sandbox):
     assert_single_owner(sandbox, "real.txt", prefix="operation:")
 
 
+@e2e_test(
+    id='phase0.c29e57384e1a51137c2a4448',
+    title='Published Symlink Parent Is Not Traversed By File Ops',
+    description='Validates the behavior exercised by Published Symlink Parent Is Not Traversed By File Ops.',
+    features=('runtime.file',),
+    validations={'assert-published-symlink-parent-is-not-traversed-by-file-ops': 'The assertions for published symlink parent is not traversed by file ops hold.'},
+    execution_surface='cli',
+)
 def test_published_symlink_parent_is_not_traversed_by_file_ops(sandbox):
     """One-shot exec creates a symlinked directory
     (`mkdir realdir; printf x > realdir/inner.txt; ln -s realdir linkdir`);
@@ -204,6 +277,14 @@ def test_published_symlink_parent_is_not_traversed_by_file_ops(sandbox):
     assert_single_owner(sandbox, "realdir/inner.txt", prefix="workspace_session:")
 
 
+@e2e_test(
+    id='phase0.24d97dc6cdabe0dd3403a289',
+    title='One Shot Fifo Is Protected Drop But Regular Note Publishes',
+    description='Validates the behavior exercised by One Shot Fifo Is Protected Drop But Regular Note Publishes.',
+    features=('runtime.file',),
+    validations={'assert-one-shot-fifo-is-protected-drop-but-regular-note-publishes': 'The assertions for one shot fifo is protected drop but regular note publishes hold.'},
+    execution_surface='cli',
+)
 def test_one_shot_fifo_is_protected_drop_but_regular_note_publishes(sandbox):
     """One-shot exec runs `mkfifo pipe.fifo && printf ok > note.txt`; then
     sessionless `file_read` of both paths.
@@ -219,6 +300,14 @@ def test_one_shot_fifo_is_protected_drop_but_regular_note_publishes(sandbox):
     assert_single_owner(sandbox, "note.txt", prefix="workspace_session:")
 
 
+@e2e_test(
+    id='phase0.5fbd1a4b9ddbd273e2fb74cd',
+    title='Exec Written Bom And Crlf Are Normalized On Read',
+    description='Validates the behavior exercised by Exec Written Bom And Crlf Are Normalized On Read.',
+    features=('runtime.file',),
+    validations={'assert-exec-written-bom-and-crlf-are-normalized-on-read': 'The assertions for exec written bom and crlf are normalized on read hold.'},
+    execution_surface='cli',
+)
 def test_exec_written_bom_and_crlf_are_normalized_on_read(sandbox):
     """One-shot exec writes a file with a UTF-8 BOM and CRLF endings
     (`printf '\xef\xbb\xbfline1\r\nline2\r\n' > mixed.txt`); then sessionless
@@ -234,6 +323,14 @@ def test_exec_written_bom_and_crlf_are_normalized_on_read(sandbox):
     assert_single_owner(sandbox, "mixed.txt", prefix="workspace_session:")
 
 
+@e2e_test(
+    id='phase0.689f63ebd122510fc2cf9e1e',
+    title='Non Utf8 Exec File Is Rejected By Read And Edit',
+    description='Validates the behavior exercised by Non Utf8 Exec File Is Rejected By Read And Edit.',
+    features=('runtime.file',),
+    validations={'assert-non-utf8-exec-file-is-rejected-by-read-and-edit': 'The assertions for non utf8 exec file is rejected by read and edit hold.'},
+    execution_surface='cli',
+)
 def test_non_utf8_exec_file_is_rejected_by_read_and_edit(sandbox):
     """One-shot exec writes non-UTF-8 bytes
     (`head -c 64 /dev/urandom > blob.bin`); then sessionless
@@ -251,6 +348,14 @@ def test_non_utf8_exec_file_is_rejected_by_read_and_edit(sandbox):
     )
 
 
+@e2e_test(
+    id='phase0.79b0434b3eea5dd53bb24d20',
+    title='One Shot Exec Consumes Published File Write Content',
+    description='Validates the behavior exercised by One Shot Exec Consumes Published File Write Content.',
+    features=('runtime.file',),
+    validations={'assert-one-shot-exec-consumes-published-file-write-content': 'The assertions for one shot exec consumes published file write content hold.'},
+    execution_surface='cli',
+)
 def test_one_shot_exec_consumes_published_file_write_content(sandbox):
     """Sessionless `file_write` creates a 10-line `data/data.csv`, then a
     one-shot exec runs `wc -l < data/data.csv && grep -c ',' data/data.csv`.
@@ -266,6 +371,14 @@ def test_one_shot_exec_consumes_published_file_write_content(sandbox):
     assert_manifest_delta(sandbox, before, 1)
 
 
+@e2e_test(
+    id='phase0.edb82e8b41f03fcb61327dcb',
+    title='Complex Long Sessionless Interleave Exec Append Then File Edit',
+    description='Validates the behavior exercised by Complex Long Sessionless Interleave Exec Append Then File Edit.',
+    features=('runtime.file',),
+    validations={'assert-complex-long-sessionless-interleave-exec-append-then-file-edit': 'The assertions for complex long sessionless interleave exec append then file edit hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_long_sessionless_interleave_exec_append_then_file_edit(sandbox):
     """[complex] Long sessionless interleave: 12 rounds where round *i* runs a
@@ -301,6 +414,14 @@ def test_complex_long_sessionless_interleave_exec_append_then_file_edit(sandbox)
     assert_manifest_delta(sandbox, before, 24)
 
 
+@e2e_test(
+    id='phase0.8ce0c28fcb5e98d37428d81e',
+    title='Complex Tar Pack And Extract Exec Generated Tree',
+    description='Validates the behavior exercised by Complex Tar Pack And Extract Exec Generated Tree.',
+    features=('runtime.file',),
+    validations={'assert-complex-tar-pack-and-extract-exec-generated-tree': 'The assertions for complex tar pack and extract exec generated tree hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_tar_pack_and_extract_exec_generated_tree(sandbox):
     """[complex] One-shot exec generates 400 files (`src/f001.txt`...`f400.txt`,
@@ -329,6 +450,14 @@ def test_complex_tar_pack_and_extract_exec_generated_tree(sandbox):
     assert_error(file_read(sandbox, "unpacked/src/f401.txt"), "not_found")
 
 
+@e2e_test(
+    id='phase0.958c5cf15d5881fb1b61c322',
+    title='Complex Two Hundred Parts Then Exec Build Concatenates All',
+    description='Validates the behavior exercised by Complex Two Hundred Parts Then Exec Build Concatenates All.',
+    features=('runtime.file',),
+    validations={'assert-complex-two-hundred-parts-then-exec-build-concatenates-all': 'The assertions for complex two hundred parts then exec build concatenates all hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_two_hundred_parts_then_exec_build_concatenates_all(sandbox):
     """[complex] 200 sessionless `file_write`s create
@@ -361,6 +490,14 @@ def test_complex_two_hundred_parts_then_exec_build_concatenates_all(sandbox):
     assert_single_owner(sandbox, "all.txt", prefix="workspace_session:")
 
 
+@e2e_test(
+    id='phase0.a38f0995804dfabb59437495',
+    title='Complex Multimeg Exec File Supports Windowed Reads',
+    description='Validates the behavior exercised by Complex Multimeg Exec File Supports Windowed Reads.',
+    features=('runtime.file',),
+    validations={'assert-complex-multimeg-exec-file-supports-windowed-reads': 'The assertions for complex multimeg exec file supports windowed reads hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_multimeg_exec_file_supports_windowed_reads(sandbox):
     """[complex] One-shot exec generates a multi-MB file
@@ -393,6 +530,14 @@ def test_complex_multimeg_exec_file_supports_windowed_reads(sandbox):
     assert past["total_lines"] == 500000, past
 
 
+@e2e_test(
+    id='phase0.b5349b9fed3f38e9bfbdb9a1',
+    title='Complex Single Wide Line Fails Read But File Published',
+    description='Validates the behavior exercised by Complex Single Wide Line Fails Read But File Published.',
+    features=('runtime.file',),
+    validations={'assert-complex-single-wide-line-fails-read-but-file-published': 'The assertions for complex single wide line fails read but file published hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_single_wide_line_fails_read_but_file_published(sandbox):
     """[complex] One-shot exec generates a single ~300 KB line
@@ -414,6 +559,14 @@ def test_complex_single_wide_line_fails_read_but_file_published(sandbox):
     assert "300000" in output["output"], output
 
 
+@e2e_test(
+    id='phase0.5f0c93e7586efe0e47e80867',
+    title='Complex Large Text File Rejects Edit But Allows Small Read Window',
+    description='Validates the behavior exercised by Complex Large Text File Rejects Edit But Allows Small Read Window.',
+    features=('runtime.file',),
+    validations={'assert-complex-large-text-file-rejects-edit-but-allows-small-read-window': 'The assertions for complex large text file rejects edit but allows small read window hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_large_text_file_rejects_edit_but_allows_small_read_window(sandbox):
     """[complex] One-shot exec generates a >4 MiB text file

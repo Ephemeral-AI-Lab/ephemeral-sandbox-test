@@ -23,8 +23,17 @@ from runtime.workspace_session.helpers import (
     workspace_entry,
     workspace_tracker,
 )
+from harness.catalog.declarations import e2e_test
 
 
+@e2e_test(
+    id='phase0.8cf6d29e1aa03eb81e8d9a42',
+    title='Ws 01 Create Response Contract',
+    description='Validates the behavior exercised by Ws 01 Create Response Contract.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ws-01-create-response-contract': 'The assertions for ws 01 create response contract hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.smoke
 def test_WS_01_create_response_contract(sandbox, workspace_tracker):
     with record_case("WS-01") as rec:
@@ -51,6 +60,14 @@ def test_WS_01_create_response_contract(sandbox, workspace_tracker):
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.d18a50288ff8c8b1c86819a8',
+    title='Ws 02 No Op Session Survives Command Completion',
+    description='Validates the behavior exercised by Ws 02 No Op Session Survives Command Completion.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ws-02-no-op-session-survives-command-completion': 'The assertions for ws 02 no op session survives command completion hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.smoke
 def test_WS_02_no_op_session_survives_command_completion(sandbox, workspace_tracker):
     with record_case("WS-02") as rec:
@@ -68,6 +85,14 @@ def test_WS_02_no_op_session_survives_command_completion(sandbox, workspace_trac
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.d8800c94b1c5221150ee37ce',
+    title='Ws 03 Destroy Refuses While Command Runs',
+    description='Validates the behavior exercised by Ws 03 Destroy Refuses While Command Runs.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ws-03-destroy-refuses-while-command-runs': 'The assertions for ws 03 destroy refuses while command runs hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.smoke
 def test_WS_03_destroy_refuses_while_command_runs(sandbox, workspace_tracker):
     with record_case("WS-03") as rec:
@@ -91,6 +116,14 @@ def test_WS_03_destroy_refuses_while_command_runs(sandbox, workspace_tracker):
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.8b493927fb49f27b363907e8',
+    title='Ws 04 Destroy Discards And Sync Op Loses Cleanly',
+    description='Validates the behavior exercised by Ws 04 Destroy Discards And Sync Op Loses Cleanly.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ws-04-destroy-discards-and-sync-op-loses-cleanly': 'The assertions for ws 04 destroy discards and sync op loses cleanly hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.medium
 def test_WS_04_destroy_discards_and_sync_op_loses_cleanly(sandbox, workspace_tracker):
     with record_case("WS-04") as rec:
@@ -112,6 +145,14 @@ def test_WS_04_destroy_discards_and_sync_op_loses_cleanly(sandbox, workspace_tra
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.3e783a9735538a11a40c3ba0',
+    title='Ws 05 Workspace Lifecycle Is Not Public',
+    description='Validates the behavior exercised by Ws 05 Workspace Lifecycle Is Not Public.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ws-05-workspace-lifecycle-is-not-public': 'The assertions for ws 05 workspace lifecycle is not public hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.medium
 def test_WS_05_workspace_lifecycle_is_not_public(sandbox, workspace_tracker):
     with record_case("WS-05") as rec:
@@ -129,6 +170,14 @@ def test_WS_05_workspace_lifecycle_is_not_public(sandbox, workspace_tracker):
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.11d3ab75c46e623b4942bdd1',
+    title='Ws 06 Destroyed Id Stays Dead',
+    description='Validates the behavior exercised by Ws 06 Destroyed Id Stays Dead.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ws-06-destroyed-id-stays-dead': 'The assertions for ws 06 destroyed id stays dead hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.medium
 def test_WS_06_destroyed_id_stays_dead(sandbox, workspace_tracker):
     with record_case("WS-06") as rec:

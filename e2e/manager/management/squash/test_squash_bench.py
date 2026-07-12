@@ -10,11 +10,20 @@ sweep width the daemon uses is set out of band via the daemon config key
 import pytest
 
 from manager.management.squash.helpers import cases_for_tier, run_case
+from harness.catalog.declarations import e2e_test
 
 
 pytestmark = [pytest.mark.squash, pytest.mark.bench]
 
 
+@e2e_test(
+    id='phase0.5a5da0a97c04fffcc1f0947f',
+    title='Squash Bench Catalog',
+    description='Validates the behavior exercised by Squash Bench Catalog.',
+    features=('manager.management',),
+    validations={'assert-squash-bench-catalog': 'The assertions for squash bench catalog hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.parametrize("case", cases_for_tier("bench"), ids=lambda case: case["id"])
 def test_squash_bench_catalog(case, squash_preconditions, squash_sandbox_factory):
     run_case(case, squash_sandbox_factory)

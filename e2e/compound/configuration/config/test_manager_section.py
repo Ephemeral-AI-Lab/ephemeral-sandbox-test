@@ -11,10 +11,19 @@ import uuid
 import pytest
 
 from config import helpers
+from harness.catalog.declarations import e2e_test
 
 pytestmark = [pytest.mark.config, pytest.mark.slow]
 
 
+@e2e_test(
+    id='phase0.05dfba4b759494beb4e25b8b',
+    title='Container Env Probe',
+    description='Validates the behavior exercised by Container Env Probe.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-container-env-probe': 'The assertions for container env probe hold.'},
+    execution_surface='cli',
+)
 def test_container_env_probe(tmp_path, config_family_custody):
     """F1/F2 — container_env rides gateway config → Docker → daemon → command
     environment; a config without the nonce yields the plain value (control).
@@ -50,6 +59,14 @@ def test_container_env_probe(tmp_path, config_family_custody):
             assert value.strip() == baseline_no_proxy
 
 
+@e2e_test(
+    id='phase0.1a15edf3049972669ce58054',
+    title='Memory Bytes Cgroup Max',
+    description='Validates the behavior exercised by Memory Bytes Cgroup Max.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-memory-bytes-cgroup-max': 'The assertions for memory bytes cgroup max hold.'},
+    execution_surface='cli',
+)
 def test_memory_bytes_cgroup_max(tmp_path, config_family_custody):
     """F3 — manager.docker.memory_bytes lands in the container's cgroup
     memory.max (conditional skip only when the probe file is absent)."""
@@ -66,6 +83,14 @@ def test_memory_bytes_cgroup_max(tmp_path, config_family_custody):
             assert result.get("output", "").strip() == str(memory_bytes), result
 
 
+@e2e_test(
+    id='phase0.7bd749120f6a89c9ada3057c',
+    title='Explicit Image Flag Outranks Default Image',
+    description='Validates the behavior exercised by Explicit Image Flag Outranks Default Image.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-explicit-image-flag-outranks-default-image': 'The assertions for explicit image flag outranks default image hold.'},
+    execution_surface='cli',
+)
 def test_explicit_image_flag_outranks_default_image(tmp_path, config_family_custody):
     """F4 — the CLI requires a non-empty --image (pinned below), so this pins
     the precedence contract instead: the explicit flag outranks
@@ -93,6 +118,14 @@ def test_explicit_image_flag_outranks_default_image(tmp_path, config_family_cust
             )
 
 
+@e2e_test(
+    id='phase0.662f08dce80bb8283c8f4a0f',
+    title='Privileged Arm Functional',
+    description='Validates the behavior exercised by Privileged Arm Functional.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-privileged-arm-functional': 'The assertions for privileged arm functional hold.'},
+    execution_surface='cli',
+)
 def test_privileged_arm_functional(tmp_path, config_family_custody):
     """F5 — the privileged legacy escape hatch still creates and runs commands
     (the de-privileged default is exercised by every other test)."""

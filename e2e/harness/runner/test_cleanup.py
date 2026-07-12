@@ -1,8 +1,16 @@
 import pytest
 
 from harness.runner import cleanup
+from harness.catalog.declarations import e2e_test
 
 
+@e2e_test(
+    id='phase0.7022e5c2693afd2bdc759b4a',
+    title='Run All Executes Every Action And Reports Failures',
+    description='Validates the behavior exercised by Run All Executes Every Action And Reports Failures.',
+    features=(),
+    validations={'assert-run-all-executes-every-action-and-reports-failures': 'The assertions for run all executes every action and reports failures hold.'},
+)
 def test_run_all_executes_every_action_and_reports_failures():
     events = []
 

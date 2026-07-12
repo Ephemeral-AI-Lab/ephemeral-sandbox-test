@@ -19,7 +19,6 @@ from harness.storage.roots import Roots
 
 MODE_ENV = "E2E_CATALOG_MODE"
 OUTPUT_OPTION = "e2e_catalog_output"
-LEDGER_OPTION = "e2e_stable_id_ledger"
 PRODUCT_CATALOG_OPTION = "e2e_product_catalog"
 METADATA_OPTION = "e2e_catalog_metadata"
 _patches: list[tuple[object, str, object]] = []
@@ -57,7 +56,6 @@ def finish(config: Any, roots: Roots, items: list[Any]) -> None:
     if not is_catalog_mode(config):
         return
     output = _validated_output_path(config.getoption(OUTPUT_OPTION), roots)
-    ledger = _load_ledger(config.getoption(LEDGER_OPTION))
     product_catalog = config.getoption(PRODUCT_CATALOG_OPTION)
     metadata = config.getoption(METADATA_OPTION)
     if not product_catalog or not metadata:
@@ -69,7 +67,6 @@ def finish(config: Any, roots: Roots, items: list[Any]) -> None:
     snapshot = build_catalog(
         items=items,
         roots=roots,
-        ledger=ledger,
         product_catalog_path=Path(product_catalog),
         metadata_path=Path(metadata),
     )
@@ -100,11 +97,6 @@ def forbid(activity: str) -> None:
         raise CatalogModeViolation(f"catalog collection attempted forbidden {activity}")
 
 
-def stable_id_for(nodeid: str) -> str:
-    digest = hashlib.sha256(nodeid.encode("utf-8")).hexdigest()[:24]
-    return f"phase0.{digest}"
-
-
 def source_tree_digest(root: Path) -> str:
     digest = hashlib.sha256()
     root = root.resolve()
@@ -126,96 +118,8 @@ def source_tree_digest(root: Path) -> str:
     return f"sha256:{digest.hexdigest()}"
 
 
-def conversion_inventory(snapshot: dict[str, Any]) -> dict[str, Any]:
-    entries = []
-    for case in snapshot["cases"]:
-        entries.append(
-            {
-                "stable_id": case.get("legacy_stable_id", case["test_id"]),
-                "pytest_nodeid": case["pytest_nodeid"],
-                "source": case["source"],
-                "phase_2_requirements": {
-                    "declaration": {
-                        "id": case["test_id"],
-                        "title": "required",
-                        "description": "required",
-                        "features": "required",
-                        "validations": "required",
-                    },
-                    "validation_checkpoint_reports": "required",
-                },
-            }
-        )
-    return {
-        "schema_version": 1,
-        "kind": "phase0_conversion_inventory",
-        "expanded_case_count": len(entries),
-        "entries": entries,
-    }
-
-
-def ledger_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "schema_version": 1,
-        "kind": "phase0_stable_id_ledger",
-        "cases": [
-            {
-                "pytest_nodeid": case["legacy_pytest_nodeid"],
-                "stable_id": case.get("legacy_stable_id", case["test_id"]),
-            }
-            for case in snapshot["cases"]
-        ],
-    }
-
-
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     _atomic_json(path.resolve(), payload)
-
-
-def _catalog_cases(
-    items: list[Any], ledger: dict[str, str], e2e_root: Path
-) -> list[dict[str, str]]:
-    nodeids = [item.nodeid for item in items]
-    legacy_nodeids = [_legacy_nodeid(nodeid) for nodeid in nodeids]
-    if len(nodeids) != len(set(nodeids)):
-        raise CatalogModeViolation("pytest collection produced duplicate node IDs")
-    if len(legacy_nodeids) != len(set(legacy_nodeids)):
-        raise CatalogModeViolation("migration produced duplicate legacy node IDs")
-    if ledger and set(ledger) != set(legacy_nodeids):
-        missing = sorted(set(legacy_nodeids) - set(ledger))
-        stale = sorted(set(ledger) - set(legacy_nodeids))
-        raise CatalogModeViolation(
-            f"stable-ID ledger mismatch: missing={missing[:3]} stale={stale[:3]}"
-        )
-    stable_ids = [ledger.get(nodeid, stable_id_for(nodeid)) for nodeid in legacy_nodeids]
-    if len(stable_ids) != len(set(stable_ids)):
-        raise CatalogModeViolation("stable-ID ledger contains duplicate stable IDs")
-    return [
-        {
-            "stable_id": ledger.get(
-                _legacy_nodeid(item.nodeid), stable_id_for(_legacy_nodeid(item.nodeid))
-            ),
-            "pytest_nodeid": item.nodeid,
-            "legacy_pytest_nodeid": _legacy_nodeid(item.nodeid),
-            "source": str(Path(str(item.fspath)).resolve().relative_to(e2e_root.parent)),
-        }
-        for item in sorted(items, key=lambda collected: collected.nodeid)
-    ]
-
-
-def _load_ledger(value: str | None) -> dict[str, str]:
-    if not value:
-        return {}
-    payload = json.loads(Path(value).read_text(encoding="utf-8"))
-    if payload.get("schema_version") != 1 or payload.get("kind") != "phase0_stable_id_ledger":
-        raise CatalogModeViolation("stable-ID ledger has an unsupported schema")
-    entries = payload.get("cases")
-    if not isinstance(entries, list):
-        raise CatalogModeViolation("stable-ID ledger cases must be a list")
-    ledger = {entry["pytest_nodeid"]: entry["stable_id"] for entry in entries}
-    if len(ledger) != len(entries):
-        raise CatalogModeViolation("stable-ID ledger contains duplicate node IDs")
-    return ledger
 
 
 def _validated_output_path(value: str | None, roots: Roots) -> Path:
@@ -346,19 +250,3 @@ def _install_side_effect_guards(*source_roots: Path) -> None:
 def _patch(target: object, name: str, replacement: object) -> None:
     _patches.append((target, name, getattr(target, name)))
     setattr(target, name, replacement)
-
-
-def _legacy_nodeid(nodeid: str) -> str:
-    replacements = (
-        ("harness/runner/test_cleanup.py", "core/test_cleanup.py"),
-        ("harness/runner/test_direct_daemon.py", "core/test_direct_daemon.py"),
-        ("harness/storage/test_roots.py", "core/test_root.py"),
-        ("runtime/workspace_session/test_squash_remount.py", "runtime/test_squash_remount.py"),
-        ("compound/configuration/config/", "config/"),
-        ("observability/snapshot/test_snapshot.py", "observability/test_observability.py"),
-        ("compound/lifecycle/test_gateway_smoke.py", "test_smoke.py"),
-    )
-    for current, legacy in replacements:
-        if nodeid == current or nodeid.startswith(f"{current}::") or current.endswith("/") and nodeid.startswith(current):
-            return legacy + nodeid[len(current):]
-    return nodeid

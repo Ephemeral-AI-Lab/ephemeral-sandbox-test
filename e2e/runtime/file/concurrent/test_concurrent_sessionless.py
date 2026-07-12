@@ -25,6 +25,7 @@ from runtime.file.helpers import (
     sandbox_from_workspace,
     write_command_stdin,
 )
+from harness.catalog.declarations import e2e_test
 
 
 def _is_error(result):
@@ -76,6 +77,14 @@ def _assert_no_operation_failed(results):
             assert result["error"]["kind"] != "operation_failed", result
 
 
+@e2e_test(
+    id='phase0.df4ac8f893e9e8668c50ebb8',
+    title='Two Concurrent Sessionless Writes To Same Path Serialize',
+    description='Validates the behavior exercised by Two Concurrent Sessionless Writes To Same Path Serialize.',
+    features=('runtime.file',),
+    validations={'assert-two-concurrent-sessionless-writes-to-same-path-serialize': 'The assertions for two concurrent sessionless writes to same path serialize hold.'},
+    execution_surface='cli',
+)
 def test_two_concurrent_sessionless_writes_to_same_path_serialize(sandbox):
     """Two concurrent sessionless `file_write` requests to the same path with
     different multi-line contents (parallel `sandbox-runtime-cli file_write`
@@ -101,6 +110,14 @@ def test_two_concurrent_sessionless_writes_to_same_path_serialize(sandbox):
     assert_manifest_delta(sandbox, before, 2)
 
 
+@e2e_test(
+    id='phase0.9607f76ba871da956691a2ce',
+    title='Sessionless Write Races Sessionless Edit Same Path',
+    description='Validates the behavior exercised by Sessionless Write Races Sessionless Edit Same Path.',
+    features=('runtime.file',),
+    validations={'assert-sessionless-write-races-sessionless-edit-same-path': 'The assertions for sessionless write races sessionless edit same path hold.'},
+    execution_surface='cli',
+)
 def test_sessionless_write_races_sessionless_edit_same_path(sandbox):
     """Concurrent sessionless `file_write` (rewriting a seeded `alpha\nbeta` file
     to `alpha\nGAMMA`) and `file_edit` (`alpha` -> `ALPHA`) on the same path.
@@ -141,6 +158,14 @@ def test_sessionless_write_races_sessionless_edit_same_path(sandbox):
     }
 
 
+@e2e_test(
+    id='phase0.d1672ae06bcae139b205fa82',
+    title='Two Concurrent Sessionless Edits Same Unique Old String',
+    description='Validates the behavior exercised by Two Concurrent Sessionless Edits Same Unique Old String.',
+    features=('runtime.file',),
+    validations={'assert-two-concurrent-sessionless-edits-same-unique-old-string': 'The assertions for two concurrent sessionless edits same unique old string hold.'},
+    execution_surface='cli',
+)
 def test_two_concurrent_sessionless_edits_same_unique_old_string(sandbox):
     """Two concurrent sessionless `file_edit` requests targeting the same unique
     `old_string` on one path (`replace_all` absent).
@@ -169,6 +194,14 @@ def test_two_concurrent_sessionless_edits_same_unique_old_string(sandbox):
     assert final in {"keep\nwinner-a\nkeep", "keep\nwinner-b\nkeep"}, final
 
 
+@e2e_test(
+    id='phase0.07af9972c2502e5a52d8d952',
+    title='Two Identical Concurrent Sessionless Writes Publish Once',
+    description='Validates the behavior exercised by Two Identical Concurrent Sessionless Writes Publish Once.',
+    features=('runtime.file',),
+    validations={'assert-two-identical-concurrent-sessionless-writes-publish-once': 'The assertions for two identical concurrent sessionless writes publish once hold.'},
+    execution_surface='cli',
+)
 def test_two_identical_concurrent_sessionless_writes_publish_once(sandbox):
     """Two concurrent sessionless `file_write` requests with byte-identical
     content to one new path.
@@ -192,6 +225,14 @@ def test_two_identical_concurrent_sessionless_writes_publish_once(sandbox):
     assert_manifest_delta(sandbox, before, 1)
 
 
+@e2e_test(
+    id='phase0.81373b27b293f000efebc1ff',
+    title='Concurrent Reads Race Sessionless Write Complete Snapshots',
+    description='Validates the behavior exercised by Concurrent Reads Race Sessionless Write Complete Snapshots.',
+    features=('runtime.file',),
+    validations={'assert-concurrent-reads-race-sessionless-write-complete-snapshots': 'The assertions for concurrent reads race sessionless write complete snapshots hold.'},
+    execution_surface='cli',
+)
 def test_concurrent_reads_race_sessionless_write_complete_snapshots(sandbox):
     """Five concurrent sessionless `file_read` requests of a seeded path racing
     one sessionless `file_write` that replaces its content.
@@ -217,6 +258,14 @@ def test_concurrent_reads_race_sessionless_write_complete_snapshots(sandbox):
     assert_content(file_read(sandbox, path), new)
 
 
+@e2e_test(
+    id='phase0.497789adf66c4c1c770408cf',
+    title='Sessionless Read Races Create Of Brand New Path',
+    description='Validates the behavior exercised by Sessionless Read Races Create Of Brand New Path.',
+    features=('runtime.file',),
+    validations={'assert-sessionless-read-races-create-of-brand-new-path': 'The assertions for sessionless read races create of brand new path hold.'},
+    execution_surface='cli',
+)
 def test_sessionless_read_races_create_of_brand_new_path(sandbox):
     """Sessionless `file_read` racing a sessionless `file_write` that creates a
     brand-new path.
@@ -241,6 +290,14 @@ def test_sessionless_read_races_create_of_brand_new_path(sandbox):
     assert_single_owner(sandbox, path, prefix="operation:")
 
 
+@e2e_test(
+    id='phase0.52b2299e8d864adc7da8db6b',
+    title='Two Concurrent Sessionless Writes To Disjoint Paths',
+    description='Validates the behavior exercised by Two Concurrent Sessionless Writes To Disjoint Paths.',
+    features=('runtime.file',),
+    validations={'assert-two-concurrent-sessionless-writes-to-disjoint-paths': 'The assertions for two concurrent sessionless writes to disjoint paths hold.'},
+    execution_surface='cli',
+)
 def test_two_concurrent_sessionless_writes_to_disjoint_paths(sandbox):
     """Two concurrent sessionless `file_write` requests to two disjoint paths.
     Expected: both publish independently; each `file_read` returns its full
@@ -269,6 +326,14 @@ def test_two_concurrent_sessionless_writes_to_disjoint_paths(sandbox):
     assert_manifest_delta(sandbox, before, 2)
 
 
+@e2e_test(
+    id='phase0.f5fc800098fd9e633f929395',
+    title='File Blame Races Sessionless Write Same Path',
+    description='Validates the behavior exercised by File Blame Races Sessionless Write Same Path.',
+    features=('runtime.file',),
+    validations={'assert-file-blame-races-sessionless-write-same-path': 'The assertions for file blame races sessionless write same path hold.'},
+    execution_surface='cli',
+)
 def test_file_blame_races_sessionless_write_same_path(sandbox):
     """`file_blame` racing a sessionless `file_write` to the same path.
     Expected: blame returns a fully tiled `ranges` set
@@ -293,6 +358,14 @@ def test_file_blame_races_sessionless_write_same_path(sandbox):
     assert_single_owner(sandbox, path, prefix="operation:")
 
 
+@e2e_test(
+    id='phase0.1ae5a9a3228ce1dc296d438b',
+    title='Sessionless Edit Races One Shot Exec Disjoint Line Merge',
+    description='Validates the behavior exercised by Sessionless Edit Races One Shot Exec Disjoint Line Merge.',
+    features=('runtime.file',),
+    validations={'assert-sessionless-edit-races-one-shot-exec-disjoint-line-merge': 'The assertions for sessionless edit races one shot exec disjoint line merge hold.'},
+    execution_surface='cli',
+)
 def test_sessionless_edit_races_one_shot_exec_disjoint_line_merge(tmp_path):
     """Sessionless `file_edit` changing line 2 of a seeded 4-line file racing a
     one-shot `exec_command` (no `--workspace-session-id`) whose shell command
@@ -324,6 +397,14 @@ def test_sessionless_edit_races_one_shot_exec_disjoint_line_merge(tmp_path):
         assert_manifest_delta(sandbox, before, 2)
 
 
+@e2e_test(
+    id='phase0.a3da0f1a271f7bbfeeda2903',
+    title='Sessionless Write Beats Conflicting One Shot Capture',
+    description='Validates the behavior exercised by Sessionless Write Beats Conflicting One Shot Capture.',
+    features=('runtime.file',),
+    validations={'assert-sessionless-write-beats-conflicting-one-shot-capture': 'The assertions for sessionless write beats conflicting one shot capture hold.'},
+    execution_surface='cli',
+)
 def test_sessionless_write_beats_conflicting_one_shot_capture(tmp_path):
     """Sessionless `file_write` wholesale-rewriting a seeded single-line file
     racing a one-shot `exec_command` that wholesale-rewrites the same file
@@ -367,6 +448,14 @@ def test_sessionless_write_beats_conflicting_one_shot_capture(tmp_path):
         assert_manifest_delta(sandbox, before_exec_first, 2)
 
 
+@e2e_test(
+    id='phase0.589124570e4a8d40b5e86eba',
+    title='Complex Twenty Sessionless Writes To One Path',
+    description='Validates the behavior exercised by Complex Twenty Sessionless Writes To One Path.',
+    features=('runtime.file',),
+    validations={'assert-complex-twenty-sessionless-writes-to-one-path': 'The assertions for complex twenty sessionless writes to one path hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_twenty_sessionless_writes_to_one_path(sandbox):
     """[complex] 20+ concurrent sessionless `file_write` requests to one path,
@@ -392,6 +481,14 @@ def test_complex_twenty_sessionless_writes_to_one_path(sandbox):
     assert_manifest_delta(sandbox, before, 20)
 
 
+@e2e_test(
+    id='phase0.a9b21b0e7c6171b295c28e9d',
+    title='Complex Hundred Sessionless Writes To Distinct Fanout Paths',
+    description='Validates the behavior exercised by Complex Hundred Sessionless Writes To Distinct Fanout Paths.',
+    features=('runtime.file',),
+    validations={'assert-complex-hundred-sessionless-writes-to-distinct-fanout-paths': 'The assertions for complex hundred sessionless writes to distinct fanout paths hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_hundred_sessionless_writes_to_distinct_fanout_paths(sandbox):
     """[complex] 100 concurrent sessionless `file_write` requests, each creating
@@ -423,6 +520,14 @@ def test_complex_hundred_sessionless_writes_to_distinct_fanout_paths(sandbox):
     assert_manifest_delta(sandbox, before, 100)
 
 
+@e2e_test(
+    id='phase0.55c16b9f608b77a4952aa02b',
+    title='Complex Mixed Fanout Hot Path Writes Reads And Blame',
+    description='Validates the behavior exercised by Complex Mixed Fanout Hot Path Writes Reads And Blame.',
+    features=('runtime.file',),
+    validations={'assert-complex-mixed-fanout-hot-path-writes-reads-and-blame': 'The assertions for complex mixed fanout hot path writes reads and blame hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_mixed_fanout_hot_path_writes_reads_and_blame(sandbox):
     """[complex] Mixed fan-out on one hot path: 10 sessionless writers (unique
@@ -463,6 +568,14 @@ def test_complex_mixed_fanout_hot_path_writes_reads_and_blame(sandbox):
     assert_single_owner(sandbox, path, prefix="operation:")
 
 
+@e2e_test(
+    id='phase0.ec915c06877a4388ac3a4f9c',
+    title='Complex Large Same Path Writes Race Windowed Reads',
+    description='Validates the behavior exercised by Complex Large Same Path Writes Race Windowed Reads.',
+    features=('runtime.file',),
+    validations={'assert-complex-large-same-path-writes-race-windowed-reads': 'The assertions for complex large same path writes race windowed reads hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_large_same_path_writes_race_windowed_reads(sandbox):
     """[complex] Two concurrent sessionless `file_write` requests each carrying a
@@ -519,6 +632,14 @@ def test_complex_large_same_path_writes_race_windowed_reads(sandbox):
     assert_manifest_delta(sandbox, before, 2)
 
 
+@e2e_test(
+    id='phase0.b4a1603e6a786608409a14bf',
+    title='Complex Twenty Disjoint Sessionless Edits One Seeded File',
+    description='Validates the behavior exercised by Complex Twenty Disjoint Sessionless Edits One Seeded File.',
+    features=('runtime.file',),
+    validations={'assert-complex-twenty-disjoint-sessionless-edits-one-seeded-file': 'The assertions for complex twenty disjoint sessionless edits one seeded file hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_twenty_disjoint_sessionless_edits_one_seeded_file(sandbox):
     """[complex] Seed one file with 20 unique tokens on separate lines, then run
@@ -556,6 +677,14 @@ def test_complex_twenty_disjoint_sessionless_edits_one_seeded_file(sandbox):
     assert_manifest_delta(sandbox, before, 20)
 
 
+@e2e_test(
+    id='phase0.6e53271e7ef49e8c63611c51',
+    title='Complex Forty Way Disjoint Exec And File Write Race',
+    description='Validates the behavior exercised by Complex Forty Way Disjoint Exec And File Write Race.',
+    features=('runtime.file',),
+    validations={'assert-complex-forty-way-disjoint-exec-and-file-write-race': 'The assertions for complex forty way disjoint exec and file write race hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_forty_way_disjoint_exec_and_file_write_race(sandbox):
     """[complex] 40-way disjoint race: 20 one-shot `exec_command` invocations
@@ -603,6 +732,14 @@ def test_complex_forty_way_disjoint_exec_and_file_write_race(sandbox):
     assert_manifest_delta(sandbox, before, 40)
 
 
+@e2e_test(
+    id='phase0.81b7616f561fda4b8c5433c7',
+    title='Complex Sustained Hot Path Churn With Layerstack Poller',
+    description='Validates the behavior exercised by Complex Sustained Hot Path Churn With Layerstack Poller.',
+    features=('runtime.file',),
+    validations={'assert-complex-sustained-hot-path-churn-with-layerstack-poller': 'The assertions for complex sustained hot path churn with layerstack poller hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_sustained_hot_path_churn_with_layerstack_poller(sandbox):
     """[complex] Sustained hot-path churn: 5 concurrent workers each issue 10

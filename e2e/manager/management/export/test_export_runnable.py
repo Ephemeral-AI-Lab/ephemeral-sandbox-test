@@ -11,11 +11,20 @@ Order follows §5: RUN-01 smokes the run harness itself, then build/venv
 import pytest
 
 from manager.management.export.helpers import cases_for_tier, run_case
+from harness.catalog.declarations import e2e_test
 
 
 pytestmark = [pytest.mark.export, pytest.mark.runnable, pytest.mark.slow]
 
 
+@e2e_test(
+    id='phase0.672942fe0e07aa36c97911ee',
+    title='Export Runnable Catalog',
+    description='Validates the behavior exercised by Export Runnable Catalog.',
+    features=('manager.management',),
+    validations={'assert-export-runnable-catalog': 'The assertions for export runnable catalog hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.parametrize("case", cases_for_tier("runnable"), ids=lambda case: case["id"])
 def test_export_runnable_catalog(case):
     run_case(case)

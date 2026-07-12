@@ -11,6 +11,7 @@ from harness.storage.roots import (
     initialize_benchmark_state,
     initialize_e2e_state,
 )
+from harness.catalog.declarations import e2e_test
 
 
 def _roots(tmp_path):
@@ -21,6 +22,13 @@ def _roots(tmp_path):
     return test_root, product_root
 
 
+@e2e_test(
+    id='phase0.28246ac72d225be18ba5f49a',
+    title='Find Repo Root Skips Partial Marker Directory',
+    description='Validates the behavior exercised by Find Repo Root Skips Partial Marker Directory.',
+    features=(),
+    validations={'assert-find-repo-root-skips-partial-marker-directory': 'The assertions for find repo root skips partial marker directory hold.'},
+)
 def test_find_repo_root_skips_partial_marker_directory(tmp_path):
     test_root, product_root = _roots(tmp_path)
 
@@ -37,6 +45,13 @@ def test_find_repo_root_skips_partial_marker_directory(tmp_path):
     assert BENCHMARK_STATE_MARKER["role"] == "benchmark-state"
 
 
+@e2e_test(
+    id='phase0.66c905c455f313405c042475',
+    title='Find Repo Root Fails Without Markers',
+    description='Validates the behavior exercised by Find Repo Root Fails Without Markers.',
+    features=(),
+    validations={'assert-find-repo-root-fails-without-markers': 'The assertions for find repo root fails without markers hold.'},
+)
 def test_find_repo_root_fails_without_markers(tmp_path):
     test_root, product_root = _roots(tmp_path)
     alias = tmp_path / "test-alias"

@@ -13,8 +13,17 @@ from runtime.file.helpers import (
     owner_for_line,
     workspace_session,
 )
+from harness.catalog.declarations import e2e_test
 
 
+@e2e_test(
+    id='phase0.3eee2226168fce0492dff17b',
+    title='Sessionless Edit Unique Replacement And Read Sees Result',
+    description='Validates the behavior exercised by Sessionless Edit Unique Replacement And Read Sees Result.',
+    features=('runtime.file',),
+    validations={'assert-sessionless-edit-unique-replacement-and-read-sees-result': 'The assertions for sessionless edit unique replacement and read sees result hold.'},
+    execution_surface='cli',
+)
 def test_sessionless_edit_unique_replacement_and_read_sees_result(sandbox):
     """Sessionless edit performs one unique replacement and sessionless read sees
     the result."""
@@ -31,6 +40,14 @@ def test_sessionless_edit_unique_replacement_and_read_sees_result(sandbox):
     assert_blame_owners(sandbox, "edit-smoke/unique.txt", [seed_owner, edit_owner])
 
 
+@e2e_test(
+    id='phase0.916c2c6804959838db383059',
+    title='Sessionless Edit Replace All True Replaces Multiple Occurrences',
+    description='Validates the behavior exercised by Sessionless Edit Replace All True Replaces Multiple Occurrences.',
+    features=('runtime.file',),
+    validations={'assert-sessionless-edit-replace-all-true-replaces-multiple-occurrences': 'The assertions for sessionless edit replace all true replaces multiple occurrences hold.'},
+    execution_surface='cli',
+)
 def test_sessionless_edit_replace_all_true_replaces_multiple_occurrences(sandbox):
     """Sessionless edit with `replace_all=true` replaces multiple occurrences."""
     assert_ok(file_write(sandbox, "edit-smoke/all.txt", "a b a"))
@@ -44,6 +61,14 @@ def test_sessionless_edit_replace_all_true_replaces_multiple_occurrences(sandbox
     assert_single_owner(sandbox, "edit-smoke/all.txt", prefix="operation:")
 
 
+@e2e_test(
+    id='phase0.fa8669a38d4df8a3305571ba',
+    title='Sessionless Edit Missing Old String Returns Edit Not Found',
+    description='Validates the behavior exercised by Sessionless Edit Missing Old String Returns Edit Not Found.',
+    features=('runtime.file',),
+    validations={'assert-sessionless-edit-missing-old-string-returns-edit-not-found': 'The assertions for sessionless edit missing old string returns edit not found hold.'},
+    execution_surface='cli',
+)
 def test_sessionless_edit_missing_old_string_returns_edit_not_found(sandbox):
     """Sessionless edit with missing `old_string` returns edit-not-found."""
     assert_ok(file_write(sandbox, "edit-smoke/missing-old.txt", "alpha"))
@@ -53,6 +78,14 @@ def test_sessionless_edit_missing_old_string_returns_edit_not_found(sandbox):
     )
 
 
+@e2e_test(
+    id='phase0.7aef434316349c5a3b815864',
+    title='Session Edit Visible With Workspace Session Id And Invisible Sessionless',
+    description='Validates the behavior exercised by Session Edit Visible With Workspace Session Id And Invisible Sessionless.',
+    features=('runtime.file',),
+    validations={'assert-session-edit-visible-with-workspace-session-id-and-invisible-sessionless': 'The assertions for session edit visible with workspace session id and invisible sessionless hold.'},
+    execution_surface='cli',
+)
 def test_session_edit_visible_with_workspace_session_id_and_invisible_sessionless(
     sandbox, workspace_session
 ):
@@ -80,6 +113,14 @@ def test_session_edit_visible_with_workspace_session_id_and_invisible_sessionles
     assert_error(file_read(sandbox, "edit-smoke/session.txt"), "not_found")
 
 
+@e2e_test(
+    id='phase0.267061494614dfa4948295f6',
+    title='Ordered Multi Edit Applies Against Evolving Content',
+    description='Validates the behavior exercised by Ordered Multi Edit Applies Against Evolving Content.',
+    features=('runtime.file',),
+    validations={'assert-ordered-multi-edit-applies-against-evolving-content': 'The assertions for ordered multi edit applies against evolving content hold.'},
+    execution_surface='cli',
+)
 def test_ordered_multi_edit_applies_against_evolving_content(sandbox):
     """Ordered multi-edit applies against evolving content."""
     assert_ok(file_write(sandbox, "edit-smoke/ordered.txt", "one"))

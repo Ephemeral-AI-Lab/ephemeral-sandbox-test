@@ -24,9 +24,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--test-repository-root", required=True, type=Path)
     parser.add_argument("--product-root", required=True, type=Path)
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--ledger", type=Path)
-    parser.add_argument("--bootstrap-ledger", type=Path)
-    parser.add_argument("--conversion-inventory", type=Path)
     parser.add_argument("--product-catalog", type=Path)
     parser.add_argument("--product-catalog-command", type=Path)
     arguments = parser.parse_args(argv)
@@ -36,14 +33,6 @@ def main(argv: list[str] | None = None) -> int:
     temporary_root = (roots.e2e_state_root / "tmp").resolve()
     if candidate != temporary_root and temporary_root not in candidate.parents:
         parser.error("--output must be inside the derived E2E state tmp leaf")
-    if arguments.bootstrap_ledger and arguments.ledger:
-        parser.error("--bootstrap-ledger and --ledger cannot be combined")
-    if arguments.bootstrap_ledger and not arguments.conversion_inventory:
-        parser.error("--bootstrap-ledger requires --conversion-inventory")
-    if arguments.conversion_inventory and not (
-        arguments.bootstrap_ledger or arguments.ledger
-    ):
-        parser.error("--conversion-inventory requires --bootstrap-ledger or --ledger")
     try:
         product_catalog = _offline_product_catalog(arguments, roots)
     except (OSError, json.JSONDecodeError, subprocess.SubprocessError, SystemExit) as error:
@@ -73,8 +62,6 @@ def main(argv: list[str] | None = None) -> int:
         "--e2e-catalog-metadata",
         str(metadata),
     ]
-    if arguments.ledger:
-        command.extend(("--e2e-stable-id-ledger", str(arguments.ledger.resolve())))
     exit_code = pytest.main(command)
     if exit_code:
         _publish_health(
@@ -90,14 +77,6 @@ def main(argv: list[str] | None = None) -> int:
         return exit_code
     snapshot = json.loads(candidate.read_text(encoding="utf-8"))
     _publish_current(roots, snapshot)
-    if arguments.bootstrap_ledger:
-        catalog_mode.write_json(
-            arguments.bootstrap_ledger, catalog_mode.ledger_from_snapshot(snapshot)
-        )
-    if arguments.conversion_inventory:
-        catalog_mode.write_json(
-            arguments.conversion_inventory, catalog_mode.conversion_inventory(snapshot)
-        )
     return 0
 
 

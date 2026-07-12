@@ -27,6 +27,7 @@ import pytest
 
 from harness.runner.cli import cli, manager, runtime
 from harness.runner.direct_daemon import direct_daemon
+from harness.catalog.declarations import e2e_test
 
 IMAGE = "ubuntu:24.04"
 
@@ -95,6 +96,14 @@ def _read(sandbox_id, session, paths):
 
 # --- G1 + G2: the boot gate is the same-upperdir + userxattr kernel proof ---
 
+@e2e_test(
+    id='phase0.9f2c9a34abff88a2e34f2f86',
+    title='Boot Gate Enables Live Remount',
+    description='Validates the behavior exercised by Boot Gate Enables Live Remount.',
+    features=('runtime.workspace_session',),
+    validations={'assert-boot-gate-enables-live-remount': 'The assertions for boot gate enables live remount hold.'},
+    execution_surface='cli',
+)
 def test_boot_gate_enables_live_remount(squash_sandbox):
     """The daemon's boot gate probes same-upperdir coexistence + userxattr
     parity in a scratch userns; on the supported environment it must PROVE
@@ -114,6 +123,14 @@ def test_boot_gate_enables_live_remount(squash_sandbox):
 
 # --- tests 1/17/20/21 + B1: contract and idle reclaim ---
 
+@e2e_test(
+    id='phase0.d40d117f1dc53470723b2a04',
+    title='Squash Empty And Idle Contract',
+    description='Validates the behavior exercised by Squash Empty And Idle Contract.',
+    features=('runtime.workspace_session',),
+    validations={'assert-squash-empty-and-idle-contract': 'The assertions for squash empty and idle contract hold.'},
+    execution_surface='cli',
+)
 def test_squash_empty_and_idle_contract(squash_sandbox):
     container = squash_sandbox
 
@@ -163,6 +180,14 @@ def test_squash_empty_and_idle_contract(squash_sandbox):
 
 # --- E5 / B2: live migration shortens an idle session's chain ---
 
+@e2e_test(
+    id='phase0.e5ea2f749149a4bfa9817f05',
+    title='Live Migration Shortens Idle Chain',
+    description='Validates the behavior exercised by Live Migration Shortens Idle Chain.',
+    features=('runtime.workspace_session',),
+    validations={'assert-live-migration-shortens-idle-chain': 'The assertions for live migration shortens idle chain hold.'},
+    execution_surface='cli',
+)
 def test_live_migration_shortens_idle_chain(squash_sandbox):
     container = squash_sandbox
     for name in ("m1", "m2", "m3"):
@@ -210,6 +235,14 @@ def test_live_migration_shortens_idle_chain(squash_sandbox):
 
 # --- E4: a cwd-pinned interactive session stays leased ---
 
+@e2e_test(
+    id='phase0.b559d37006c7c7cf4f4dcca0',
+    title='Cwd Pinned Session Stays Leased',
+    description='Validates the behavior exercised by Cwd Pinned Session Stays Leased.',
+    features=('runtime.workspace_session',),
+    validations={'assert-cwd-pinned-session-stays-leased': 'The assertions for cwd pinned session stays leased hold.'},
+    execution_surface='cli',
+)
 def test_cwd_pinned_session_stays_leased(squash_sandbox):
     container = squash_sandbox
     for name in ("p1", "p2", "p3"):
@@ -259,6 +292,14 @@ def test_cwd_pinned_session_stays_leased(squash_sandbox):
 
 # --- G3 / E10: boot reap-then-sweep recovers, holders die with the daemon ---
 
+@e2e_test(
+    id='phase0.4a8d03eaa067c6654e38add3',
+    title='Boot Reap Then Sweep Recovers',
+    description='Validates the behavior exercised by Boot Reap Then Sweep Recovers.',
+    features=('runtime.workspace_session',),
+    validations={'assert-boot-reap-then-sweep-recovers': 'The assertions for boot reap then sweep recovers hold.'},
+    execution_surface='cli',
+)
 def test_boot_reap_then_sweep_recovers(squash_sandbox):
     container = squash_sandbox
     for name in ("r1", "r2", "r3"):

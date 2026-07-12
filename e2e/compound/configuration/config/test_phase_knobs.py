@@ -16,6 +16,7 @@ import pytest
 from config import helpers
 from harness.runner import cli as climod
 from harness.runner.daemon_http import daemon_http_endpoint, http_post
+from harness.catalog.declarations import e2e_test
 
 pytestmark = pytest.mark.config
 
@@ -44,6 +45,14 @@ class TestPhase1:
     gateway reads.
     """
 
+    @e2e_test(
+        id='phase0.fd146f600feadbd4df95c2c9',
+        title='Sweep Width Squash Invariance',
+        description='Validates the behavior exercised by Sweep Width Squash Invariance.',
+        features=('manager.management', 'runtime.command'),
+        validations={'assert-sweep-width-squash-invariance': 'The assertions for sweep width squash invariance hold.'},
+        execution_surface='cli',
+    )
     def test_sweep_width_squash_invariance(self, lane_a_daemon_yaml):
         """P1-F1 — remount_sweep_width 1 vs 4: squash succeeds identically in
         both arms (perf knob; correctness invariance is the e2e contract) and
@@ -69,6 +78,14 @@ class TestPhase1:
                 assert helpers.exec_output(sandbox_id, "cat sweep-a.txt").strip() == "one"
                 assert helpers.exec_output(sandbox_id, "cat sweep-b.txt").strip() == "two"
 
+    @e2e_test(
+        id='phase0.912e631dcd54877c6cb67f31',
+        title='Export Chunk Shape Invariance',
+        description='Validates the behavior exercised by Export Chunk Shape Invariance.',
+        features=('manager.management', 'runtime.command'),
+        validations={'assert-export-chunk-shape-invariance': 'The assertions for export chunk shape invariance hold.'},
+        execution_surface='cli',
+    )
     def test_export_chunk_shape_invariance(self, lane_a_daemon_yaml, tmp_path):
         """P1-F4 (adapted) — runtime.layerstack.export_chunk_bytes: 4096 pages
         a multi-chunk spool whose exported content is identical to the 2 MiB
@@ -129,6 +146,14 @@ class TestPhase1:
             f"chunk shape must not change exported content: {trees}"
         )
 
+    @e2e_test(
+        id='phase0.11db9d7567dc480c73ad91d5',
+        title='Export Stream Cap Error',
+        description='Validates the behavior exercised by Export Stream Cap Error.',
+        features=('manager.management', 'runtime.command'),
+        validations={'assert-export-stream-cap-error': 'The assertions for export stream cap error hold.'},
+        execution_surface='cli',
+    )
     @pytest.mark.slow
     def test_export_stream_cap_error(self, lane_a_daemon_yaml, tmp_path):
         """P1-F2 — manager.export.max_stream_bytes: 4096 fails an export of a
@@ -180,6 +205,14 @@ class TestPhase1:
         finally:
             helpers.start_gateway(lane_a_daemon_yaml.parent / "gateway.yml")
 
+    @e2e_test(
+        id='phase0.1aa8ac9074c3b41486cdee81',
+        title='Export Apply Entry Cap Error',
+        description='Validates the behavior exercised by Export Apply Entry Cap Error.',
+        features=('manager.management', 'runtime.command'),
+        validations={'assert-export-apply-entry-cap-error': 'The assertions for export apply entry cap error hold.'},
+        execution_surface='cli',
+    )
     @pytest.mark.slow
     def test_export_apply_entry_cap_error(self, lane_a_daemon_yaml, tmp_path):
         """P1-F3 — manager.export.max_apply_entries: 1 fails a dir-mode export
@@ -218,6 +251,14 @@ class TestPhase1:
 class TestPhase2:
     """daemon.server limits, observability.views (phase 2). Lane A only."""
 
+    @e2e_test(
+        id='phase0.6d2d24764b7ec0cba0d1005b',
+        title='Request Cap Rejects Oversized Write',
+        description='Validates the behavior exercised by Request Cap Rejects Oversized Write.',
+        features=('manager.management', 'runtime.command'),
+        validations={'assert-request-cap-rejects-oversized-write': 'The assertions for request cap rejects oversized write hold.'},
+        execution_surface='cli',
+    )
     def test_request_cap_rejects_oversized_write(self, lane_a_daemon_yaml):
         """P2-F1 — daemon.server.max_request_bytes: 65536 rejects a file_write
         whose request envelope exceeds 64 KiB with the daemon's
@@ -242,6 +283,14 @@ class TestPhase2:
                 f"default arm must accept the payload: {result}"
             )
 
+    @e2e_test(
+        id='phase0.df09d255a4308e4bdff4e209',
+        title='Layer Delta View Honors Default Limit',
+        description='Validates the behavior exercised by Layer Delta View Honors Default Limit.',
+        features=('manager.management', 'runtime.command'),
+        validations={'assert-layer-delta-view-honors-default-limit': 'The assertions for layer delta view honors default limit hold.'},
+        execution_surface='cli',
+    )
     def test_layer_delta_view_honors_default_limit(self, lane_a_daemon_yaml):
         """P2-F2 — observability.views.layer_delta_default_limit: 3 caps the
         layer-delta view at 3 entries for a layer carrying more, with the
@@ -300,6 +349,14 @@ class TestPhase3:
     """runtime.command, runtime.file, runtime.namespace_execution (phase 3).
     Lane A only."""
 
+    @e2e_test(
+        id='phase0.e435dfddfc6422e8c447152b',
+        title='File List Truncates At Cap',
+        description='Validates the behavior exercised by File List Truncates At Cap.',
+        features=('manager.management', 'runtime.command'),
+        validations={'assert-file-list-truncates-at-cap': 'The assertions for file list truncates at cap hold.'},
+        execution_surface='cli',
+    )
     def test_file_list_truncates_at_cap(self, lane_a_daemon_yaml):
         """P3-F1 — runtime.file.max_list_entries: 5 lists exactly 5 of 10
         entries with the truncation flag set through the documented
@@ -328,6 +385,14 @@ class TestPhase3:
             )
             assert listing.get("truncated") is True, listing
 
+    @e2e_test(
+        id='phase0.6e9f10a5c97a4142f9e3f5e8',
+        title='File Read Default Lines',
+        description='Validates the behavior exercised by File Read Default Lines.',
+        features=('manager.management', 'runtime.command'),
+        validations={'assert-file-read-default-lines': 'The assertions for file read default lines hold.'},
+        execution_surface='cli',
+    )
     def test_file_read_default_lines(self, lane_a_daemon_yaml):
         """P3-F2 (adapted) — runtime.file.read_lines_default: 10 returns 10
         lines of a 100-line file when the request names no limit.
@@ -350,6 +415,14 @@ class TestPhase3:
             assert len(lines) == 10, f"default window must be 10 lines: {result}"
             assert lines[0] == "1" and lines[-1] == "10", lines
 
+    @e2e_test(
+        id='phase0.1a062c1bccce4faa075f85d1',
+        title='File Edit Size Cap Error',
+        description='Validates the behavior exercised by File Edit Size Cap Error.',
+        features=('manager.management', 'runtime.command'),
+        validations={'assert-file-edit-size-cap-error': 'The assertions for file edit size cap error hold.'},
+        execution_surface='cli',
+    )
     def test_file_edit_size_cap_error(self, lane_a_daemon_yaml):
         """P3-F3 — runtime.file.max_edit_bytes: 1024 fails an edit of a 2 KiB
         file with the size-cap error."""
@@ -371,6 +444,14 @@ class TestPhase3:
             error = helpers.error_text(result)
             assert "too large" in error, error
 
+    @e2e_test(
+        id='phase0.e1e3c8635fdc933760ae4cb1',
+        title='Command Admission Cap',
+        description='Validates the behavior exercised by Command Admission Cap.',
+        features=('manager.management', 'runtime.command'),
+        validations={'assert-command-admission-cap': 'The assertions for command admission cap hold.'},
+        execution_surface='cli',
+    )
     def test_command_admission_cap(self, lane_a_daemon_yaml):
         """P3-F4 — runtime.command.max_active: 1 refuses a second submission
         with the admission error while one long-running command is active."""
@@ -388,6 +469,14 @@ class TestPhase3:
             error = helpers.error_text(refused)
             assert "admission refused" in error, error
 
+    @e2e_test(
+        id='phase0.4ca68485652f8c133c749f4c',
+        title='Terminal Retention Eviction',
+        description='Validates the behavior exercised by Terminal Retention Eviction.',
+        features=('manager.management', 'runtime.command'),
+        validations={'assert-terminal-retention-eviction': 'The assertions for terminal retention eviction hold.'},
+        execution_surface='cli',
+    )
     def test_terminal_retention_eviction(self, lane_a_daemon_yaml):
         """P3-F5 — runtime.namespace_execution.max_terminal_entries: 2 evicts
         the oldest of three completed commands: draining it answers the empty

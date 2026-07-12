@@ -28,6 +28,7 @@ from harness.runner.config import IMAGE
 from harness.runner.daemon_http import daemon_http_endpoint, http_get, http_post, http_request
 from harness.runner.direct_daemon import direct_daemon
 from manager.management import helpers as mgmt
+from harness.catalog.declarations import e2e_test
 
 
 # A tiny static HTTP probe: bind 0.0.0.0:0, print the assigned port, then echo
@@ -100,6 +101,14 @@ fn serve(route: &str, workspace: Option<&str>, lifetime: u64) -> Result<(), Stri
 """
 
 
+@e2e_test(
+    id='phase0.745ce20dba225dabc12fc688',
+    title='Daemon Http Health',
+    description='Validates the behavior exercised by Daemon Http Health.',
+    features=('runtime.daemon_http',),
+    validations={'assert-daemon-http-health': 'The assertions for daemon http health hold.'},
+    execution_surface='daemon_http',
+)
 def test_daemon_http_health(tmp_path):
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -122,6 +131,14 @@ def test_daemon_http_health(tmp_path):
             mgmt.destroy_sandbox(sandbox_id)
 
 
+@e2e_test(
+    id='phase0.fdeb3d4c6d0f844268d89b3c',
+    title='Forward Shared Arbitrary Port',
+    description='Validates the behavior exercised by Forward Shared Arbitrary Port.',
+    features=('runtime.daemon_http',),
+    validations={'assert-forward-shared-arbitrary-port': 'The assertions for forward shared arbitrary port hold.'},
+    execution_surface='daemon_http',
+)
 def test_forward_shared_arbitrary_port(tmp_path):
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -163,6 +180,14 @@ def test_forward_shared_arbitrary_port(tmp_path):
             mgmt.destroy_sandbox(sandbox_id)
 
 
+@e2e_test(
+    id='phase0.ea39327a0d635e37a2bb2d35',
+    title='Forward Isolated Arbitrary Port',
+    description='Validates the behavior exercised by Forward Isolated Arbitrary Port.',
+    features=('runtime.daemon_http',),
+    validations={'assert-forward-isolated-arbitrary-port': 'The assertions for forward isolated arbitrary port hold.'},
+    execution_surface='daemon_http',
+)
 def test_forward_isolated_arbitrary_port(tmp_path):
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -221,6 +246,14 @@ def test_forward_isolated_arbitrary_port(tmp_path):
             mgmt.destroy_sandbox(sandbox_id)
 
 
+@e2e_test(
+    id='phase0.817622ea9b59238859288a1a',
+    title='Forward Rejects Invalid Routes',
+    description='Validates the behavior exercised by Forward Rejects Invalid Routes.',
+    features=('runtime.daemon_http',),
+    validations={'assert-forward-rejects-invalid-routes': 'The assertions for forward rejects invalid routes hold.'},
+    execution_surface='daemon_http',
+)
 def test_forward_rejects_invalid_routes(tmp_path):
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -246,6 +279,14 @@ def test_forward_rejects_invalid_routes(tmp_path):
             mgmt.destroy_sandbox(sandbox_id)
 
 
+@e2e_test(
+    id='phase0.4d2f9820783e7993d4b44c58',
+    title='File List And Removed Operation Routes',
+    description='Validates the behavior exercised by File List And Removed Operation Routes.',
+    features=('runtime.daemon_http',),
+    validations={'assert-file-list-and-removed-operation-routes': 'The assertions for file list and removed operation routes hold.'},
+    execution_surface='daemon_http',
+)
 def test_file_list_and_removed_operation_routes(tmp_path):
     workspace = tmp_path / "workspace"
     workspace.mkdir()

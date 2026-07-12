@@ -22,6 +22,7 @@ from runtime.file.helpers import (
     owners_by_line,
     sandbox_from_workspace,
 )
+from harness.catalog.declarations import e2e_test
 
 
 def _exec_ok(sandbox, command, **kwargs):
@@ -56,6 +57,14 @@ def _bulk_path(index):
     return f"bulk/dir{index % 10:02d}/sub{index % 5:02d}/file-{index}.txt"
 
 
+@e2e_test(
+    id='phase0.9848b4a85b912d82e2712c5d',
+    title='Three Distinct Sessionless Writes Prepend Three Layers',
+    description='Validates the behavior exercised by Three Distinct Sessionless Writes Prepend Three Layers.',
+    features=('runtime.file',),
+    validations={'assert-three-distinct-sessionless-writes-prepend-three-layers': 'The assertions for three distinct sessionless writes prepend three layers hold.'},
+    execution_surface='cli',
+)
 def test_three_distinct_sessionless_writes_prepend_three_layers(sandbox):
     """Three sessionless `file_write` calls to three distinct new paths, then
     read each back.
@@ -86,6 +95,14 @@ def test_three_distinct_sessionless_writes_prepend_three_layers(sandbox):
     assert len(set(after_layers[:3])) == 3, after
 
 
+@e2e_test(
+    id='phase0.6c7e047adb98410d538619fb',
+    title='Blame Ladder On One Path Tracks Three Publish Owners',
+    description='Validates the behavior exercised by Blame Ladder On One Path Tracks Three Publish Owners.',
+    features=('runtime.file',),
+    validations={'assert-blame-ladder-on-one-path-tracks-three-publish-owners': 'The assertions for blame ladder on one path tracks three publish owners hold.'},
+    execution_surface='cli',
+)
 def test_blame_ladder_on_one_path_tracks_three_publish_owners(sandbox):
     """Blame ladder on one path: sessionless `file_write` creates a 3-line file
     (request A), then `file_edit` rewrites line 2 (request B), then
@@ -116,6 +133,14 @@ def test_blame_ladder_on_one_path_tracks_three_publish_owners(sandbox):
     assert_manifest_delta(sandbox, before, 3)
 
 
+@e2e_test(
+    id='phase0.2c91975911705d2b363387b8',
+    title='Identical Content Repeated At Head Is Noop Update',
+    description='Validates the behavior exercised by Identical Content Repeated At Head Is Noop Update.',
+    features=('runtime.file',),
+    validations={'assert-identical-content-repeated-at-head-is-noop-update': 'The assertions for identical content repeated at head is noop update hold.'},
+    execution_surface='cli',
+)
 def test_identical_content_repeated_at_head_is_noop_update(sandbox):
     """Identical-content `file_write` immediately repeated on the same path
     (digest matches the head layer).
@@ -135,6 +160,14 @@ def test_identical_content_repeated_at_head_is_noop_update(sandbox):
     assert_blame_ranges(sandbox, path, [(1, 2, owner)], before_blame)
 
 
+@e2e_test(
+    id='phase0.0d0ebfbe0ce5fad6d9ed0f14',
+    title='Identical Content Rewrite Not At Head Commits But Keeps Original Owner',
+    description='Validates the behavior exercised by Identical Content Rewrite Not At Head Commits But Keeps Original Owner.',
+    features=('runtime.file',),
+    validations={'assert-identical-content-rewrite-not-at-head-commits-but-keeps-original-owner': 'The assertions for identical content rewrite not at head commits but keeps original owner hold.'},
+    execution_surface='cli',
+)
 def test_identical_content_rewrite_not_at_head_commits_but_keeps_original_owner(
     sandbox,
 ):
@@ -158,6 +191,14 @@ def test_identical_content_rewrite_not_at_head_commits_but_keeps_original_owner(
     assert_blame_ranges(sandbox, path, [(1, 2, owner_a)])
 
 
+@e2e_test(
+    id='phase0.b72718239ee5124f3d80374a',
+    title='Delete Via Exec Then Recreate Via File Op',
+    description='Validates the behavior exercised by Delete Via Exec Then Recreate Via File Op.',
+    features=('runtime.file',),
+    validations={'assert-delete-via-exec-then-recreate-via-file-op': 'The assertions for delete via exec then recreate via file op hold.'},
+    execution_surface='cli',
+)
 def test_delete_via_exec_then_recreate_via_file_op(sandbox):
     """Delete via exec then re-create via file op: one-shot
     `exec_command "rm f.txt"` publishes a whiteout layer; then sessionless
@@ -182,6 +223,14 @@ def test_delete_via_exec_then_recreate_via_file_op(sandbox):
     assert_manifest_delta(sandbox, before, 3)
 
 
+@e2e_test(
+    id='phase0.eb647c38f8fbfc26a369f710',
+    title='Parent Hidden By Whiteout Can Be Recreated',
+    description='Validates the behavior exercised by Parent Hidden By Whiteout Can Be Recreated.',
+    features=('runtime.file',),
+    validations={'assert-parent-hidden-by-whiteout-can-be-recreated': 'The assertions for parent hidden by whiteout can be recreated hold.'},
+    execution_surface='cli',
+)
 def test_parent_hidden_by_whiteout_can_be_recreated(tmp_path):
     """Parent hidden by whiteout: one-shot `exec_command "rm -rf dir"` (dir has
     files in lower layers), then `file_write dir/new.txt`.
@@ -202,6 +251,14 @@ def test_parent_hidden_by_whiteout_can_be_recreated(tmp_path):
         assert_manifest_delta(sandbox, before, 2)
 
 
+@e2e_test(
+    id='phase0.daca7917331878e0992e5dbc',
+    title='Opaque Directory Hides Lower Children And Allows Update',
+    description='Validates the behavior exercised by Opaque Directory Hides Lower Children And Allows Update.',
+    features=('runtime.file',),
+    validations={'assert-opaque-directory-hides-lower-children-and-allows-update': 'The assertions for opaque directory hides lower children and allows update hold.'},
+    execution_surface='cli',
+)
 def test_opaque_directory_hides_lower_children_and_allows_update(tmp_path):
     """Opaque directory: one-shot
     `exec_command "rm -rf dir && mkdir dir && echo fresh > dir/only.txt"` over
@@ -233,6 +290,14 @@ def test_opaque_directory_hides_lower_children_and_allows_update(tmp_path):
         assert_manifest_delta(sandbox, before_update, 1)
 
 
+@e2e_test(
+    id='phase0.7076190fb802b6802e0ad5cf',
+    title='Complex Deep Whiteout Opaque Hierarchy',
+    description='Validates the behavior exercised by Complex Deep Whiteout Opaque Hierarchy.',
+    features=('runtime.file',),
+    validations={'assert-complex-deep-whiteout-opaque-hierarchy': 'The assertions for complex deep whiteout opaque hierarchy hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_deep_whiteout_opaque_hierarchy(sandbox):
     """[complex] Deep whiteout/opaque hierarchy: seed `a/b/c/d` with files at
@@ -275,6 +340,14 @@ def test_complex_deep_whiteout_opaque_hierarchy(sandbox):
     assert_manifest_delta(sandbox, before, 3)
 
 
+@e2e_test(
+    id='phase0.ab2e6ef3944bda519b0fc72b',
+    title='Complex Deep Layer Stack Multi Path',
+    description='Validates the behavior exercised by Complex Deep Layer Stack Multi Path.',
+    features=('runtime.file',),
+    validations={'assert-complex-deep-layer-stack-multi-path': 'The assertions for complex deep layer stack multi path hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_deep_layer_stack_multi_path(sandbox):
     """[complex] Deep layer stack, multi-path: 60 sequential sessionless
@@ -307,6 +380,14 @@ def test_complex_deep_layer_stack_multi_path(sandbox):
         assert_single_owner(sandbox, path, owner=final_owner[path])
 
 
+@e2e_test(
+    id='phase0.52b3a015ef4b3c87bedcd272',
+    title='Complex Deep Layer Stack Single Path 50 Line Edits',
+    description='Validates the behavior exercised by Complex Deep Layer Stack Single Path 50 Line Edits.',
+    features=('runtime.file',),
+    validations={'assert-complex-deep-layer-stack-single-path-50-line-edits': 'The assertions for complex deep layer stack single path 50 line edits hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_deep_layer_stack_single_path_50_line_edits(sandbox):
     """[complex] Deep layer stack, single path: `file_write` a 50-line file of
@@ -336,6 +417,14 @@ def test_complex_deep_layer_stack_single_path_50_line_edits(sandbox):
     assert_manifest_delta(sandbox, before, 51)
 
 
+@e2e_test(
+    id='phase0.1d49661ca712919a270645dd',
+    title='Complex Large File Windowed Reads Over Layer Boundary',
+    description='Validates the behavior exercised by Complex Large File Windowed Reads Over Layer Boundary.',
+    features=('runtime.file',),
+    validations={'assert-complex-large-file-windowed-reads-over-layer-boundary': 'The assertions for complex large file windowed reads over layer boundary hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_large_file_windowed_reads_over_layer_boundary(sandbox):
     """[complex] Large file windowed reads over a layer boundary: generate a
@@ -396,6 +485,14 @@ def test_complex_large_file_windowed_reads_over_layer_boundary(sandbox):
         assert owners[index].startswith("workspace_session:"), owners[9997:10002]
 
 
+@e2e_test(
+    id='phase0.5a8e9671dd464af35416e838',
+    title='Complex Hundreds Of Files In One Captured Layer',
+    description='Validates the behavior exercised by Complex Hundreds Of Files In One Captured Layer.',
+    features=('runtime.file',),
+    validations={'assert-complex-hundreds-of-files-in-one-captured-layer': 'The assertions for complex hundreds of files in one captured layer hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_hundreds_of_files_in_one_captured_layer(sandbox):
     """[complex] Hundreds of files in one captured layer: a one-shot exec creates
@@ -437,6 +534,14 @@ def test_complex_hundreds_of_files_in_one_captured_layer(sandbox):
         assert_single_owner(sandbox, _bulk_path(index), prefix="workspace_session:")
 
 
+@e2e_test(
+    id='phase0.cdb49f675d8f7db887b7e94f',
+    title='Complex Mixed History Blame At Scale',
+    description='Validates the behavior exercised by Complex Mixed History Blame At Scale.',
+    features=('runtime.file',),
+    validations={'assert-complex-mixed-history-blame-at-scale': 'The assertions for complex mixed history blame at scale hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_mixed_history_blame_at_scale(tmp_path):
     """[complex] Mixed-history blame at scale: on one seeded 20-line base file,
@@ -476,6 +581,14 @@ def test_complex_mixed_history_blame_at_scale(tmp_path):
         assert_manifest_delta(sandbox, before, 10)
 
 
+@e2e_test(
+    id='phase0.a4dc3e471cfd1a2865c4e21b',
+    title='First Sessionless Edit Of Workspace Base Uses Original For Untouched',
+    description='Validates the behavior exercised by First Sessionless Edit Of Workspace Base Uses Original For Untouched.',
+    features=('runtime.file',),
+    validations={'assert-first-sessionless-edit-of-workspace-base-uses-original-for-untouched': 'The assertions for first sessionless edit of workspace base uses original for untouched hold.'},
+    execution_surface='cli',
+)
 def test_first_sessionless_edit_of_workspace_base_uses_original_for_untouched(
     tmp_path,
 ):
@@ -497,6 +610,14 @@ def test_first_sessionless_edit_of_workspace_base_uses_original_for_untouched(
         assert_manifest_delta(sandbox, before, 1)
 
 
+@e2e_test(
+    id='phase0.c864c6233269df52aff62771',
+    title='Blame Survives Deletion',
+    description='Validates the behavior exercised by Blame Survives Deletion.',
+    features=('runtime.file',),
+    validations={'assert-blame-survives-deletion': 'The assertions for blame survives deletion hold.'},
+    execution_surface='cli',
+)
 def test_blame_survives_deletion(sandbox):
     """Blame survives deletion: sessionless `file_write` a file (audit event
     recorded), then one-shot `exec_command "rm <path>"` publishes the
@@ -520,6 +641,14 @@ def test_blame_survives_deletion(sandbox):
     assert_manifest_delta(sandbox, before, 2)
 
 
+@e2e_test(
+    id='phase0.7ce2c61b3532fb5c55a65bab',
+    title='Forbidden Publishes Do Not Advance Manifest',
+    description='Validates the behavior exercised by Forbidden Publishes Do Not Advance Manifest.',
+    features=('runtime.file',),
+    validations={'assert-forbidden-publishes-do-not-advance-manifest': 'The assertions for forbidden publishes do not advance manifest hold.'},
+    execution_surface='cli',
+)
 def test_forbidden_publishes_do_not_advance_manifest(sandbox):
     """Forbidden publishes: sessionless `file_write` to `layers/evil.txt` and
     `manifest.json` (layerstack-internal paths).
@@ -538,6 +667,14 @@ def test_forbidden_publishes_do_not_advance_manifest(sandbox):
     _assert_stack_unchanged(sandbox, before)
 
 
+@e2e_test(
+    id='phase0.623963ee9817b2d326ccb97e',
+    title='Gitignored Route Blame Is Wholesale',
+    description='Validates the behavior exercised by Gitignored Route Blame Is Wholesale.',
+    features=('runtime.file',),
+    validations={'assert-gitignored-route-blame-is-wholesale': 'The assertions for gitignored route blame is wholesale hold.'},
+    execution_surface='cli',
+)
 def test_gitignored_route_blame_is_wholesale(tmp_path):
     """Gitignored route: with `logs/` in the base `.gitignore`, a one-shot exec
     writes a multi-line `logs/app.log`.
@@ -557,6 +694,14 @@ def test_gitignored_route_blame_is_wholesale(tmp_path):
         assert_manifest_delta(sandbox, before, 1)
 
 
+@e2e_test(
+    id='phase0.edbda533807888f52c5b435d',
+    title='No Change Capture Is Noop',
+    description='Validates the behavior exercised by No Change Capture Is Noop.',
+    features=('runtime.file',),
+    validations={'assert-no-change-capture-is-noop': 'The assertions for no change capture is noop hold.'},
+    execution_surface='cli',
+)
 def test_no_change_capture_is_noop(sandbox):
     """No-change capture: one-shot `exec_command "true"` completes.
     Expected: the capture publish is a `no_op` — `manifest_version`,

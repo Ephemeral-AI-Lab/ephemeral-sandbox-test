@@ -23,6 +23,7 @@ from runtime.file.helpers import (
     sandbox_from_workspace,
     write_command_stdin,
 )
+from harness.catalog.declarations import e2e_test
 
 
 def _exec_ok(sandbox, command, **kwargs):
@@ -65,6 +66,14 @@ def _created_path(index):
     return f"capture/new/d{index % 10:02d}/file-{index}.txt"
 
 
+@e2e_test(
+    id='phase0.2e8bdafecf88b925e76f4745',
+    title='Frozen Snapshot Mount Excludes Later Published Layers',
+    description='Validates the behavior exercised by Frozen Snapshot Mount Excludes Later Published Layers.',
+    features=('runtime.file',),
+    validations={'assert-frozen-snapshot-mount-excludes-later-published-layers': 'The assertions for frozen snapshot mount excludes later published layers hold.'},
+    execution_surface='cli',
+)
 def test_frozen_snapshot_mount_excludes_later_published_layers(tmp_path):
     """Frozen snapshot mount: `create_workspace_session`, then sessionless
     `file_write` a new file and update an existing base file.
@@ -126,6 +135,14 @@ def test_frozen_snapshot_mount_excludes_later_published_layers(tmp_path):
             destroy_workspace_session(sandbox, session_id, grace_s=1)
 
 
+@e2e_test(
+    id='phase0.b2a07a28416dd7ec5f9b05f8',
+    title='Complex Session Overlay At Scale Through Mount',
+    description='Validates the behavior exercised by Complex Session Overlay At Scale Through Mount.',
+    features=('runtime.file',),
+    validations={'assert-complex-session-overlay-at-scale-through-mount': 'The assertions for complex session overlay at scale through mount hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_session_overlay_at_scale_through_mount(tmp_path):
     """[complex] Session overlay at scale through the mount: 100 session
@@ -168,6 +185,14 @@ def test_complex_session_overlay_at_scale_through_mount(tmp_path):
             destroy_workspace_session(sandbox, session_id, grace_s=1)
 
 
+@e2e_test(
+    id='phase0.5cb2c62945ae326a7214c0a7',
+    title='Destroy Discards The Overlay',
+    description='Validates the behavior exercised by Destroy Discards The Overlay.',
+    features=('runtime.file',),
+    validations={'assert-destroy-discards-the-overlay': 'The assertions for destroy discards the overlay hold.'},
+    execution_surface='cli',
+)
 def test_destroy_discards_the_overlay(tmp_path):
     """Destroy discards the overlay: session `file_write` several files in a
     caller-owned session, then `destroy_workspace_session`.
@@ -209,6 +234,14 @@ def test_destroy_discards_the_overlay(tmp_path):
             destroy_workspace_session(sandbox, fresh, grace_s=1)
 
 
+@e2e_test(
+    id='phase0.58078ba64138a8a75c43083e',
+    title='One Shot Capture End State',
+    description='Validates the behavior exercised by One Shot Capture End State.',
+    features=('runtime.file',),
+    validations={'assert-one-shot-capture-end-state': 'The assertions for one shot capture end state hold.'},
+    execution_surface='cli',
+)
 def test_one_shot_capture_end_state(tmp_path):
     """One-shot capture end state: a single one-shot `exec_command` creates one
     file, modifies one seeded base file, and deletes another base file.
@@ -243,6 +276,14 @@ def test_one_shot_capture_end_state(tmp_path):
         assert_error(file_read(sandbox, "capture/delete.txt"), "not_found")
 
 
+@e2e_test(
+    id='phase0.97ee508afd021e604644259c',
+    title='Capture After Base Advanced Clean Auto Merge',
+    description='Validates the behavior exercised by Capture After Base Advanced Clean Auto Merge.',
+    features=('runtime.file',),
+    validations={'assert-capture-after-base-advanced-clean-auto-merge': 'The assertions for capture after base advanced clean auto merge hold.'},
+    execution_surface='cli',
+)
 def test_capture_after_base_advanced_clean_auto_merge(tmp_path):
     """Capture after the base advanced — clean auto-merge: start a one-shot exec
     blocked on stdin (`read x; printf "tail\n" >> notes.txt`), sessionless
@@ -272,6 +313,14 @@ def test_capture_after_base_advanced_clean_auto_merge(tmp_path):
         assert_manifest_delta(sandbox, before, 2)
 
 
+@e2e_test(
+    id='phase0.1e3edb57a1e70140def1dfef',
+    title='Capture After Base Advanced Overlapping Conflict',
+    description='Validates the behavior exercised by Capture After Base Advanced Overlapping Conflict.',
+    features=('runtime.file',),
+    validations={'assert-capture-after-base-advanced-overlapping-conflict': 'The assertions for capture after base advanced overlapping conflict hold.'},
+    execution_surface='cli',
+)
 def test_capture_after_base_advanced_overlapping_conflict(tmp_path):
     """Capture after the base advanced — overlapping conflict: same stdin-gated
     one-shot pattern, but the in-session command rewrites the same line the
@@ -304,6 +353,14 @@ def test_capture_after_base_advanced_overlapping_conflict(tmp_path):
         assert_manifest_delta(sandbox, before, 1)
 
 
+@e2e_test(
+    id='phase0.f3a7b58c26954b53ca80b97e',
+    title='Session Delete Vs Sessionless Modify Rejects Atomically',
+    description='Validates the behavior exercised by Session Delete Vs Sessionless Modify Rejects Atomically.',
+    features=('runtime.file',),
+    validations={'assert-session-delete-vs-sessionless-modify-rejects-atomically': 'The assertions for session delete vs sessionless modify rejects atomically hold.'},
+    execution_surface='cli',
+)
 def test_session_delete_vs_sessionless_modify_rejects_atomically(tmp_path):
     """Session delete vs sessionless modify: a stdin-gated one-shot session
     deletes `shared.txt` (and also creates `unrelated.txt`) after a
@@ -336,6 +393,14 @@ def test_session_delete_vs_sessionless_modify_rejects_atomically(tmp_path):
         assert_manifest_delta(sandbox, before, 1)
 
 
+@e2e_test(
+    id='phase0.3ef2a8eb92e0829b77c5a0c2',
+    title='Complex Two Sessions From One Base Captured In Sequence',
+    description='Validates the behavior exercised by Complex Two Sessions From One Base Captured In Sequence.',
+    features=('runtime.file',),
+    validations={'assert-complex-two-sessions-from-one-base-captured-in-sequence': 'The assertions for complex two sessions from one base captured in sequence hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_two_sessions_from_one_base_captured_in_sequence(tmp_path):
     """[complex] Two sessions from one base captured in sequence: start two
@@ -389,6 +454,14 @@ def test_complex_two_sessions_from_one_base_captured_in_sequence(tmp_path):
         assert owners[100:110] == [owner_two] * 10, owners[98:112]
 
 
+@e2e_test(
+    id='phase0.55f2ac6b1a4afd2e07693b78',
+    title='Complex Capture With Hundreds Of Changed Files',
+    description='Validates the behavior exercised by Complex Capture With Hundreds Of Changed Files.',
+    features=('runtime.file',),
+    validations={'assert-complex-capture-with-hundreds-of-changed-files': 'The assertions for complex capture with hundreds of changed files hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_capture_with_hundreds_of_changed_files(tmp_path):
     """[complex] Capture with hundreds of changed files: one one-shot exec

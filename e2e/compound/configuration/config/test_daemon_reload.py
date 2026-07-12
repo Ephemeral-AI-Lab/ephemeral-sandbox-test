@@ -13,6 +13,7 @@ workspace session (mount mask applied, publish_then_destroy finalize policy).
 import pytest
 
 from config import helpers
+from harness.catalog.declarations import e2e_test
 
 pytestmark = pytest.mark.config
 
@@ -21,6 +22,14 @@ pytestmark = pytest.mark.config
 MASK_PROBE_DIR = "/root"
 
 
+@e2e_test(
+    id='phase0.e82b9ba1f71b9ee1268249cc',
+    title='Rewrite Applies To Next Sandbox',
+    description='Validates the behavior exercised by Rewrite Applies To Next Sandbox.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-rewrite-applies-to-next-sandbox': 'The assertions for rewrite applies to next sandbox hold.'},
+    execution_surface='cli',
+)
 def test_rewrite_applies_to_next_sandbox(lane_a_daemon_yaml):
     """F1 per-create reload + F2 create-time binding, one flow.
 
@@ -48,6 +57,14 @@ def test_rewrite_applies_to_next_sandbox(lane_a_daemon_yaml):
         )
 
 
+@e2e_test(
+    id='phase0.0bffa0a17b5a9e0581e6768f',
+    title='Mount Mask Hides Paths',
+    description='Validates the behavior exercised by Mount Mask Hides Paths.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-mount-mask-hides-paths': 'The assertions for mount mask hides paths hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.parametrize(
     ("hidden_paths", "probe_dir", "expect_masked"),
     [
@@ -69,6 +86,14 @@ def test_mount_mask_hides_paths(lane_a_daemon_yaml, hidden_paths, probe_dir, exp
             assert listing != "", f"{probe_dir} should be visible"
 
 
+@e2e_test(
+    id='phase0.e841cede95e3ffd9e5209a44',
+    title='Setup Timeout Tiny Fails Session',
+    description='Validates the behavior exercised by Setup Timeout Tiny Fails Session.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-setup-timeout-tiny-fails-session': 'The assertions for setup timeout tiny fails session hold.'},
+    execution_surface='cli',
+)
 def test_setup_timeout_tiny_fails_session(lane_a_daemon_yaml):
     """F4 — a tiny runtime.workspace.setup_timeout_s fails workspace-session
     setup with a timeout-classed error; the default arm succeeds.
@@ -95,6 +120,14 @@ def test_setup_timeout_tiny_fails_session(lane_a_daemon_yaml):
         assert helpers.exec_output(control_id, "echo setup-ok").strip() == "setup-ok"
 
 
+@e2e_test(
+    id='phase0.fc185cf4268e081816d81361',
+    title='Relocated Roots Functional',
+    description='Validates the behavior exercised by Relocated Roots Functional.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-relocated-roots-functional': 'The assertions for relocated roots functional hold.'},
+    execution_surface='cli',
+)
 def test_relocated_roots_functional(lane_a_daemon_yaml):
     """F5 — relocated scratch roots stay fully functional.
 
@@ -123,6 +156,14 @@ def test_relocated_roots_functional(lane_a_daemon_yaml):
         assert round_trip.strip() == "relocated"
 
 
+@e2e_test(
+    id='phase0.7c8e6cb1caeda7821c5181df',
+    title='Observability Toggle',
+    description='Validates the behavior exercised by Observability Toggle.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-observability-toggle': 'The assertions for observability toggle hold.'},
+    execution_surface='cli',
+)
 def test_observability_toggle(lane_a_daemon_yaml):
     """F6 — observability.enabled governs the views while operations still work.
 
@@ -147,6 +188,14 @@ def test_observability_toggle(lane_a_daemon_yaml):
         )
 
 
+@e2e_test(
+    id='phase0.4fa59f548a12705abeb8d122',
+    title='Single Worker Thread Functional',
+    description='Validates the behavior exercised by Single Worker Thread Functional.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-single-worker-thread-functional': 'The assertions for single worker thread functional hold.'},
+    execution_surface='cli',
+)
 def test_single_worker_thread_functional(lane_a_daemon_yaml):
     """F7 — daemon.server.max_worker_threads: 1 is accepted and functional
     (no stronger observable exists via the CLI)."""

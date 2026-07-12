@@ -31,6 +31,7 @@ from runtime.file.helpers import (
     write_command_stdin,
 )
 from runtime.workspace_session.helpers import assert_exec_workspace_not_found
+from harness.catalog.declarations import e2e_test
 
 pytestmark = [pytest.mark.git, pytest.mark.easy]
 
@@ -447,6 +448,14 @@ def axis_rejected(rec: GitCaseRecorder, detail: str, reject_class: str):
     )
 
 
+@e2e_test(
+    id='phase0.56ae972ef1e6036198b5510b',
+    title='Ez 01 Git Init Publishes Dotgit As Source',
+    description='Validates the behavior exercised by Ez 01 Git Init Publishes Dotgit As Source.',
+    features=('runtime.command',),
+    validations={'assert-ez-01-git-init-publishes-dotgit-as-source': 'The assertions for ez 01 git init publishes dotgit as source hold.'},
+    execution_surface='cli',
+)
 def test_EZ_01_git_init_publishes_dotgit_as_source(tmp_path):
     with GitCaseRecorder("EZ-01") as rec, git_case(tmp_path, rec) as sandbox:
         before = layerstack(sandbox)
@@ -459,6 +468,14 @@ def test_EZ_01_git_init_publishes_dotgit_as_source(tmp_path):
         rec.axis("attribution", True, "file_read matched .git/HEAD and .git/config blame tiled")
 
 
+@e2e_test(
+    id='phase0.c8c50f22907d1243480e6775',
+    title='Ez 02 Git Commit Persists Into Fresh Exec',
+    description='Validates the behavior exercised by Ez 02 Git Commit Persists Into Fresh Exec.',
+    features=('runtime.command',),
+    validations={'assert-ez-02-git-commit-persists-into-fresh-exec': 'The assertions for ez 02 git commit persists into fresh exec hold.'},
+    execution_surface='cli',
+)
 def test_EZ_02_git_commit_persists_into_fresh_exec(tmp_path):
     with GitCaseRecorder("EZ-02") as rec, git_case(tmp_path, rec) as sandbox:
         before = layerstack(sandbox)
@@ -491,6 +508,14 @@ def test_EZ_02_git_commit_persists_into_fresh_exec(tmp_path):
         rec.axis("attribution", True, "fresh git log and README file_read matched")
 
 
+@e2e_test(
+    id='phase0.8621ad2db26957f9ab9462e6',
+    title='Ez 03 Git Tracked Working File Has Line Attribution',
+    description='Validates the behavior exercised by Ez 03 Git Tracked Working File Has Line Attribution.',
+    features=('runtime.command',),
+    validations={'assert-ez-03-git-tracked-working-file-has-line-attribution': 'The assertions for ez 03 git tracked working file has line attribution hold.'},
+    execution_surface='cli',
+)
 def test_EZ_03_git_tracked_working_file_has_line_attribution(tmp_path):
     with GitCaseRecorder("EZ-03") as rec, git_case(tmp_path, rec) as sandbox:
         before = layerstack(sandbox)
@@ -509,6 +534,14 @@ def test_EZ_03_git_tracked_working_file_has_line_attribution(tmp_path):
         rec.axis("attribution", True, "file_blame returned per-line source ownership")
 
 
+@e2e_test(
+    id='phase0.2e36219502d44f8d2a435339',
+    title='Ez 04 Gitignore Is Source And Drives Ignored Route',
+    description='Validates the behavior exercised by Ez 04 Gitignore Is Source And Drives Ignored Route.',
+    features=('runtime.command',),
+    validations={'assert-ez-04-gitignore-is-source-and-drives-ignored-route': 'The assertions for ez 04 gitignore is source and drives ignored route hold.'},
+    execution_surface='cli',
+)
 def test_EZ_04_gitignore_is_source_and_drives_ignored_route(tmp_path):
     with GitCaseRecorder("EZ-04") as rec, git_case(tmp_path, rec) as sandbox:
         init_repo(sandbox, rec)
@@ -534,6 +567,14 @@ def test_EZ_04_gitignore_is_source_and_drives_ignored_route(tmp_path):
         rec.axis("attribution", True, ".gitignore tiled per-line; out.log used wholesale ignored blame")
 
 
+@e2e_test(
+    id='phase0.7ced45e7f2ac683c0a7e4e6e',
+    title='Ez 05 Dotgithub Gitattributes Gitmodules Are Source',
+    description='Validates the behavior exercised by Ez 05 Dotgithub Gitattributes Gitmodules Are Source.',
+    features=('runtime.command',),
+    validations={'assert-ez-05-dotgithub-gitattributes-gitmodules-are-source': 'The assertions for ez 05 dotgithub gitattributes gitmodules are source hold.'},
+    execution_surface='cli',
+)
 def test_EZ_05_dotgithub_gitattributes_gitmodules_are_source(tmp_path):
     with GitCaseRecorder("EZ-05") as rec, git_case(tmp_path, rec) as sandbox:
         before = layerstack(sandbox)
@@ -565,6 +606,14 @@ def test_EZ_05_dotgithub_gitattributes_gitmodules_are_source(tmp_path):
         rec.axis("attribution", True, "all three files file_read matched and blamed as source")
 
 
+@e2e_test(
+    id='phase0.0936ba975e6b3aae0fe7fb45',
+    title='Ez 06 Nested Repo Dotgit Is Source',
+    description='Validates the behavior exercised by Ez 06 Nested Repo Dotgit Is Source.',
+    features=('runtime.command',),
+    validations={'assert-ez-06-nested-repo-dotgit-is-source': 'The assertions for ez 06 nested repo dotgit is source hold.'},
+    execution_surface='cli',
+)
 def test_EZ_06_nested_repo_dotgit_is_source(tmp_path):
     with GitCaseRecorder("EZ-06") as rec, git_case(tmp_path, rec) as sandbox:
         before = layerstack(sandbox)
@@ -595,6 +644,14 @@ def test_EZ_06_nested_repo_dotgit_is_source(tmp_path):
         rec.axis("attribution", True, "nested git log survived and nested .git/HEAD blamed as source")
 
 
+@e2e_test(
+    id='phase0.6a6a3039bcdfa41f5c7f8981',
+    title='Ez 07 Git Rm Publishes Deletion',
+    description='Validates the behavior exercised by Ez 07 Git Rm Publishes Deletion.',
+    features=('runtime.command',),
+    validations={'assert-ez-07-git-rm-publishes-deletion': 'The assertions for ez 07 git rm publishes deletion hold.'},
+    execution_surface='cli',
+)
 def test_EZ_07_git_rm_publishes_deletion(tmp_path):
     with GitCaseRecorder("EZ-07") as rec, git_case(tmp_path, rec) as sandbox:
         seed_repo(sandbox, rec, {"doomed.txt": "delete me\n"})
@@ -612,6 +669,14 @@ def test_EZ_07_git_rm_publishes_deletion(tmp_path):
         rec.axis("attribution", True, "deleted path is not_found for read")
 
 
+@e2e_test(
+    id='phase0.8b1e08d1b22cbc721217d468',
+    title='Ez 08 Git Mv Is Delete Old Write New',
+    description='Validates the behavior exercised by Ez 08 Git Mv Is Delete Old Write New.',
+    features=('runtime.command',),
+    validations={'assert-ez-08-git-mv-is-delete-old-write-new': 'The assertions for ez 08 git mv is delete old write new hold.'},
+    execution_surface='cli',
+)
 def test_EZ_08_git_mv_is_delete_old_write_new(tmp_path):
     with GitCaseRecorder("EZ-08") as rec, git_case(tmp_path, rec) as sandbox:
         seed_repo(sandbox, rec, {"old.txt": "move me\n"})
@@ -631,6 +696,14 @@ def test_EZ_08_git_mv_is_delete_old_write_new(tmp_path):
         rec.axis("attribution", True, "new path content matched and old path is not_found")
 
 
+@e2e_test(
+    id='phase0.f0b564528c16623db17ffbf6',
+    title='Ez 09 Gitignored Build Output Uses Ignored Route',
+    description='Validates the behavior exercised by Ez 09 Gitignored Build Output Uses Ignored Route.',
+    features=('runtime.command',),
+    validations={'assert-ez-09-gitignored-build-output-uses-ignored-route': 'The assertions for ez 09 gitignored build output uses ignored route hold.'},
+    execution_surface='cli',
+)
 def test_EZ_09_gitignored_build_output_uses_ignored_route(tmp_path):
     with GitCaseRecorder("EZ-09") as rec, git_case(tmp_path, rec) as sandbox:
         seed_repo(sandbox, rec, {".gitignore": "target/\n"})
@@ -649,6 +722,14 @@ def test_EZ_09_gitignored_build_output_uses_ignored_route(tmp_path):
         rec.axis("attribution", True, "ignored path file_read matched and blame was wholesale")
 
 
+@e2e_test(
+    id='phase0.0c9c041c78ceeb02e98de529',
+    title='Ez 10 Protected Path Still Rejects',
+    description='Validates the behavior exercised by Ez 10 Protected Path Still Rejects.',
+    features=('runtime.command',),
+    validations={'assert-ez-10-protected-path-still-rejects': 'The assertions for ez 10 protected path still rejects hold.'},
+    execution_surface='cli',
+)
 def test_EZ_10_protected_path_still_rejects(tmp_path):
     with GitCaseRecorder("EZ-10") as rec, git_case(tmp_path, rec) as sandbox:
         init_repo(sandbox, rec)

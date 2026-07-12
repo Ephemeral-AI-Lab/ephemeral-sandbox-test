@@ -15,10 +15,19 @@ gateway running; the package finalizer's baseline restore covers them.
 import pytest
 
 from config import helpers
+from harness.catalog.declarations import e2e_test
 
 pytestmark = pytest.mark.config
 
 
+@e2e_test(
+    id='phase0.b8d33fb68efad3e4d8c5df70',
+    title='Unknown Daemon Key Fails Create',
+    description='Validates the behavior exercised by Unknown Daemon Key Fails Create.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-unknown-daemon-key-fails-create': 'The assertions for unknown daemon key fails create hold.'},
+    execution_surface='cli',
+)
 def test_unknown_daemon_key_fails_create(lane_a_daemon_yaml):
     """F1 — deny_unknown_fields surfaces through create_sandbox, with rollback.
     F6 — restoring a valid YAML recovers with no gateway restart."""
@@ -38,6 +47,14 @@ def test_unknown_daemon_key_fails_create(lane_a_daemon_yaml):
         assert recovered_id
 
 
+@e2e_test(
+    id='phase0.68934fa57db7aee5aa27fe93',
+    title='Invalid Daemon Values Fail Create',
+    description='Validates the behavior exercised by Invalid Daemon Values Fail Create.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-invalid-daemon-values-fail-create': 'The assertions for invalid daemon values fail create hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.parametrize(
     ("overrides", "expected_substring"),
     [
@@ -75,6 +92,14 @@ def test_invalid_daemon_values_fail_create(lane_a_daemon_yaml, overrides, expect
     assert helpers.sandbox_ids() == before, "failed create must not leave a record"
 
 
+@e2e_test(
+    id='phase0.40900bf10a83c455127cc766',
+    title='Valid Config Recovers',
+    description='Validates the behavior exercised by Valid Config Recovers.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-valid-config-recovers': 'The assertions for valid config recovers hold.'},
+    execution_surface='cli',
+)
 def test_valid_config_recovers(lane_a_daemon_yaml):
     """F6 — after the invalid arms above, a valid rewrite creates cleanly on the
     same gateway (Lane A reload also recovers, no restart)."""
@@ -83,6 +108,14 @@ def test_valid_config_recovers(lane_a_daemon_yaml):
         assert helpers.exec_output(sandbox_id, "echo recovered").strip() == "recovered"
 
 
+@e2e_test(
+    id='phase0.0a8c5b239c7e43f5d58ba763',
+    title='Unknown Manager Key Fails Gateway Start',
+    description='Validates the behavior exercised by Unknown Manager Key Fails Gateway Start.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-unknown-manager-key-fails-gateway-start': 'The assertions for unknown manager key fails gateway start hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_unknown_manager_key_fails_gateway_start(tmp_path, config_family_custody):
     """F4 — an unknown manager.docker key must fail gateway start (Lane B)."""
@@ -94,6 +127,14 @@ def test_unknown_manager_key_fails_gateway_start(tmp_path, config_family_custody
     )
 
 
+@e2e_test(
+    id='phase0.e0e14ba1b2e3302de9808209',
+    title='Invalid Manager Value Fails Gateway Start',
+    description='Validates the behavior exercised by Invalid Manager Value Fails Gateway Start.',
+    features=('manager.management', 'runtime.command'),
+    validations={'assert-invalid-manager-value-fails-gateway-start': 'The assertions for invalid manager value fails gateway start hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_invalid_manager_value_fails_gateway_start(tmp_path, config_family_custody):
     """F5 — a semantic manager.docker violation must fail gateway start (Lane B)."""

@@ -1,9 +1,8 @@
 """Typed E2E declarations and validation reporting.
 
-Declarations describe a case; they do not execute it.  This keeps discovery
+Declarations describe a case; they do not execute it. This keeps discovery
 safe and lets the controller use the same facts for catalog, preview, and run
-records.  The legacy adapter is intentionally ledger-bounded: it keeps the
-already-frozen suite identifiable while any new undecorated test is rejected.
+records. Every collected test supplies one explicit declaration.
 """
 
 from __future__ import annotations
@@ -147,38 +146,6 @@ def explicit_declaration(item: pytest.Item) -> E2ETestDeclaration | None:
         raise DeclarationError(f"invalid e2e_test marker on {item.nodeid}: {error}") from error
 
 
-def legacy_declaration(
-    *, stable_id: str, source: str, nodeid: str
-) -> E2ETestDeclaration:
-    """Frozen migration metadata for a pre-Phase-2 ledger entry only."""
-
-    domain_id, family_id, kind = placement_for_source(source)
-    title = re.sub(r"[_-]+", " ", nodeid.rsplit("::", 1)[-1]).strip().capitalize()
-    if kind == "harness":
-        features: tuple[str, ...] = ()
-        surface = None
-        mapping: dict[str, tuple[str, ...]] = {}
-    elif kind == "compound":
-        features = ("manager.management", "runtime.command")
-        surface = "cli"
-        mapping = {"assertion": features}
-    else:
-        features = (f"{domain_id}.{family_id}",)
-        surface = _surface_for_family(domain_id, family_id)
-        mapping = {"assertion": features}
-    return E2ETestDeclaration(
-        id=stable_id,
-        title=title,
-        description=f"Frozen migration declaration for {nodeid}.",
-        features=features,
-        validations={"assertion": "The test's asserted behavior holds."},
-        validation_features=mapping,
-        execution_surface=surface,
-        owner_id="e2e-core",
-        timeout_ms=120_000,
-    )
-
-
 def placement_for_source(source: str) -> tuple[str, str, str]:
     parts = Path(source).parts
     if len(parts) < 3 or parts[0] != "e2e":
@@ -190,18 +157,6 @@ def placement_for_source(source: str) -> tuple[str, str, str]:
     return domain_id, family_id, "harness" if domain_id == "harness" else (
         "compound" if domain_id == "compound" else "product"
     )
-
-
-def _surface_for_family(domain_id: str, family_id: str) -> str:
-    if domain_id == "runtime" and family_id == "daemon_http":
-        return "daemon_http"
-    if domain_id == "runtime" and family_id == "network_isolation":
-        return "gateway_rpc"
-    if domain_id == "runtime" and family_id == "reserved_paths":
-        return "direct_daemon_rpc"
-    if domain_id == "observability":
-        return "cli"
-    return "cli"
 
 
 def _validate_declaration(declaration: E2ETestDeclaration) -> None:

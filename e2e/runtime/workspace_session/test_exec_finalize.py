@@ -31,8 +31,17 @@ from runtime.workspace_session.helpers import (
     workspace_tracker,
     snapshot,
 )
+from harness.catalog.declarations import e2e_test
 
 
+@e2e_test(
+    id='phase0.0a021857a4d623505707e8e3',
+    title='Ex 01 Implicit Exec Response Contract',
+    description='Validates the behavior exercised by Ex 01 Implicit Exec Response Contract.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ex-01-implicit-exec-response-contract': 'The assertions for ex 01 implicit exec response contract hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.smoke
 def test_EX_01_implicit_exec_response_contract(sandbox, workspace_tracker):
     with record_case("EX-01") as rec:
@@ -47,6 +56,14 @@ def test_EX_01_implicit_exec_response_contract(sandbox, workspace_tracker):
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.e71891cd5bed6e99f7b7f88d',
+    title='Ex 02 Implicit Exec Publishes Then Destroys',
+    description='Validates the behavior exercised by Ex 02 Implicit Exec Publishes Then Destroys.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ex-02-implicit-exec-publishes-then-destroys': 'The assertions for ex 02 implicit exec publishes then destroys hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.smoke
 def test_EX_02_implicit_exec_publishes_then_destroys(sandbox, workspace_tracker):
     with record_case("EX-02") as rec:
@@ -65,6 +82,14 @@ def test_EX_02_implicit_exec_publishes_then_destroys(sandbox, workspace_tracker)
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.75bfa965da16d6404110bb41',
+    title='Ex 03 Session Exec Carries The Session Id',
+    description='Validates the behavior exercised by Ex 03 Session Exec Carries The Session Id.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ex-03-session-exec-carries-the-session-id': 'The assertions for ex 03 session exec carries the session id hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.smoke
 def test_EX_03_session_exec_carries_the_session_id(sandbox, workspace_tracker):
     with record_case("EX-03") as rec:
@@ -85,6 +110,14 @@ def test_EX_03_session_exec_carries_the_session_id(sandbox, workspace_tracker):
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.e5875fdd1ad7a2814810ae25',
+    title='Ex 04 Rider Defers Finalization',
+    description='Validates the behavior exercised by Ex 04 Rider Defers Finalization.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ex-04-rider-defers-finalization': 'The assertions for ex 04 rider defers finalization hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.medium
 def test_EX_04_rider_defers_finalization(sandbox, workspace_tracker):
     with record_case("EX-04") as rec:
@@ -128,6 +161,14 @@ def test_EX_04_rider_defers_finalization(sandbox, workspace_tracker):
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.5ab5d83879113f73d088860f',
+    title='Ex 05 Publish Rejection Surfaces On Terminal Response',
+    description='Validates the behavior exercised by Ex 05 Publish Rejection Surfaces On Terminal Response.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ex-05-publish-rejection-surfaces-on-terminal-response': 'The assertions for ex 05 publish rejection surfaces on terminal response hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.medium
 def test_EX_05_publish_rejection_surfaces_on_terminal_response(sandbox, workspace_tracker):
     with record_case("EX-05") as rec:
@@ -152,6 +193,14 @@ def test_EX_05_publish_rejection_surfaces_on_terminal_response(sandbox, workspac
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.7a1dd45bc535da464e84b82e',
+    title='Ex 06 File Op Racing Last Completion Gets Not Found',
+    description='Validates the behavior exercised by Ex 06 File Op Racing Last Completion Gets Not Found.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ex-06-file-op-racing-last-completion-gets-not-found': 'The assertions for ex 06 file op racing last completion gets not found hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.medium
 def test_EX_06_file_op_racing_last_completion_gets_not_found(sandbox, workspace_tracker):
     with record_case("EX-06") as rec:
@@ -200,6 +249,14 @@ def test_EX_06_file_op_racing_last_completion_gets_not_found(sandbox, workspace_
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.8b53a40685e535c8b745c1f0',
+    title='Ex 07 Interrupt And Timeout Paths Still Finalize',
+    description='Validates the behavior exercised by Ex 07 Interrupt And Timeout Paths Still Finalize.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ex-07-interrupt-and-timeout-paths-still-finalize': 'The assertions for ex 07 interrupt and timeout paths still finalize hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.medium
 def test_EX_07_interrupt_and_timeout_paths_still_finalize(sandbox, workspace_tracker):
     with record_case("EX-07") as rec:
@@ -227,6 +284,14 @@ def test_EX_07_interrupt_and_timeout_paths_still_finalize(sandbox, workspace_tra
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.f819b8be1f0456561482d5e8',
+    title='Ex 08 Drain Retention Cap',
+    description='Validates the behavior exercised by Ex 08 Drain Retention Cap.',
+    features=('runtime.workspace_session',),
+    validations={'assert-ex-08-drain-retention-cap': 'The assertions for ex 08 drain retention cap hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.hard
 @pytest.mark.skipif(os.environ.get("E2E_RETENTION") != "1", reason="set E2E_RETENTION=1")
 def test_EX_08_drain_retention_cap(sandbox, workspace_tracker):
@@ -260,6 +325,14 @@ def test_EX_08_drain_retention_cap(sandbox, workspace_tracker):
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.821e106d53e5e3c5fdd3222d',
+    title='Fp 01 Remount Sweep Cannot Finalize Idle Implicit Session',
+    description='Validates the behavior exercised by Fp 01 Remount Sweep Cannot Finalize Idle Implicit Session.',
+    features=('runtime.workspace_session',),
+    validations={'assert-fp-01-remount-sweep-cannot-finalize-idle-implicit-session': 'The assertions for fp 01 remount sweep cannot finalize idle implicit session hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.medium
 def test_FP_01_remount_sweep_cannot_finalize_idle_implicit_session(sandbox, workspace_tracker):
     with record_case("FP-01") as rec:
@@ -307,6 +380,14 @@ def test_FP_01_remount_sweep_cannot_finalize_idle_implicit_session(sandbox, work
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.af13a0df8dff9057d1abd175',
+    title='Fp 02 Empty Capture Skips Publish',
+    description='Validates the behavior exercised by Fp 02 Empty Capture Skips Publish.',
+    features=('runtime.workspace_session',),
+    validations={'assert-fp-02-empty-capture-skips-publish': 'The assertions for fp 02 empty capture skips publish hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.medium
 def test_FP_02_empty_capture_skips_publish(sandbox, workspace_tracker):
     with record_case("FP-02") as rec:
@@ -322,6 +403,14 @@ def test_FP_02_empty_capture_skips_publish(sandbox, workspace_tracker):
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.0537c12a765317aabbd3a960',
+    title='Fp 03 Back To Back Implicit Execs Are Independent',
+    description='Validates the behavior exercised by Fp 03 Back To Back Implicit Execs Are Independent.',
+    features=('runtime.workspace_session',),
+    validations={'assert-fp-03-back-to-back-implicit-execs-are-independent': 'The assertions for fp 03 back to back implicit execs are independent hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.medium
 def test_FP_03_back_to_back_implicit_execs_are_independent(sandbox, workspace_tracker):
     with record_case("FP-03") as rec:
@@ -338,6 +427,14 @@ def test_FP_03_back_to_back_implicit_execs_are_independent(sandbox, workspace_tr
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
+@e2e_test(
+    id='phase0.3368783ac84e61a30339ea78',
+    title='Fp 04 Finalize Vs Destroy Interleave Storm',
+    description='Validates the behavior exercised by Fp 04 Finalize Vs Destroy Interleave Storm.',
+    features=('runtime.workspace_session',),
+    validations={'assert-fp-04-finalize-vs-destroy-interleave-storm': 'The assertions for fp 04 finalize vs destroy interleave storm hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.hard
 @pytest.mark.skipif(os.environ.get("E2E_STORM") != "1", reason="set E2E_STORM=1")
 def test_FP_04_finalize_vs_destroy_interleave_storm(sandbox, workspace_tracker):

@@ -26,6 +26,7 @@ from runtime.file.helpers import (
     write_command_stdin,
     workspace_session,
 )
+from harness.catalog.declarations import e2e_test
 
 
 def _is_error(result):
@@ -88,6 +89,14 @@ def _assert_sessionless_not_found(sandbox, paths):
         assert_error(file_read(sandbox, path), "not_found")
 
 
+@e2e_test(
+    id='phase0.542a5d5da944591dc7fa5c08',
+    title='Session Write Races Session Edit Same Path',
+    description='Validates the behavior exercised by Session Write Races Session Edit Same Path.',
+    features=('runtime.file',),
+    validations={'assert-session-write-races-session-edit-same-path': 'The assertions for session write races session edit same path hold.'},
+    execution_surface='cli',
+)
 def test_session_write_races_session_edit_same_path(sandbox, workspace_session):
     """Inside one live workspace session (`create_workspace_session`), race a
     session `file_write` (rewriting `alpha\nbeta` to `alpha\nGAMMA`) against a
@@ -135,6 +144,14 @@ def test_session_write_races_session_edit_same_path(sandbox, workspace_session):
     assert_manifest_delta(sandbox, before, 0)
 
 
+@e2e_test(
+    id='phase0.bccbee30e50210ab1aa5845d',
+    title='Two Concurrent Session Writes Same Path Leave No Tmp Artifacts',
+    description='Validates the behavior exercised by Two Concurrent Session Writes Same Path Leave No Tmp Artifacts.',
+    features=('runtime.file',),
+    validations={'assert-two-concurrent-session-writes-same-path-leave-no-tmp-artifacts': 'The assertions for two concurrent session writes same path leave no tmp artifacts hold.'},
+    execution_surface='cli',
+)
 def test_two_concurrent_session_writes_same_path_leave_no_tmp_artifacts(
     sandbox, workspace_session
 ):
@@ -175,6 +192,14 @@ def test_two_concurrent_session_writes_same_path_leave_no_tmp_artifacts(
     assert_manifest_delta(sandbox, before, 0)
 
 
+@e2e_test(
+    id='phase0.c8d1ef6995f797d3098064f4',
+    title='Session Reads Race In Session Atomic Mv Loop',
+    description='Validates the behavior exercised by Session Reads Race In Session Atomic Mv Loop.',
+    features=('runtime.file',),
+    validations={'assert-session-reads-race-in-session-atomic-mv-loop': 'The assertions for session reads race in session atomic mv loop hold.'},
+    execution_surface='cli',
+)
 def test_session_reads_race_in_session_atomic_mv_loop(sandbox, workspace_session):
     """Session `file_read` requests looping concurrently with an in-session shell
     command (`exec_command --workspace-session-id ID`) that repeatedly writes
@@ -219,6 +244,14 @@ def test_session_reads_race_in_session_atomic_mv_loop(sandbox, workspace_session
     assert_manifest_delta(sandbox, before, 0)
 
 
+@e2e_test(
+    id='phase0.c4799490fff69611b6e36707',
+    title='Destroy Workspace Session Races Running Exec',
+    description='Validates the behavior exercised by Destroy Workspace Session Races Running Exec.',
+    features=('runtime.file',),
+    validations={'assert-destroy-workspace-session-races-running-exec': 'The assertions for destroy workspace session races running exec hold.'},
+    execution_surface='cli',
+)
 def test_destroy_workspace_session_races_running_exec(sandbox):
     """`destroy_workspace_session` racing an `exec_command` still running in
     that same session.
@@ -261,6 +294,14 @@ def test_destroy_workspace_session_races_running_exec(sandbox):
     assert_manifest_delta(sandbox, before, 0)
 
 
+@e2e_test(
+    id='phase0.b2bbea7755eb539d70a437c3',
+    title='Complex Long Session Disjoint Writes Visible To Shell Then Destroy',
+    description='Validates the behavior exercised by Complex Long Session Disjoint Writes Visible To Shell Then Destroy.',
+    features=('runtime.file',),
+    validations={'assert-complex-long-session-disjoint-writes-visible-to-shell-then-destroy': 'The assertions for complex long session disjoint writes visible to shell then destroy hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_long_session_disjoint_writes_visible_to_shell_then_destroy(sandbox):
     """[complex] Inside one long-running session, launch 20+ concurrent session
@@ -334,6 +375,14 @@ def test_complex_long_session_disjoint_writes_visible_to_shell_then_destroy(sand
     assert_manifest_delta(sandbox, before, 0)
 
 
+@e2e_test(
+    id='phase0.6112359c0a8393f834a111ff',
+    title='Complex Hot File Storm Inside One Session',
+    description='Validates the behavior exercised by Complex Hot File Storm Inside One Session.',
+    features=('runtime.file',),
+    validations={'assert-complex-hot-file-storm-inside-one-session': 'The assertions for complex hot file storm inside one session hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_hot_file_storm_inside_one_session(sandbox, workspace_session):
     """[complex] Hot-file storm inside one session: 10 concurrent session writes
@@ -420,6 +469,14 @@ def test_complex_hot_file_storm_inside_one_session(sandbox, workspace_session):
         write_command_stdin(sandbox, command_session_id, "exit\n", yield_time_ms=30_000)
 
 
+@e2e_test(
+    id='phase0.751134e947b24506a43464eb',
+    title='Complex Same Path Conflicting Captures Publish Only First',
+    description='Validates the behavior exercised by Complex Same Path Conflicting Captures Publish Only First.',
+    features=('runtime.file',),
+    validations={'assert-complex-same-path-conflicting-captures-publish-only-first': 'The assertions for complex same path conflicting captures publish only first hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_same_path_conflicting_captures_publish_only_first(sandbox):
     """[complex] Same-path conflicting captures: 5 concurrent one-shot
@@ -453,6 +510,14 @@ def test_complex_same_path_conflicting_captures_publish_only_first(sandbox):
     assert_manifest_delta(sandbox, before, 1)
 
 
+@e2e_test(
+    id='phase0.ecab9c80f736fb125568436d',
+    title='Complex Capture Order Independence Line Disjoint Merges',
+    description='Validates the behavior exercised by Complex Capture Order Independence Line Disjoint Merges.',
+    features=('runtime.file',),
+    validations={'assert-complex-capture-order-independence-line-disjoint-merges': 'The assertions for complex capture order independence line disjoint merges hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_capture_order_independence_line_disjoint_merges(tmp_path):
     """[complex] Capture-order independence: seed a 10-line file, then run 5
@@ -491,6 +556,14 @@ def test_complex_capture_order_independence_line_disjoint_merges(tmp_path):
         assert_manifest_delta(sandbox, before, 5)
 
 
+@e2e_test(
+    id='phase0.91b14ec29ac5bd2ee178ddce',
+    title='Complex Capture Races Sessionless Writers Hot Path',
+    description='Validates the behavior exercised by Complex Capture Races Sessionless Writers Hot Path.',
+    features=('runtime.file',),
+    validations={'assert-complex-capture-races-sessionless-writers-hot-path': 'The assertions for complex capture races sessionless writers hot path hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.slow
 def test_complex_capture_races_sessionless_writers_hot_path(sandbox):
     """[complex] Capture racing sessionless writers: a one-shot `exec_command`

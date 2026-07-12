@@ -7,6 +7,7 @@ from harness.runner.cli import is_error, runtime
 from harness.runner.config import IMAGE
 from harness.runner.direct_daemon import direct_daemon
 from manager.management import helpers as mgmt
+from harness.catalog.declarations import e2e_test
 
 
 HELPER_SOURCE = r"""
@@ -85,6 +86,14 @@ fn get(host: &str, expected: Option<&String>) -> Result<(), String> {
 """
 
 
+@e2e_test(
+    id='phase0.38564e01cbb6b89300cbe70d',
+    title='Isolated Workspace Sessions Cannot Reach Each Other On Same Port',
+    description='Validates the behavior exercised by Isolated Workspace Sessions Cannot Reach Each Other On Same Port.',
+    features=('runtime.network_isolation',),
+    validations={'assert-isolated-workspace-sessions-cannot-reach-each-other-on-same-port': 'The assertions for isolated workspace sessions cannot reach each other on same port hold.'},
+    execution_surface='gateway_rpc',
+)
 def test_isolated_workspace_sessions_cannot_reach_each_other_on_same_port(tmp_path):
     workspace = tmp_path / "workspace"
     workspace.mkdir()

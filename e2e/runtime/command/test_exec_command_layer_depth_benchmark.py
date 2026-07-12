@@ -10,6 +10,7 @@ import pytest
 from harness.runner import cleanup
 from harness.runner.cli import is_error, manager, runtime
 from manager.management import helpers as mgmt
+from harness.catalog.declarations import e2e_test
 
 
 pytestmark = pytest.mark.skipif(
@@ -26,6 +27,14 @@ DEPTHS = [
 SAMPLES = int(os.environ.get("E2E_EXEC_BENCH_SAMPLES", "5"))
 
 
+@e2e_test(
+    id='phase0.bed7336af4cba54ee4a81ef1',
+    title='Exec Command Layer Depth Shared Base Benchmark',
+    description='Validates the behavior exercised by Exec Command Layer Depth Shared Base Benchmark.',
+    features=('runtime.command',),
+    validations={'assert-exec-command-layer-depth-shared-base-benchmark': 'The assertions for exec command layer depth shared base benchmark hold.'},
+    execution_surface='cli',
+)
 def test_exec_command_layer_depth_shared_base_benchmark(tmp_path):
     # This benchmark is env-gated because repeated exec publishes can approach the retention cap.
     workspace = tmp_path / "workspace"

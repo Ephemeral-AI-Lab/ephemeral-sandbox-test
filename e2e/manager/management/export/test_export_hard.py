@@ -10,6 +10,7 @@ gateway (with baseline restore) and must run in the serial config lane.
 import pytest
 
 from manager.management.export.helpers import cases_for_tier, run_case
+from harness.catalog.declarations import e2e_test
 
 
 pytestmark = [pytest.mark.export, pytest.mark.hard]
@@ -28,6 +29,14 @@ def _hard_params():
     ]
 
 
+@e2e_test(
+    id='phase0.7d19d896e07b1e3292c534b2',
+    title='Export Hard Catalog',
+    description='Validates the behavior exercised by Export Hard Catalog.',
+    features=('manager.management',),
+    validations={'assert-export-hard-catalog': 'The assertions for export hard catalog hold.'},
+    execution_surface='cli',
+)
 @pytest.mark.parametrize("case", _hard_params())
 def test_export_hard_catalog(case, export_preconditions):
     run_case(case)

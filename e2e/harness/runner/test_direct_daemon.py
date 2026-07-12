@@ -7,6 +7,7 @@ import pytest
 
 from harness.runner import direct_daemon as daemon
 from harness.runner.cli import CliError
+from harness.catalog.declarations import e2e_test
 
 
 class Recorder:
@@ -72,6 +73,13 @@ def formatted_exception(error):
     )
 
 
+@e2e_test(
+    id='phase0.4412b9db6a7fef7fe86f61be',
+    title='Allowlist Is Exact And Rejects Before Side Effects',
+    description='Validates the behavior exercised by Allowlist Is Exact And Rejects Before Side Effects.',
+    features=(),
+    validations={'assert-allowlist-is-exact-and-rejects-before-side-effects': 'The assertions for allowlist is exact and rejects before side effects hold.'},
+)
 def test_allowlist_is_exact_and_rejects_before_side_effects(monkeypatch):
     assert daemon.ALLOWED_OPERATIONS == frozenset(
         {"create_workspace_session", "destroy_workspace_session"}
@@ -84,6 +92,13 @@ def test_allowlist_is_exact_and_rejects_before_side_effects(monkeypatch):
         daemon.direct_daemon("sandbox-1", "file_list", {"path": "."})
 
 
+@e2e_test(
+    id='phase0.6ba343db9c31611feeca00f2',
+    title='Success Uses Inspect And Label Without Persisting Token',
+    description='Validates the behavior exercised by Success Uses Inspect And Label Without Persisting Token.',
+    features=(),
+    validations={'assert-success-uses-inspect-and-label-without-persisting-token': 'The assertions for success uses inspect and label without persisting token hold.'},
+)
 def test_success_uses_inspect_and_label_without_persisting_token(monkeypatch, caplog):
     secret = "sentinel-daemon-secret"
     calls = {}
@@ -157,6 +172,13 @@ def test_success_uses_inspect_and_label_without_persisting_token(monkeypatch, ca
     assert secret not in persisted
 
 
+@e2e_test(
+    id='phase0.1d5b71b0b266599a0a60e35b',
+    title='Docker Failures Do Not Leak Secret',
+    description='Validates the behavior exercised by Docker Failures Do Not Leak Secret.',
+    features=(),
+    validations={'assert-docker-failures-do-not-leak-secret': 'The assertions for docker failures do not leak secret hold.'},
+)
 @pytest.mark.parametrize("failure", ["nonzero", "timeout"])
 def test_docker_failures_do_not_leak_secret(
     monkeypatch,
@@ -194,6 +216,13 @@ def test_docker_failures_do_not_leak_secret(
     assert recorder.records == []
 
 
+@e2e_test(
+    id='phase0.f5c2307737a5e07c145848f4',
+    title='Missing Docker Label Fails Before Socket',
+    description='Validates the behavior exercised by Missing Docker Label Fails Before Socket.',
+    features=(),
+    validations={'assert-missing-docker-label-fails-before-socket': 'The assertions for missing docker label fails before socket hold.'},
+)
 @pytest.mark.parametrize("label_output", ["", "<no value>\n"])
 def test_missing_docker_label_fails_before_socket(monkeypatch, label_output):
     monkeypatch.setattr(daemon, "manager", endpoint)
@@ -210,6 +239,13 @@ def test_missing_docker_label_fails_before_socket(monkeypatch, label_output):
         daemon.direct_daemon("sandbox-1", "destroy_workspace_session")
 
 
+@e2e_test(
+    id='phase0.1bf33a65a113671cd44bf8a0',
+    title='Non Json Daemon Output Is Not Echoed',
+    description='Validates the behavior exercised by Non Json Daemon Output Is Not Echoed.',
+    features=(),
+    validations={'assert-non-json-daemon-output-is-not-echoed': 'The assertions for non json daemon output is not echoed hold.'},
+)
 def test_non_json_daemon_output_is_not_echoed(monkeypatch, caplog):
     secret = "sentinel-malformed-daemon-output"
     stream = Stream((secret + "\n").encode())
@@ -243,6 +279,13 @@ def test_non_json_daemon_output_is_not_echoed(monkeypatch, caplog):
     assert recorder.records == []
 
 
+@e2e_test(
+    id='phase0.1dcdbd6ef105c4421e4bfd50',
+    title='Daemon Response Cannot Persist Auth Token',
+    description='Validates the behavior exercised by Daemon Response Cannot Persist Auth Token.',
+    features=(),
+    validations={'assert-daemon-response-cannot-persist-auth-token': 'The assertions for daemon response cannot persist auth token hold.'},
+)
 def test_daemon_response_cannot_persist_auth_token(monkeypatch, caplog):
     secret = "sentinel-echoed-daemon-token"
     stream = Stream(json.dumps({"message": secret}).encode() + b"\n")

@@ -13,10 +13,9 @@ from harness.catalog.declarations import (
     DeclarationError,
     E2ETestDeclaration,
     explicit_declaration,
-    legacy_declaration,
     placement_for_source,
 )
-from harness.catalog.mode import _legacy_nodeid, source_tree_digest
+from harness.catalog.mode import source_tree_digest
 from harness.storage.roots import Roots
 
 
@@ -32,7 +31,6 @@ def build_catalog(
     *,
     items: list[Any],
     roots: Roots,
-    ledger: dict[str, str],
     product_catalog_path: Path,
     metadata_path: Path,
 ) -> dict[str, Any]:
@@ -41,7 +39,7 @@ def build_catalog(
     metadata = _read_yaml(metadata_path, errors)
     product_nodes, product_features = _product_nodes(product, errors)
     e2e_nodes, owners = _metadata_nodes(metadata, errors)
-    cases = _cases(items, ledger, roots, product_features, e2e_nodes, errors)
+    cases = _cases(items, roots, product_features, e2e_nodes, errors)
     _validate_unique(cases, ("test_id", "case_id"), errors)
     if errors:
         raise CatalogValidationError(errors)
@@ -88,44 +86,24 @@ def build_catalog(
 
 def _cases(
     items: list[Any],
-    ledger: dict[str, str],
     roots: Roots,
     product_features: set[str],
     e2e_nodes: list[dict[str, Any]],
     errors: list[str],
 ) -> list[dict[str, Any]]:
     nodeids = [item.nodeid for item in items]
-    legacy_nodeids = [_legacy_nodeid(nodeid) for nodeid in nodeids]
     if len(nodeids) != len(set(nodeids)):
         errors.append("pytest collection produced duplicate node IDs")
-    if len(legacy_nodeids) != len(set(legacy_nodeids)):
-        errors.append("migration produced duplicate legacy node IDs")
-    missing = set(ledger) - set(legacy_nodeids)
-    added = set(legacy_nodeids) - set(ledger)
-    if missing:
-        errors.append(f"stable-ID ledger has stale entries: {sorted(missing)[:3]}")
-    for item in items:
-        legacy_nodeid = _legacy_nodeid(item.nodeid)
-        if legacy_nodeid in added and explicit_declaration(item) is None:
-            errors.append(f"{item.nodeid}: undecorated test is absent from the stable-ID ledger")
     e2e_families = {(node["domain_id"], node["family_id"]) for node in e2e_nodes}
     cases: list[dict[str, Any]] = []
     for item in sorted(items, key=lambda collected: collected.nodeid):
         nodeid = item.nodeid
-        legacy_nodeid = _legacy_nodeid(nodeid)
         source = "e2e/" + Path(str(item.path)).resolve().relative_to(roots.e2e_source_root).as_posix()
         try:
             domain_id, family_id, kind = placement_for_source(source)
             declaration = explicit_declaration(item)
             if declaration is None:
-                stable_id = ledger.get(legacy_nodeid)
-                if stable_id is None:
-                    raise DeclarationError(
-                        "undecorated test is not part of the frozen stable-ID ledger"
-                    )
-                declaration = legacy_declaration(
-                    stable_id=stable_id, source=source, nodeid=nodeid
-                )
+                raise DeclarationError("every collected test requires an @e2e_test declaration")
             case_id = _case_id(item)
             _validate_case(
                 declaration,
@@ -146,9 +124,6 @@ def _cases(
                 "owner_id": declaration.owner_id,
                 "source": source,
                 "pytest_nodeid": nodeid,
-                "legacy_pytest_nodeid": legacy_nodeid,
-                "legacy_stable_id": ledger.get(legacy_nodeid),
-                "metadata_status": "declared" if explicit_declaration(item) else "legacy_migration",
                 "runnable": True,
                 "validations": [
                     {

@@ -30,7 +30,6 @@ def pytest_addoption(parser):
     group = parser.getgroup("e2e catalog")
     group.addoption("--e2e-catalog", action="store_true")
     group.addoption("--e2e-catalog-output")
-    group.addoption("--e2e-stable-id-ledger")
     group.addoption("--e2e-product-catalog")
     group.addoption("--e2e-catalog-metadata")
     startup = parser.getgroup("external E2E roots")

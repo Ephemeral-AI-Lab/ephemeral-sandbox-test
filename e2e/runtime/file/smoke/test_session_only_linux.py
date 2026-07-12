@@ -10,8 +10,17 @@ from runtime.file.helpers import (
     file_write,
     workspace_session,
 )
+from harness.catalog.declarations import e2e_test
 
 
+@e2e_test(
+    id='phase0.7767860809e822f7d8f6b612',
+    title='Session Write Updates Existing Executable File And Preserves Mode',
+    description='Validates the behavior exercised by Session Write Updates Existing Executable File And Preserves Mode.',
+    features=('runtime.file',),
+    validations={'assert-session-write-updates-existing-executable-file-and-preserves-mode': 'The assertions for session write updates existing executable file and preserves mode hold.'},
+    execution_surface='cli',
+)
 def test_session_write_updates_existing_executable_file_and_preserves_mode(
     sandbox, workspace_session
 ):
@@ -37,6 +46,14 @@ def test_session_write_updates_existing_executable_file_and_preserves_mode(
     assert "v2" in result["output"]
 
 
+@e2e_test(
+    id='phase0.22bfeb00a992b12278ac9445',
+    title='Session Write To In Session Directory Is Rejected',
+    description='Validates the behavior exercised by Session Write To In Session Directory Is Rejected.',
+    features=('runtime.file',),
+    validations={'assert-session-write-to-in-session-directory-is-rejected': 'The assertions for session write to in session directory is rejected hold.'},
+    execution_surface='cli',
+)
 def test_session_write_to_in_session_directory_is_rejected(sandbox, workspace_session):
     """Session write to an in-session directory is rejected as invalid request /
     not regular."""
@@ -52,6 +69,14 @@ def test_session_write_to_in_session_directory_is_rejected(sandbox, workspace_se
     )
 
 
+@e2e_test(
+    id='phase0.47c3c442cc83e5de1850b9a3',
+    title='Session Write To In Session Symlink Is Rejected And Not Followed',
+    description='Validates the behavior exercised by Session Write To In Session Symlink Is Rejected And Not Followed.',
+    features=('runtime.file',),
+    validations={'assert-session-write-to-in-session-symlink-is-rejected-and-not-followed': 'The assertions for session write to in session symlink is rejected and not followed hold.'},
+    execution_surface='cli',
+)
 def test_session_write_to_in_session_symlink_is_rejected_and_not_followed(
     sandbox, workspace_session
 ):
@@ -79,6 +104,14 @@ def test_session_write_to_in_session_symlink_is_rejected_and_not_followed(
     )
 
 
+@e2e_test(
+    id='phase0.2a85f69e5eee1ae6cb95f04a',
+    title='Session Write To In Session Symlink Parent Is Rejected',
+    description='Validates the behavior exercised by Session Write To In Session Symlink Parent Is Rejected.',
+    features=('runtime.file',),
+    validations={'assert-session-write-to-in-session-symlink-parent-is-rejected': 'The assertions for session write to in session symlink parent is rejected hold.'},
+    execution_surface='cli',
+)
 def test_session_write_to_in_session_symlink_parent_is_rejected(sandbox, workspace_session):
     """Session write to an in-session symlink parent is rejected as invalid
     request; no symlink-parent traversal."""
@@ -100,6 +133,14 @@ def test_session_write_to_in_session_symlink_parent_is_rejected(sandbox, workspa
     )
 
 
+@e2e_test(
+    id='phase0.baef571baf5c9b7cef27ff53',
+    title='Session Edit To In Session Symlink Or Symlink Parent Is Rejected',
+    description='Validates the behavior exercised by Session Edit To In Session Symlink Or Symlink Parent Is Rejected.',
+    features=('runtime.file',),
+    validations={'assert-session-edit-to-in-session-symlink-or-symlink-parent-is-rejected': 'The assertions for session edit to in session symlink or symlink parent is rejected hold.'},
+    execution_surface='cli',
+)
 def test_session_edit_to_in_session_symlink_or_symlink_parent_is_rejected(
     sandbox, workspace_session
 ):
