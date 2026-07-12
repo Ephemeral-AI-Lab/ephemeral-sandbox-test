@@ -1104,9 +1104,9 @@ def _scenario_contract(case, rec, sandbox_factory):
 
 
 def _scenario_catalog(case, rec, sandbox_factory):
-    help_result = raw_cli(rec, "manager", "--help", timeout=30)
+    help_result = raw_cli(rec, "manager", "help", timeout=30)
     assert help_result.returncode == 0, help_result.stderr
-    operation_help = raw_cli(rec, "manager", "squash_layerstacks", "--help", timeout=30)
+    operation_help = raw_cli(rec, "manager", "help", "squash_layerstacks", timeout=30)
     assert operation_help.returncode == 0, operation_help.stderr
     assert "squash_layerstacks" in help_result.stdout
     assert "--sandbox-id" in operation_help.stdout

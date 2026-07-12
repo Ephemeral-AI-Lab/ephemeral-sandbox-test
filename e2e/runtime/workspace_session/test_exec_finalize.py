@@ -20,6 +20,7 @@ from runtime.workspace_session.helpers import (
     exec_bare,
     exec_in,
     file_read,
+    file_write,
     interrupt,
     is_error,
     manifest_version,
@@ -207,6 +208,16 @@ def test_EX_06_file_op_racing_last_completion_gets_not_found(sandbox, workspace_
         running = assert_ok(exec_bare(sandbox, "sleep 2", yield_time_ms=0))
         session = workspace_tracker.track_workspace(running["workspace_session_id"])
         command_id = workspace_tracker.track_command(running["command_session_id"])
+        sentinel_path = "e2e-ex06-sentinel.txt"
+        sentinel_content = "stable"
+        assert_ok(
+            file_write(
+                sandbox,
+                sentinel_path,
+                f"{sentinel_content}\n",
+                workspace_session_id=session,
+            )
+        )
         terminal_at = None
         reads = {"ok": 0, "dead": 0}
         deadline = time.monotonic() + 35
@@ -219,7 +230,7 @@ def test_EX_06_file_op_racing_last_completion_gets_not_found(sandbox, workspace_
                 terminal_at = time.monotonic()
                 workspace_tracker.untrack_command(command_id)
 
-            last_read = file_read(sandbox, ".gitkeep", workspace_session_id=session, timeout=30)
+            last_read = file_read(sandbox, sentinel_path, workspace_session_id=session, timeout=30)
             if is_error(last_read):
                 assert_file_workspace_not_found(last_read, session)
                 reads["dead"] += 1
@@ -229,7 +240,7 @@ def test_EX_06_file_op_racing_last_completion_gets_not_found(sandbox, workspace_
                     workspace_tracker.untrack_command(command_id)
                 break
             assert_ok(last_read)
-            assert last_read["content"] == "", last_read
+            assert last_read["content"] == sentinel_content, last_read
             reads["ok"] += 1
             time.sleep(0.05)
         else:

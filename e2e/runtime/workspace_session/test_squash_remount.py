@@ -135,7 +135,11 @@ def test_squash_empty_and_idle_contract(squash_sandbox):
     container = squash_sandbox
 
     empty = manager("squash_layerstacks", "--sandbox-id", container)
-    assert empty == {"manifest_version": 1, "squashed_blocks": []}, empty
+    assert empty == {
+        "manifest_version": 1,
+        "squashed_blocks": [],
+        "swept_sessions": [],
+    }, empty
 
     for name in ("a", "b", "c"):
         _publish(container, name)
@@ -143,7 +147,11 @@ def test_squash_empty_and_idle_contract(squash_sandbox):
     assert before[-1].startswith("B"), "base is the bottom boundary"
 
     result = manager("squash_layerstacks", "--sandbox-id", container)
-    assert set(result.keys()) == {"manifest_version", "squashed_blocks"}, result
+    assert set(result.keys()) == {
+        "manifest_version",
+        "squashed_blocks",
+        "swept_sessions",
+    }, result
     blocks = result["squashed_blocks"]
     assert len(blocks) == 1
     block = blocks[0]
@@ -176,6 +184,7 @@ def test_squash_empty_and_idle_contract(squash_sandbox):
     # Nothing left to squash: empty blocks, no no_op flag.
     again = manager("squash_layerstacks", "--sandbox-id", container)
     assert again["squashed_blocks"] == [], again
+    assert again["swept_sessions"] == [], again
 
 
 # --- E5 / B2: live migration shortens an idle session's chain ---
