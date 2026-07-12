@@ -11,6 +11,7 @@ import shutil
 import stat
 import tempfile
 import uuid
+from contextlib import contextmanager
 from typing import Any, Mapping
 
 from harness.reducer.events import (
@@ -34,6 +35,28 @@ _UNSAFE_MODE_BITS = stat.S_ISUID | stat.S_ISGID | stat.S_IWGRP | stat.S_IWOTH
 
 class StoreError(RuntimeError):
     """A mutation would violate E2E state ownership or immutability."""
+
+
+@contextmanager
+def store_writer_lock(roots: Roots):
+    """Serialize controller-wide admission and recovery mutations.
+
+    The lock is deliberately operational state rather than a second durable
+    authority.  Journals still serialize their own append path, but a preview
+    admission needs one lock across lane checking, source staging, and the
+    atomic publication commit point.
+    """
+
+    initialize_store(roots)
+    lock_path = roots.e2e_state_root / ".store-writer.lock"
+    with lock_path.open("a+b") as lock:
+        import fcntl
+
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
 
 
 def initialize_store(roots: Roots) -> dict[str, Any]:
@@ -71,14 +94,39 @@ def create_run(roots: Roots, manifest: Mapping[str, Any]) -> Path:
         raise StoreError(f"run already exists: {manifest['run_id']}")
     run_root.mkdir(mode=0o700)
     try:
-        _atomic_write_json(run_root / "manifest.json", dict(manifest), mode=0o444)
-        (run_root / "events.jsonl").touch(mode=0o600)
-        (run_root / "evidence").mkdir(mode=0o700)
-        _write_projection(run_root, reduce_run(manifest, ()))
+        _initialize_run_directory(run_root, manifest)
     except BaseException:
         shutil.rmtree(run_root)
         raise
     return run_root
+
+
+def create_admitted_run(roots: Roots, manifest: Mapping[str, Any]) -> Path:
+    """Stage an immutable manifest and source snapshot, then atomically publish one run."""
+
+    validate_manifest(manifest)
+    if source_tree_digest(manifest["source_files"]) != manifest["source_snapshot_digest"]:
+        raise StoreError("manifest source_snapshot_digest does not match its source_files")
+    initialize_store(roots)
+    final_root = run_path(roots, manifest["run_id"])
+    if final_root.exists():
+        raise StoreError(f"run already exists: {manifest['run_id']}")
+    stage = Path(tempfile.mkdtemp(prefix=f"{manifest['run_id']}-", dir=roots.e2e_state_root / "tmp"))
+    try:
+        _initialize_run_directory(stage, manifest)
+        _publish_snapshot_to(
+            stage,
+            roots.test_repository_root,
+            manifest["source_files"],
+            manifest["source_snapshot_digest"],
+        )
+        os.replace(stage, final_root)
+        _fsync_directory(final_root.parent)
+    except BaseException:
+        if stage.exists():
+            shutil.rmtree(stage, ignore_errors=True)
+        raise
+    return final_root
 
 
 def append_event(roots: Roots, run_id: str, draft: Mapping[str, Any]) -> dict[str, Any]:
@@ -138,22 +186,37 @@ def source_tree_digest(source_files: list[Mapping[str, Any]]) -> str:
     return digest({"files": normalized})
 
 
+def declared_source_files(roots: Roots, source_paths: list[str]) -> list[dict[str, Any]]:
+    """Capture immutable source-file metadata from controller-derived paths only."""
+
+    unique_paths = sorted(set(source_paths))
+    if len(unique_paths) != len(source_paths):
+        raise StoreError("declared source file list contains duplicates")
+    return [_capture_source_file(roots.test_repository_root, path) for path in unique_paths]
+
+
 def publish_source_snapshot(
     roots: Roots, run_id: str, source_files: list[Mapping[str, Any]], expected_tree_digest: str
 ) -> str:
     """Copy only verified declared regular files into a non-writable run snapshot."""
 
     run_root = _existing_run_root(roots, run_id)
+    return _publish_snapshot_to(run_root, roots.test_repository_root, source_files, expected_tree_digest)
+
+
+def _publish_snapshot_to(
+    run_root: Path, source_root: Path, source_files: list[Mapping[str, Any]], expected_tree_digest: str
+) -> str:
     if (run_root / "source").exists():
         raise StoreError("run source snapshot already exists")
-    actual_files = [_validate_source_file(roots.test_repository_root, entry) for entry in source_files]
+    actual_files = [_validate_source_file(source_root, entry) for entry in source_files]
     actual_tree_digest = source_tree_digest(actual_files)
     if actual_tree_digest != expected_tree_digest:
         raise StoreError("declared source tree digest does not match verified source files")
     temporary = Path(tempfile.mkdtemp(prefix="source-", dir=run_root))
     try:
         for entry in actual_files:
-            source = _safe_source_path(roots.test_repository_root, entry["path"])
+            source = _safe_source_path(source_root, entry["path"])
             destination = temporary / entry["path"]
             destination.parent.mkdir(parents=True, exist_ok=True)
             _copy_regular_file(source, destination)
@@ -219,26 +282,30 @@ def _validate_source_file(source_root: Path, expected: Mapping[str, Any]) -> dic
     for key in ("path", "mode", "size", "sha256"):
         if key not in expected:
             raise StoreError(f"declared source file is missing {key}")
-    path = _safe_source_path(source_root, expected["path"])
-    _reject_linked_ancestors(source_root, Path(expected["path"]))
+    actual = _capture_source_file(source_root, expected["path"])
+    if actual != {key: expected[key] for key in actual}:
+        raise StoreError(f"declared source metadata does not match: {expected['path']}")
+    return actual
+
+
+def _capture_source_file(source_root: Path, raw_path: Any) -> dict[str, Any]:
+    path = _safe_source_path(source_root, raw_path)
+    _reject_linked_ancestors(source_root, Path(raw_path))
     try:
         source_stat = os.lstat(path)
     except OSError as error:
-        raise StoreError(f"cannot stat declared source file {expected['path']}") from error
+        raise StoreError(f"cannot stat declared source file {raw_path}") from error
     if not stat.S_ISREG(source_stat.st_mode):
-        raise StoreError(f"declared source is not a regular file: {expected['path']}")
+        raise StoreError(f"declared source is not a regular file: {raw_path}")
     mode = stat.S_IMODE(source_stat.st_mode)
     if mode & _UNSAFE_MODE_BITS:
-        raise StoreError(f"declared source has unsafe mode: {expected['path']}")
-    actual = {
-        "path": expected["path"],
+        raise StoreError(f"declared source has unsafe mode: {raw_path}")
+    return {
+        "path": raw_path,
         "mode": mode,
         "size": source_stat.st_size,
         "sha256": _file_digest(path),
     }
-    if actual != {key: expected[key] for key in actual}:
-        raise StoreError(f"declared source metadata does not match: {expected['path']}")
-    return actual
 
 
 def _safe_source_path(source_root: Path, raw_path: Any) -> Path:
@@ -288,6 +355,13 @@ def _existing_run_root(roots: Roots, run_id: str) -> Path:
     if not path.is_dir():
         raise StoreError(f"unknown run: {run_id}")
     return path
+
+
+def _initialize_run_directory(run_root: Path, manifest: Mapping[str, Any]) -> None:
+    _atomic_write_json(run_root / "manifest.json", dict(manifest), mode=0o444)
+    (run_root / "events.jsonl").touch(mode=0o600)
+    (run_root / "evidence").mkdir(mode=0o700)
+    _write_projection(run_root, reduce_run(manifest, ()))
 
 
 def _write_projection(run_root: Path, projection: Mapping[str, Any]) -> None:

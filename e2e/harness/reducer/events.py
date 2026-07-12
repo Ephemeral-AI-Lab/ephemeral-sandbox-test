@@ -89,7 +89,7 @@ def validate_preview(preview: Mapping[str, Any]) -> None:
         "expires_at",
         "catalog_revision",
     )
-    if preview["state"] not in {"ready", "blocked", "expired"}:
+    if preview["state"] not in {"checking", "ready", "blocked", "stale", "expired"}:
         raise ContractError(f"unsupported preview state: {preview['state']}")
     cases = preview.get("cases")
     if not isinstance(cases, list):
