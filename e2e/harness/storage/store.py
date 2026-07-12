@@ -14,6 +14,7 @@ import uuid
 from contextlib import contextmanager
 from typing import Any, Mapping
 
+from harness.api.redaction import redact
 from harness.reducer.events import (
     ContractError,
     JournalRead,
@@ -134,7 +135,10 @@ def append_event(roots: Roots, run_id: str, draft: Mapping[str, Any]) -> dict[st
 
     run_root = _existing_run_root(roots, run_id)
     manifest = load_manifest(roots, run_id)
-    event = RunJournal(run_root / "events.jsonl", manifest).append(draft)
+    # Known secrets are registered in memory before transport starts.  Scrub at
+    # the durable sink as well as at API/SSE serialization so a later caller
+    # cannot expose a raw journal entry through a new route.
+    event = RunJournal(run_root / "events.jsonl", manifest).append(redact(dict(draft)))
     replay_run(roots, run_id)
     return event
 

@@ -1,0 +1,124 @@
+import { MantineProvider } from "@mantine/core";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import axe from "axe-core";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { BrowserRouter } from "react-router";
+import { beforeEach, expect, it } from "vitest";
+import { App } from "../src/App";
+import { asyncStateFixture, catalog, catalogCases, run } from "./fixtures";
+import { FixtureEventSource, refreshBodies, runFetches, server, templateBodies } from "./setup";
+import { HttpResponse, http } from "msw";
+
+function renderRoom(path = "/e2e/catalog") {
+  window.history.pushState({}, "", path);
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  return render(<MantineProvider defaultColorScheme="dark"><QueryClientProvider client={client}><BrowserRouter><App /></BrowserRouter></QueryClientProvider></MantineProvider>);
+}
+
+beforeEach(() => { document.body.innerHTML = ""; });
+
+it("renders catalog taxonomy directly from records and supports keyboard review/admission", async () => {
+  const user = userEvent.setup();
+  renderRoom();
+  await screen.findByRole("button", { name: "Manager · 1 cases" });
+  for (const domain of ["Manager", "Runtime", "Observability", "Compound", "Translation"]) expect(screen.getByRole("button", { name: new RegExp(`^${domain} ·`) })).toBeTruthy();
+  expect(screen.getByRole("button", { name: /^Harness Diagnostics ·/ })).toBeTruthy();
+  for (const family of ["command", "file", "daemon_http", "network_isolation", "reserved_paths", "shell_security", "workspace_session", "snapshot", "trace", "events", "cgroup", "layerstack", "catalog", "runner", "reducer", "storage", "api", "ui"]) expect(screen.getByRole("button", { name: new RegExp(`^${family.replaceAll("_", " ")} \\(`, "i") })).toBeTruthy();
+  const selection = screen.getByRole("checkbox", { name: `Select ${catalogCases[0].title}` });
+  selection.focus();
+  await user.keyboard(" ");
+  expect((selection as HTMLInputElement).checked).toBe(true);
+  const review = screen.getByRole("button", { name: "Review run" });
+  review.focus();
+  await user.keyboard("{Enter}");
+  await screen.findByText("Ready to start 1 exact cases.");
+  const start = screen.getByRole("button", { name: "Start run" });
+  start.focus();
+  await user.keyboard("{Enter}");
+  await screen.findByRole("heading", { name: `Run ${run.run_id}` });
+  expect(document.activeElement?.closest("header")?.textContent).toContain(`Run ${run.run_id}`);
+});
+
+it("uses a bodyless refresh request, exposes empty workspaces, and has no serious axe violations", async () => {
+  const user = userEvent.setup();
+  renderRoom();
+  await user.click(await screen.findByRole("button", { name: "Refresh catalog" }));
+  await waitFor(() => expect(refreshBodies).toEqual([""]));
+  const results = await axe.run(document, { rules: { "color-contrast": { enabled: false } } });
+  expect(results.violations.filter((item) => ["critical", "serious"].includes(item.impact ?? "")).map((item) => item.id)).toEqual([]);
+  const workspaces = screen.getByRole("link", { name: "Workspaces" });
+  workspaces.focus();
+  await user.keyboard("{Enter}");
+  await screen.findByRole("heading", { name: "Workspaces" });
+  expect(screen.getByText("No active attempts.")).toBeTruthy();
+  expect(screen.getByText("No quarantined attempts.")).toBeTruthy();
+  const prepare = screen.getByRole("button", { name: "Prepare template" });
+  prepare.focus();
+  await user.keyboard("{Enter}");
+  await waitFor(() => expect(templateBodies).toEqual([""]));
+});
+
+it("keeps the complete async-state fixture matrix available for view-contract tests", () => {
+  expect(asyncStateFixture).toHaveLength(40);
+  expect(asyncStateFixture).toContain("recovery_blocked");
+  expect(asyncStateFixture).toContain("evidence_purged");
+});
+
+it("refreshes exactly one run snapshot for one SSE gap and gives the operator a reconnecting notice", async () => {
+  renderRoom(`/e2e/runs/${run.run_id}`);
+  await screen.findByRole("heading", { name: `Run ${run.run_id}` });
+  expect(runFetches).toHaveLength(1);
+  expect(FixtureEventSource.instances).toHaveLength(1);
+  FixtureEventSource.instances[0].emit("stream.gap");
+  await screen.findByRole("heading", { name: "Reconnecting to live updates…" });
+  await waitFor(() => expect(runFetches).toHaveLength(2));
+});
+
+it("refreshes exactly one run snapshot for one SSE disconnect", async () => {
+  renderRoom(`/e2e/runs/${run.run_id}`);
+  await screen.findByRole("heading", { name: `Run ${run.run_id}` });
+  FixtureEventSource.instances[0].fail();
+  await screen.findByRole("heading", { name: "Reconnecting to live updates…" });
+  await waitFor(() => expect(runFetches).toHaveLength(2));
+  expect(screen.getAllByRole("heading", { name: "Reconnecting to live updates…" })).toHaveLength(1);
+});
+
+it("renders a newly discovered catalog record after an ordinary revision notification", async () => {
+  const discovered = { ...catalogCases[0], test_id: "runtime.additive", case_id: "folder", title: "New folder catalog record", family_id: "additive", source: "e2e/runtime/additive/test_case.py" };
+  const next = { ...catalog, catalog_revision: "sha256:fixture-catalog-v2", items: [...catalog.items, discovered], total: catalog.total + 1, facets: { ...catalog.facets, family_id: { ...catalog.facets.family_id, additive: 1 } } };
+  let requests = 0;
+  server.use(http.get("*/api/v1/catalog", () => {
+    requests += 1;
+    return HttpResponse.json({ schema_version: 1, data: requests === 1 ? catalog : next });
+  }));
+  renderRoom();
+  await screen.findByRole("button", { name: "Manager · 1 cases" });
+  expect(FixtureEventSource.instances).toHaveLength(1);
+  FixtureEventSource.instances[0].emit("catalog.revision");
+  await waitFor(() => expect(screen.getAllByText("New folder catalog record").length).toBeGreaterThan(0));
+});
+
+it("does not retry rejected controller actions and keeps response canaries out of the UI", async () => {
+  let refreshCalls = 0;
+  const secret = "ui-plain-secret-canary";
+  const encoded = btoa(secret);
+  server.use(
+    http.post("*/api/v1/catalog/refresh", () => {
+      refreshCalls += 1;
+      return HttpResponse.json({ schema_version: 1, error: { code: "blocked", message: "refresh blocked", retryable: false, request_id: "fixture" } }, { status: 409 });
+    }),
+    http.get(`*/api/v1/runs/${run.run_id}`, () => HttpResponse.json({ schema_version: 1, data: { ...run, internal_secret: `${secret} ${encoded}` } })),
+  );
+  const user = userEvent.setup();
+  renderRoom();
+  await user.click(await screen.findByRole("button", { name: "Refresh catalog" }));
+  await screen.findByRole("heading", { name: "Catalog update failed — showing the last good revision." });
+  await new Promise((resolve) => setTimeout(resolve, 25));
+  expect(refreshCalls).toBe(1);
+  window.history.pushState({}, "", `/e2e/runs/${run.run_id}`);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+  await screen.findByText("Evidence capped: retained 1024 bytes; 2048 bytes and 16 lines omitted.");
+  expect(document.body.textContent).not.toContain(secret);
+  expect(document.body.textContent).not.toContain(encoded);
+});
