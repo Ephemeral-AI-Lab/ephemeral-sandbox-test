@@ -20,6 +20,8 @@ from harness.storage.roots import Roots
 MODE_ENV = "E2E_CATALOG_MODE"
 OUTPUT_OPTION = "e2e_catalog_output"
 LEDGER_OPTION = "e2e_stable_id_ledger"
+PRODUCT_CATALOG_OPTION = "e2e_product_catalog"
+METADATA_OPTION = "e2e_catalog_metadata"
 _patches: list[tuple[object, str, object]] = []
 _before_digests: dict[str, str] = {}
 
@@ -56,34 +58,33 @@ def finish(config: Any, roots: Roots, items: list[Any]) -> None:
         return
     output = _validated_output_path(config.getoption(OUTPUT_OPTION), roots)
     ledger = _load_ledger(config.getoption(LEDGER_OPTION))
-    cases = _catalog_cases(items, ledger, roots.e2e_source_root)
+    product_catalog = config.getoption(PRODUCT_CATALOG_OPTION)
+    metadata = config.getoption(METADATA_OPTION)
+    if not product_catalog or not metadata:
+        raise CatalogModeViolation(
+            "catalog collection requires an offline product catalog and metadata/catalog.yaml"
+        )
+    from harness.catalog.collector import build_catalog
+
+    snapshot = build_catalog(
+        items=items,
+        roots=roots,
+        ledger=ledger,
+        product_catalog_path=Path(product_catalog),
+        metadata_path=Path(metadata),
+    )
     after_digests = {
         "product": source_tree_digest(roots.product_root),
         "e2e": source_tree_digest(roots.e2e_source_root),
     }
     if after_digests != _before_digests:
         raise CatalogModeViolation("catalog collection changed a protected source tree")
-    snapshot = {
-        "schema_version": 1,
-        "kind": "phase0_catalog_snapshot",
-        "collection": {
-            "expanded_case_count": len(cases),
-            "source_tree_digests": {
-                "before": _before_digests,
-                "after": after_digests,
-            },
+    snapshot["collection"] = {
+        "expanded_case_count": len(snapshot["cases"]),
+        "source_tree_digests": {
+            "before": _before_digests,
+            "after": after_digests,
         },
-        "side_effects": {
-            "gateway": 0,
-            "daemon": 0,
-            "container": 0,
-            "process": 0,
-            "network": 0,
-            "source_write": 0,
-            "terminal_summary": 0,
-            "atexit_writer": 0,
-        },
-        "cases": cases,
     }
     _atomic_json(output, snapshot)
 
@@ -130,12 +131,12 @@ def conversion_inventory(snapshot: dict[str, Any]) -> dict[str, Any]:
     for case in snapshot["cases"]:
         entries.append(
             {
-                "stable_id": case["stable_id"],
+                "stable_id": case.get("legacy_stable_id", case["test_id"]),
                 "pytest_nodeid": case["pytest_nodeid"],
                 "source": case["source"],
                 "phase_2_requirements": {
                     "declaration": {
-                        "id": case["stable_id"],
+                        "id": case["test_id"],
                         "title": "required",
                         "description": "required",
                         "features": "required",
@@ -159,8 +160,8 @@ def ledger_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
         "kind": "phase0_stable_id_ledger",
         "cases": [
             {
-                "pytest_nodeid": case["pytest_nodeid"],
-                "stable_id": case["stable_id"],
+                "pytest_nodeid": case["legacy_pytest_nodeid"],
+                "stable_id": case.get("legacy_stable_id", case["test_id"]),
             }
             for case in snapshot["cases"]
         ],
@@ -221,8 +222,9 @@ def _validated_output_path(value: str | None, roots: Roots) -> Path:
     if not value:
         raise CatalogModeViolation("catalog output path is required")
     output = Path(value).resolve()
-    if roots.e2e_state_root not in output.parents:
-        raise CatalogModeViolation("catalog output must be below the E2E state root")
+    temporary_root = roots.e2e_state_root / "tmp"
+    if output != temporary_root and temporary_root not in output.parents:
+        raise CatalogModeViolation("catalog candidate output must be below the E2E state tmp leaf")
     return output
 
 
@@ -351,6 +353,7 @@ def _legacy_nodeid(nodeid: str) -> str:
         ("harness/runner/test_cleanup.py", "core/test_cleanup.py"),
         ("harness/runner/test_direct_daemon.py", "core/test_direct_daemon.py"),
         ("harness/storage/test_roots.py", "core/test_root.py"),
+        ("runtime/workspace_session/test_squash_remount.py", "runtime/test_squash_remount.py"),
         ("compound/configuration/config/", "config/"),
         ("observability/snapshot/test_snapshot.py", "observability/test_observability.py"),
         ("compound/lifecycle/test_gateway_smoke.py", "test_smoke.py"),

@@ -1,0 +1,30 @@
+schema_version: 1
+owners:
+  - id: e2e-core
+    title: E2E Control Room
+compound_families:
+  - id: configuration
+    title: Configuration
+    summary: Cross-domain configuration behavior.
+  - id: lifecycle
+    title: Lifecycle
+    summary: Shared create, use, observe, and destroy journeys.
+harness_families:
+  - id: catalog
+    title: Catalog
+    summary: Offline catalog declaration and refresh diagnostics.
+  - id: runner
+    title: Runner
+    summary: Pytest runner and surface-boundary diagnostics.
+  - id: storage
+    title: Storage
+    summary: Root ownership and storage safety diagnostics.
+  - id: reducer
+    title: Reducer
+    summary: Event reduction diagnostics.
+  - id: api
+    title: API
+    summary: Controller API contract diagnostics.
+  - id: ui
+    title: UI
+    summary: Control Room interface diagnostics.

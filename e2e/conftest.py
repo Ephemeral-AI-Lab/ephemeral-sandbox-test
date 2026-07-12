@@ -14,6 +14,7 @@ import sys
 import pytest
 
 from harness.catalog import mode as catalog_mode
+from harness.catalog.declarations import validation
 from harness.runner import cleanup, gateway
 from harness.runner.cli import operation_timing_records, operation_timing_summary
 from harness.runner.config import E2E_STATE_ROOT, ROOTS, initialize_workspace
@@ -30,12 +31,15 @@ def pytest_addoption(parser):
     group.addoption("--e2e-catalog", action="store_true")
     group.addoption("--e2e-catalog-output")
     group.addoption("--e2e-stable-id-ledger")
+    group.addoption("--e2e-product-catalog")
+    group.addoption("--e2e-catalog-metadata")
     startup = parser.getgroup("external E2E roots")
     startup.addoption("--test-repository-root")
     startup.addoption("--product-root")
 
 
 def pytest_configure(config):
+    config.addinivalue_line("markers", "e2e_test: typed E2E Control Room declaration")
     catalog_mode.activate(config, ROOTS)
 
 
