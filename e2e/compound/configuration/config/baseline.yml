@@ -1,0 +1,27 @@
+daemon:
+  server:
+    socket_path: /eos/runtime/daemon/runtime.sock
+    pid_path: /eos/runtime/daemon/runtime.pid
+    max_worker_threads: 32
+runtime:
+  workspace:
+    layer_stack_root: /eos/layer-stack
+    scratch_root: /eos/workspace
+    setup_timeout_s: 30
+    exit_grace_s: 0.25
+    rfc1918_egress: allow
+  namespace_execution:
+    scratch_root: /eos/namespace_execution
+runner:
+  mount_mask:
+    hidden_paths:
+      - /eos
+manager:
+  docker:
+    privileged: false
+    daemon_binary_path: dist/sandbox-daemon-linux-arm64
+    daemon_config_yaml_path: config/prd.yml
+    container_env:
+      HTTP_PROXY: http://http.docker.internal:3128
+      HTTPS_PROXY: http://http.docker.internal:3128
+      NO_PROXY: localhost,127.0.0.1,::1
