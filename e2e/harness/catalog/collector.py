@@ -42,7 +42,7 @@ def build_catalog(
     product_nodes, product_features = _product_nodes(product, errors)
     e2e_nodes, owners = _metadata_nodes(metadata, errors)
     cases = _cases(items, ledger, roots, product_features, e2e_nodes, errors)
-    _validate_unique(cases, "test_id", errors)
+    _validate_unique(cases, ("test_id", "case_id"), errors)
     if errors:
         raise CatalogValidationError(errors)
 
@@ -328,11 +328,13 @@ def _case_id(item: Any) -> str:
     return str(callspec.id) if callspec is not None and callspec.id else "default"
 
 
-def _validate_unique(records: list[dict[str, Any]], field: str, errors: list[str]) -> None:
-    values = [record[field] for record in records]
+def _validate_unique(
+    records: list[dict[str, Any]], fields: tuple[str, ...], errors: list[str]
+) -> None:
+    values = [tuple(record[field] for field in fields) for record in records]
     duplicates = sorted({value for value in values if values.count(value) > 1})
     if duplicates:
-        errors.append(f"duplicate {field}: {duplicates[:3]}")
+        errors.append(f"duplicate {'+'.join(fields)}: {duplicates[:3]}")
 
 
 def _read_json(path: Path, label: str, errors: list[str]) -> Any:
