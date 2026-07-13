@@ -114,16 +114,41 @@ class SerialPytestRunner:
         nodeids = [case.get("pytest_nodeid") for case in manifest["cases"]]
         if not nodeids or any(not isinstance(nodeid, str) for nodeid in nodeids):
             raise RunnerError("frozen cases require pytest_nodeid for child execution")
-        process = subprocess.run(
-            [sys.executable, "-m", "pytest", *nodeids],
-            cwd=e2e_root,
-            capture_output=True,
-            text=True,
-            timeout=timeout_seconds,
-            env={"PYTHONPATH": str(source_root), "PYTHONDONTWRITEBYTECODE": "1"},
+        root_options = (
+            [
+                "--test-repository-root",
+                str(self.roots.test_repository_root),
+                "--product-root",
+                str(self.roots.product_root),
+            ]
+            if (e2e_root / "conftest.py").is_file()
+            else []
         )
+        launch_error: str | None = None
+        try:
+            process = subprocess.run(
+                [sys.executable, "-m", "pytest", *root_options, *nodeids],
+                cwd=e2e_root,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+                env={"PYTHONPATH": str(source_root), "PYTHONDONTWRITEBYTECODE": "1"},
+            )
+        except subprocess.TimeoutExpired:
+            process = None
+            launch_error = "pytest child timed out"
+        except OSError:
+            process = None
+            launch_error = "pytest child could not be started"
 
         def outcome(case: Mapping[str, Any]) -> Mapping[str, Any]:
+            if launch_error is not None:
+                return {
+                    "state": "error",
+                    "validations": {item["id"]: "error" for item in case.get("validations", [])},
+                    "surface": None,
+                    "message": launch_error,
+                }
             return {
                 "state": "passed" if process.returncode == 0 else "failed",
                 "validations": {item["id"]: "passed" for item in case.get("validations", [])},

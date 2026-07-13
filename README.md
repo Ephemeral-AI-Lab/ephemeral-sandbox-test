@@ -16,6 +16,24 @@ PYTHONPATH=/absolute/path/to/ephemeral-sandbox-test/e2e python3 -m harness.catal
 The `.e2e-state/` and `.benchmark-state/` leaves are disposable runtime state and
 are intentionally ignored by Git.
 
+## Control Room UI
+
+Build and serve the UI and controller on one loopback origin:
+
+Use Node `^20.19.0`, `^22.13.0`, or `>=24.0.0`, as required by the UI toolchain.
+
+```sh
+cd /absolute/path/to/ephemeral-sandbox-test/e2e/web
+npm install
+npm run build
+cd ../..
+PYTHONPATH=e2e python3 -m harness.api \
+  --test-repository-root /absolute/path/to/ephemeral-sandbox-test \
+  --product-root /absolute/path/to/ephemeral-sandbox
+```
+
+Open `http://127.0.0.1:5173/e2e/catalog`.
+
 ## Benchmark laboratory
 
 `benchmark/` is the complete external EphemeralOS benchmark application, not an

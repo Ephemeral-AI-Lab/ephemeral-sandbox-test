@@ -40,6 +40,17 @@ it("renders catalog taxonomy directly from records and supports keyboard review/
   expect(document.activeElement?.closest("header")?.textContent).toContain(`Run ${run.run_id}`);
 });
 
+it("renders every domain and the full harness count from facets on a paged catalog", async () => {
+  server.use(http.get("*/api/v1/catalog", () => HttpResponse.json({
+    schema_version: 1,
+    data: { ...catalog, items: catalog.items.slice(0, 1), page: { ...catalog.page, next_cursor: "next" } },
+  })));
+  renderRoom();
+  await screen.findByRole("button", { name: "Manager · 1 cases" });
+  expect(screen.getByRole("button", { name: "Runtime · 7 cases" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Harness Diagnostics · 6 cases" })).toBeTruthy();
+});
+
 it("uses a bodyless refresh request, exposes empty workspaces, and has no serious axe violations", async () => {
   const user = userEvent.setup();
   renderRoom();
@@ -84,6 +95,16 @@ it("refreshes exactly one run snapshot for one SSE disconnect", async () => {
   expect(screen.getAllByRole("heading", { name: "Reconnecting to live updates…" })).toHaveLength(1);
 });
 
+it("treats a heartbeat-terminated SSE response as a healthy reconnect cycle", async () => {
+  renderRoom(`/e2e/runs/${run.run_id}`);
+  await screen.findByRole("heading", { name: `Run ${run.run_id}` });
+  FixtureEventSource.instances[0].emit("stream.heartbeat");
+  FixtureEventSource.instances[0].fail();
+  await new Promise((resolve) => setTimeout(resolve, 25));
+  expect(screen.queryByRole("heading", { name: "Reconnecting to live updates…" })).toBeNull();
+  expect(runFetches).toHaveLength(1);
+});
+
 it("renders a newly discovered catalog record after an ordinary revision notification", async () => {
   const discovered = { ...catalogCases[0], test_id: "runtime.additive", case_id: "folder", title: "New folder catalog record", family_id: "additive", source: "e2e/runtime/additive/test_case.py" };
   const next = { ...catalog, catalog_revision: "sha256:fixture-catalog-v2", items: [...catalog.items, discovered], total: catalog.total + 1, facets: { ...catalog.facets, family_id: { ...catalog.facets.family_id, additive: 1 } } };
@@ -121,4 +142,11 @@ it("does not retry rejected controller actions and keeps response canaries out o
   await screen.findByText("Evidence capped: retained 1024 bytes; 2048 bytes and 16 lines omitted.");
   expect(document.body.textContent).not.toContain(secret);
   expect(document.body.textContent).not.toContain(encoded);
+});
+
+it("shows a stable controller error when an API route returns HTML", async () => {
+  server.use(http.get("*/api/v1/catalog", () => new HttpResponse("<!doctype html><title>Not the API</title>", { headers: { "Content-Type": "text/html" } })));
+  renderRoom();
+  await screen.findByRole("heading", { name: "Test catalog is unavailable." });
+  expect(screen.getByText("The controller returned an invalid response. Request unknown.")).toBeTruthy();
 });

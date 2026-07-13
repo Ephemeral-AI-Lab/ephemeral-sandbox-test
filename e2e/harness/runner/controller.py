@@ -19,7 +19,7 @@ import stat
 from typing import Any, Callable, Mapping
 import uuid
 
-from harness.catalog.mode import source_tree_digest
+from harness.catalog.mode import source_tree_digest, source_tree_paths
 from harness.reducer.events import canonical_bytes, digest, validate_preview
 from harness.storage.roots import Roots
 from harness.storage.store import (
@@ -436,16 +436,14 @@ class PreviewController:
     def _all_e2e_source_paths(self) -> list[str]:
         root = self.roots.e2e_source_root
         paths = []
-        for path in sorted(root.rglob("*")):
-            relative = path.relative_to(self.roots.test_repository_root)
-            if "__pycache__" in relative.parts or path.name == ".DS_Store":
-                continue
-            try:
+        try:
+            for path in source_tree_paths(root):
+                relative = path.relative_to(self.roots.test_repository_root)
                 mode = os.lstat(path).st_mode
-            except OSError as error:
-                raise ControllerError("source_unavailable", "Cannot inspect E2E source.", status=503) from error
-            if not stat.S_ISDIR(mode):
-                paths.append(relative.as_posix())
+                if not stat.S_ISDIR(mode):
+                    paths.append(relative.as_posix())
+        except OSError as error:
+            raise ControllerError("source_unavailable", "Cannot inspect E2E source.", status=503) from error
         if not paths:
             raise ControllerError("source_unavailable", "No declared E2E source files are available.", status=503)
         return paths

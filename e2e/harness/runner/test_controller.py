@@ -7,6 +7,7 @@ import datetime as dt
 import pytest
 
 from harness.catalog.declarations import e2e_test
+from harness.catalog.mode import source_tree_digest as catalog_source_tree_digest
 from harness.reducer.events import digest, read_events
 from harness.runner.controller import ControllerError, PreviewController
 from harness.runner.recovery import RecoveryAction, recover_interrupted_runs
@@ -125,6 +126,11 @@ def _event(event_type: str, payload: dict, *, case: dict | None = None, caused_b
 def test_preview_query_exclusion_admission_and_idempotency(tmp_path, validation):
     roots = _roots(tmp_path)
     (roots.e2e_source_root / "case.py").write_text("print('snapshot')\n", encoding="utf-8")
+    source_digest = catalog_source_tree_digest(roots.e2e_source_root)
+    generated = roots.e2e_source_root / "node_modules" / "package" / "index.js"
+    generated.parent.mkdir(parents=True)
+    generated.write_text("generated dependency\n", encoding="utf-8")
+    assert catalog_source_tree_digest(roots.e2e_source_root) == source_digest
     cases = [_case("harness.runner.alpha", "one"), _case("harness.runner.beta", "two")]
     controller = _controller(roots, cases)
     preview = controller.create_preview(
@@ -151,6 +157,7 @@ def test_preview_query_exclusion_admission_and_idempotency(tmp_path, validation)
         assert result["idempotent"] is False
         assert [(case["test_id"], case["case_id"]) for case in manifest["cases"]] == [("harness.runner.beta", "two")]
         assert (roots.e2e_state_root / "runs" / result["run_id"] / "source" / "e2e" / "case.py").read_text(encoding="utf-8") == "print('snapshot')\n"
+        assert not (roots.e2e_state_root / "runs" / result["run_id"] / "source" / "e2e" / "node_modules").exists()
         (roots.e2e_source_root / "case.py").write_text("print('live tree changed')\n", encoding="utf-8")
         assert (roots.e2e_state_root / "runs" / result["run_id"] / "source" / "e2e" / "case.py").read_text(encoding="utf-8") == "print('snapshot')\n"
         duplicate = controller.admit(
@@ -347,12 +354,44 @@ def test_serial_runner_uses_one_child_from_run_owned_e2e_snapshot(tmp_path, vali
     snapshot = roots.e2e_state_root / "runs" / "run-pytest-child" / "source" / "e2e"
     snapshot.mkdir(parents=True)
     (snapshot / "test_child.py").write_text("def test_ok():\n    assert True\n", encoding="utf-8")
+    (snapshot / "conftest.py").write_text(
+        "def pytest_addoption(parser):\n"
+        "    parser.addoption('--test-repository-root')\n"
+        "    parser.addoption('--product-root')\n\n"
+        "def pytest_configure(config):\n"
+        f"    assert config.getoption('--test-repository-root') == {str(roots.test_repository_root)!r}\n"
+        f"    assert config.getoption('--product-root') == {str(roots.product_root)!r}\n",
+        encoding="utf-8",
+    )
     runner = SerialPytestRunner(roots, producer_revision="sha256:runner")
     projection = runner.run_pytest("run-pytest-child")
 
     with validation("snapshot_child", expected="passed", actual=lambda: projection["state"]):
         assert projection["state"] == "passed"
         assert projection["cases"][0]["state"] == "passed"
+
+
+@e2e_test(
+    id="harness.runner.pytest-launch-error",
+    title="Runner records a pytest child launch failure as terminal",
+    description="An unavailable child process cannot strand the durable lane in a nonterminal running state.",
+    validations={"terminal": "The run and selected case both reach the error state when pytest cannot launch."},
+)
+def test_serial_runner_records_a_child_launch_failure_as_terminal(tmp_path, monkeypatch, validation):
+    roots = _roots(tmp_path)
+    case = _case("harness.runner.pytest-launch", "default", source="e2e/test_child.py")
+    case["pytest_nodeid"] = "test_child.py::test_ok"
+    create_run(roots, _manifest("run-pytest-launch-error", [case]))
+    snapshot = roots.e2e_state_root / "runs" / "run-pytest-launch-error" / "source" / "e2e"
+    snapshot.mkdir(parents=True)
+    (snapshot / "test_child.py").write_text("def test_ok():\n    assert True\n", encoding="utf-8")
+    monkeypatch.setattr("harness.runner.runner.subprocess.run", lambda *_args, **_kwargs: (_ for _ in ()).throw(OSError("unavailable")))
+
+    projection = SerialPytestRunner(roots, producer_revision="sha256:runner").run_pytest("run-pytest-launch-error")
+
+    with validation("terminal", expected=("error", "error"), actual=lambda: (projection["state"], projection["cases"][0]["state"])):
+        assert projection["state"] == "error"
+        assert projection["cases"][0]["state"] == "error"
 
 
 @e2e_test(

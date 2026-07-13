@@ -51,14 +51,22 @@ function useControllerEvents() {
     const stream = new EventSource(path);
     source.current = stream;
     let resynced = false;
+    let heartbeatReceived = false;
     const refreshSnapshot = () => {
       if (resynced) return;
       resynced = true;
+      heartbeatReceived = false;
       setConnection("reconnecting");
       if (runId) void queryClient.refetchQueries({ queryKey: ["run", runId], type: "active" });
     };
-    stream.onopen = () => { resynced = false; setConnection("live"); };
-    stream.onerror = () => refreshSnapshot();
+    stream.onopen = () => { resynced = false; heartbeatReceived = false; setConnection("live"); };
+    stream.onerror = () => {
+      if (heartbeatReceived) {
+        heartbeatReceived = false;
+        return;
+      }
+      refreshSnapshot();
+    };
     stream.onmessage = (event) => {
       resynced = false;
       setConnection("live");
@@ -66,6 +74,7 @@ function useControllerEvents() {
       if (event.lastEventId && runId) queryClient.invalidateQueries({ queryKey: ["runs"] });
     };
     stream.addEventListener("catalog.revision", () => void queryClient.refetchQueries({ queryKey: ["catalog"], type: "active" }));
+    stream.addEventListener("stream.heartbeat", () => { heartbeatReceived = true; setConnection("live"); });
     stream.addEventListener("stream.gap", refreshSnapshot);
     return () => stream.close();
   }, [location.pathname, queryClient]);
@@ -192,9 +201,8 @@ function EmptyCatalog({ onClear }: { onClear: () => void }) {
 function CatalogTopology({ data, activeDomain, activeFamily, onFilter }: { data: CatalogPage; activeDomain: string | null; activeFamily: string | null; onFilter: (name: string, value?: string) => void }) {
   const domains = Object.entries(data.facets.domain_id).sort(([left], [right]) => left.localeCompare(right));
   const families = Object.entries(data.facets.family_id).sort(([left], [right]) => left.localeCompare(right));
-  const isHarness = (item: CatalogCase) => item.kind === "harness";
-  const primary = domains.filter(([domain]) => data.items.some((item) => item.domain_id === domain && !isHarness(item)));
-  const harnessCount = data.items.filter(isHarness).length;
+  const primary = domains.filter(([domain]) => domain !== "harness");
+  const harnessCount = data.facets.kind.harness ?? data.facets.domain_id.harness ?? 0;
   return <Stack gap="xs"><Text fw={700}>Domains</Text><SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>{primary.map(([domain, count]) => <Card key={domain} withBorder className={activeDomain === domain ? "active-card" : ""}><Button fullWidth variant="subtle" onClick={() => onFilter("domain_id", domain)}>{humanize(domain)} · {count} cases</Button></Card>)}</SimpleGrid>
     {harnessCount > 0 && <Card withBorder className="subordinate"><Button fullWidth variant="subtle" onClick={() => onFilter("kind", "harness")}>Harness Diagnostics · {harnessCount} cases</Button></Card>}
     <Group gap="xs" aria-label="Families">{families.map(([family, count]) => <Button key={family} variant={activeFamily === family ? "filled" : "light"} size="compact-md" onClick={() => onFilter("family_id", family)}>{humanize(family)} ({count})</Button>)}</Group>

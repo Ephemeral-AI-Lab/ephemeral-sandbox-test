@@ -7,9 +7,13 @@ import json
 import base64
 from http.client import HTTPConnection
 import socket
+import subprocess
 from threading import Thread
 from time import perf_counter
 
+import pytest
+
+from harness.api import app as app_module
 from harness.api import server as api_module
 from harness.api.loopback import make_loopback_server
 from harness.api.redaction import redact_chunks
@@ -243,6 +247,7 @@ def test_transport_and_evidence_contracts_are_safe(tmp_path, validation):
         assert (traversal.status, corrupt.status, after_purge.status) == (404, 500, 410)
         assert secret not in durable and encoded_secret not in durable
         assert secret not in stream.body.decode() and encoded_secret not in stream.body.decode()
+        assert b"event: stream.heartbeat" in stream.body
         assert secret not in artifact_response.body.decode() and encoded_secret not in artifact_response.body.decode()
         assert secret.encode() not in redact_chunks([secret[:7].encode(), secret[7:].encode()])
         assert "purged" in purged.body.decode() and load_projection(roots, "run-evidence")["retention"]["state"] == "purged"
@@ -303,6 +308,68 @@ def test_loopback_adapter_enforces_exact_browser_transport(tmp_path, validation)
         pass
     else:
         raise AssertionError("a public listener must not be constructible")
+
+
+@e2e_test(
+    id="harness.api.static-control-room",
+    title="Loopback server hosts the built Control Room and refreshes its catalog",
+    description="The executable composition keeps UI, API, and the validated catalog refresh workflow on one loopback origin.",
+    validations={"composition": "SPA routes and assets are served safely, while refresh invokes offline catalog collection."},
+)
+def test_loopback_serves_the_built_control_room_on_the_same_origin(tmp_path, validation, monkeypatch):
+    roots, api = _api(tmp_path)
+    web_root = tmp_path / "web-dist"
+    assets = web_root / "assets"
+    assets.mkdir(parents=True)
+    (web_root / "index.html").write_text("<!doctype html><title>E2E Control Room</title>", encoding="utf-8")
+    (assets / "app.js").write_text("globalThis.controlRoomLoaded = true;", encoding="utf-8")
+    (tmp_path / "outside.txt").write_text("must not be served", encoding="utf-8")
+
+    server = make_loopback_server(api, "127.0.0.1", 0, web_root=web_root)
+    port = server.server_address[1]
+    thread = Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        responses = []
+        for path in ("/e2e/catalog", "/assets/app.js", "/api/v1/health", "/%2e%2e/outside.txt"):
+            connection = HTTPConnection("127.0.0.1", port, timeout=2)
+            connection.request("GET", path, headers={"Host": api.expected_host})
+            response = connection.getresponse()
+            responses.append((response.status, dict(response.headers), response.read()))
+            connection.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+    spa, asset, health, traversal = responses
+    refresh_command = []
+
+    def collect(command, **kwargs):
+        refresh_command.extend(command)
+        assert kwargs["cwd"] == roots.test_repository_root
+        return subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(app_module.subprocess, "run", collect)
+    refreshed = app_module._refresh_catalog(roots)
+
+    with validation("composition", expected="safe SPA and published refresh", actual=lambda: "safe SPA and published refresh"):
+        assert spa[0] == 200 and spa[1]["Content-Type"].startswith("text/html")
+        assert b"E2E Control Room" in spa[2]
+        assert asset[0] == 200 and asset[1]["Content-Type"].startswith("text/javascript")
+        assert json.loads(health[2])["data"]["nonce"] == api.nonce
+        assert traversal[0] == 404 and b"must not be served" not in traversal[2]
+        assert refreshed == {"state": "published", "coalesced": False}
+        assert refresh_command[1].endswith("/harness/catalog/collect.py")
+
+    monkeypatch.setattr(
+        app_module.subprocess,
+        "run",
+        lambda *args, **kwargs: subprocess.CompletedProcess(args[0], 2, "", "failed"),
+    )
+    with pytest.raises(app_module.ApiError) as failed:
+        app_module._refresh_catalog(roots)
+    assert failed.value.code == "catalog_refresh_failed"
 
 
 @e2e_test(

@@ -77,12 +77,21 @@ export class ControlRoomClient {
     const headers = new Headers(init?.headers);
     if (init?.body) headers.set("Content-Type", "application/json");
     const response = await fetch(`/api/v1${path}`, { ...init, headers, credentials: "same-origin" });
-    const envelope = (await response.json()) as Envelope<T>;
-    if (!response.ok || envelope.error || envelope.data === undefined) {
+    let envelope: Envelope<T>;
+    try {
+      envelope = (await response.json()) as Envelope<T>;
+    } catch {
+      throw invalidResponse(response.status);
+    }
+    if (!envelope || envelope.schema_version !== 1 || !response.ok || envelope.error || envelope.data === undefined) {
       throw new ApiError(envelope.error ?? { code: "invalid_response", message: "The controller returned an invalid response.", retryable: false, request_id: "unknown" }, response.status);
     }
     return envelope.data;
   }
+}
+
+function invalidResponse(status: number): ApiError {
+  return new ApiError({ code: "invalid_response", message: "The controller returned an invalid response.", retryable: false, request_id: "unknown" }, status);
 }
 
 export const api = new ControlRoomClient();

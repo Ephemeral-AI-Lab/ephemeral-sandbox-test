@@ -90,6 +90,7 @@ class ControlRoomApi:
         health_loader: Callable[[], Mapping[str, Any]] | None = None,
         catalog_refresh: Callable[[], Mapping[str, Any] | None] | None = None,
         template_prepare: Callable[[], Mapping[str, Any] | None] | None = None,
+        run_start: Callable[[str], None] | None = None,
         known_secrets: tuple[str, ...] = (),
     ) -> None:
         if not expected_host or "/" in expected_host:
@@ -103,6 +104,7 @@ class ControlRoomApi:
         self._health_loader = health_loader or _json_loader(roots.e2e_state_root / "catalog" / "health.json", "catalog health")
         self._catalog_refresh = catalog_refresh or (lambda: {"state": "requested", "coalesced": True})
         self._template_prepare = template_prepare or (lambda: {"state": "requested"})
+        self._run_start = run_start
         self._nonce = secrets.token_urlsafe(32)
         self._workspace_purges: list[dict[str, Any]] = []
         register_known_secrets(known_secrets)
@@ -172,7 +174,10 @@ class ControlRoomApi:
         if method == "POST" and path == "/previews":
             return self.controller.create_preview(self._json_body(request))
         if method == "POST" and path == "/runs":
-            return self.controller.admit(self._json_body(request))
+            admitted = self.controller.admit(self._json_body(request))
+            if self._run_start is not None and not admitted.get("idempotent"):
+                self._run_start(admitted["run_id"])
+            return admitted
         if method == "GET" and path == "/runs":
             return self._runs(query)
         if method == "GET" and path == "/workspaces":
@@ -254,7 +259,7 @@ class ControlRoomApi:
         for event in events:
             encoded = canonical_bytes(redact(event))
             chunks.append(f"id: {event['seq']}\n".encode() + b"data: " + encoded + b"\n\n")
-        chunks.append(b": heartbeat\n\n")
+        chunks.append(b": heartbeat\n\nevent: stream.heartbeat\ndata: {\"schema_version\":1}\n\n")
         return ApiResponse(200, _sse_headers(), b"".join(chunks))
 
     def _runs(self, query: Mapping[str, list[str]]) -> dict[str, Any]:

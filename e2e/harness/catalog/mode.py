@@ -21,6 +21,9 @@ MODE_ENV = "E2E_CATALOG_MODE"
 OUTPUT_OPTION = "e2e_catalog_output"
 PRODUCT_CATALOG_OPTION = "e2e_product_catalog"
 METADATA_OPTION = "e2e_catalog_metadata"
+SOURCE_TREE_IGNORED_NAMES = frozenset(
+    {".DS_Store", ".git", ".pytest_cache", "__pycache__", "dist", "node_modules", "target", "test-reports"}
+)
 _patches: list[tuple[object, str, object]] = []
 _before_digests: dict[str, str] = {}
 
@@ -100,11 +103,8 @@ def forbid(activity: str) -> None:
 def source_tree_digest(root: Path) -> str:
     digest = hashlib.sha256()
     root = root.resolve()
-    ignored = {".git", ".pytest_cache", "__pycache__", "target", "dist", "test-reports"}
-    for path in sorted(root.rglob("*"), key=lambda candidate: candidate.as_posix()):
+    for path in source_tree_paths(root):
         relative = path.relative_to(root)
-        if any(part in ignored for part in relative.parts):
-            continue
         encoded = relative.as_posix().encode("utf-8")
         if path.is_symlink():
             digest.update(b"L\0" + encoded + b"\0" + os.readlink(path).encode("utf-8"))
@@ -116,6 +116,25 @@ def source_tree_digest(root: Path) -> str:
                 for chunk in iter(lambda: source.read(1024 * 1024), b""):
                     digest.update(chunk)
     return f"sha256:{digest.hexdigest()}"
+
+
+def source_tree_paths(root: Path) -> list[Path]:
+    """Return source entries without traversing generated dependency and cache trees."""
+
+    root = root.resolve()
+    paths: list[Path] = []
+
+    def raise_walk_error(error: OSError) -> None:
+        raise error
+
+    for directory, dirnames, filenames in os.walk(
+        root, topdown=True, onerror=raise_walk_error, followlinks=False
+    ):
+        dirnames[:] = sorted(name for name in dirnames if name not in SOURCE_TREE_IGNORED_NAMES)
+        base = Path(directory)
+        paths.extend(base / name for name in dirnames)
+        paths.extend(base / name for name in sorted(filenames) if name not in SOURCE_TREE_IGNORED_NAMES)
+    return sorted(paths, key=lambda candidate: candidate.relative_to(root).as_posix())
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
