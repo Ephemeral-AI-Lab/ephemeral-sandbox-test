@@ -23,6 +23,7 @@ MASK_PROBE_DIR = "/root"
 
 
 @e2e_test(
+    timeout_ms=18_000,
     id='phase0.e82b9ba1f71b9ee1268249cc',
     title='Rewrite Applies To Next Sandbox',
     description='Validates the behavior exercised by Rewrite Applies To Next Sandbox.',
@@ -58,6 +59,7 @@ def test_rewrite_applies_to_next_sandbox(lane_a_daemon_yaml):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.0bffa0a17b5a9e0581e6768f',
     title='Mount Mask Hides Paths',
     description='Validates the behavior exercised by Mount Mask Hides Paths.',
@@ -87,6 +89,7 @@ def test_mount_mask_hides_paths(lane_a_daemon_yaml, hidden_paths, probe_dir, exp
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.e841cede95e3ffd9e5209a44',
     title='Setup Timeout Tiny Fails Session',
     description='Validates the behavior exercised by Setup Timeout Tiny Fails Session.',
@@ -121,6 +124,7 @@ def test_setup_timeout_tiny_fails_session(lane_a_daemon_yaml):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.fc185cf4268e081816d81361',
     title='Relocated Roots Functional',
     description='Validates the behavior exercised by Relocated Roots Functional.',
@@ -157,6 +161,7 @@ def test_relocated_roots_functional(lane_a_daemon_yaml):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.7c8e6cb1caeda7821c5181df',
     title='Observability Toggle',
     description='Validates the behavior exercised by Observability Toggle.',
@@ -189,6 +194,7 @@ def test_observability_toggle(lane_a_daemon_yaml):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.4fa59f548a12705abeb8d122',
     title='Single Worker Thread Functional',
     description='Validates the behavior exercised by Single Worker Thread Functional.',

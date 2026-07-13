@@ -8,6 +8,7 @@ import uuid
 
 from .cli import CliError, is_error, manager
 from .reporter import record_surface
+from . import resources
 
 
 ALLOWED_OPERATIONS = frozenset(
@@ -64,6 +65,14 @@ def direct_daemon_result(
         DAEMON_AUTH_FIELD: auth_token,
     }
 
+    workspace_hint = request_args.get("workspace_session_id")
+    resources.operation(
+        "direct_daemon_rpc",
+        operation,
+        edge="start",
+        sandbox_id=sandbox_id,
+        workspace_id=workspace_hint,
+    )
     started = time.monotonic()
     with socket.create_connection((host, port), timeout=timeout) as stream:
         stream.settimeout(timeout)
@@ -89,6 +98,19 @@ def direct_daemon_result(
     )
 
     result = DirectDaemonResult(operation, request_args, response, elapsed_ms)
+    _, workspace_ids = resources.trusted_ids(response)
+    if isinstance(workspace_hint, str):
+        workspace_ids.add(workspace_hint)
+    for workspace_id in workspace_ids:
+        resources.remember_workspace(sandbox_id, workspace_id)
+    resources.operation(
+        "direct_daemon_rpc",
+        operation,
+        duration_ms=elapsed_ms,
+        returncode=result.returncode,
+        sandbox_id=sandbox_id,
+        workspace_id=next(iter(workspace_ids)) if len(workspace_ids) == 1 else None,
+    )
     if recorder is not None:
         recorder.add_command(
             {

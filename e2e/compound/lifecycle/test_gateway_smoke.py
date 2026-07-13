@@ -12,6 +12,7 @@ from harness.catalog.declarations import e2e_test
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.ba148eaa52683ee2c974ec85',
     title='Gateway Responds With Sandbox List',
     description='Validates the behavior exercised by Gateway Responds With Sandbox List.',

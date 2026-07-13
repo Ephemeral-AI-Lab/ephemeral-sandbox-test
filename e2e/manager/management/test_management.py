@@ -8,6 +8,7 @@ from harness.catalog.declarations import e2e_test
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.f84eaa24d8eb1c1cf2be32fe',
     title='Sandbox Lifecycle',
     description='Validates the behavior exercised by Sandbox Lifecycle.',

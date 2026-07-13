@@ -31,6 +31,7 @@ from harness.catalog.declarations import e2e_test
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.0a021857a4d623505707e8e3',
     title='Ex 01 Implicit Exec Response Contract',
     description='Validates the behavior exercised by Ex 01 Implicit Exec Response Contract.',
@@ -53,6 +54,7 @@ def test_EX_01_implicit_exec_response_contract(sandbox, workspace_tracker):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.e71891cd5bed6e99f7b7f88d',
     title='Ex 02 Implicit Exec Publishes Then Destroys',
     description='Validates the behavior exercised by Ex 02 Implicit Exec Publishes Then Destroys.',
@@ -79,6 +81,7 @@ def test_EX_02_implicit_exec_publishes_then_destroys(sandbox, workspace_tracker)
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.75bfa965da16d6404110bb41',
     title='Ex 03 Session Exec Carries The Session Id',
     description='Validates the behavior exercised by Ex 03 Session Exec Carries The Session Id.',
@@ -107,6 +110,7 @@ def test_EX_03_session_exec_carries_the_session_id(sandbox, workspace_tracker):
 
 
 @e2e_test(
+    timeout_ms=20_000,
     id='phase0.e5875fdd1ad7a2814810ae25',
     title='Ex 04 Rider Defers Finalization',
     description='Validates the behavior exercised by Ex 04 Rider Defers Finalization.',
@@ -158,6 +162,7 @@ def test_EX_04_rider_defers_finalization(sandbox, workspace_tracker):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.5ab5d83879113f73d088860f',
     title='Ex 05 Publish Rejection Surfaces On Terminal Response',
     description='Validates the behavior exercised by Ex 05 Publish Rejection Surfaces On Terminal Response.',
@@ -190,6 +195,7 @@ def test_EX_05_publish_rejection_surfaces_on_terminal_response(sandbox, workspac
 
 
 @e2e_test(
+    timeout_ms=7_000,
     id='phase0.7a1dd45bc535da464e84b82e',
     title='Ex 06 File Op Racing Last Completion Gets Not Found',
     description='Validates the behavior exercised by Ex 06 File Op Racing Last Completion Gets Not Found.',
@@ -256,6 +262,7 @@ def test_EX_06_file_op_racing_last_completion_gets_not_found(sandbox, workspace_
 
 
 @e2e_test(
+    timeout_ms=6_000,
     id='phase0.8b53a40685e535c8b745c1f0',
     title='Ex 07 Interrupt And Timeout Paths Still Finalize',
     description='Validates the behavior exercised by Ex 07 Interrupt And Timeout Paths Still Finalize.',
@@ -291,6 +298,7 @@ def test_EX_07_interrupt_and_timeout_paths_still_finalize(sandbox, workspace_tra
 
 
 @e2e_test(
+    timeout_ms=16_000,
     id='phase0.821e106d53e5e3c5fdd3222d',
     title='Fp 01 Remount Sweep Cannot Finalize Idle Implicit Session',
     description='Validates the behavior exercised by Fp 01 Remount Sweep Cannot Finalize Idle Implicit Session.',
@@ -346,6 +354,7 @@ def test_FP_01_remount_sweep_cannot_finalize_idle_implicit_session(sandbox, work
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.af13a0df8dff9057d1abd175',
     title='Fp 02 Empty Capture Skips Publish',
     description='Validates the behavior exercised by Fp 02 Empty Capture Skips Publish.',
@@ -369,6 +378,7 @@ def test_FP_02_empty_capture_skips_publish(sandbox, workspace_tracker):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.0537c12a765317aabbd3a960',
     title='Fp 03 Back To Back Implicit Execs Are Independent',
     description='Validates the behavior exercised by Fp 03 Back To Back Implicit Execs Are Independent.',

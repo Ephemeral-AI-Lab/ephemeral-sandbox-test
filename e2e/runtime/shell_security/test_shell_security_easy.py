@@ -18,6 +18,7 @@ pytestmark = pytest.mark.easy
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.2537b71377a542e5c1c8319f',
     title='Ss E01 Normal Commands Still Work',
     description='Validates the behavior exercised by Ss E01 Normal Commands Still Work.',
@@ -34,6 +35,7 @@ def test_ss_e01_normal_commands_still_work(module_sandbox):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.89ab46b9d95b61632c7b442b',
     title='Ss E02 Workspace Write Path Unaffected',
     description='Validates the behavior exercised by Ss E02 Workspace Write Path Unaffected.',
@@ -51,6 +53,7 @@ def test_ss_e02_workspace_write_path_unaffected(module_sandbox):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.5f03ae739da21fbbafc6a977',
     title='Ss E03 No New Privs Installed',
     description='Validates the behavior exercised by Ss E03 No New Privs Installed.',
@@ -63,6 +66,7 @@ def test_ss_e03_no_new_privs_installed(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.7b28d1aec7634fc9cfacfa8a',
     title='Ss E04 Seccomp Filter Mode Active',
     description='Validates the behavior exercised by Ss E04 Seccomp Filter Mode Active.',
@@ -75,6 +79,7 @@ def test_ss_e04_seccomp_filter_mode_active(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.74442978b8be054dba182f34',
     title='Ss E05 Mount Mutation Denied',
     description='Validates the behavior exercised by Ss E05 Mount Mutation Denied.',
@@ -87,6 +92,7 @@ def test_ss_e05_mount_mutation_denied(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.81fa8e870547a89643b75a2a',
     title='Ss E06 Namespace Mutation Denied',
     description='Validates the behavior exercised by Ss E06 Namespace Mutation Denied.',
@@ -100,6 +106,7 @@ def test_ss_e06_namespace_mutation_denied(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.d6920f758f5b59c02e850c25',
     title='Ss E07 Device Node Char Denied',
     description='Validates the behavior exercised by Ss E07 Device Node Char Denied.',
@@ -112,6 +119,7 @@ def test_ss_e07_device_node_char_denied(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.a7775bc30a1ccb4c6eef7236',
     title='Ss E08 Device Node Fifo Allowed',
     description='Validates the behavior exercised by Ss E08 Device Node Fifo Allowed.',
@@ -124,6 +132,7 @@ def test_ss_e08_device_node_fifo_allowed(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.aef78c3d8e194cf159fb0f7f',
     title='Ss E09 Kernel Surface Denied',
     description='Validates the behavior exercised by Ss E09 Kernel Surface Denied.',
@@ -137,6 +146,7 @@ def test_ss_e09_kernel_surface_denied(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.0785186f3356e83570623a8f',
     title='Ss E10 Clone3 Forced Enosys',
     description='Validates the behavior exercised by Ss E10 Clone3 Forced Enosys.',

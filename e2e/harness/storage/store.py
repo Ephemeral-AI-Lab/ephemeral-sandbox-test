@@ -138,9 +138,10 @@ def append_event(roots: Roots, run_id: str, draft: Mapping[str, Any]) -> dict[st
     # Known secrets are registered in memory before transport starts.  Scrub at
     # the durable sink as well as at API/SSE serialization so a later caller
     # cannot expose a raw journal entry through a new route.
-    event = RunJournal(run_root / "events.jsonl", manifest).append(redact(dict(draft)))
-    replay_run(roots, run_id)
-    return event
+    return RunJournal(run_root / "events.jsonl", manifest).append(
+        redact(dict(draft)),
+        publish_projection=lambda projection: _write_projection(run_root, projection),
+    )
 
 
 def replay_run(roots: Roots, run_id: str) -> dict[str, Any]:

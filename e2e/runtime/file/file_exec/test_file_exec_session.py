@@ -76,6 +76,7 @@ def _wait_for_session_file(sandbox, workspace_session_id, path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.6a8050471ad92538482e0970',
     title='Session Exec File Edit Exec Round Trip Stays Unpublished',
     description='Validates the behavior exercised by Session Exec File Edit Exec Round Trip Stays Unpublished.',
@@ -118,6 +119,7 @@ def test_session_exec_file_edit_exec_round_trip_stays_unpublished(sandbox, works
 
 
 @e2e_test(
+    timeout_ms=6_000,
     id='phase0.3cdbb34e27217500217c35f3',
     title='Interactive Session Shell Sees File Ops While Running',
     description='Validates the behavior exercised by Interactive Session Shell Sees File Ops While Running.',
@@ -191,6 +193,7 @@ def test_interactive_session_shell_sees_file_ops_while_running(sandbox, workspac
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.465c2b951fc8fcb3f6242917',
     title='Session Exec Remove Then Session Write Recreates Parent',
     description='Validates the behavior exercised by Session Exec Remove Then Session Write Recreates Parent.',
@@ -233,6 +236,7 @@ def test_session_exec_remove_then_session_write_recreates_parent(sandbox, worksp
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.5d10634d9f90eb57e014d982',
     title='Session Fifo Is Rejected By Session File Ops',
     description='Validates the behavior exercised by Session Fifo Is Rejected By Session File Ops.',
@@ -267,6 +271,7 @@ def test_session_fifo_is_rejected_by_session_file_ops(sandbox, workspace_session
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.5c7a36cdfc9830d44b33c097',
     title='Session Write Preserves Existing Executable Mode',
     description='Validates the behavior exercised by Session Write Preserves Existing Executable Mode.',
@@ -312,6 +317,7 @@ def test_session_write_preserves_existing_executable_mode(sandbox, workspace_ses
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.1143eb8db624188a53b8db76',
     title='Complex One Shot Capture Lifecycle Accepts File Ops Before Exit',
     description='Validates the behavior exercised by Complex One Shot Capture Lifecycle Accepts File Ops Before Exit.',
@@ -376,6 +382,7 @@ def test_complex_one_shot_capture_lifecycle_accepts_file_ops_before_exit(sandbox
 
 
 @e2e_test(
+    timeout_ms=11_000,
     id='phase0.b2d274e270357950a5322408',
     title='Complex Long Interleaved Session Destroy Discards All Changes',
     description='Validates the behavior exercised by Complex Long Interleaved Session Destroy Discards All Changes.',
@@ -467,6 +474,7 @@ def test_complex_long_interleaved_session_destroy_discards_all_changes(sandbox):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.f2c24aedfd2b97064ad0a971',
     title='Complex Large In Session Volume Supports Windowed Reads',
     description='Validates the behavior exercised by Complex Large In Session Volume Supports Windowed Reads.',

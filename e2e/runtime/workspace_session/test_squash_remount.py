@@ -97,6 +97,7 @@ def _read(sandbox_id, session, paths):
 # --- G1 + G2: the boot gate is the same-upperdir + userxattr kernel proof ---
 
 @e2e_test(
+    timeout_ms=2_000,
     id='phase0.9f2c9a34abff88a2e34f2f86',
     title='Boot Gate Enables Live Remount',
     description='Validates the behavior exercised by Boot Gate Enables Live Remount.',
@@ -124,6 +125,7 @@ def test_boot_gate_enables_live_remount(squash_sandbox):
 # --- tests 1/17/20/21 + B1: contract and idle reclaim ---
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.d40d117f1dc53470723b2a04',
     title='Squash Empty And Idle Contract',
     description='Validates the behavior exercised by Squash Empty And Idle Contract.',
@@ -190,6 +192,7 @@ def test_squash_empty_and_idle_contract(squash_sandbox):
 # --- E5 / B2: live migration shortens an idle session's chain ---
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.e5ea2f749149a4bfa9817f05',
     title='Live Migration Shortens Idle Chain',
     description='Validates the behavior exercised by Live Migration Shortens Idle Chain.',
@@ -245,6 +248,7 @@ def test_live_migration_shortens_idle_chain(squash_sandbox):
 # --- E4: a cwd-pinned interactive session stays leased ---
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.b559d37006c7c7cf4f4dcca0',
     title='Cwd Pinned Session Stays Leased',
     description='Validates the behavior exercised by Cwd Pinned Session Stays Leased.',
@@ -302,6 +306,7 @@ def test_cwd_pinned_session_stays_leased(squash_sandbox):
 # --- G3 / E10: boot reap-then-sweep recovers, holders die with the daemon ---
 
 @e2e_test(
+    timeout_ms=7_000,
     id='phase0.4a8d03eaa067c6654e38add3',
     title='Boot Reap Then Sweep Recovers',
     description='Validates the behavior exercised by Boot Reap Then Sweep Recovers.',

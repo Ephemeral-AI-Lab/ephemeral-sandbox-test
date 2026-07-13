@@ -18,6 +18,7 @@ pytestmark = [pytest.mark.export, pytest.mark.runnable, pytest.mark.slow]
 
 
 @e2e_test(
+    timeout_ms=54_000,
     id='phase0.672942fe0e07aa36c97911ee',
     title='Export Runnable Catalog',
     description='Validates the behavior exercised by Export Runnable Catalog.',

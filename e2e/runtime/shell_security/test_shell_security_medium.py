@@ -1,10 +1,10 @@
 """SS-M01..SS-M15 — medium tier.
 
 Full deny/allow set sweeps, capability decode, real ``util-linux`` / ``apt``
-tooling, and multi-step scoping checks. Read-only cases share the module probe;
-package installs and mutation take a dedicated ``fresh_sandbox``. Each test is
-named after its SS-ID and carries the catalog's Guards text as the assert
-message.
+tooling, and multi-step scoping checks. Read-only cases run their own probe in a
+shared module sandbox; package installs and mutation take a dedicated
+``fresh_sandbox``. Each test is named after its SS-ID and carries the catalog's
+Guards text as the assert message.
 
 Image: ubuntu:24.04 (pinned via ``core.config.IMAGE`` / ``E2E_IMAGE``).
 """
@@ -36,6 +36,7 @@ pytestmark = pytest.mark.medium
 
 
 @e2e_test(
+    timeout_ms=2_000,
     id='phase0.06b29fd7c09723a02dc6f0f4',
     title='Ss M01 Full Deny Set',
     description='Validates the behavior exercised by Ss M01 Full Deny Set.',
@@ -49,6 +50,7 @@ def test_ss_m01_full_deny_set(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.5498cc25584c066d2773ded4',
     title='Ss M02 Full Allow Set',
     description='Validates the behavior exercised by Ss M02 Full Allow Set.',
@@ -65,6 +67,7 @@ def test_ss_m02_full_allow_set(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.cde90f97993fa86ebf4c3677',
     title='Ss M03 System Power Caps Dropped',
     description='Validates the behavior exercised by Ss M03 System Power Caps Dropped.',
@@ -78,6 +81,7 @@ def test_ss_m03_system_power_caps_dropped(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.a189f8b432e3af0c18b76913',
     title='Ss M04 Fs Identity Caps Kept',
     description='Validates the behavior exercised by Ss M04 Fs Identity Caps Kept.',
@@ -91,6 +95,7 @@ def test_ss_m04_fs_identity_caps_kept(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.f60ec41f57128fafe862f7a1',
     title='Ss M05 Sys Admin Dropped From Bounding Set',
     description='Validates the behavior exercised by Ss M05 Sys Admin Dropped From Bounding Set.',
@@ -103,6 +108,7 @@ def test_ss_m05_sys_admin_dropped_from_bounding_set(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.b80f4405d3f94d45c89eae24',
     title='Ss M06 Image Unshare Denied',
     description='Validates the behavior exercised by Ss M06 Image Unshare Denied.',
@@ -121,6 +127,7 @@ def test_ss_m06_image_unshare_denied(module_sandbox):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.33606d0f86785d10f2b100ed',
     title='Ss M07 Image Mount Tools Denied',
     description='Validates the behavior exercised by Ss M07 Image Mount Tools Denied.',
@@ -140,6 +147,7 @@ def test_ss_m07_image_mount_tools_denied(module_sandbox):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.25e96586353ad38bbe9aa498',
     title='Ss M08 Package Manager Starts',
     description='Validates the behavior exercised by Ss M08 Package Manager Starts.',
@@ -153,6 +161,7 @@ def test_ss_m08_package_manager_starts(module_sandbox):
 
 
 @e2e_test(
+    timeout_ms=43_000,
     id='phase0.3ca5dea3d573b39e7adbb897',
     title='Ss M09 Real Install Under Policy',
     description='Validates the behavior exercised by Ss M09 Real Install Under Policy.',
@@ -173,10 +182,11 @@ def test_ss_m09_real_install_under_policy(fresh_sandbox):
         output = repr(install).lower()
         for marker in ("operation not permitted", "setgroups", "seccomp", "capability"):
             assert marker not in output, f"real install under policy; poll the session | {install}"
-        pytest.skip(f"apt install unavailable (no package egress): {install}")
+    assert install.get("status") == "ok", f"real install under policy; poll the session | {install}"
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.b92fa88fed87a7301befb542',
     title='Ss M10 Dac Override Kept',
     description='Validates the behavior exercised by Ss M10 Dac Override Kept.',
@@ -189,6 +199,7 @@ def test_ss_m10_dac_override_kept(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.7b175bb916514672daa942f7',
     title='Ss M11 Device Node Mode Filter Both Directions',
     description='Validates the behavior exercised by Ss M11 Device Node Mode Filter Both Directions.',
@@ -204,6 +215,7 @@ def test_ss_m11_device_node_mode_filter_both_directions(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.28be718328b1218f078f9707',
     title='Ss M12 Rename And Chmod Allowed',
     description='Validates the behavior exercised by Ss M12 Rename And Chmod Allowed.',
@@ -218,6 +230,7 @@ def test_ss_m12_rename_and_chmod_allowed(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.944badf226efcfca719768e8',
     title='Ss M13 Ptrace Kept Within Pid Namespace',
     description='Validates the behavior exercised by Ss M13 Ptrace Kept Within Pid Namespace.',
@@ -231,6 +244,7 @@ def test_ss_m13_ptrace_kept_within_pid_namespace(probe):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.646ab3f20c9e63095a530a6d',
     title='Ss M14 Every Child Independently Hardened',
     description='Validates the behavior exercised by Ss M14 Every Child Independently Hardened.',
@@ -247,6 +261,7 @@ def test_ss_m14_every_child_independently_hardened(module_sandbox):
 
 
 @e2e_test(
+    timeout_ms=2_000,
     id='phase0.9de5f149723a9593d1bd3b4c',
     title='Ss M15 Policy Scoped To Shell Exec Child',
     description='Validates the behavior exercised by Ss M15 Policy Scoped To Shell Exec Child.',

@@ -8,10 +8,12 @@ import json
 import os
 import subprocess
 import sys
+import time
 from typing import Any
 
 from harness.storage.roots import Roots
 from harness.storage.store import append_event, load_manifest, load_projection
+from . import resources
 
 
 class RunnerError(RuntimeError):
@@ -148,11 +150,11 @@ class SerialPytestRunner:
             )
         launch_error: str | None = None
         try:
-            process = subprocess.run(
+            process = subprocess.Popen(
                 [sys.executable, "-m", "pytest", *reporter_options, *root_options, *nodeids],
                 cwd=e2e_root,
-                capture_output=True,
-                text=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
                 env=child_environment,
             )
         except OSError:
@@ -161,14 +163,55 @@ class SerialPytestRunner:
 
         reported: dict[str, Mapping[str, Any]] = {}
         reporter_error: str | None = None
-        if reporter_enabled and report_path.is_file():
+        report_offset = 0
+
+        def refresh_reports() -> None:
+            nonlocal report_offset, reporter_error
+            if reporter_error is not None or not report_path.is_file():
+                return
             try:
-                reported = _read_pytest_reports(report_path)
+                report_offset = _read_pytest_report_chunk(
+                    report_path, report_offset, reported
+                )
             except (OSError, RunnerError) as error:
                 reporter_error = str(error)
 
+        if process is not None and not reporter_enabled:
+            process.wait()
+
         def outcome(case: Mapping[str, Any]) -> Mapping[str, Any]:
             nodeid = case.get("pytest_nodeid")
+            while (
+                reporter_enabled
+                and isinstance(nodeid, str)
+                and nodeid not in reported
+                and reporter_error is None
+                and launch_error is None
+            ):
+                refresh_reports()
+                if nodeid in reported or reporter_error is not None:
+                    break
+                if process is None or process.poll() is not None:
+                    refresh_reports()
+                    break
+                if run_id in self._cancel_seq:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait()
+                    return {
+                        "state": "cancelled",
+                        "validations": {
+                            item["id"]: "cancelled"
+                            for item in case.get("validations", [])
+                        },
+                        "surface": None,
+                        "artifacts": [resources.interrupted_artifact(manifest, case)],
+                        "message": "pytest child cancelled by user",
+                    }
+                time.sleep(0.05)
             if isinstance(nodeid, str) and nodeid in reported:
                 return reported[nodeid]
             if launch_error is not None:
@@ -176,6 +219,7 @@ class SerialPytestRunner:
                     "state": "error",
                     "validations": {item["id"]: "error" for item in case.get("validations", [])},
                     "surface": None,
+                    "artifacts": [resources.interrupted_artifact(manifest, case)],
                     "message": launch_error,
                 }
             if reporter_enabled:
@@ -186,6 +230,10 @@ class SerialPytestRunner:
                     "state": "error",
                     "validations": {item["id"]: "error" for item in case.get("validations", [])},
                     "surface": None,
+                    "artifacts": [
+                        resources.recover_artifact(run_root, manifest, case)
+                        or resources.interrupted_artifact(manifest, case)
+                    ],
                     "message": detail,
                 }
             return {
@@ -197,7 +245,10 @@ class SerialPytestRunner:
                 "message": "pytest child completed" if process.returncode == 0 else "pytest child returned nonzero",
             }
 
-        return self.execute(run_id, outcome)
+        projection = self.execute(run_id, outcome)
+        if process is not None and process.poll() is None:
+            process.wait()
+        return projection
 
     def _execute_case(
         self,
@@ -310,7 +361,10 @@ class SerialPytestRunner:
             )
         expected_surface = case.get("execution_surface")
         proof = outcome.get("surface")
-        if expected_surface is not None:
+        if expected_surface is not None and requested_state not in {
+            "cancelled",
+            "skipped",
+        }:
             if not isinstance(proof, Mapping) or proof.get("expected_surface") != expected_surface or proof.get("observed_surface") != expected_surface or proof.get("dispatch_outcome") != "succeeded":
                 requested_state = "error"
                 failure_seq = self._failure(
@@ -414,15 +468,33 @@ def _identity(case: Mapping[str, Any]) -> tuple[str, str]:
 
 def _read_pytest_reports(path) -> dict[str, Mapping[str, Any]]:
     reports: dict[str, Mapping[str, Any]] = {}
-    for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
-        try:
-            record = json.loads(raw_line)
-        except json.JSONDecodeError as error:
-            raise RunnerError(f"pytest reporter line {line_number} is invalid JSON") from error
-        if not isinstance(record, Mapping) or not isinstance(record.get("nodeid"), str):
-            raise RunnerError(f"pytest reporter line {line_number} is not a case result")
-        nodeid = record["nodeid"]
-        if nodeid in reports:
-            raise RunnerError(f"pytest reporter published duplicate result for {nodeid}")
-        reports[nodeid] = record
+    _read_pytest_report_chunk(path, 0, reports)
     return reports
+
+
+def _read_pytest_report_chunk(
+    path, offset: int, reports: dict[str, Mapping[str, Any]]
+) -> int:
+    with path.open(encoding="utf-8") as stream:
+        stream.seek(offset)
+        while True:
+            record_offset = stream.tell()
+            raw_line = stream.readline()
+            if not raw_line:
+                return stream.tell()
+            if not raw_line.endswith("\n"):
+                return record_offset
+            try:
+                record = json.loads(raw_line)
+            except json.JSONDecodeError as error:
+                raise RunnerError(
+                    f"pytest reporter record at offset {record_offset} is invalid JSON"
+                ) from error
+            if not isinstance(record, Mapping) or not isinstance(record.get("nodeid"), str):
+                raise RunnerError(
+                    f"pytest reporter record at offset {record_offset} is not a case result"
+                )
+            nodeid = record["nodeid"]
+            if nodeid in reports:
+                raise RunnerError(f"pytest reporter published duplicate result for {nodeid}")
+            reports[nodeid] = record

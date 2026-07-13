@@ -30,12 +30,13 @@ pytestmark = [pytest.mark.whreserved, pytest.mark.medium]
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.48035e0eb60be0f2ad6bd95c',
     title='Med 01 Mixed Changeset Is Atomic',
     description='Validates the behavior exercised by Med 01 Mixed Changeset Is Atomic.',
     features=('runtime.reserved_paths',),
     validations={'assert-med-01-mixed-changeset-is-atomic': 'The assertions for med 01 mixed changeset is atomic hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_MED_01_mixed_changeset_is_atomic(tmp_path):
     """MED-01 — one reserved name discards the whole changeset, no partial publish."""
@@ -65,12 +66,13 @@ def test_MED_01_mixed_changeset_is_atomic(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.6e9a6c8d6181563675dde9a2',
     title='Med 02 Rule Is Per Component Not Per Basename',
     description='Validates the behavior exercised by Med 02 Rule Is Per Component Not Per Basename.',
     features=('runtime.reserved_paths',),
     validations={'assert-med-02-rule-is-per-component-not-per-basename': 'The assertions for med 02 rule is per component not per basename hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_MED_02_rule_is_per_component_not_per_basename(tmp_path):
     """MED-02 — `a/.wh.d/f.txt` rejects: the reserved rule is component-wise."""
@@ -103,12 +105,13 @@ def test_MED_02_rule_is_per_component_not_per_basename(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.2f3c01fde6147c47b48a17a6',
     title='Med 03 Symlink Named Wh Link Rejects',
     description='Validates the behavior exercised by Med 03 Symlink Named Wh Link Rejects.',
     features=('runtime.reserved_paths',),
     validations={'assert-med-03-symlink-named-wh-link-rejects': 'The assertions for med 03 symlink named wh link rejects hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_MED_03_symlink_named_wh_link_rejects(tmp_path):
     """MED-03 — a symlink named `.wh.link` rejects like every other change kind."""
@@ -136,12 +139,13 @@ def test_MED_03_symlink_named_wh_link_rejects(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.32edf1c4182a9802ca268802',
     title='Med 04 Bare Wh File Rejects And Base Materialization Stays Intact',
     description='Validates the behavior exercised by Med 04 Bare Wh File Rejects And Base Materialization Stays Intact.',
     features=('runtime.reserved_paths',),
     validations={'assert-med-04-bare-wh-file-rejects-and-base-materialization-stays-intact': 'The assertions for med 04 bare wh file rejects and base materialization stays intact hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_MED_04_bare_wh_file_rejects_and_base_materialization_stays_intact(tmp_path):
     """MED-04 — bare `.wh.` rejects; a fresh session still sees the whole base."""
@@ -190,12 +194,13 @@ def test_MED_04_bare_wh_file_rejects_and_base_materialization_stays_intact(tmp_p
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.4d40313dd7d5187289558cbe',
     title='Med 05 Wh Protected Name Is One Clean Reject',
     description='Validates the behavior exercised by Med 05 Wh Protected Name Is One Clean Reject.',
     features=('runtime.reserved_paths',),
     validations={'assert-med-05-wh-protected-name-is-one-clean-reject': 'The assertions for med 05 wh protected name is one clean reject hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_MED_05_wh_protected_name_is_one_clean_reject(tmp_path):
     """MED-05 — `.wh.manifest.json` is one clean reject, not a fabricated protected delete."""
@@ -238,12 +243,13 @@ def test_MED_05_wh_protected_name_is_one_clean_reject(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.6254fce361921f97746919bc',
     title='Med 06 Rm Rf And Recreate Round Trips',
     description='Validates the behavior exercised by Med 06 Rm Rf And Recreate Round Trips.',
     features=('runtime.reserved_paths',),
     validations={'assert-med-06-rm-rf-and-recreate-round-trips': 'The assertions for med 06 rm rf and recreate round trips hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_MED_06_rm_rf_and_recreate_round_trips(tmp_path):
     """MED-06 — `rm -rf` + recreate (kernel opaque/whiteout flow) still round-trips."""

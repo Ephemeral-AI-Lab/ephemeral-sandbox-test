@@ -42,6 +42,7 @@ pytestmark = [pytest.mark.git, pytest.mark.medium]
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.ac2cd69d881a144251a7353c',
     title='Med 01 First Writer Wins On Tracked File',
     description='Validates the behavior exercised by Med 01 First Writer Wins On Tracked File.',
@@ -94,6 +95,7 @@ def test_MED_01_first_writer_wins_on_tracked_file(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.092975e12980181f4102a18a',
     title='Med 02 Last Writer Wins On Gitignored Path',
     description='Validates the behavior exercised by Med 02 Last Writer Wins On Gitignored Path.',
@@ -120,6 +122,7 @@ def test_MED_02_last_writer_wins_on_gitignored_path(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.8037036447b7b484e6ee21ae',
     title='Med 03 Git Reset Hard Revert Is Not Forbidden',
     description='Validates the behavior exercised by Med 03 Git Reset Hard Revert Is Not Forbidden.',
@@ -153,6 +156,7 @@ def test_MED_03_git_reset_hard_revert_is_not_forbidden(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.c90e06560bfb493f7f19d91d',
     title='Med 04 Git Clean Publishes Untracked Deletions',
     description='Validates the behavior exercised by Med 04 Git Clean Publishes Untracked Deletions.',
@@ -180,6 +184,7 @@ def test_MED_04_git_clean_publishes_untracked_deletions(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.3348e4b759ce859d5686f30b',
     title='Med 05 Binary Git Index Divergence Rejects Cleanly',
     description='Validates the behavior exercised by Med 05 Binary Git Index Divergence Rejects Cleanly.',
@@ -236,6 +241,7 @@ def test_MED_05_binary_git_index_divergence_rejects_cleanly(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.26f80cc088619e85c29b74e6',
     title='Med 06 Text Git Log Divergence Merges Or Rejects',
     description='Validates the behavior exercised by Med 06 Text Git Log Divergence Merges Or Rejects.',
@@ -296,6 +302,7 @@ def test_MED_06_text_git_log_divergence_merges_or_rejects(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.4a286e3f3a8a181b52dd8fe4',
     title='Med 07 Gitignored Dotgit Is Last Writer Wins',
     description='Validates the behavior exercised by Med 07 Gitignored Dotgit Is Last Writer Wins.',
@@ -338,6 +345,7 @@ def test_MED_07_gitignored_dotgit_is_last_writer_wins(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.25d77d5f9bb921d1d0c87230',
     title='Med 08 Mixed Source Ignored Changeset Rejects Atomically',
     description='Validates the behavior exercised by Med 08 Mixed Source Ignored Changeset Rejects Atomically.',
@@ -387,6 +395,7 @@ def test_MED_08_mixed_source_ignored_changeset_rejects_atomically(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.d2291a5692cddff5633e540b',
     title='Med 09 Branch Switch Rewrites Worktree',
     description='Validates the behavior exercised by Med 09 Branch Switch Rewrites Worktree.',
@@ -429,6 +438,7 @@ def test_MED_09_branch_switch_rewrites_worktree(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.09457afe3bcedcadb59cce11',
     title='Med 10 Protected Layer Metadata Rejects And Discards',
     description='Validates the behavior exercised by Med 10 Protected Layer Metadata Rejects And Discards.',

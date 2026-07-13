@@ -36,6 +36,7 @@ pytestmark = [pytest.mark.git, pytest.mark.complex]
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.d5e2bb06af17a67f9ebd8c18',
     title='Cx 01 Two Agents Commit Different Files Rejects Cleanly',
     description='Validates the behavior exercised by Cx 01 Two Agents Commit Different Files Rejects Cleanly.',
@@ -88,6 +89,7 @@ def test_CX_01_two_agents_commit_different_files_rejects_cleanly(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.c90445bb24a0350470e1dbf6',
     title='Cx 02 Two Agents Commit Same File One Wins',
     description='Validates the behavior exercised by Cx 02 Two Agents Commit Same File One Wins.',
@@ -139,6 +141,7 @@ def test_CX_02_two_agents_commit_same_file_one_wins(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.9010847f820f287c1535404f',
     title='Cx 03 Concurrent Refs Heads Main Do Not Interleave',
     description='Validates the behavior exercised by Cx 03 Concurrent Refs Heads Main Do Not Interleave.',
@@ -190,6 +193,7 @@ def test_CX_03_concurrent_refs_heads_main_do_not_interleave(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.21905e7d18b8fa042ee1e3ce',
     title='Cx 04 Git Gc Churn With Concurrent Commit Keeps Db Intact',
     description='Validates the behavior exercised by Cx 04 Git Gc Churn With Concurrent Commit Keeps Db Intact.',
@@ -244,6 +248,7 @@ def test_CX_04_git_gc_churn_with_concurrent_commit_keeps_db_intact(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.634ba5838795a836e8685625',
     title='Cx 05 Large Repo Import Is Unforbidden',
     description='Validates the behavior exercised by Cx 05 Large Repo Import Is Unforbidden.',
@@ -291,6 +296,7 @@ def test_CX_05_large_repo_import_is_unforbidden(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.0ebf2d3602bc54cefe890971',
     title='Cx 06 Stale Destructive Delete Rejects Settled Delete Allowed',
     description='Validates the behavior exercised by Cx 06 Stale Destructive Delete Rejects Settled Delete Allowed.',
@@ -350,6 +356,7 @@ def test_CX_06_stale_destructive_delete_rejects_settled_delete_allowed(tmp_path)
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.73992059825af398d357521d',
     title='Cx 07 Routing Uses Base Gitignore Not Racing One',
     description='Validates the behavior exercised by Cx 07 Routing Uses Base Gitignore Not Racing One.',
@@ -381,6 +388,7 @@ def test_CX_07_routing_uses_base_gitignore_not_racing_one(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.25390d56855d41c1f5ba6e23',
     title='Cx 08 Symlink Under Repo Routes As Source',
     description='Validates the behavior exercised by Cx 08 Symlink Under Repo Routes As Source.',
@@ -420,6 +428,7 @@ def test_CX_08_symlink_under_repo_routes_as_source(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=24_000,
     id='phase0.54eec6bb20e42b46f120e099',
     title='Cx 09 Interleaved Git Soak Keeps Invariants',
     description='Validates the behavior exercised by Cx 09 Interleaved Git Soak Keeps Invariants.',
@@ -505,6 +514,7 @@ def test_CX_09_interleaved_git_soak_keeps_invariants(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.26c7718c38e223c2e9d3e59b',
     title='Cx 10 Destructive Policy Is Caller Prehook Not Layerstack',
     description='Validates the behavior exercised by Cx 10 Destructive Policy Is Caller Prehook Not Layerstack.',

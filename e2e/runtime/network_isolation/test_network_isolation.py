@@ -87,12 +87,13 @@ fn get(host: &str, expected: Option<&String>) -> Result<(), String> {
 
 
 @e2e_test(
+    timeout_ms=18_000,
     id='phase0.38564e01cbb6b89300cbe70d',
     title='Isolated Workspace Sessions Cannot Reach Each Other On Same Port',
     description='Validates the behavior exercised by Isolated Workspace Sessions Cannot Reach Each Other On Same Port.',
     features=('runtime.network_isolation',),
     validations={'assert-isolated-workspace-sessions-cannot-reach-each-other-on-same-port': 'The assertions for isolated workspace sessions cannot reach each other on same port hold.'},
-    execution_surface='gateway_rpc',
+    execution_surface='direct_daemon_rpc',
 )
 def test_isolated_workspace_sessions_cannot_reach_each_other_on_same_port(tmp_path):
     workspace = tmp_path / "workspace"

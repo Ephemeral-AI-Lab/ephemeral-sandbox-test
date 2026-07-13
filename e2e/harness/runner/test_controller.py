@@ -3,8 +3,13 @@
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
+import json
 from pathlib import Path
 import shutil
+import subprocess
+from threading import Event, Thread
+import time
 
 import pytest
 
@@ -122,6 +127,7 @@ def _event(event_type: str, payload: dict, *, case: dict | None = None, caused_b
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.runner.preview-admission",
     title="Preview freezes selected case order and admission snapshots it atomically",
     description="The controller accepts no execution input beyond an exact preview token and idempotency key.",
@@ -195,6 +201,7 @@ def test_preview_query_exclusion_admission_and_idempotency(tmp_path, validation)
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.runner.failed-admission",
     title="Failed snapshot staging leaves no run and preserves the preview token",
     description="A symlinked source rejects admission before its atomic publication commit point.",
@@ -223,6 +230,7 @@ def test_failed_snapshot_transaction_is_unpublished_and_token_remains_valid(tmp_
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.runner.preview-preflight",
     title="Preview failures remain typed and do not admit a run",
     description="Catalog drift, stale selections, empty/excess scope, disk reserve, expiry, and lane ownership are reviewed without browser execution input.",
@@ -287,6 +295,7 @@ def test_preview_preflight_and_drift_failures_are_typed_and_non_mutating(tmp_pat
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.runner.child-retry",
     title="Child retry resolves only failed and not-run frozen parent membership",
     description="Retry input contains only a parent run and semantic subset, never selectors or paths.",
@@ -316,6 +325,7 @@ def test_child_retry_uses_only_frozen_parent_outcomes(tmp_path, validation):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.runner.fail-fast-cancel",
     title="Serial runner makes fail-fast and cancellation causal",
     description="The runner persists its stop reason before every remaining case becomes not-run.",
@@ -345,6 +355,7 @@ def test_serial_runner_fail_fast_and_cancellation_are_journal_causal(tmp_path, v
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.runner.pytest-child",
     title="Runner launches one pytest child from the immutable E2E snapshot",
     description="The child resolves frozen node IDs relative to its run-owned e2e root, never the live checkout.",
@@ -368,23 +379,97 @@ def test_serial_runner_uses_one_child_from_run_owned_e2e_snapshot(tmp_path, monk
         encoding="utf-8",
     )
     launches = []
-    subprocess_run = runner_module.subprocess.run
+    subprocess_popen = runner_module.subprocess.Popen
 
     def record_launch(*args, **kwargs):
         launches.append(kwargs)
-        return subprocess_run(*args, **kwargs)
+        return subprocess_popen(*args, **kwargs)
 
-    monkeypatch.setattr(runner_module.subprocess, "run", record_launch)
+    monkeypatch.setattr(runner_module.subprocess, "Popen", record_launch)
     runner = SerialPytestRunner(roots, producer_revision="sha256:runner")
     projection = runner.run_pytest("run-pytest-child")
 
-    with validation("snapshot_child", expected=("passed", "no batch timeout"), actual=lambda: (projection["state"], launches[0].get("timeout"))):
+    stream_cases = [
+        _case("harness.runner.stream", "first", source="e2e/test_stream.py"),
+        _case("harness.runner.stream", "second", source="e2e/test_stream.py"),
+    ]
+    stream_cases[0]["pytest_nodeid"] = "test_stream.py::test_first"
+    stream_cases[1]["pytest_nodeid"] = "test_stream.py::test_second"
+    create_run(roots, _manifest("run-pytest-stream", stream_cases))
+    stream_snapshot = roots.e2e_state_root / "runs" / "run-pytest-stream" / "source" / "e2e"
+    stream_reporter = stream_snapshot / "harness" / "runner" / "reporter.py"
+    stream_reporter.parent.mkdir(parents=True)
+    stream_reporter.write_text("# reporter presence enables the run-owned stream\n", encoding="utf-8")
+    (stream_snapshot / "test_stream.py").write_text("# frozen node IDs\n", encoding="utf-8")
+    first_projected = Event()
+    child_finished = Event()
+
+    class StreamingProcess:
+        returncode = None
+
+        def __init__(self, _command, **kwargs):
+            report_path = Path(kwargs["env"]["E2E_PYTEST_REPORT_PATH"])
+
+            def publish():
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+                first = {
+                    "nodeid": stream_cases[0]["pytest_nodeid"],
+                    "state": "passed",
+                    "validations": {"assertion": "passed"},
+                    "phases": {"setup": "passed", "call": "passed"},
+                    "cleanup": {"pytest_teardown": "passed"},
+                    "surface": None,
+                    "duration_ms": 10,
+                }
+                report_path.write_text(json.dumps(first) + "\n", encoding="utf-8")
+                deadline = time.monotonic() + 5
+                while time.monotonic() < deadline:
+                    projected = load_projection(roots, "run-pytest-stream")
+                    if projected["cases"][0]["state"] == "passed":
+                        first_projected.set()
+                        break
+                    time.sleep(0.01)
+                second = {**first, "nodeid": stream_cases[1]["pytest_nodeid"]}
+                with report_path.open("a", encoding="utf-8") as stream:
+                    stream.write(json.dumps(second) + "\n")
+                self.returncode = 0
+                child_finished.set()
+
+            Thread(target=publish, daemon=True).start()
+
+        def poll(self):
+            return self.returncode
+
+        def wait(self, timeout=None):
+            if not child_finished.wait(timeout):
+                raise subprocess.TimeoutExpired("pytest", timeout)
+            return self.returncode
+
+        def terminate(self):
+            self.returncode = -15
+            child_finished.set()
+
+        def kill(self):
+            self.returncode = -9
+            child_finished.set()
+
+    monkeypatch.setattr(runner_module.subprocess, "Popen", StreamingProcess)
+    streamed = runner.run_pytest("run-pytest-stream")
+
+    with validation(
+        "snapshot_child",
+        expected=("passed", "no batch timeout", "visible before child exit"),
+        actual=lambda: (projection["state"], launches[0].get("timeout"), first_projected.is_set()),
+    ):
         assert projection["state"] == "passed"
         assert projection["cases"][0]["state"] == "passed"
         assert "timeout" not in launches[0]
+        assert streamed["state"] == "passed"
+        assert first_projected.is_set()
 
 
 @e2e_test(
+    timeout_ms=2_000,
     id="harness.runner.pytest-reporter",
     title="Pytest reporter preserves real case outcomes and execution-surface proof",
     description="The child reports each frozen node independently and only attests a boundary that the case actually observed.",
@@ -414,7 +499,12 @@ def test_serial_runner_uses_real_case_results_and_surface_observations(tmp_path,
         (snapshot / "harness" / "__init__.py").write_text("", encoding="utf-8")
         (runner_package / "__init__.py").write_text("", encoding="utf-8")
         shutil.copy2(source_runner / "reporter.py", runner_package / "reporter.py")
+        shutil.copy2(source_runner / "resources.py", runner_package / "resources.py")
         shutil.copy2(source_runner / "surfaces.py", runner_package / "surfaces.py")
+        (runner_package / "config.py").write_text(
+            "from pathlib import Path\nSANDBOX_OBSERVABILITY_CLI = Path('/missing-observability-cli')\n",
+            encoding="utf-8",
+        )
         (snapshot / "test_child.py").write_text(
             "from harness.runner.reporter import record_surface\n\n"
             f"def {test_name}():\n"
@@ -422,7 +512,29 @@ def test_serial_runner_uses_real_case_results_and_surface_observations(tmp_path,
             f"    {body}\n",
             encoding="utf-8",
         )
-        return SerialPytestRunner(roots, producer_revision="sha256:runner").run_pytest(run_id)
+        projection = SerialPytestRunner(
+            roots, producer_revision="sha256:runner"
+        ).run_pytest(run_id)
+        report_path = roots.e2e_state_root / "runs" / run_id / "pytest-report.jsonl"
+        published = json.loads(report_path.read_text(encoding="utf-8"))
+        assert isinstance(published["duration_ms"], (int, float))
+        assert published["duration_ms"] >= 0
+        assert len(published["logs"]) == 1
+        log_record = published["logs"][0]
+        assert log_record["availability"] in {"available", "partial"}
+        assert log_record["storage_ref"].startswith("logs/")
+        log_path = roots.e2e_state_root / "runs" / run_id / "evidence" / log_record["storage_ref"]
+        log_bytes = log_path.read_bytes()
+        assert log_path.stat().st_mode & 0o777 == 0o600
+        assert log_record["sha256"] == "sha256:" + hashlib.sha256(log_bytes).hexdigest()
+        log_lines = [json.loads(line) for line in log_bytes.splitlines()]
+        assert log_lines[0]["record"] == "case.started"
+        assert log_lines[-1]["record"] == "case.finished"
+        assert any(line.get("record") == "operation.finished" and line.get("operation") == "inspect" for line in log_lines)
+        prohibited = {"args", "output", "environment", "token", "tokens", "path", "content", "response"}
+        assert not prohibited.intersection({key for line in log_lines for key in line})
+        assert b"real child failure" not in log_bytes
+        return projection
 
     passed = run_case("run-reporter-pass", "test_surface_pass", "assert True")
     failed = run_case("run-reporter-fail", "test_surface_fail", "assert False, 'real child failure'")
@@ -446,15 +558,37 @@ def test_serial_runner_uses_real_case_results_and_surface_observations(tmp_path,
         assert len(passed_case["surfaces"]) == 1
         assert passed_case["surfaces"][0]["expected_surface"] == "cli"
         assert passed_case["surfaces"][0]["observed_surface"] == "cli"
+        assert passed_case["surfaces"][0]["duration_ms"] == 12.5
         assert passed_case["surfaces"][0]["evidence"]["operation"] == "inspect"
         assert failed["state"] == failed_case["state"] == "failed"
         assert failed_case["validations"] == {"assertion": "failed"}
         assert failed_case["phases"]["call"] == "failed"
         assert timed_out["state"] == timed_out["cases"][0]["state"] == "failed"
         assert "timeout" in timed_out["failures"][0]["message"].lower()
+        for projection in (passed, failed, timed_out):
+            logs = [
+                evidence
+                for evidence in projection["cases"][0]["evidence"]
+                if evidence.get("type") == "log.recorded"
+            ]
+            assert len(logs) == 1
+            assert logs[0]["availability"] in {"available", "partial"}
+            runtime = [
+                evidence
+                for evidence in projection["cases"][0]["evidence"]
+                if evidence.get("kind") == "runtime_observability"
+            ]
+            assert len(runtime) == 1
+            assert runtime[0]["type"] == "artifact.recorded"
+            assert runtime[0]["role"] == "supporting"
+            assert runtime[0]["status"] == "not_applicable"
+            assert projection["evidence_health"] == "complete"
+            events_path = roots.e2e_state_root / "runs" / projection["run_id"] / "events.jsonl"
+            assert max(len(line) for line in events_path.read_bytes().splitlines()) < 64 * 1024
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.runner.cli-surface-observation",
     title="CLI helper records its real subprocess boundary",
     description="Every successfully decoded purpose-built CLI response publishes the observation consumed by the run reporter.",
@@ -482,6 +616,7 @@ def test_cli_helper_records_surface_after_decoding_response(monkeypatch, validat
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.runner.pytest-launch-error",
     title="Runner records a pytest child launch failure as terminal",
     description="An unavailable child process cannot strand the durable lane in a nonterminal running state.",
@@ -495,7 +630,7 @@ def test_serial_runner_records_a_child_launch_failure_as_terminal(tmp_path, monk
     snapshot = roots.e2e_state_root / "runs" / "run-pytest-launch-error" / "source" / "e2e"
     snapshot.mkdir(parents=True)
     (snapshot / "test_child.py").write_text("def test_ok():\n    assert True\n", encoding="utf-8")
-    monkeypatch.setattr("harness.runner.runner.subprocess.run", lambda *_args, **_kwargs: (_ for _ in ()).throw(OSError("unavailable")))
+    monkeypatch.setattr("harness.runner.runner.subprocess.Popen", lambda *_args, **_kwargs: (_ for _ in ()).throw(OSError("unavailable")))
 
     projection = SerialPytestRunner(roots, producer_revision="sha256:runner").run_pytest("run-pytest-launch-error")
 
@@ -505,6 +640,7 @@ def test_serial_runner_records_a_child_launch_failure_as_terminal(tmp_path, monk
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.runner.structured-events",
     title="Runner retains structured failure, cleanup, and evidence truth through replay",
     description="A failed validation followed by cleanup failure retains first and primary failure semantics and journal-backed evidence.",
@@ -540,6 +676,68 @@ def test_runner_structured_events_and_replay_preserve_failure_precedence(tmp_pat
 
 
 @e2e_test(
+    timeout_ms=1_000,
+    id="harness.runner.runtime-evidence-independence",
+    title="Runtime collection health never changes the functional verdict",
+    description="An unavailable supporting runtime artifact degrades evidence health while a passing validation and case remain passed.",
+    validations={"independence": "Runtime collection status is projected only into evidence health."},
+)
+def test_runtime_artifact_health_is_independent_from_verdict(tmp_path, validation):
+    roots = _roots(tmp_path)
+    case = _case("harness.runner.runtime-evidence", "default")
+    create_run(roots, _manifest("run-runtime-evidence", [case]))
+    artifact = {
+        "evidence_id": "runtime-contract",
+        "kind": "runtime_observability",
+        "role": "supporting",
+        "availability": "unavailable",
+        "status": "unavailable",
+        "summary": {"scopes": []},
+        "coverage": {
+            "sample_interval_ms": 1_000,
+            "expected_ticks": 1,
+            "observed_ticks": 0,
+            "missed_ticks": 1,
+            "sandbox_count": 1,
+            "workspace_count": 0,
+        },
+        "errors": [
+            {
+                "reason_code": "query_timeout",
+                "count": 1,
+                "message": "Runtime resource sampling timed out.",
+            }
+        ],
+    }
+    projection = SerialPytestRunner(roots, producer_revision="sha256:runner").execute(
+        "run-runtime-evidence",
+        lambda _case: {
+            "state": "passed",
+            "validations": {"assertion": "passed"},
+            "artifacts": [artifact],
+        },
+    )
+
+    with validation(
+        "independence",
+        expected=("passed", "unavailable"),
+        actual=lambda: (projection["state"], projection["evidence_health"]),
+    ):
+        assert projection["state"] == projection["cases"][0]["state"] == "passed"
+        assert projection["evidence_health"] == "unavailable"
+        runtime = [
+            evidence
+            for evidence in projection["cases"][0]["evidence"]
+            if evidence.get("kind") == "runtime_observability"
+        ]
+        assert len(runtime) == 1
+        assert runtime[0]["type"] == "artifact.recorded"
+        events_path = roots.e2e_state_root / "runs" / projection["run_id"] / "events.jsonl"
+        assert max(len(line) for line in events_path.read_bytes().splitlines()) < 64 * 1024
+
+
+@e2e_test(
+    timeout_ms=1_000,
     id="harness.runner.surfaces-recovery",
     title="Surface proofs stay explicit and recovery is exact-bundle startup work",
     description="Every named boundary rejects false attestation; exact recovery journals its plan before effects while mismatch remains read-only and blocks admission.",

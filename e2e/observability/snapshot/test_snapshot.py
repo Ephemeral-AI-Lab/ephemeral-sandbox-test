@@ -7,6 +7,7 @@ from harness.catalog.declarations import e2e_test
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.a67bb80023d113fed655fbfc',
     title='Aggregate Snapshot Includes Ready Sandbox',
     description='Validates the behavior exercised by Aggregate Snapshot Includes Ready Sandbox.',
@@ -28,6 +29,7 @@ def test_aggregate_snapshot_includes_ready_sandbox(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.003f7b03d5969c5ab9752a4b',
     title='Scoped Snapshot Returns Selected Sandbox',
     description='Validates the behavior exercised by Scoped Snapshot Returns Selected Sandbox.',

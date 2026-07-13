@@ -12,6 +12,7 @@ from harness.catalog.declarations import e2e_test
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.a9af17e774634e939a9d463c',
     title='Sessionless Read Of File Created By Sessionless File Write',
     description='Validates the behavior exercised by Sessionless Read Of File Created By Sessionless File Write.',
@@ -32,6 +33,7 @@ def test_sessionless_read_of_file_created_by_sessionless_file_write(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.b180a5054762d6df30da21ca',
     title='Session Read Of File Created By Session File Write',
     description='Validates the behavior exercised by Session Read Of File Created By Session File Write.',
@@ -56,6 +58,7 @@ def test_session_read_of_file_created_by_session_file_write(sandbox, workspace_s
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.4e125cfdc2c3209841ffdf8c',
     title='Sessionless Read With Offset And Limit Over Multiline File',
     description='Validates the behavior exercised by Sessionless Read With Offset And Limit Over Multiline File.',
@@ -78,6 +81,7 @@ def test_sessionless_read_with_offset_and_limit_over_multiline_file(sandbox):
 
 
 @e2e_test(
+    timeout_ms=2_000,
     id='phase0.43e92c6cd6d6bdbdd8526300',
     title='Sessionless Read Of Missing File Returns Not Found',
     description='Validates the behavior exercised by Sessionless Read Of Missing File Returns Not Found.',
@@ -91,6 +95,7 @@ def test_sessionless_read_of_missing_file_returns_not_found(sandbox):
 
 
 @e2e_test(
+    timeout_ms=2_000,
     id='phase0.45eee852ba27e44e2652b823',
     title='Sessionless Read Rejects Absolute Path Outside Workspace Root',
     description='Validates the behavior exercised by Sessionless Read Rejects Absolute Path Outside Workspace Root.',

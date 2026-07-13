@@ -10,6 +10,7 @@ pytestmark = [pytest.mark.squash, pytest.mark.medium]
 
 
 @e2e_test(
+    timeout_ms=23_000,
     id='phase0.884b2388b89112e425d3456c',
     title='Squash Medium Catalog',
     description='Validates the behavior exercised by Squash Medium Catalog.',

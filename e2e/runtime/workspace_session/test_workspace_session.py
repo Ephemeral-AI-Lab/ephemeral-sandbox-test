@@ -27,6 +27,7 @@ from harness.catalog.declarations import e2e_test
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.8cf6d29e1aa03eb81e8d9a42',
     title='Ws 01 Create Response Contract',
     description='Validates the behavior exercised by Ws 01 Create Response Contract.',
@@ -61,6 +62,7 @@ def test_WS_01_create_response_contract(sandbox, workspace_tracker):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.d18a50288ff8c8b1c86819a8',
     title='Ws 02 No Op Session Survives Command Completion',
     description='Validates the behavior exercised by Ws 02 No Op Session Survives Command Completion.',
@@ -86,6 +88,7 @@ def test_WS_02_no_op_session_survives_command_completion(sandbox, workspace_trac
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.d8800c94b1c5221150ee37ce',
     title='Ws 03 Destroy Refuses While Command Runs',
     description='Validates the behavior exercised by Ws 03 Destroy Refuses While Command Runs.',
@@ -117,6 +120,7 @@ def test_WS_03_destroy_refuses_while_command_runs(sandbox, workspace_tracker):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.8b493927fb49f27b363907e8',
     title='Ws 04 Destroy Discards And Sync Op Loses Cleanly',
     description='Validates the behavior exercised by Ws 04 Destroy Discards And Sync Op Loses Cleanly.',
@@ -146,6 +150,7 @@ def test_WS_04_destroy_discards_and_sync_op_loses_cleanly(sandbox, workspace_tra
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.3e783a9735538a11a40c3ba0',
     title='Ws 05 Workspace Lifecycle Is Not Public',
     description='Validates the behavior exercised by Ws 05 Workspace Lifecycle Is Not Public.',
@@ -171,6 +176,7 @@ def test_WS_05_workspace_lifecycle_is_not_public(sandbox, workspace_tracker):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.11d3ab75c46e623b4942bdd1',
     title='Ws 06 Destroyed Id Stays Dead',
     description='Validates the behavior exercised by Ws 06 Destroyed Id Stays Dead.',

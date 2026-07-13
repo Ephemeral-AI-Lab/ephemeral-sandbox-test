@@ -449,6 +449,7 @@ def axis_rejected(rec: GitCaseRecorder, detail: str, reject_class: str):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.56ae972ef1e6036198b5510b',
     title='Ez 01 Git Init Publishes Dotgit As Source',
     description='Validates the behavior exercised by Ez 01 Git Init Publishes Dotgit As Source.',
@@ -469,6 +470,7 @@ def test_EZ_01_git_init_publishes_dotgit_as_source(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.c8c50f22907d1243480e6775',
     title='Ez 02 Git Commit Persists Into Fresh Exec',
     description='Validates the behavior exercised by Ez 02 Git Commit Persists Into Fresh Exec.',
@@ -509,6 +511,7 @@ def test_EZ_02_git_commit_persists_into_fresh_exec(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.8621ad2db26957f9ab9462e6',
     title='Ez 03 Git Tracked Working File Has Line Attribution',
     description='Validates the behavior exercised by Ez 03 Git Tracked Working File Has Line Attribution.',
@@ -535,6 +538,7 @@ def test_EZ_03_git_tracked_working_file_has_line_attribution(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.2e36219502d44f8d2a435339',
     title='Ez 04 Gitignore Is Source And Drives Ignored Route',
     description='Validates the behavior exercised by Ez 04 Gitignore Is Source And Drives Ignored Route.',
@@ -568,6 +572,7 @@ def test_EZ_04_gitignore_is_source_and_drives_ignored_route(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.7ced45e7f2ac683c0a7e4e6e',
     title='Ez 05 Dotgithub Gitattributes Gitmodules Are Source',
     description='Validates the behavior exercised by Ez 05 Dotgithub Gitattributes Gitmodules Are Source.',
@@ -607,6 +612,7 @@ def test_EZ_05_dotgithub_gitattributes_gitmodules_are_source(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.0936ba975e6b3aae0fe7fb45',
     title='Ez 06 Nested Repo Dotgit Is Source',
     description='Validates the behavior exercised by Ez 06 Nested Repo Dotgit Is Source.',
@@ -645,6 +651,7 @@ def test_EZ_06_nested_repo_dotgit_is_source(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.6a6a3039bcdfa41f5c7f8981',
     title='Ez 07 Git Rm Publishes Deletion',
     description='Validates the behavior exercised by Ez 07 Git Rm Publishes Deletion.',
@@ -670,6 +677,7 @@ def test_EZ_07_git_rm_publishes_deletion(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.8b1e08d1b22cbc721217d468',
     title='Ez 08 Git Mv Is Delete Old Write New',
     description='Validates the behavior exercised by Ez 08 Git Mv Is Delete Old Write New.',
@@ -697,6 +705,7 @@ def test_EZ_08_git_mv_is_delete_old_write_new(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.f0b564528c16623db17ffbf6',
     title='Ez 09 Gitignored Build Output Uses Ignored Route',
     description='Validates the behavior exercised by Ez 09 Gitignored Build Output Uses Ignored Route.',
@@ -723,6 +732,7 @@ def test_EZ_09_gitignored_build_output_uses_ignored_route(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.0c9c041c78ceeb02e98de529',
     title='Ez 10 Protected Path Still Rejects',
     description='Validates the behavior exercised by Ez 10 Protected Path Still Rejects.',

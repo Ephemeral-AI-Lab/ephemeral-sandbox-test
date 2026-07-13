@@ -8,6 +8,8 @@ suite created are tracked; sandboxes owned by other clients are never touched.
 
 from collections.abc import Callable, Iterable
 
+from . import resources
+
 
 class CleanupAggregateError(RuntimeError):
     """Raised after every cleanup action runs and at least one failed."""
@@ -23,15 +25,19 @@ _tracked = set()
 def track(sandbox_id):
     if sandbox_id:
         _tracked.add(sandbox_id)
+        resources.track(sandbox_id)
 
 
 def untrack(sandbox_id):
+    resources.untrack(sandbox_id)
     _tracked.discard(sandbox_id)
 
 
 def drain():
     """Return and clear all tracked ids."""
     ids = sorted(_tracked)
+    for sandbox_id in ids:
+        resources.untrack(sandbox_id)
     _tracked.clear()
     return ids
 

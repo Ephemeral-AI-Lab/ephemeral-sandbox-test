@@ -15,6 +15,7 @@ from harness.catalog.declarations import e2e_test
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.5e9f89f9abe7e2df3a1e36cc',
     title='Sessionless Write Creates New File And Sessionless Read Sees It',
     description='Validates the behavior exercised by Sessionless Write Creates New File And Sessionless Read Sees It.',
@@ -31,6 +32,7 @@ def test_sessionless_write_creates_new_file_and_sessionless_read_sees_it(sandbox
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.5418d15ca74e092df595aaa4',
     title='Sessionless Write Updates Existing File And File Blame Shows Operation Owner',
     description='Validates the behavior exercised by Sessionless Write Updates Existing File And File Blame Shows Operation Owner.',
@@ -52,6 +54,7 @@ def test_sessionless_write_updates_existing_file_and_file_blame_shows_operation_
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.44d20c965b76df06ae306e86',
     title='Session Write Visible With Workspace Session Id And Invisible Sessionless',
     description='Validates the behavior exercised by Session Write Visible With Workspace Session Id And Invisible Sessionless.',
@@ -83,6 +86,7 @@ def test_session_write_visible_with_workspace_session_id_and_invisible_sessionle
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.f69245d5305f3fbe2c9b7798',
     title='Session Write Creates Missing Parent Directories',
     description='Validates the behavior exercised by Session Write Creates Missing Parent Directories.',
@@ -106,6 +110,7 @@ def test_session_write_creates_missing_parent_directories(sandbox, workspace_ses
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.c01ada0865d8a3af3f9c47e9',
     title='Write To Existing Directory Is Rejected',
     description='Validates the behavior exercised by Write To Existing Directory Is Rejected.',

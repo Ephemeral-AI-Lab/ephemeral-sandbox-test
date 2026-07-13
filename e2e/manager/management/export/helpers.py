@@ -26,7 +26,7 @@ import threading
 import time
 from pathlib import Path
 
-from harness.runner import cleanup
+from harness.runner import cleanup, resources
 from harness.runner.cli import route_cli
 from harness.runner.config import E2E_STATE_ROOT, IMAGE, REPO_ROOT
 from harness.runner.direct_daemon import direct_daemon_result
@@ -75,6 +75,7 @@ class RawResult:
 
 
 def raw_cli(rec, *args, timeout=180):
+    resource_context = resources.raw_cli_start(args)
     started = time.monotonic()
     env = os.environ.copy()
     env["PATH"] = f"{REPO_ROOT / 'bin'}:{env.get('PATH', '')}"
@@ -90,6 +91,7 @@ def raw_cli(rec, *args, timeout=180):
     )
     elapsed = round((time.monotonic() - started) * 1000.0, 3)
     result = RawResult(command, proc.returncode, proc.stdout, proc.stderr, elapsed)
+    resources.raw_cli_finish(resource_context, result.json, elapsed, proc.returncode)
     if rec is not None:
         rec.add_command(
             {

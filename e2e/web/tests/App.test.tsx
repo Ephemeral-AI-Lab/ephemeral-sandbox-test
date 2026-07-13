@@ -1,7 +1,7 @@
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import axe from "axe-core";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router";
 import { beforeEach, expect, it, vi } from "vitest";
@@ -393,4 +393,128 @@ it("shows a stable controller error when an API route returns HTML", async () =>
   renderRoom();
   await screen.findByRole("heading", { name: "Test catalog is unavailable." });
   expect(screen.getByText("The controller returned an invalid response. Request unknown.")).toBeTruthy();
+});
+
+const runtimeArtifact = (overrides: Record<string, unknown> = {}) => ({
+  type: "artifact.recorded" as const,
+  seq: 50,
+  evidence_id: "runtime-fixture",
+  kind: "runtime_observability",
+  role: "supporting",
+  status: "available",
+  availability: "available",
+  storage_ref: "runtime/fixture.ndjson",
+  sha256: "sha256:runtime-fixture",
+  media_type: "application/x-ndjson",
+  summary: {
+    scopes: [
+      { sandbox_id: "eos-fixture", scope: { kind: "sandbox", id: "sandbox" }, sample_count: 3, cpu_peak_cores: 1.25, cpu_time_seconds: 0, memory_peak_bytes: 536870912, memory_limit_unlimited: true, io_read_bytes: 0, io_write_bytes: 1048576 },
+      { sandbox_id: "eos-fixture", scope: { kind: "workspace", id: "ws-fixture" }, sample_count: 2, disk_peak_bytes: 2147483648, disk_allocated_peak_bytes: 1073741824, file_peak: 42, disk_truncated: true },
+    ],
+  },
+  coverage: { expected_ticks: 4, observed_ticks: 3, missed_ticks: 1, sandbox_count: 1, workspace_count: 1 },
+  errors: [{ reason_code: "sampling_late", count: 1, message: "The collector could not maintain its sampling interval." }],
+  ...overrides,
+});
+
+const runtimeProjection = (artifact = runtimeArtifact(), retention = { state: "retained" }) => ({
+  ...run,
+  evidence_health: "complete",
+  retention,
+  cases: [{ test_id: "runtime.command", case_id: "default", title: "Runtime command", state: "passed", phases: { call: "passed" }, validations: { contract: "passed" }, cleanup: { sandbox: "passed" }, surfaces: [], evidence: [artifact] }],
+  failures: [],
+});
+
+it("loads an accessible multi-scope runtime timeline lazily and preserves honest log emptiness", async () => {
+  const runtimeLines = [
+    { schema_version: 1, kind: "metadata", offset_ms: 0, run_id: run.run_id, test_id: "runtime.command", case_id: "default", attempt_id: "attempt-fixture", started_at: "2026-07-13T00:00:00Z", sample_interval_ms: 1000 },
+    { schema_version: 1, kind: "sample", offset_ms: 0, phase: "setup", sandbox_id: "eos-fixture", scope: { kind: "sandbox", id: "sandbox" }, source: "docker_engine", metrics: { cpu_usec: 0, mem_cur: 268435456 } },
+    { schema_version: 1, kind: "operation", offset_ms: 500, phase: "call", edge: "start", surface: "cli", operation: "runtime.command" },
+    { schema_version: 1, kind: "sample", offset_ms: 1000, phase: "call", sandbox_id: "eos-fixture", scope: { kind: "sandbox", id: "sandbox" }, source: "docker_engine", metrics: { cpu_usec: 1250000, mem_cur: 536870912 }, derived: { cpu_cores: 1.25 } },
+    { schema_version: 1, kind: "gap", offset_ms: 1500, reason_code: "sampling_late", message: "The collector could not maintain its sampling interval.", scope: { kind: "sandbox", id: "sandbox" } },
+    { schema_version: 1, kind: "operation", offset_ms: 1700, phase: "call", edge: "marker", surface: "pytest", operation: "case_failure" },
+    { schema_version: 1, kind: "sample", offset_ms: 2000, phase: "teardown", sandbox_id: "eos-fixture", scope: { kind: "sandbox", id: "sandbox" }, source: "docker_engine", metrics: { cpu_usec: 1600000, mem_cur: 402653184 }, derived: { cpu_cores: 0.35 } },
+    { schema_version: 1, kind: "sample", offset_ms: 2100, phase: "teardown", sandbox_id: "eos-fixture", scope: { kind: "workspace", id: "ws-fixture" }, source: "sandbox_daemon", metrics: { disk_bytes: 2147483648, disk_allocated_bytes: 1073741824, files: 42, disk_truncated: true } },
+    ...Array.from({ length: 200 }, (_, index) => ({ schema_version: 1, kind: "gap", offset_ms: 3000 + index, reason_code: "sampling_late", message: "The collector could not maintain its sampling interval.", scope: { kind: "sandbox", id: "sandbox" } })),
+  ].map((record) => JSON.stringify(record)).join("\n") + "\n";
+  server.use(
+    http.get(`*/api/v1/runs/${run.run_id}`, () => HttpResponse.json({ schema_version: 1, data: runtimeProjection() })),
+    http.get(`*/api/v1/runs/${run.run_id}/evidence/runtime-fixture`, ({ request }) => {
+      evidenceFetches.push(request.url);
+      return new HttpResponse(runtimeLines, { headers: { "Content-Type": "application/x-ndjson" } });
+    }),
+  );
+  const user = userEvent.setup();
+  renderRoom(`/e2e/runs/${run.run_id}`);
+  const runtimePanel = (await screen.findByRole("heading", { name: "Runtime resources" })).closest("section");
+  if (!runtimePanel) throw new Error("Runtime resources panel is missing.");
+  const runtimeView = within(runtimePanel);
+  expect(evidenceFetches).toHaveLength(0);
+  expect(runtimeView.getByText("1.25 cores")).toBeTruthy();
+  expect(runtimeView.getByText("0 s")).toBeTruthy();
+  expect(runtimeView.getByText("512 MiB")).toBeTruthy();
+  expect(runtimeView.getByText("Memory is unlimited for this scope; absence of a byte limit is not zero.")).toBeTruthy();
+  expect(runtimeView.getByText(/Observed 3 of 4 expected ticks · 1 missed · 2 scopes/)).toBeTruthy();
+  expect(runtimeView.getByText(/collector could not maintain its sampling interval/i)).toBeTruthy();
+  expect(screen.getByText("No log records were published for any case.")).toBeTruthy();
+
+  const load = runtimeView.getByRole("button", { name: "Load timeline" });
+  load.focus();
+  await user.keyboard("{Enter}");
+  const chart = await runtimeView.findByRole("img", { name: /Runtime resource timeline for Sandbox/ });
+  expect(chart.getAttribute("tabindex")).toBe("0");
+  expect(runtimePanel.querySelectorAll(".chart-gap")).toHaveLength(160);
+  expect(evidenceFetches).toHaveLength(1);
+  const svgFailureMarker = runtimeView.getByRole("img", { name: /call: case_failure marker/ });
+  expect(svgFailureMarker.getAttribute("tabindex")).toBe("0");
+  const failureMarker = runtimeView.getAllByText("call", { selector: ".runtime-markers strong" }).map((phase) => phase.closest("li")).find((row) => row?.textContent?.includes("case_failure"));
+  expect(failureMarker?.textContent).toContain("call · case_failure · marker · 1.7 s");
+
+  const scope = runtimeView.getByRole("combobox", { name: "Scope" });
+  expect(within(scope).getByRole("option", { name: "All scopes" })).toBeTruthy();
+  await user.selectOptions(scope, "sandbox:all:all");
+  expect(await runtimeView.findByRole("img", { name: /Runtime resource timeline for All scopes/ })).toBeTruthy();
+  scope.focus();
+  await user.selectOptions(scope, "eos-fixture:workspace:ws-fixture");
+  expect(runtimeView.getByText("2 GiB")).toBeTruthy();
+  expect(runtimeView.getByText("42")).toBeTruthy();
+  expect(runtimeView.getByText(/Workspace disk accounting was truncated/)).toBeTruthy();
+  expect(await runtimeView.findByRole("img", { name: /Runtime resource timeline for Workspace/ })).toBeTruthy();
+
+  await user.click(runtimeView.getByRole("button", { name: "Raw evidence" }));
+  await screen.findByRole("heading", { name: "Artifact" });
+  expect(evidenceFetches).toHaveLength(1);
+});
+
+it.each([
+  ["not_applicable", "available", "This case did not own a sandbox, so runtime collection was not applicable."],
+  ["unsupported", "unsupported", "The product observability boundary does not support runtime collection for this case."],
+  ["unavailable", "unavailable", "Runtime collection ran, but no usable samples were available."],
+  ["invalid", "invalid", "Runtime evidence is invalid and is not presented as resource truth."],
+  ["partial", "partial", "Runtime evidence is partial; coverage and gaps remain explicit below."],
+])("renders the %s runtime evidence state without fetching", async (status, availability, message) => {
+  const artifact = runtimeArtifact({ status, availability, storage_ref: undefined, summary: { scopes: [] } });
+  server.use(http.get(`*/api/v1/runs/${run.run_id}`, () => HttpResponse.json({ schema_version: 1, data: runtimeProjection(artifact) })));
+  renderRoom(`/e2e/runs/${run.run_id}`);
+  expect(await screen.findByText(message)).toBeTruthy();
+  expect(evidenceFetches).toHaveLength(0);
+});
+
+it("shows invalid NDJSON and purged runtime evidence without inventing a chart", async () => {
+  const user = userEvent.setup();
+  server.use(
+    http.get(`*/api/v1/runs/${run.run_id}`, () => HttpResponse.json({ schema_version: 1, data: runtimeProjection() })),
+    http.get(`*/api/v1/runs/${run.run_id}/evidence/runtime-fixture`, ({ request }) => { evidenceFetches.push(request.url); return new HttpResponse("{not-json}\n", { headers: { "Content-Type": "application/x-ndjson" } }); }),
+  );
+  const rendered = renderRoom(`/e2e/runs/${run.run_id}`);
+  await user.click(await screen.findByRole("button", { name: "Load timeline" }));
+  expect(await screen.findByText("Runtime evidence contains an invalid line at 1.")).toBeTruthy();
+  expect(screen.queryByRole("img", { name: /Runtime resource timeline/ })).toBeNull();
+  rendered.unmount();
+
+  server.use(http.get(`*/api/v1/runs/${run.run_id}`, () => HttpResponse.json({ schema_version: 1, data: runtimeProjection(runtimeArtifact(), { state: "purged" }) })));
+  renderRoom(`/e2e/runs/${run.run_id}`);
+  expect(await screen.findByText("Runtime evidence was purged; durable summary metadata remains.")).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Load timeline" })).toBeNull();
+  expect(evidenceFetches).toHaveLength(1);
 });

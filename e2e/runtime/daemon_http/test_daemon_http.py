@@ -102,6 +102,7 @@ fn serve(route: &str, workspace: Option<&str>, lifetime: u64) -> Result<(), Stri
 
 
 @e2e_test(
+    timeout_ms=2_000,
     id='phase0.745ce20dba225dabc12fc688',
     title='Daemon Http Health',
     description='Validates the behavior exercised by Daemon Http Health.',
@@ -132,6 +133,7 @@ def test_daemon_http_health(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.fdeb3d4c6d0f844268d89b3c',
     title='Forward Shared Arbitrary Port',
     description='Validates the behavior exercised by Forward Shared Arbitrary Port.',
@@ -181,6 +183,7 @@ def test_forward_shared_arbitrary_port(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.ea39327a0d635e37a2bb2d35',
     title='Forward Isolated Arbitrary Port',
     description='Validates the behavior exercised by Forward Isolated Arbitrary Port.',
@@ -247,6 +250,7 @@ def test_forward_isolated_arbitrary_port(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.817622ea9b59238859288a1a',
     title='Forward Rejects Invalid Routes',
     description='Validates the behavior exercised by Forward Rejects Invalid Routes.',
@@ -280,6 +284,7 @@ def test_forward_rejects_invalid_routes(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.4d2f9820783e7993d4b44c58',
     title='File List And Removed Operation Routes',
     description='Validates the behavior exercised by File List And Removed Operation Routes.',

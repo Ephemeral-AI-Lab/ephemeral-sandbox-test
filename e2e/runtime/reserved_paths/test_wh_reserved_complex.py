@@ -40,12 +40,13 @@ pytestmark = [pytest.mark.whreserved, pytest.mark.complex]
 
 
 @e2e_test(
+    timeout_ms=8_000,
     id='phase0.0c6bdb2b9b1bdf09b0353313',
     title='Cx 01 Poisoned Session Never Disturbs Concurrent Session',
     description='Validates the behavior exercised by Cx 01 Poisoned Session Never Disturbs Concurrent Session.',
     features=('runtime.reserved_paths',),
     validations={'assert-cx-01-poisoned-session-never-disturbs-concurrent-session': 'The assertions for cx 01 poisoned session never disturbs concurrent session hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_CX_01_poisoned_session_never_disturbs_concurrent_session(tmp_path):
     """CX-01 — poisoned session B never disturbs concurrent session A."""
@@ -96,12 +97,13 @@ def test_CX_01_poisoned_session_never_disturbs_concurrent_session(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.7a448a1c9e0b98ee2a48b8fa',
     title='Cx 02 Squash Interplay Reservation Survives Squash',
     description='Validates the behavior exercised by Cx 02 Squash Interplay Reservation Survives Squash.',
     features=('runtime.reserved_paths',),
     validations={'assert-cx-02-squash-interplay-reservation-survives-squash': 'The assertions for cx 02 squash interplay reservation survives squash hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_CX_02_squash_interplay_reservation_survives_squash(tmp_path):
     """CX-02 — internal markers squash cleanly; the reservation survives squash."""
@@ -164,12 +166,13 @@ def test_CX_02_squash_interplay_reservation_survives_squash(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=9_000,
     id='phase0.590e80776c0f3085a83d46fe',
     title='Cx 04 Reject On A Deep Stack Is Prompt And Clean',
     description='Validates the behavior exercised by Cx 04 Reject On A Deep Stack Is Prompt And Clean.',
     features=('runtime.reserved_paths',),
     validations={'assert-cx-04-reject-on-a-deep-stack-is-prompt-and-clean': 'The assertions for cx 04 reject on a deep stack is prompt and clean hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_CX_04_reject_on_a_deep_stack_is_prompt_and_clean(tmp_path):
     """CX-04 — reject on a 50-layer stack is prompt; teardown contract holds at depth."""
@@ -224,12 +227,13 @@ POISON_SHAPES = (
 
 
 @e2e_test(
+    timeout_ms=23_000,
     id='phase0.e2305d72b21183304f5626a5',
     title='Cx 03 Reserved Name Storm Standing Invariants',
     description='Validates the behavior exercised by Cx 03 Reserved Name Storm Standing Invariants.',
     features=('runtime.reserved_paths',),
     validations={'assert-cx-03-reserved-name-storm-standing-invariants': 'The assertions for cx 03 reserved name storm standing invariants hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_CX_03_reserved_name_storm_standing_invariants(tmp_path):
     """CX-03 — randomized reserved-name storm: standing invariants ×10."""

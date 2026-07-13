@@ -14,6 +14,7 @@ pytestmark = [pytest.mark.export, pytest.mark.easy]
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.0c43cd76510f26aee2235363',
     title='Export Easy Catalog',
     description='Validates the behavior exercised by Export Easy Catalog.',

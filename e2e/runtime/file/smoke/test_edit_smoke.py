@@ -17,6 +17,7 @@ from harness.catalog.declarations import e2e_test
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.3eee2226168fce0492dff17b',
     title='Sessionless Edit Unique Replacement And Read Sees Result',
     description='Validates the behavior exercised by Sessionless Edit Unique Replacement And Read Sees Result.',
@@ -41,6 +42,7 @@ def test_sessionless_edit_unique_replacement_and_read_sees_result(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.916c2c6804959838db383059',
     title='Sessionless Edit Replace All True Replaces Multiple Occurrences',
     description='Validates the behavior exercised by Sessionless Edit Replace All True Replaces Multiple Occurrences.',
@@ -62,6 +64,7 @@ def test_sessionless_edit_replace_all_true_replaces_multiple_occurrences(sandbox
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.fa8669a38d4df8a3305571ba',
     title='Sessionless Edit Missing Old String Returns Edit Not Found',
     description='Validates the behavior exercised by Sessionless Edit Missing Old String Returns Edit Not Found.',
@@ -79,6 +82,7 @@ def test_sessionless_edit_missing_old_string_returns_edit_not_found(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.7aef434316349c5a3b815864',
     title='Session Edit Visible With Workspace Session Id And Invisible Sessionless',
     description='Validates the behavior exercised by Session Edit Visible With Workspace Session Id And Invisible Sessionless.',
@@ -114,6 +118,7 @@ def test_session_edit_visible_with_workspace_session_id_and_invisible_sessionles
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.267061494614dfa4948295f6',
     title='Ordered Multi Edit Applies Against Evolving Content',
     description='Validates the behavior exercised by Ordered Multi Edit Applies Against Evolving Content.',

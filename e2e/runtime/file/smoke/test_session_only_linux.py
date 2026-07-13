@@ -14,6 +14,7 @@ from harness.catalog.declarations import e2e_test
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.7767860809e822f7d8f6b612',
     title='Session Write Updates Existing Executable File And Preserves Mode',
     description='Validates the behavior exercised by Session Write Updates Existing Executable File And Preserves Mode.',
@@ -47,6 +48,7 @@ def test_session_write_updates_existing_executable_file_and_preserves_mode(
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.22bfeb00a992b12278ac9445',
     title='Session Write To In Session Directory Is Rejected',
     description='Validates the behavior exercised by Session Write To In Session Directory Is Rejected.',
@@ -70,6 +72,7 @@ def test_session_write_to_in_session_directory_is_rejected(sandbox, workspace_se
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.47c3c442cc83e5de1850b9a3',
     title='Session Write To In Session Symlink Is Rejected And Not Followed',
     description='Validates the behavior exercised by Session Write To In Session Symlink Is Rejected And Not Followed.',
@@ -105,6 +108,7 @@ def test_session_write_to_in_session_symlink_is_rejected_and_not_followed(
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.2a85f69e5eee1ae6cb95f04a',
     title='Session Write To In Session Symlink Parent Is Rejected',
     description='Validates the behavior exercised by Session Write To In Session Symlink Parent Is Rejected.',
@@ -134,6 +138,7 @@ def test_session_write_to_in_session_symlink_parent_is_rejected(sandbox, workspa
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.baef571baf5c9b7cef27ff53',
     title='Session Edit To In Session Symlink Or Symlink Parent Is Rejected',
     description='Validates the behavior exercised by Session Edit To In Session Symlink Or Symlink Parent Is Rejected.',

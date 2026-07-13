@@ -3,6 +3,7 @@ import platform
 import subprocess
 import textwrap
 import time
+from urllib.parse import urlsplit
 
 from harness.runner.cli import runtime
 
@@ -72,7 +73,7 @@ PROBE_SOURCE = r"""
 use std::env;
 use std::ffi::CString;
 use std::fs;
-use std::os::raw::{c_int, c_long, c_uint, c_ulong, c_void};
+use std::os::raw::{c_char, c_int, c_long, c_uint, c_ulong, c_void};
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::io::AsRawFd;
 use std::ptr;
@@ -85,6 +86,13 @@ extern "C" {
     fn kill(pid: c_int, sig: c_int) -> c_int;
     fn pause() -> c_int;
     fn _exit(status: c_int) -> !;
+    fn setxattr(
+        path: *const c_char,
+        name: *const c_char,
+        value: *const c_void,
+        size: usize,
+        flags: c_int,
+    ) -> c_int;
 }
 
 const EPERM: c_int = 1;
@@ -363,7 +371,36 @@ fn run_x32_probe() {
 
 #[cfg(not(target_arch = "x86_64"))]
 fn run_x32_probe() {
-    println!("x32_skipped=aarch64");
+    println!("x32_unavailable=aarch64");
+}
+
+// Install a real VFS_CAP_REVISION_2 effective+permitted CAP_SYS_ADMIN xattr
+// without depending on the image-specific `setcap` package. CAP_SETFCAP is a
+// deliberately retained filesystem capability, so staging the xattr must work
+// even though execve can never honor SYS_ADMIN after the bounding-set drop.
+fn run_setfilecap(path: &str) {
+    const VFS_CAP_REVISION_2_EFFECTIVE: u32 = 0x0200_0001;
+    const CAP_SYS_ADMIN_MASK: u32 = 1 << 21;
+    let path = c(path);
+    let name = c("security.capability");
+    let data = [
+        VFS_CAP_REVISION_2_EFFECTIVE.to_le(),
+        CAP_SYS_ADMIN_MASK.to_le(),
+        0,
+        0,
+        0,
+    ];
+    clear_errno();
+    let ret = unsafe {
+        setxattr(
+            path.as_ptr(),
+            name.as_ptr(),
+            data.as_ptr() as *const c_void,
+            std::mem::size_of_val(&data),
+            0,
+        )
+    };
+    println!("setfilecap={}", classify(ret as c_long));
 }
 
 // SS-H11/H12: report the privilege state a setuid-root / file-capability helper
@@ -696,6 +733,9 @@ fn main() {
     match env::args().nth(1).as_deref() {
         Some("x32") => run_x32_probe(),
         Some("privinfo") => run_privinfo(),
+        Some("setfilecap") => run_setfilecap(
+            &env::args().nth(2).unwrap_or_else(|| "/tmp/eos-cap-helper".to_string()),
+        ),
         _ => run_suite(),
     }
 }
@@ -778,10 +818,15 @@ def file_read(sandbox_id, path, *, timeout=90):
     return runtime(sandbox_id, "file_read", "--path", path, timeout=timeout)
 
 
+_APT_ARCHIVE_URI = (
+    "http://ports.ubuntu.com/ubuntu-ports/"
+    if linux_musl_target().startswith("aarch64")
+    else "http://archive.ubuntu.com/ubuntu/"
+)
 APT_ARCHIVE_SOURCES = (
     'printf "'
     "Types: deb\\n"
-    "URIs: http://archive.ubuntu.com/ubuntu/\\n"
+    f"URIs: {_APT_ARCHIVE_URI}\\n"
     "Suites: noble\\n"
     "Components: main universe restricted multiverse\\n"
     "Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\\n"
@@ -790,18 +835,53 @@ APT_ARCHIVE_SOURCES = (
 APT_OPTIONS = "-o APT::Sandbox::User=root -o Dir::Cache::archives=/tmp/eos-apt-archives"
 
 
+def _container_http_proxy():
+    """Translate a credential-free host proxy into Docker's host namespace."""
+
+    raw = (
+        os.environ.get("E2E_CONTAINER_HTTP_PROXY")
+        or os.environ.get("HTTP_PROXY")
+        or os.environ.get("http_proxy")
+    )
+    if not raw or "'" in raw:
+        return None
+    parsed = urlsplit(raw)
+    if (
+        parsed.scheme not in {"http", "https"}
+        or not parsed.hostname
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.path not in {"", "/"}
+        or parsed.query
+        or parsed.fragment
+    ):
+        return None
+    host = parsed.hostname
+    if host in {"127.0.0.1", "localhost", "::1"}:
+        host = "host.docker.internal"
+    host = f"[{host}]" if ":" in host else host
+    port = f":{parsed.port}" if parsed.port is not None else ""
+    return f"{parsed.scheme}://{host}{port}"
+
+
 def apt_install_command(packages, *, then=()):
-    """A ``sh -lc`` command that points apt at the ubuntu24 noble archive pockets,
+    """A ``sh -lc`` command that points apt at the architecture's noble archive,
     installs ``packages`` under the reduced caps/seccomp policy (root apt sandbox,
     a root-owned cache under ``/tmp``), then runs any ``then`` follow-up commands.
     """
+    proxy = _container_http_proxy()
+    apt = (
+        f'env http_proxy="{proxy}" https_proxy="{proxy}" apt-get'
+        if proxy
+        else "apt-get"
+    )
     body = " && ".join(
         [
             APT_ARCHIVE_SOURCES,
             "mkdir -p /tmp/eos-apt-archives/partial",
             "chmod 0700 /tmp/eos-apt-archives/partial",
-            f"apt-get {APT_OPTIONS} update",
-            f"apt-get {APT_OPTIONS} install -y --no-install-recommends {' '.join(packages)}",
+            f"{apt} {APT_OPTIONS} update",
+            f"{apt} {APT_OPTIONS} install -y --no-install-recommends {' '.join(packages)}",
             *then,
         ]
     )

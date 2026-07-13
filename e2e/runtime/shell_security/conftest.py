@@ -6,9 +6,10 @@ commands/files via ``core.cli.runtime`` → ``sandbox-runtime-cli``. The static
 musl probe (``helpers.PROBE_SOURCE``) is compiled once per session and copied
 into each sandbox's bind-mounted workspace.
 
-Read-only cases share a module-scoped sandbox and a single ``probe`` run; cases
-that mutate container state, install packages, or assert scoping isolation take a
-dedicated ``fresh_sandbox``.
+Read-only cases share a module-scoped sandbox but run ``probe`` once per test so
+each catalog case publishes its own CLI surface proof. Cases that mutate
+container state, install packages, or assert scoping isolation take a dedicated
+``fresh_sandbox``.
 """
 
 import shutil
@@ -54,7 +55,7 @@ def module_sandbox(probe_binary, tmp_path_factory):
         mgmt.destroy_sandbox(sandbox_id)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def probe(module_sandbox):
     return run_probe(module_sandbox)
 

@@ -12,6 +12,7 @@ pytestmark = [pytest.mark.export, pytest.mark.medium]
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.bbe31f00ddd433857d0bf60d',
     title='Export Medium Catalog',
     description='Validates the behavior exercised by Export Medium Catalog.',

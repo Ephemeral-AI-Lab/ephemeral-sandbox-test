@@ -17,6 +17,7 @@ pytestmark = [pytest.mark.config, pytest.mark.slow]
 
 
 @e2e_test(
+    timeout_ms=24_000,
     id='phase0.05dfba4b759494beb4e25b8b',
     title='Container Env Probe',
     description='Validates the behavior exercised by Container Env Probe.',
@@ -60,6 +61,7 @@ def test_container_env_probe(tmp_path, config_family_custody):
 
 
 @e2e_test(
+    timeout_ms=13_000,
     id='phase0.1a15edf3049972669ce58054',
     title='Memory Bytes Cgroup Max',
     description='Validates the behavior exercised by Memory Bytes Cgroup Max.',
@@ -84,6 +86,7 @@ def test_memory_bytes_cgroup_max(tmp_path, config_family_custody):
 
 
 @e2e_test(
+    timeout_ms=12_000,
     id='phase0.7bd749120f6a89c9ada3057c',
     title='Explicit Image Flag Outranks Default Image',
     description='Validates the behavior exercised by Explicit Image Flag Outranks Default Image.',
@@ -119,6 +122,7 @@ def test_explicit_image_flag_outranks_default_image(tmp_path, config_family_cust
 
 
 @e2e_test(
+    timeout_ms=13_000,
     id='phase0.662f08dce80bb8283c8f4a0f',
     title='Privileged Arm Functional',
     description='Validates the behavior exercised by Privileged Arm Functional.',

@@ -23,6 +23,7 @@ def _roots(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.28246ac72d225be18ba5f49a',
     title='Find Repo Root Skips Partial Marker Directory',
     description='Validates the behavior exercised by Find Repo Root Skips Partial Marker Directory.',
@@ -46,6 +47,7 @@ def test_find_repo_root_skips_partial_marker_directory(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.66c905c455f313405c042475',
     title='Find Repo Root Fails Without Markers',
     description='Validates the behavior exercised by Find Repo Root Fails Without Markers.',

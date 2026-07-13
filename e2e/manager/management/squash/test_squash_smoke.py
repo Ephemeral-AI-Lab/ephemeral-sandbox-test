@@ -10,6 +10,7 @@ pytestmark = [pytest.mark.squash, pytest.mark.smoke]
 
 
 @e2e_test(
+    timeout_ms=7_000,
     id='phase0.001bf5977254495a57086a0c',
     title='Squash Smoke Catalog',
     description='Validates the behavior exercised by Squash Smoke Catalog.',

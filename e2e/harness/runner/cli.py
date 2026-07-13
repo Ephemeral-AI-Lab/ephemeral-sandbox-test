@@ -39,6 +39,7 @@ from .config import (
     SANDBOX_RUNTIME_CLI,
 )
 from .reporter import record_surface
+from . import resources
 
 _log = logging.getLogger("e2e.cli")
 _timing_lock = threading.Lock()
@@ -72,31 +73,57 @@ def route_cli(args):
 def cli(*args, timeout=180):
     """Run a space-addressed operation and return the parsed JSON response."""
     binary, argv, supports_progress = route_cli(args)
+    scope, operation_name = _classify_operation(args)
+    sandbox_id, workspace_id = _resource_context(args)
+    operation_key = f"{scope}.{operation_name}"
+    resources.operation(
+        "cli", operation_key, edge="start", sandbox_id=sandbox_id, workspace_id=workspace_id
+    )
     printable = " ".join([binary.name, *argv])
     _log.info("→ %s", printable)
     started = time.monotonic()
-    if PROGRESS and supports_progress:
-        stdout, stderr_lines, returncode = _run_streaming(binary, argv, timeout)
-        raw = _select_json(stdout, stderr_lines)
-    else:
-        proc = subprocess.run(
-            [str(binary), *argv],
-            cwd=str(REPO_ROOT),
-            capture_output=True,
-            text=True,
-            timeout=timeout,
+    try:
+        if PROGRESS and supports_progress:
+            stdout, stderr_lines, returncode = _run_streaming(binary, argv, timeout)
+            raw = _select_json(stdout, stderr_lines)
+        else:
+            proc = subprocess.run(
+                [str(binary), *argv],
+                cwd=str(REPO_ROOT),
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
+            returncode = proc.returncode
+            raw = proc.stdout.strip() or proc.stderr.strip()
+    except subprocess.TimeoutExpired:
+        resources.operation(
+            "cli",
+            operation_key,
+            duration_ms=(time.monotonic() - started) * 1000.0,
+            returncode=124,
+            sandbox_id=sandbox_id,
+            workspace_id=workspace_id,
         )
-        returncode = proc.returncode
-        raw = proc.stdout.strip() or proc.stderr.strip()
+        raise
     elapsed = time.monotonic() - started
     _record_timing(args, returncode, elapsed)
     _log.info("← %s  (exit=%s, %.2fs)", printable, returncode, elapsed)
+    resources.operation(
+        "cli",
+        operation_key,
+        duration_ms=elapsed * 1000.0,
+        returncode=returncode,
+        sandbox_id=sandbox_id,
+        workspace_id=workspace_id,
+    )
     try:
         result = json.loads(raw)
     except json.JSONDecodeError as exc:
         raise CliError(
             f"non-JSON CLI output (exit {returncode}): {raw!r}"
         ) from exc
+    _remember_trusted_ids(result, sandbox_id)
     record_surface(
         "cli",
         duration_ms=elapsed * 1000.0,
@@ -106,6 +133,31 @@ def cli(*args, timeout=180):
         },
     )
     return result
+
+
+def _resource_context(args):
+    values = tuple(map(str, args))
+    sandbox_id = _flag_value(values, "--sandbox-id")
+    workspace_id = _flag_value(values, "--workspace-session-id") or _flag_value(
+        values, "--workspace-id"
+    )
+    return sandbox_id, workspace_id
+
+
+def _flag_value(values, flag):
+    try:
+        value = values[values.index(flag) + 1]
+    except (ValueError, IndexError):
+        return None
+    return value
+
+
+def _remember_trusted_ids(result, sandbox_hint):
+    sandboxes, workspaces = resources.trusted_ids(result)
+    sandbox_id = sandbox_hint or (next(iter(sandboxes)) if len(sandboxes) == 1 else None)
+    if sandbox_id:
+        for workspace_id in workspaces:
+            resources.remember_workspace(sandbox_id, workspace_id)
 
 
 def _run_streaming(binary, argv, timeout):
@@ -267,6 +319,7 @@ def raw_gateway(sandbox_id, operation, args=None, *, timeout=180):
         request["_sandbox_gateway_auth_token"] = token
 
     host, port = _gateway_endpoint()
+    resources.operation("gateway_rpc", operation, edge="start", sandbox_id=sandbox_id)
     started = time.monotonic()
     with socket.create_connection((host, port), timeout=timeout) as stream:
         stream.settimeout(timeout)
@@ -284,6 +337,13 @@ def raw_gateway(sandbox_id, operation, args=None, *, timeout=180):
         "gateway_rpc",
         duration_ms=(time.monotonic() - started) * 1000.0,
         evidence={"operation": operation},
+    )
+    resources.operation(
+        "gateway_rpc",
+        operation,
+        duration_ms=(time.monotonic() - started) * 1000.0,
+        returncode=0 if not is_error(response) else 1,
+        sandbox_id=sandbox_id,
     )
     return response
 

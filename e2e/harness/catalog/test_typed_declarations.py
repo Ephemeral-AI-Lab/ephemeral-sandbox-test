@@ -27,6 +27,7 @@ def _has_e2e_declaration(node: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.catalog.explicit-declarations",
     title="Every collected test has a typed declaration",
     description="The catalog no longer synthesizes declarations from the Phase 0 ledger.",
@@ -43,6 +44,7 @@ def test_every_python_test_has_an_explicit_declaration():
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.catalog.stable-id-migration",
     title="Stable ID migration ledger is complete",
     description="Every former expanded case maps once to an explicit typed test and case identity.",
@@ -62,6 +64,7 @@ def test_stable_id_migration_ledger_is_complete_and_nonduplicative():
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.catalog.no-legacy-adapter",
     title="Collector has no legacy declaration adapter",
     description="Collection reads only explicit declarations and current canonical pytest paths.",
@@ -82,6 +85,7 @@ def test_catalog_runtime_has_no_legacy_adapter():
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.catalog.canonical-paths",
     title="Typed tests use canonical family paths",
     description="Every test source resolves through one supported domain and family placement.",

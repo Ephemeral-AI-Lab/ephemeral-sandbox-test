@@ -74,6 +74,7 @@ def formatted_exception(error):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.4412b9db6a7fef7fe86f61be',
     title='Allowlist Is Exact And Rejects Before Side Effects',
     description='Validates the behavior exercised by Allowlist Is Exact And Rejects Before Side Effects.',
@@ -93,6 +94,7 @@ def test_allowlist_is_exact_and_rejects_before_side_effects(monkeypatch):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.6ba343db9c31611feeca00f2',
     title='Success Uses Inspect And Label Without Persisting Token',
     description='Validates the behavior exercised by Success Uses Inspect And Label Without Persisting Token.',
@@ -173,6 +175,7 @@ def test_success_uses_inspect_and_label_without_persisting_token(monkeypatch, ca
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.1d5b71b0b266599a0a60e35b',
     title='Docker Failures Do Not Leak Secret',
     description='Validates the behavior exercised by Docker Failures Do Not Leak Secret.',
@@ -217,6 +220,7 @@ def test_docker_failures_do_not_leak_secret(
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.f5c2307737a5e07c145848f4',
     title='Missing Docker Label Fails Before Socket',
     description='Validates the behavior exercised by Missing Docker Label Fails Before Socket.',
@@ -240,6 +244,7 @@ def test_missing_docker_label_fails_before_socket(monkeypatch, label_output):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.1bf33a65a113671cd44bf8a0',
     title='Non Json Daemon Output Is Not Echoed',
     description='Validates the behavior exercised by Non Json Daemon Output Is Not Echoed.',
@@ -280,6 +285,7 @@ def test_non_json_daemon_output_is_not_echoed(monkeypatch, caplog):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.1dcdbd6ef105c4421e4bfd50',
     title='Daemon Response Cannot Persist Auth Token',
     description='Validates the behavior exercised by Daemon Response Cannot Persist Auth Token.',

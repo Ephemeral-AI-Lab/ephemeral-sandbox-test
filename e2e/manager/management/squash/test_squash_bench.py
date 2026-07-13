@@ -17,6 +17,7 @@ pytestmark = [pytest.mark.squash, pytest.mark.bench]
 
 
 @e2e_test(
+    timeout_ms=81_000,
     id='phase0.5a5da0a97c04fffcc1f0947f',
     title='Squash Bench Catalog',
     description='Validates the behavior exercised by Squash Bench Catalog.',

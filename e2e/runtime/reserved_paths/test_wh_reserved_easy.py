@@ -31,12 +31,13 @@ pytestmark = [pytest.mark.whreserved, pytest.mark.easy]
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.14e7a6eef663b3dccde8b876',
     title='Ez 01 Session File Named Wh Foo Never Deletes Foo',
     description='Validates the behavior exercised by Ez 01 Session File Named Wh Foo Never Deletes Foo.',
     features=('runtime.reserved_paths',),
     validations={'assert-ez-01-session-file-named-wh-foo-never-deletes-foo': 'The assertions for ez 01 session file named wh foo never deletes foo hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_EZ_01_session_file_named_wh_foo_never_deletes_foo(tmp_path):
     """EZ-01 — a session file named `.wh.foo` never deletes `foo` (THE regression)."""
@@ -70,12 +71,13 @@ def test_EZ_01_session_file_named_wh_foo_never_deletes_foo(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.dcaedc59209a646e5abbdef1',
     title='Ez 02 One Shot Exec Touch Wh Probe Rejects And Discards',
     description='Validates the behavior exercised by Ez 02 One Shot Exec Touch Wh Probe Rejects And Discards.',
     features=('runtime.reserved_paths',),
     validations={'assert-ez-02-one-shot-exec-touch-wh-probe-rejects-and-discards': 'The assertions for ez 02 one shot exec touch wh probe rejects and discards hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_EZ_02_one_shot_exec_touch_wh_probe_rejects_and_discards(tmp_path):
     """EZ-02 — one-shot exec `touch .wh.probe` rejects and discards."""
@@ -104,12 +106,13 @@ def test_EZ_02_one_shot_exec_touch_wh_probe_rejects_and_discards(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.8db3b3003f36c3b05a7ef87d',
     title='Ez 03 User File Named Opaque Marker Never Masks Directory',
     description='Validates the behavior exercised by Ez 03 User File Named Opaque Marker Never Masks Directory.',
     features=('runtime.reserved_paths',),
     validations={'assert-ez-03-user-file-named-opaque-marker-never-masks-directory': 'The assertions for ez 03 user file named opaque marker never masks directory hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_EZ_03_user_file_named_opaque_marker_never_masks_directory(tmp_path):
     """EZ-03 — a user file named `.wh..wh..opq` never masks its directory."""
@@ -141,12 +144,13 @@ def test_EZ_03_user_file_named_opaque_marker_never_masks_directory(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.646fa64ad69edad7a5d63711',
     title='Ez 04 Sessionless File Write To Wh Foo Rejects Without Poisoning',
     description='Validates the behavior exercised by Ez 04 Sessionless File Write To Wh Foo Rejects Without Poisoning.',
     features=('runtime.reserved_paths',),
     validations={'assert-ez-04-sessionless-file-write-to-wh-foo-rejects-without-poisoning': 'The assertions for ez 04 sessionless file write to wh foo rejects without poisoning hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_EZ_04_sessionless_file_write_to_wh_foo_rejects_without_poisoning(tmp_path):
     """EZ-04 — sessionless `file_write` to `.wh.foo` rejects without poisoning."""
@@ -183,12 +187,13 @@ def test_EZ_04_sessionless_file_write_to_wh_foo_rejects_without_poisoning(tmp_pa
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.80971e522b1d68eb63e9a2fb',
     title='Ez 05 Lookalike Names Are Ordinary Paths',
     description='Validates the behavior exercised by Ez 05 Lookalike Names Are Ordinary Paths.',
     features=('runtime.reserved_paths',),
     validations={'assert-ez-05-lookalike-names-are-ordinary-paths': 'The assertions for ez 05 lookalike names are ordinary paths hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_EZ_05_lookalike_names_are_ordinary_paths(tmp_path):
     """EZ-05 — lookalike names (`.wh`, `.whx`, `x.wh.y`, `wh.foo`) are ordinary paths."""
@@ -222,12 +227,13 @@ def test_EZ_05_lookalike_names_are_ordinary_paths(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.f980103600efc4ba994cf890',
     title='Ez 06 Real Deletion Still Works End To End',
     description='Validates the behavior exercised by Ez 06 Real Deletion Still Works End To End.',
     features=('runtime.reserved_paths',),
     validations={'assert-ez-06-real-deletion-still-works-end-to-end': 'The assertions for ez 06 real deletion still works end to end hold.'},
-    execution_surface='direct_daemon_rpc',
+    execution_surface='cli',
 )
 def test_EZ_06_real_deletion_still_works_end_to_end(tmp_path):
     """EZ-06 — real deletion (kernel whiteout) still works end to end."""

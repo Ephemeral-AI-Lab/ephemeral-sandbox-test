@@ -67,6 +67,7 @@ def _created_path(index):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.2e8bdafecf88b925e76f4745',
     title='Frozen Snapshot Mount Excludes Later Published Layers',
     description='Validates the behavior exercised by Frozen Snapshot Mount Excludes Later Published Layers.',
@@ -136,6 +137,7 @@ def test_frozen_snapshot_mount_excludes_later_published_layers(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=14_000,
     id='phase0.b2a07a28416dd7ec5f9b05f8',
     title='Complex Session Overlay At Scale Through Mount',
     description='Validates the behavior exercised by Complex Session Overlay At Scale Through Mount.',
@@ -186,6 +188,7 @@ def test_complex_session_overlay_at_scale_through_mount(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.5cb2c62945ae326a7214c0a7',
     title='Destroy Discards The Overlay',
     description='Validates the behavior exercised by Destroy Discards The Overlay.',
@@ -235,6 +238,7 @@ def test_destroy_discards_the_overlay(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.58078ba64138a8a75c43083e',
     title='One Shot Capture End State',
     description='Validates the behavior exercised by One Shot Capture End State.',
@@ -277,6 +281,7 @@ def test_one_shot_capture_end_state(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.97ee508afd021e604644259c',
     title='Capture After Base Advanced Clean Auto Merge',
     description='Validates the behavior exercised by Capture After Base Advanced Clean Auto Merge.',
@@ -314,6 +319,7 @@ def test_capture_after_base_advanced_clean_auto_merge(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.1e3edb57a1e70140def1dfef',
     title='Capture After Base Advanced Overlapping Conflict',
     description='Validates the behavior exercised by Capture After Base Advanced Overlapping Conflict.',
@@ -354,6 +360,7 @@ def test_capture_after_base_advanced_overlapping_conflict(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.f3a7b58c26954b53ca80b97e',
     title='Session Delete Vs Sessionless Modify Rejects Atomically',
     description='Validates the behavior exercised by Session Delete Vs Sessionless Modify Rejects Atomically.',
@@ -394,6 +401,7 @@ def test_session_delete_vs_sessionless_modify_rejects_atomically(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.3ef2a8eb92e0829b77c5a0c2',
     title='Complex Two Sessions From One Base Captured In Sequence',
     description='Validates the behavior exercised by Complex Two Sessions From One Base Captured In Sequence.',
@@ -455,6 +463,7 @@ def test_complex_two_sessions_from_one_base_captured_in_sequence(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=7_000,
     id='phase0.55f2ac6b1a4afd2e07693b78',
     title='Complex Capture With Hundreds Of Changed Files',
     description='Validates the behavior exercised by Complex Capture With Hundreds Of Changed Files.',

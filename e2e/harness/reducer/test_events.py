@@ -67,6 +67,7 @@ def _draft(event_type: str, payload: dict, *, monotonic_ns: int, entity_id: str 
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.reducer.restart-replay",
     title="Replay replaces a deleted run projection deterministically",
     description="The immutable manifest and complete journal recreate the same normalized run projection.",
@@ -91,6 +92,7 @@ def test_reducer_replay_is_deterministic_after_restart(tmp_path, validation):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.reducer.ordering",
     title="Reducer rejects duplicate and reordered journal events",
     description="Sequence integrity is enforced before a projection can be published.",
@@ -110,6 +112,7 @@ def test_reducer_rejects_duplicate_and_reordered_events(validation):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.reducer.partial-final-line",
     title="Torn final journal lines never invent success",
     description="Replay folds only the synced complete prefix and reports truncation truthfully.",
@@ -131,6 +134,7 @@ def test_partial_final_line_keeps_only_complete_event_prefix(tmp_path, validatio
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.reducer.preallocation-validation",
     title="Invalid transitions receive no journal sequence",
     description="The journal validates a proposed transition before writing or allocating its sequence.",

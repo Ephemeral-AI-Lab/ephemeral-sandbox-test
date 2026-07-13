@@ -136,6 +136,7 @@ def _p95_ms(action) -> float:
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.api.routes",
     title="Control Room exposes its fourteen narrow routes",
     description="Every API route is fixture-tested through envelope, bodyless action, and controller-owner contracts.",
@@ -197,6 +198,7 @@ def test_fourteen_routes_use_existing_controller_owners(tmp_path, validation):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.api.transport-evidence",
     title="Loopback transport and evidence responses are redacted and ownership-safe",
     description="Exact Host, Origin, memory nonce, no CORS, artifact map, traversal, corruption, and purge behavior remain typed and non-leaking.",
@@ -257,6 +259,7 @@ def test_transport_and_evidence_contracts_are_safe(tmp_path, validation):
 
 
 @e2e_test(
+    timeout_ms=2_000,
     id="harness.api.loopback",
     title="Control Room binds only loopback and preserves browser transport checks",
     description="The HTTP adapter forwards the exact Host, Origin, nonce, SSE, and bodyless contracts without CORS headers.",
@@ -314,6 +317,7 @@ def test_loopback_adapter_enforces_exact_browser_transport(tmp_path, validation)
 
 
 @e2e_test(
+    timeout_ms=2_000,
     id="harness.api.static-control-room",
     title="Loopback server hosts the built Control Room and refreshes its catalog",
     description="The executable composition keeps UI, API, and the validated catalog refresh workflow on one loopback origin.",
@@ -376,6 +380,7 @@ def test_loopback_serves_the_built_control_room_on_the_same_origin(tmp_path, val
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.api.workspace-template",
     title="Control Room prepares the pytest workspace template",
     description="The production composition prepares the same owned template root used by pytest and publishes it to the workspace inventory.",
@@ -413,6 +418,7 @@ def test_control_room_prepares_and_publishes_the_pytest_workspace_template(tmp_p
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.api.catalog-revision",
     title="Ordinary catalog refetch exposes a newly discovered case",
     description="The API derives every card and family from the current catalog without a route or UI registration.",
@@ -440,6 +446,7 @@ def test_catalog_refetch_exposes_new_folder_without_api_registration(tmp_path, v
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.api.evidence-caps",
     title="Evidence cap reports retained and omitted counts",
     description="A browser evidence response is bounded while retaining exact byte and line omissions for the UI.",
@@ -478,6 +485,7 @@ def test_evidence_cap_exposes_omitted_counts(tmp_path, validation, monkeypatch):
 
 
 @e2e_test(
+    timeout_ms=2_000,
     id="harness.api.budget",
     title="Catalog and history meet the supported offline fixture budget",
     description="The controller serves 10,000 catalog cases in pages of 50 and scans 1,000 retained runs without an index.",

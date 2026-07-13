@@ -20,6 +20,7 @@ pytestmark = [pytest.mark.export, pytest.mark.bench, pytest.mark.slow]
 
 
 @e2e_test(
+    timeout_ms=15_000,
     id='phase0.dcda9caad84fa48ad1526f7c',
     title='Export Bench Catalog',
     description='Validates the behavior exercised by Export Bench Catalog.',

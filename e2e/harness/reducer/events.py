@@ -8,7 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Callable, Iterable, Mapping
 
 
 SCHEMA_VERSION = 1
@@ -136,6 +136,14 @@ def validate_manifest(manifest: Mapping[str, Any]) -> None:
 
 def validate_event(event: Mapping[str, Any], manifest: Mapping[str, Any]) -> None:
     validate_manifest(manifest)
+    _validate_event(event, manifest, _case_identities(manifest))
+
+
+def _validate_event(
+    event: Mapping[str, Any],
+    manifest: Mapping[str, Any],
+    case_identities: set[tuple[str, str]],
+) -> None:
     _require_schema(event, "event")
     _require_strings(event, "event", "run_id", "at", "producer", "producer_revision", "type")
     if event["run_id"] != manifest["run_id"]:
@@ -159,7 +167,7 @@ def validate_event(event: Mapping[str, Any], manifest: Mapping[str, Any]) -> Non
         raise ContractError("event caused_by_seq must be a positive integer when present")
     if event.get("caused_by_seq") is not None and event["caused_by_seq"] >= event["seq"]:
         raise ContractError("event caused_by_seq must reference an earlier event")
-    _validate_event_correlation(event, manifest)
+    _validate_event_correlation(event, case_identities)
     _validate_event_payload(event)
     if len(canonical_bytes(event)) > MAX_EVENT_BYTES:
         raise ContractError(f"event exceeds {MAX_EVENT_BYTES} byte cap")
@@ -197,7 +205,12 @@ class RunJournal:
         self.path = path
         self.manifest = dict(manifest)
 
-    def append(self, draft: Mapping[str, Any]) -> dict[str, Any]:
+    def append(
+        self,
+        draft: Mapping[str, Any],
+        *,
+        publish_projection: Callable[[Mapping[str, Any]], None] | None = None,
+    ) -> dict[str, Any]:
         """Validate, persist, and sync one event before any projection can update."""
 
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -219,13 +232,14 @@ class RunJournal:
                 event["schema_version"] = SCHEMA_VERSION
                 event["run_id"] = self.manifest["run_id"]
                 event["seq"] = len(prior.events) + 1
-                validate_event(event, self.manifest)
-                reduce_run(self.manifest, (*prior.events, event))
+                projection = reduce_run(self.manifest, (*prior.events, event))
                 encoded = canonical_bytes(event) + b"\n"
                 with self.path.open("ab", buffering=0) as journal:
                     journal.write(encoded)
                     journal.flush()
                     os.fsync(journal.fileno())
+                if publish_projection is not None:
+                    publish_projection(projection)
                 return event
             finally:
                 fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
@@ -245,6 +259,7 @@ def reduce_run(
     """Fold a contiguous valid journal without reading mutable external state."""
 
     validate_manifest(manifest)
+    case_identities = _case_identities(manifest)
     cases = {
         (case["test_id"], case["case_id"]): {
             "test_id": case["test_id"],
@@ -279,7 +294,7 @@ def reduce_run(
         "failures": [],
         "first_failure_id": None,
         "primary_failure_id": None,
-        "evidence_health": "complete",
+        "evidence_health": "not_published",
         "retention": {"state": "retained", "purges": []},
         "recovery": {"history": [], "blocker": None},
         "recovery_bundle_match": "exact_match",
@@ -289,7 +304,7 @@ def reduce_run(
     }
     expected_seq = 1
     for event in events:
-        validate_event(event, manifest)
+        _validate_event(event, manifest, case_identities)
         if event["seq"] != expected_seq:
             raise JournalCorruption(
                 f"journal sequence is not contiguous: expected {expected_seq}, got {event['seq']}"
@@ -382,24 +397,32 @@ def _apply_evidence_or_surface(projection: dict[str, Any], event: Mapping[str, A
         return
     case["evidence"].append({"type": event["type"], "seq": event["seq"], **event["payload"]})
     availability = event["payload"].get("availability")
-    if availability in {"invalid"}:
+    status = event["payload"].get("status")
+    if status == "not_applicable":
+        return
+    health = projection["evidence_health"]
+    if availability == "invalid":
         projection["evidence_health"] = "invalid"
-    elif availability in {"unavailable"} and projection["evidence_health"] == "complete":
+    elif availability == "unavailable" and health != "invalid":
         projection["evidence_health"] = "unavailable"
-    elif availability in {"partial", "unsupported"} and projection["evidence_health"] == "complete":
+    elif availability in {"partial", "unsupported"} and health in {"not_published", "complete", "degraded"}:
         projection["evidence_health"] = "degraded"
+    elif availability == "available" and health == "not_published":
+        projection["evidence_health"] = "complete"
 
 
 def _projection_case(projection: Mapping[str, Any], event: Mapping[str, Any]) -> dict[str, Any]:
     identity = (event.get("test_id"), event.get("case_id"))
-    cases = {(case["test_id"], case["case_id"]): case for case in projection["cases"].values()} if isinstance(projection["cases"], dict) else {}
-    case = cases.get(identity)
+    cases = projection["cases"]
+    case = cases.get(identity) if isinstance(cases, dict) else None
     if case is None:
         raise JournalCorruption(f"event references unknown manifest case: {identity}")
     return case
 
 
-def _validate_event_correlation(event: Mapping[str, Any], manifest: Mapping[str, Any]) -> None:
+def _validate_event_correlation(
+    event: Mapping[str, Any], case_identities: set[tuple[str, str]]
+) -> None:
     case_scoped = {
         "case.state", "phase.state", "validation.state", "cleanup.state", "failure.recorded",
         "surface.recorded", "evidence.recorded", "log.recorded", "artifact.recorded",
@@ -407,9 +430,12 @@ def _validate_event_correlation(event: Mapping[str, Any], manifest: Mapping[str,
     if event["type"] not in case_scoped:
         return
     identity = (event.get("test_id"), event.get("case_id"))
-    known = {(case["test_id"], case["case_id"]) for case in manifest["cases"]}
-    if identity not in known:
+    if identity not in case_identities:
         raise ContractError(f"event references unknown manifest case: {identity}")
+
+
+def _case_identities(manifest: Mapping[str, Any]) -> set[tuple[str, str]]:
+    return {(case["test_id"], case["case_id"]) for case in manifest["cases"]}
 
 
 def _validate_event_payload(event: Mapping[str, Any]) -> None:

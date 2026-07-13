@@ -90,6 +90,7 @@ def _assert_sessionless_not_found(sandbox, paths):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.542a5d5da944591dc7fa5c08',
     title='Session Write Races Session Edit Same Path',
     description='Validates the behavior exercised by Session Write Races Session Edit Same Path.',
@@ -145,6 +146,7 @@ def test_session_write_races_session_edit_same_path(sandbox, workspace_session):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.bccbee30e50210ab1aa5845d',
     title='Two Concurrent Session Writes Same Path Leave No Tmp Artifacts',
     description='Validates the behavior exercised by Two Concurrent Session Writes Same Path Leave No Tmp Artifacts.',
@@ -193,6 +195,7 @@ def test_two_concurrent_session_writes_same_path_leave_no_tmp_artifacts(
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.c8d1ef6995f797d3098064f4',
     title='Session Reads Race In Session Atomic Mv Loop',
     description='Validates the behavior exercised by Session Reads Race In Session Atomic Mv Loop.',
@@ -245,6 +248,7 @@ def test_session_reads_race_in_session_atomic_mv_loop(sandbox, workspace_session
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.c4799490fff69611b6e36707',
     title='Destroy Workspace Session Races Running Exec',
     description='Validates the behavior exercised by Destroy Workspace Session Races Running Exec.',
@@ -295,6 +299,7 @@ def test_destroy_workspace_session_races_running_exec(sandbox):
 
 
 @e2e_test(
+    timeout_ms=9_000,
     id='phase0.b2bbea7755eb539d70a437c3',
     title='Complex Long Session Disjoint Writes Visible To Shell Then Destroy',
     description='Validates the behavior exercised by Complex Long Session Disjoint Writes Visible To Shell Then Destroy.',
@@ -376,6 +381,7 @@ def test_complex_long_session_disjoint_writes_visible_to_shell_then_destroy(sand
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.6112359c0a8393f834a111ff',
     title='Complex Hot File Storm Inside One Session',
     description='Validates the behavior exercised by Complex Hot File Storm Inside One Session.',
@@ -470,6 +476,7 @@ def test_complex_hot_file_storm_inside_one_session(sandbox, workspace_session):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.751134e947b24506a43464eb',
     title='Complex Same Path Conflicting Captures Publish Only First',
     description='Validates the behavior exercised by Complex Same Path Conflicting Captures Publish Only First.',
@@ -511,6 +518,7 @@ def test_complex_same_path_conflicting_captures_publish_only_first(sandbox):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.ecab9c80f736fb125568436d',
     title='Complex Capture Order Independence Line Disjoint Merges',
     description='Validates the behavior exercised by Complex Capture Order Independence Line Disjoint Merges.',
@@ -557,6 +565,7 @@ def test_complex_capture_order_independence_line_disjoint_merges(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=14_000,
     id='phase0.91b14ec29ac5bd2ee178ddce',
     title='Complex Capture Races Sessionless Writers Hot Path',
     description='Validates the behavior exercised by Complex Capture Races Sessionless Writers Hot Path.',

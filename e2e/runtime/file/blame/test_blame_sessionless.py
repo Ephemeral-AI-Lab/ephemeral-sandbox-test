@@ -21,6 +21,7 @@ from harness.catalog.declarations import e2e_test
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.7177e2c4f09e76f89ad08d61',
     title='Blame Key Resolution And Unaudited Paths',
     description='Validates the behavior exercised by Blame Key Resolution And Unaudited Paths.',
@@ -61,6 +62,7 @@ def test_blame_key_resolution_and_unaudited_paths(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.88dc54ec45134ef5aef23d5c',
     title='Same Owner Coalescing For Adjacent Lines Rewritten In One Edit',
     description='Validates the behavior exercised by Same Owner Coalescing For Adjacent Lines Rewritten In One Edit.',
@@ -97,6 +99,7 @@ def test_same_owner_coalescing_for_adjacent_lines_rewritten_in_one_edit(sandbox)
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.b1b78bb3f7a973112b160a49',
     title='Line Shift On Insert And Delete Preserves Untouched Owners',
     description='Validates the behavior exercised by Line Shift On Insert And Delete Preserves Untouched Owners.',
@@ -149,6 +152,7 @@ def test_line_shift_on_insert_and_delete_preserves_untouched_owners(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.0302d9621afca6e94dc65b78',
     title='Replace All Multi Site Attribution Keeps Non Adjacent Ranges',
     description='Validates the behavior exercised by Replace All Multi Site Attribution Keeps Non Adjacent Ranges.',
@@ -200,6 +204,7 @@ def test_replace_all_multi_site_attribution_keeps_non_adjacent_ranges(sandbox):
 
 
 @e2e_test(
+    timeout_ms=14_000,
     id='phase0.3d44dbfc7bfe730f5667ee22',
     title='Complex 50 Round Insert Delete Ladder From Many Actors',
     description='Validates the behavior exercised by Complex 50 Round Insert Delete Ladder From Many Actors.',
@@ -248,6 +253,7 @@ def test_complex_50_round_insert_delete_ladder_from_many_actors(sandbox):
 
 
 @e2e_test(
+    timeout_ms=13_000,
     id='phase0.ac8910853ffd571b54f244b0',
     title='Complex Owner Turnover Across 30 Wholesale Generations',
     description='Validates the behavior exercised by Complex Owner Turnover Across 30 Wholesale Generations.',

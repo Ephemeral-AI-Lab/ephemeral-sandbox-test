@@ -30,6 +30,7 @@ def _hard_params():
 
 
 @e2e_test(
+    timeout_ms=33_000,
     id='phase0.7d19d896e07b1e3292c534b2',
     title='Export Hard Catalog',
     description='Validates the behavior exercised by Export Hard Catalog.',

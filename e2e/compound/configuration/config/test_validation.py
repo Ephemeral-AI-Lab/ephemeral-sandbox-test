@@ -21,6 +21,7 @@ pytestmark = pytest.mark.config
 
 
 @e2e_test(
+    timeout_ms=12_000,
     id='phase0.b8d33fb68efad3e4d8c5df70',
     title='Unknown Daemon Key Fails Create',
     description='Validates the behavior exercised by Unknown Daemon Key Fails Create.',
@@ -48,6 +49,7 @@ def test_unknown_daemon_key_fails_create(lane_a_daemon_yaml):
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id='phase0.68934fa57db7aee5aa27fe93',
     title='Invalid Daemon Values Fail Create',
     description='Validates the behavior exercised by Invalid Daemon Values Fail Create.',
@@ -93,6 +95,7 @@ def test_invalid_daemon_values_fail_create(lane_a_daemon_yaml, overrides, expect
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.40900bf10a83c455127cc766',
     title='Valid Config Recovers',
     description='Validates the behavior exercised by Valid Config Recovers.',
@@ -109,6 +112,7 @@ def test_valid_config_recovers(lane_a_daemon_yaml):
 
 
 @e2e_test(
+    timeout_ms=7_000,
     id='phase0.0a8c5b239c7e43f5d58ba763',
     title='Unknown Manager Key Fails Gateway Start',
     description='Validates the behavior exercised by Unknown Manager Key Fails Gateway Start.',
@@ -128,6 +132,7 @@ def test_unknown_manager_key_fails_gateway_start(tmp_path, config_family_custody
 
 
 @e2e_test(
+    timeout_ms=14_000,
     id='phase0.e0e14ba1b2e3302de9808209',
     title='Invalid Manager Value Fails Gateway Start',
     description='Validates the behavior exercised by Invalid Manager Value Fails Gateway Start.',

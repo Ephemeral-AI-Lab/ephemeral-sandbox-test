@@ -68,6 +68,7 @@ def _entry(roots, relative: str = "e2e/input.py", content: bytes = b"print('safe
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.storage.immutable-snapshot",
     title="Source snapshots copy only verified files and become non-writable",
     description="A run owns a frozen source copy whose digest matches the admitted manifest.",
@@ -90,6 +91,7 @@ def test_regular_source_snapshot_is_verified_and_non_writable(tmp_path, validati
 
 @pytest.mark.parametrize("kind", ["link", "fifo", "socket"], ids=["link", "fifo", "socket"])
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.storage.nonregular-source",
     title="Source snapshots reject non-regular files",
     description="Links, FIFOs, and sockets cannot enter a run-owned source snapshot.",
@@ -125,6 +127,7 @@ def test_snapshot_rejects_nonregular_source_files(tmp_path, kind, monkeypatch, v
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.storage.device-and-mode",
     title="Source snapshots reject device records and unsafe modes",
     description="Special device metadata and writable group/world modes fail before copying.",
@@ -155,6 +158,7 @@ def test_snapshot_rejects_device_and_unsafe_mode(tmp_path, monkeypatch, validati
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.storage.snapshot-mismatch",
     title="Source snapshot metadata and tree digest mismatches fail",
     description="Neither a changed file nor a mismatched tree digest can publish a partial source snapshot.",
@@ -176,6 +180,7 @@ def test_snapshot_rejects_metadata_and_tree_digest_mismatch(tmp_path, validation
 
 
 @e2e_test(
+    timeout_ms=1_000,
     id="harness.storage.owned-quarantine",
     title="Only owned workspace attempts can be quarantined",
     description="Attempt IDs resolve through ownership records rather than caller-provided filesystem paths.",

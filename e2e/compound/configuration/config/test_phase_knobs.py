@@ -46,6 +46,7 @@ class TestPhase1:
     """
 
     @e2e_test(
+    timeout_ms=17_000,
         id='phase0.fd146f600feadbd4df95c2c9',
         title='Sweep Width Squash Invariance',
         description='Validates the behavior exercised by Sweep Width Squash Invariance.',
@@ -79,6 +80,7 @@ class TestPhase1:
                 assert helpers.exec_output(sandbox_id, "cat sweep-b.txt").strip() == "two"
 
     @e2e_test(
+    timeout_ms=6_000,
         id='phase0.912e631dcd54877c6cb67f31',
         title='Export Chunk Shape Invariance',
         description='Validates the behavior exercised by Export Chunk Shape Invariance.',
@@ -147,6 +149,7 @@ class TestPhase1:
         )
 
     @e2e_test(
+    timeout_ms=32_000,
         id='phase0.11db9d7567dc480c73ad91d5',
         title='Export Stream Cap Error',
         description='Validates the behavior exercised by Export Stream Cap Error.',
@@ -206,6 +209,7 @@ class TestPhase1:
             helpers.start_gateway(lane_a_daemon_yaml.parent / "gateway.yml")
 
     @e2e_test(
+    timeout_ms=22_000,
         id='phase0.1aa8ac9074c3b41486cdee81',
         title='Export Apply Entry Cap Error',
         description='Validates the behavior exercised by Export Apply Entry Cap Error.',
@@ -252,6 +256,7 @@ class TestPhase2:
     """daemon.server limits, observability.views (phase 2). Lane A only."""
 
     @e2e_test(
+    timeout_ms=7_000,
         id='phase0.6d2d24764b7ec0cba0d1005b',
         title='Request Cap Rejects Oversized Write',
         description='Validates the behavior exercised by Request Cap Rejects Oversized Write.',
@@ -284,6 +289,7 @@ class TestPhase2:
             )
 
     @e2e_test(
+    timeout_ms=3_000,
         id='phase0.df09d255a4308e4bdff4e209',
         title='Layer Delta View Honors Default Limit',
         description='Validates the behavior exercised by Layer Delta View Honors Default Limit.',
@@ -350,6 +356,7 @@ class TestPhase3:
     Lane A only."""
 
     @e2e_test(
+    timeout_ms=3_000,
         id='phase0.e435dfddfc6422e8c447152b',
         title='File List Truncates At Cap',
         description='Validates the behavior exercised by File List Truncates At Cap.',
@@ -386,6 +393,7 @@ class TestPhase3:
             assert listing.get("truncated") is True, listing
 
     @e2e_test(
+    timeout_ms=2_000,
         id='phase0.6e9f10a5c97a4142f9e3f5e8',
         title='File Read Default Lines',
         description='Validates the behavior exercised by File Read Default Lines.',
@@ -416,6 +424,7 @@ class TestPhase3:
             assert lines[0] == "1" and lines[-1] == "10", lines
 
     @e2e_test(
+    timeout_ms=3_000,
         id='phase0.1a062c1bccce4faa075f85d1',
         title='File Edit Size Cap Error',
         description='Validates the behavior exercised by File Edit Size Cap Error.',
@@ -445,6 +454,7 @@ class TestPhase3:
             assert "too large" in error, error
 
     @e2e_test(
+    timeout_ms=3_000,
         id='phase0.e1e3c8635fdc933760ae4cb1',
         title='Command Admission Cap',
         description='Validates the behavior exercised by Command Admission Cap.',
@@ -470,6 +480,7 @@ class TestPhase3:
             assert "admission refused" in error, error
 
     @e2e_test(
+    timeout_ms=6_000,
         id='phase0.4ca68485652f8c133c749f4c',
         title='Terminal Retention Eviction',
         description='Validates the behavior exercised by Terminal Retention Eviction.',

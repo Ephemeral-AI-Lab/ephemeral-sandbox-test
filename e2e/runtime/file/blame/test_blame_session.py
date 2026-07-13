@@ -23,6 +23,7 @@ from harness.catalog.declarations import e2e_test
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.a47f534094341a328c4fe993',
     title='Live Session Changes Are Invisible To Blame',
     description='Validates the behavior exercised by Live Session Changes Are Invisible To Blame.',
@@ -77,6 +78,7 @@ def test_live_session_changes_are_invisible_to_blame(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.9297208357a3f15900e741b6',
     title='Capture Insertion Shifts Without Reassigning',
     description='Validates the behavior exercised by Capture Insertion Shifts Without Reassigning.',
@@ -109,6 +111,7 @@ def test_capture_insertion_shifts_without_reassigning(sandbox):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.cd40dd7917fb0e1f7e073f9f',
     title='Capture Deletion Mints No Ownership',
     description='Validates the behavior exercised by Capture Deletion Mints No Ownership.',
@@ -141,6 +144,7 @@ def test_capture_deletion_mints_no_ownership(sandbox):
 
 
 @e2e_test(
+    timeout_ms=12_000,
     id='phase0.5b6e67580a7778ab3b510f36',
     title='Complex Deep Prepend History Across 20 Captures',
     description='Validates the behavior exercised by Complex Deep Prepend History Across 20 Captures.',

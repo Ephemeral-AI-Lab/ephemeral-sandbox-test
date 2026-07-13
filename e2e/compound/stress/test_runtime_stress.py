@@ -43,6 +43,7 @@ SAMPLES = int(os.environ.get("E2E_EXEC_BENCH_SAMPLES", "5"))
 
 
 @e2e_test(
+    timeout_ms=95_000,
     id="phase0.f819b8be1f0456561482d5e8",
     title="Ex 08 Drain Retention Cap",
     description="Validates the behavior exercised by Ex 08 Drain Retention Cap.",
@@ -85,6 +86,7 @@ def test_EX_08_drain_retention_cap(sandbox, workspace_tracker):
 
 
 @e2e_test(
+    timeout_ms=131_000,
     id="phase0.3368783ac84e61a30339ea78",
     title="Fp 04 Finalize Vs Destroy Interleave Storm",
     description="Validates the behavior exercised by Fp 04 Finalize Vs Destroy Interleave Storm.",
@@ -196,6 +198,7 @@ def test_FP_04_finalize_vs_destroy_interleave_storm(sandbox, workspace_tracker):
 
 
 @e2e_test(
+    timeout_ms=57_000,
     id="phase0.bed7336af4cba54ee4a81ef1",
     title="Exec Command Layer Depth Shared Base Benchmark",
     description="Validates the behavior exercised by Exec Command Layer Depth Shared Base Benchmark.",

@@ -58,6 +58,7 @@ def _bulk_path(index):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.9848b4a85b912d82e2712c5d',
     title='Three Distinct Sessionless Writes Prepend Three Layers',
     description='Validates the behavior exercised by Three Distinct Sessionless Writes Prepend Three Layers.',
@@ -96,6 +97,7 @@ def test_three_distinct_sessionless_writes_prepend_three_layers(sandbox):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.6c7e047adb98410d538619fb',
     title='Blame Ladder On One Path Tracks Three Publish Owners',
     description='Validates the behavior exercised by Blame Ladder On One Path Tracks Three Publish Owners.',
@@ -134,6 +136,7 @@ def test_blame_ladder_on_one_path_tracks_three_publish_owners(sandbox):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.2c91975911705d2b363387b8',
     title='Identical Content Repeated At Head Is Noop Update',
     description='Validates the behavior exercised by Identical Content Repeated At Head Is Noop Update.',
@@ -161,6 +164,7 @@ def test_identical_content_repeated_at_head_is_noop_update(sandbox):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.0d0ebfbe0ce5fad6d9ed0f14',
     title='Identical Content Rewrite Not At Head Commits But Keeps Original Owner',
     description='Validates the behavior exercised by Identical Content Rewrite Not At Head Commits But Keeps Original Owner.',
@@ -192,6 +196,7 @@ def test_identical_content_rewrite_not_at_head_commits_but_keeps_original_owner(
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.b72718239ee5124f3d80374a',
     title='Delete Via Exec Then Recreate Via File Op',
     description='Validates the behavior exercised by Delete Via Exec Then Recreate Via File Op.',
@@ -224,6 +229,7 @@ def test_delete_via_exec_then_recreate_via_file_op(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.eb647c38f8fbfc26a369f710',
     title='Parent Hidden By Whiteout Can Be Recreated',
     description='Validates the behavior exercised by Parent Hidden By Whiteout Can Be Recreated.',
@@ -252,6 +258,7 @@ def test_parent_hidden_by_whiteout_can_be_recreated(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.daca7917331878e0992e5dbc',
     title='Opaque Directory Hides Lower Children And Allows Update',
     description='Validates the behavior exercised by Opaque Directory Hides Lower Children And Allows Update.',
@@ -291,6 +298,7 @@ def test_opaque_directory_hides_lower_children_and_allows_update(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=5_000,
     id='phase0.7076190fb802b6802e0ad5cf',
     title='Complex Deep Whiteout Opaque Hierarchy',
     description='Validates the behavior exercised by Complex Deep Whiteout Opaque Hierarchy.',
@@ -341,6 +349,7 @@ def test_complex_deep_whiteout_opaque_hierarchy(sandbox):
 
 
 @e2e_test(
+    timeout_ms=26_000,
     id='phase0.ab2e6ef3944bda519b0fc72b',
     title='Complex Deep Layer Stack Multi Path',
     description='Validates the behavior exercised by Complex Deep Layer Stack Multi Path.',
@@ -381,6 +390,7 @@ def test_complex_deep_layer_stack_multi_path(sandbox):
 
 
 @e2e_test(
+    timeout_ms=19_000,
     id='phase0.52b3a015ef4b3c87bedcd272',
     title='Complex Deep Layer Stack Single Path 50 Line Edits',
     description='Validates the behavior exercised by Complex Deep Layer Stack Single Path 50 Line Edits.',
@@ -418,6 +428,7 @@ def test_complex_deep_layer_stack_single_path_50_line_edits(sandbox):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.1d49661ca712919a270645dd',
     title='Complex Large File Windowed Reads Over Layer Boundary',
     description='Validates the behavior exercised by Complex Large File Windowed Reads Over Layer Boundary.',
@@ -486,6 +497,7 @@ def test_complex_large_file_windowed_reads_over_layer_boundary(sandbox):
 
 
 @e2e_test(
+    timeout_ms=11_000,
     id='phase0.5a8e9671dd464af35416e838',
     title='Complex Hundreds Of Files In One Captured Layer',
     description='Validates the behavior exercised by Complex Hundreds Of Files In One Captured Layer.',
@@ -535,6 +547,7 @@ def test_complex_hundreds_of_files_in_one_captured_layer(sandbox):
 
 
 @e2e_test(
+    timeout_ms=6_000,
     id='phase0.cdb49f675d8f7db887b7e94f',
     title='Complex Mixed History Blame At Scale',
     description='Validates the behavior exercised by Complex Mixed History Blame At Scale.',
@@ -582,6 +595,7 @@ def test_complex_mixed_history_blame_at_scale(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.a4dc3e471cfd1a2865c4e21b',
     title='First Sessionless Edit Of Workspace Base Uses Original For Untouched',
     description='Validates the behavior exercised by First Sessionless Edit Of Workspace Base Uses Original For Untouched.',
@@ -611,6 +625,7 @@ def test_first_sessionless_edit_of_workspace_base_uses_original_for_untouched(
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.c864c6233269df52aff62771',
     title='Blame Survives Deletion',
     description='Validates the behavior exercised by Blame Survives Deletion.',
@@ -642,6 +657,7 @@ def test_blame_survives_deletion(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.7ce2c61b3532fb5c55a65bab',
     title='Forbidden Publishes Do Not Advance Manifest',
     description='Validates the behavior exercised by Forbidden Publishes Do Not Advance Manifest.',
@@ -668,6 +684,7 @@ def test_forbidden_publishes_do_not_advance_manifest(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.623963ee9817b2d326ccb97e',
     title='Gitignored Route Blame Is Wholesale',
     description='Validates the behavior exercised by Gitignored Route Blame Is Wholesale.',
@@ -695,6 +712,7 @@ def test_gitignored_route_blame_is_wholesale(tmp_path):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.edbda533807888f52c5b435d',
     title='No Change Capture Is Noop',
     description='Validates the behavior exercised by No Change Capture Is Noop.',

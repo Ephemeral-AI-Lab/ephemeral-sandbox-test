@@ -39,6 +39,7 @@ def _assert_window(result, content, *, total_lines):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.dd58e5523fa91a024492dcfe',
     title='One Shot Exec Creates New File Then Sessionless Read And Blame',
     description='Validates the behavior exercised by One Shot Exec Creates New File Then Sessionless Read And Blame.',
@@ -62,6 +63,7 @@ def test_one_shot_exec_creates_new_file_then_sessionless_read_and_blame(sandbox)
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.d81eaff73cc8b7fa2e01d70d',
     title='File Write Then One Shot Sed Reassigns Only Edited Line',
     description='Validates the behavior exercised by File Write Then One Shot Sed Reassigns Only Edited Line.',
@@ -95,6 +97,7 @@ def test_file_write_then_one_shot_sed_reassigns_only_edited_line(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.81b71c5c6b2225c3a017189d',
     title='One Shot Rm Publishes Delete Whiteout For File Ops',
     description='Validates the behavior exercised by One Shot Rm Publishes Delete Whiteout For File Ops.',
@@ -120,6 +123,7 @@ def test_one_shot_rm_publishes_delete_whiteout_for_file_ops(sandbox):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.31f8cff318391a7d355f81b5',
     title='Rm Rf Parent Whiteout Then Recreate Child Path',
     description='Validates the behavior exercised by Rm Rf Parent Whiteout Then Recreate Child Path.',
@@ -149,6 +153,7 @@ def test_rm_rf_parent_whiteout_then_recreate_child_path(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.acc9e70a0c8d0d0dacf20643',
     title='One Shot Mv Over Published File Reassigns New Path Blame',
     description='Validates the behavior exercised by One Shot Mv Over Published File Reassigns New Path Blame.',
@@ -173,6 +178,7 @@ def test_one_shot_mv_over_published_file_reassigns_new_path_blame(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.e3d61f29614a8f333d7ccab3',
     title='File Write Script Then One Shot Exec Side Effect Is Published',
     description='Validates the behavior exercised by File Write Script Then One Shot Exec Side Effect Is Published.',
@@ -199,6 +205,7 @@ def test_file_write_script_then_one_shot_exec_side_effect_is_published(sandbox):
 
 
 @e2e_test(
+    timeout_ms=4_000,
     id='phase0.e42cc19df900868e63039500',
     title='Executable Bit Survives One Shot Capture And Projection',
     description='Validates the behavior exercised by Executable Bit Survives One Shot Capture And Projection.',
@@ -226,6 +233,7 @@ def test_executable_bit_survives_one_shot_capture_and_projection(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.27127b15536c27a7abf880d1',
     title='Published Symlink File Is Not Followed By File Ops',
     description='Validates the behavior exercised by Published Symlink File Is Not Followed By File Ops.',
@@ -253,6 +261,7 @@ def test_published_symlink_file_is_not_followed_by_file_ops(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.c29e57384e1a51137c2a4448',
     title='Published Symlink Parent Is Not Traversed By File Ops',
     description='Validates the behavior exercised by Published Symlink Parent Is Not Traversed By File Ops.',
@@ -278,6 +287,7 @@ def test_published_symlink_parent_is_not_traversed_by_file_ops(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.24d97dc6cdabe0dd3403a289',
     title='One Shot Fifo Is Protected Drop But Regular Note Publishes',
     description='Validates the behavior exercised by One Shot Fifo Is Protected Drop But Regular Note Publishes.',
@@ -301,6 +311,7 @@ def test_one_shot_fifo_is_protected_drop_but_regular_note_publishes(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.5fbd1a4b9ddbd273e2fb74cd',
     title='Exec Written Bom And Crlf Are Normalized On Read',
     description='Validates the behavior exercised by Exec Written Bom And Crlf Are Normalized On Read.',
@@ -324,6 +335,7 @@ def test_exec_written_bom_and_crlf_are_normalized_on_read(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.689f63ebd122510fc2cf9e1e',
     title='Non Utf8 Exec File Is Rejected By Read And Edit',
     description='Validates the behavior exercised by Non Utf8 Exec File Is Rejected By Read And Edit.',
@@ -349,6 +361,7 @@ def test_non_utf8_exec_file_is_rejected_by_read_and_edit(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.79b0434b3eea5dd53bb24d20',
     title='One Shot Exec Consumes Published File Write Content',
     description='Validates the behavior exercised by One Shot Exec Consumes Published File Write Content.',
@@ -372,6 +385,7 @@ def test_one_shot_exec_consumes_published_file_write_content(sandbox):
 
 
 @e2e_test(
+    timeout_ms=11_000,
     id='phase0.edb82e8b41f03fcb61327dcb',
     title='Complex Long Sessionless Interleave Exec Append Then File Edit',
     description='Validates the behavior exercised by Complex Long Sessionless Interleave Exec Append Then File Edit.',
@@ -415,6 +429,7 @@ def test_complex_long_sessionless_interleave_exec_append_then_file_edit(sandbox)
 
 
 @e2e_test(
+    timeout_ms=6_000,
     id='phase0.8ce0c28fcb5e98d37428d81e',
     title='Complex Tar Pack And Extract Exec Generated Tree',
     description='Validates the behavior exercised by Complex Tar Pack And Extract Exec Generated Tree.',
@@ -451,6 +466,7 @@ def test_complex_tar_pack_and_extract_exec_generated_tree(sandbox):
 
 
 @e2e_test(
+    timeout_ms=25_000,
     id='phase0.958c5cf15d5881fb1b61c322',
     title='Complex Two Hundred Parts Then Exec Build Concatenates All',
     description='Validates the behavior exercised by Complex Two Hundred Parts Then Exec Build Concatenates All.',
@@ -491,6 +507,7 @@ def test_complex_two_hundred_parts_then_exec_build_concatenates_all(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.a38f0995804dfabb59437495',
     title='Complex Multimeg Exec File Supports Windowed Reads',
     description='Validates the behavior exercised by Complex Multimeg Exec File Supports Windowed Reads.',
@@ -531,6 +548,7 @@ def test_complex_multimeg_exec_file_supports_windowed_reads(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.b5349b9fed3f38e9bfbdb9a1',
     title='Complex Single Wide Line Fails Read But File Published',
     description='Validates the behavior exercised by Complex Single Wide Line Fails Read But File Published.',
@@ -560,6 +578,7 @@ def test_complex_single_wide_line_fails_read_but_file_published(sandbox):
 
 
 @e2e_test(
+    timeout_ms=3_000,
     id='phase0.5f0c93e7586efe0e47e80867',
     title='Complex Large Text File Rejects Edit But Allows Small Read Window',
     description='Validates the behavior exercised by Complex Large Text File Rejects Edit But Allows Small Read Window.',
