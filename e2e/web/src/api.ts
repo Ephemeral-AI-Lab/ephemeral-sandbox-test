@@ -83,9 +83,9 @@ export class ControlRoomClient {
     return this.mutate("/previews", { selection });
   }
 
-  admit(preview: Preview): Promise<{ run_id: string }> {
+  admit(preview: Preview, idempotencyKey: string): Promise<{ run_id: string }> {
     if (!preview.admission_token) throw new Error("The reviewed run cannot be admitted without its controller token.");
-    return this.mutate("/runs", { preview_id: preview.preview_id, admission_token: preview.admission_token, idempotency_key: crypto.randomUUID() });
+    return this.mutate("/runs", { preview_id: preview.preview_id, admission_token: preview.admission_token, idempotency_key: idempotencyKey });
   }
 
   private async mutate<T>(path: string, body?: Record<string, unknown>): Promise<T> {

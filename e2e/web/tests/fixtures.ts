@@ -14,6 +14,18 @@ const familyCases = (domain_id: string, kind: string, familyIds: string[]): Cata
   effective_features: kind === "harness" ? [] : [`${domain_id}.${family_id}`],
   validations: [{ id: "contract", required: true }],
   execution_surface: kind === "harness" ? null : "runtime_cli",
+  ...(domain_id === "compound" ? {
+    compound: {
+      complexity_id: family_id,
+      subject_domain_ids: ["manager", "runtime"],
+      components: [
+        { id: "manager.management", role: "subject" },
+        { id: "runtime.command", role: "subject" },
+      ],
+      shared_workspace: true,
+      teardown_contract: "pytest fixture teardown",
+    },
+  } : {}),
 }));
 
 export const catalogCases: CatalogCase[] = [
@@ -67,7 +79,7 @@ export const preview: Preview = {
   preview_id: "preview-fixture",
   state: "ready",
   created_at: "2026-07-13T00:00:00Z",
-  expires_at: "2026-07-13T01:00:00Z",
+  expires_at: "2099-07-13T01:00:00Z",
   admission_token: "fixture-token",
   catalog_revision: catalog.catalog_revision,
   source_revision: catalog.source_revision,

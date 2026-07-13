@@ -66,8 +66,8 @@ function humanize(value: string | undefined): string {
 function statusIcon(state: string): IconName {
   if (["passed", "ready", "complete", "retained", "live"].includes(state)) return "check";
   if (["failed", "error", "blocked", "degraded", "unavailable", "purged", "invalid", "partial", "unsupported"].includes(state)) return "alert";
-  if (["running", "checking", "preparing", "reconnecting"].includes(state)) return "activity";
-  if (["queued", "not_run", "stale", "cancelled"].includes(state)) return "clock";
+  if (["running", "checking", "preparing", "recovering", "cancelling", "reconnecting"].includes(state)) return "activity";
+  if (["queued", "pending", "not_run", "skipped", "stale", "cancelled"].includes(state)) return "clock";
   return "info";
 }
 
@@ -107,16 +107,19 @@ function useControllerEvents() {
   const location = useLocation();
   const queryClient = useQueryClient();
   const source = useRef<EventSource | null>(null);
+  const recovery = useRef({ path: "", pending: false });
   const [connection, setConnection] = useState<ControllerConnection>("connecting");
+  const [streamVersion, setStreamVersion] = useState(0);
 
   useEffect(() => {
     const runId = /^\/e2e\/runs\/([^/]+)$/.exec(location.pathname)?.[1];
+    if (recovery.current.path !== location.pathname) recovery.current = { path: location.pathname, pending: false };
     const after = runId ? Number(queryClient.getQueryData<RunProjection>(["run", runId])?.applied_through_seq ?? 0) : 0;
     const path = runId ? `/api/v1/events?run_id=${encodeURIComponent(runId)}&after=${after}` : "/api/v1/events";
     source.current?.close();
     const stream = new EventSource(path);
     source.current = stream;
-    let resynced = false;
+    let disposed = false;
     let heartbeatReceived = false;
     let staleTimer: ReturnType<typeof setTimeout> | undefined;
     let disconnectedTimer: ReturnType<typeof setTimeout> | undefined;
@@ -133,35 +136,66 @@ function useControllerEvents() {
       staleTimer = setTimeout(() => {
         setConnection("stale");
         if (runId) void queryClient.refetchQueries({ queryKey: ["run", runId], type: "active" });
-      }, 20_000);
+      }, 15_000);
     };
     const refreshSnapshot = () => {
-      if (resynced) return;
-      resynced = true;
+      if (recovery.current.pending) return;
+      recovery.current.pending = true;
       heartbeatReceived = false;
       setConnection("reconnecting");
       armDisconnectedTimer();
       if (runId) void queryClient.refetchQueries({ queryKey: ["run", runId], type: "active" });
+      void queryClient.invalidateQueries({ queryKey: ["health"] });
+    };
+    const restartAfterSnapshot = () => {
+      if (!runId) { refreshSnapshot(); return; }
+      if (recovery.current.pending) return;
+      recovery.current.pending = true;
+      heartbeatReceived = false;
+      setConnection("reconnecting");
+      armDisconnectedTimer();
+      if (staleTimer) clearTimeout(staleTimer);
+      stream.close();
+      void queryClient.invalidateQueries({ queryKey: ["health"] });
+      void api.run(runId).then((snapshot) => {
+        if (disposed) return;
+        queryClient.setQueryData(["run", runId], snapshot);
+        const nextAfter = Number(snapshot.applied_through_seq ?? 0);
+        if (Number.isFinite(nextAfter) && nextAfter > after) setStreamVersion((value) => value + 1);
+        else setConnection("disconnected");
+      }).catch(() => {
+        if (!disposed) setConnection("disconnected");
+      });
     };
     setConnection("connecting");
     armDisconnectedTimer();
-    stream.onopen = () => { resynced = false; heartbeatReceived = false; setConnection("connecting"); armDisconnectedTimer(); };
+    stream.onopen = () => { heartbeatReceived = false; if (!recovery.current.pending) setConnection("connecting"); armDisconnectedTimer(); };
     stream.onerror = () => {
       if (heartbeatReceived) { heartbeatReceived = false; return; }
       refreshSnapshot();
     };
     stream.onmessage = (event) => {
-      resynced = false;
+      recovery.current.pending = false;
       confirmFreshStream();
       armStaleTimer();
       if (runId) void queryClient.invalidateQueries({ queryKey: ["run", runId] });
-      if (event.lastEventId && runId) void queryClient.invalidateQueries({ queryKey: ["runs"] });
+      if (event.lastEventId) void queryClient.invalidateQueries({ queryKey: ["runs"] });
+      void queryClient.invalidateQueries({ queryKey: ["health"] });
     };
-    stream.addEventListener("catalog.revision", () => void queryClient.refetchQueries({ queryKey: ["catalog"], type: "active" }));
-    stream.addEventListener("stream.heartbeat", () => { heartbeatReceived = true; confirmFreshStream(); armStaleTimer(); });
-    stream.addEventListener("stream.gap", refreshSnapshot);
-    return () => { if (staleTimer) clearTimeout(staleTimer); if (disconnectedTimer) clearTimeout(disconnectedTimer); stream.close(); };
-  }, [location.pathname, queryClient]);
+    stream.addEventListener("catalog.revision", () => {
+      void queryClient.refetchQueries({ queryKey: ["catalog"], type: "active" });
+      void queryClient.invalidateQueries({ queryKey: ["health"] });
+    });
+    stream.addEventListener("stream.heartbeat", () => {
+      recovery.current.pending = false;
+      heartbeatReceived = true;
+      confirmFreshStream();
+      armStaleTimer();
+      void queryClient.invalidateQueries({ queryKey: ["health"] });
+    });
+    stream.addEventListener("stream.gap", restartAfterSnapshot);
+    return () => { disposed = true; if (staleTimer) clearTimeout(staleTimer); if (disconnectedTimer) clearTimeout(disconnectedTimer); stream.close(); };
+  }, [location.pathname, queryClient, streamVersion]);
   return connection;
 }
 
@@ -209,7 +243,7 @@ function Shell({ children }: { children: ReactNode }) {
   const shellCatalog = useQuery({ queryKey: catalogKey(catalogSearch), queryFn: () => api.catalog(catalogSearch) });
   const activeRunId = health.data?.lane.active_run_id;
   const domains = Object.entries(shellCatalog.data?.facets.domain_id ?? {}).sort(([left], [right]) => left.localeCompare(right));
-  const healthState = health.isPending ? "checking" : health.isError ? "unavailable" : String(health.data.catalog.state ?? "ready");
+  const healthState = health.isPending ? "checking" : health.isError ? "unavailable" : String(health.data.catalog.state ?? "unknown");
 
   return <ControllerConnectionContext.Provider value={connection}><AppShell
     header={{ height: { base: 112, md: 58 } }}
@@ -241,7 +275,7 @@ function Shell({ children }: { children: ReactNode }) {
     </AppShell.Header>
 
     <nav aria-label="Skip links"><a className="skip-link" href="#main-content">Skip to main content</a></nav>
-    <AppShell.Main><main id="main-content" tabIndex={-1} className="route-main">{connection === "reconnecting" && <AsyncStateNotice state="reconnecting" />}{connection === "stale" && <AsyncStateNotice state="stream_stale" detail="No controller heartbeat arrived within 20 seconds; displayed data remains the last verified projection." />}{connection === "disconnected" && <AsyncStateNotice state="disconnected" detail="The live event stream did not recover; displayed data remains the last verified controller projection." />}{children}</main></AppShell.Main>
+    <AppShell.Main><main id="main-content" tabIndex={-1} className="route-main">{connection === "reconnecting" && <AsyncStateNotice state="reconnecting" />}{connection === "stale" && <AsyncStateNotice state="stream_stale" detail="No controller heartbeat arrived within 15 seconds; displayed data remains the last verified projection." />}{connection === "disconnected" && <AsyncStateNotice state="disconnected" detail="The live event stream did not recover; displayed data remains the last verified controller projection." />}{children}</main></AppShell.Main>
     <Drawer opened={healthOpened} onClose={healthControls.close} title="Runner health" position="right" size="min(100%, 560px)" classNames={{ root: "health-drawer", header: "sheet-header", body: "sheet-body" }}>
       {health.isPending ? <Loading label="Loading runner health…" /> : health.isError ? <Failure error={health.error} headline="Runner health is unavailable." /> : <HealthPanel health={health.data} onNavigate={healthControls.close} />}
     </Drawer>
@@ -281,6 +315,7 @@ function Page({ eyebrow, title, description, actions, children, className = "" }
 }
 
 function CatalogPage() {
+  const queryClient = useQueryClient();
   const [params, setParams] = useSearchParams();
   const [searchInput, setSearchInput] = useState(params.get("q") ?? "");
   const [selected, setSelected] = useState<Map<string, CatalogCase>>(new Map());
@@ -293,7 +328,14 @@ function CatalogPage() {
   const detailIsFullscreen = useMediaQuery("(max-width: 900px)") ?? false;
   const search = new URLSearchParams(params);
   const catalog = useQuery({ queryKey: catalogKey(search), queryFn: () => api.catalog(search) });
-  const refresh = useMutation({ mutationFn: () => api.refreshCatalog(), retry: false, onSuccess: () => catalog.refetch() });
+  const refresh = useMutation({
+    mutationFn: () => api.refreshCatalog(),
+    retry: false,
+    onSuccess: () => {
+      void catalog.refetch();
+      void queryClient.invalidateQueries({ queryKey: ["health"] });
+    },
+  });
 
   const selectionStale = Boolean(catalog.data && selectionRevision && selectionRevision !== catalog.data.catalog_revision);
   useEffect(() => { setSearchInput(params.get("q") ?? ""); }, [params]);
@@ -387,7 +429,7 @@ function CatalogFilterRail({ data, params, onFilter, onClearAll }: { data: Catal
     ["family_id", data.facets.family_id ?? {}],
     ["kind", data.facets.kind ?? {}],
   ];
-  return <aside className="filter-rail" aria-label="Catalog filters"><Group justify="space-between"><Text fw={750}>Filter catalog</Text>{[...params.keys()].length > 0 && <Button variant="subtle" size="compact-sm" onClick={onClearAll}>Clear</Button>}</Group>{groups.map(([field, values]) => <section key={field} className="filter-group"><Text className="filter-label">{humanize(field)}</Text><Stack gap={2}>{Object.entries(values).sort(([left], [right]) => left.localeCompare(right)).map(([value, count]) => <Button key={value} variant={params.get(field) === value ? "filled" : "subtle"} className="facet-button" aria-label={`${humanize(value)} (${count})`} onClick={() => onFilter(field, params.get(field) === value ? undefined : value)}><span>{humanize(value)}</span><strong>{count}</strong></Button>)}</Stack></section>)}</aside>;
+  return <aside className="filter-rail" aria-label="Catalog filters"><Group justify="space-between"><Text fw={750}>Filter catalog</Text>{[...params.keys()].length > 0 && <Button variant="subtle" size="compact-sm" onClick={onClearAll}>Clear</Button>}</Group>{groups.map(([field, values]) => <section key={field} className="filter-group"><Text className="filter-label">{humanize(field)}</Text><Stack gap={2}>{Object.entries(values).sort(([left], [right]) => left.localeCompare(right)).map(([value, count]) => { const active = params.get(field) === value; return <Button key={value} variant={active ? "filled" : "subtle"} className="facet-button" aria-label={`${humanize(value)} (${count})`} aria-pressed={active} onClick={() => onFilter(field, active ? undefined : value)}><span>{humanize(value)}</span><strong>{count}</strong></Button>; })}</Stack></section>)}</aside>;
 }
 
 function EmptyCatalog({ onClear }: { onClear: () => void }) {
@@ -406,7 +448,31 @@ function CatalogResults({ data, selected, detail, onToggle, onDetail, onPage }: 
 
 function CatalogDetail({ item, embedded = false }: { item: CatalogCase | null; embedded?: boolean }) {
   if (!item) return <aside className="catalog-detail"><FactGap>Select a case to inspect its published declaration.</FactGap></aside>;
-  return <aside aria-label="Case detail" className={`catalog-detail${embedded ? " catalog-detail-embedded" : ""}`}><div className="detail-kicker"><Status value={item.runnable ? "ready" : "blocked"} /><Text size="xs">Catalog declaration</Text></div><Title order={2}>{item.title}</Title><Identity>{item.test_id} · {item.case_id}</Identity><DetailSection title="Purpose"><Text>{item.purpose ?? item.description ?? "No purpose was published."}</Text></DetailSection><DetailSection title="Validations"><Stack gap={6}>{item.validations?.length ? item.validations.map((validation) => <div className="validation-row" key={validation.id}><Status value="declared" /><div><Text fw={650}>{validation.id}</Text><Text size="xs">{validation.required === false ? "Optional" : "Required"}{validation.phase ? ` · ${humanize(validation.phase)}` : ""}</Text></div></div>) : <FactGap>No named validations were published.</FactGap>}</Stack></DetailSection><DetailSection title="Product coverage">{item.kind === "harness" ? <Text>Harness diagnostic — no product boundary claimed.</Text> : (item.effective_features?.length ? <div className="plain-list">{item.effective_features.map((feature) => <Identity key={feature}>{feature}</Identity>)}</div> : <FactGap>No effective feature metadata was published.</FactGap>)}</DetailSection>{item.compound && <DetailSection title="Compound context"><Text>Complexity: {humanize(item.compound.complexity_id)}</Text><Text size="sm">Subject domains: {item.compound.subject_domain_ids?.map(humanize).join(", ") || "Not published"}</Text><Text size="sm">Component roles: {item.compound.component_roles?.map(humanize).join(", ") || "Not published"}</Text></DetailSection>}<DetailSection title="Execution boundary"><Text>{item.execution_surface ? humanize(item.execution_surface) : "No product execution surface is claimed."}</Text>{item.execution_label_ids?.length ? <Text size="sm">Labels: {item.execution_label_ids.map(humanize).join(", ")}</Text> : null}</DetailSection><DetailSection title="Run policy"><Text size="sm">{item.runnable ? "Runnable in the current published catalog." : "Admission is blocked for this declaration."}</Text></DetailSection><DetailSection title="History"><FactGap>Recent execution history is not published with catalog records.</FactGap></DetailSection><DetailSection title="Source"><Stack gap={4}>{item.source && <Identity>{item.source}</Identity>}{item.pytest_nodeid && <Identity>{item.pytest_nodeid}</Identity>}{!item.source && !item.pytest_nodeid && <FactGap>Source identity was not published.</FactGap>}</Stack></DetailSection></aside>;
+  return <aside aria-label="Case detail" className={`catalog-detail${embedded ? " catalog-detail-embedded" : ""}`}>
+    <div className="detail-kicker"><Status value={item.runnable ? "ready" : "blocked"} /><Text size="xs">Catalog declaration</Text></div>
+    <Title order={2}>{item.title}</Title>
+    <Identity>{item.test_id} · {item.case_id}</Identity>
+    <DetailSection title="Purpose"><Text>{item.purpose ?? item.description ?? "No purpose was published."}</Text></DetailSection>
+    <DetailSection title="Validations"><Stack gap={6}>{item.validations?.length ? item.validations.map((validation) => <div className="validation-row" key={validation.id}><Status value="declared" /><div><Text fw={650}>{validation.id}</Text><Text size="xs">{validation.required === false ? "Optional" : "Required"}{validation.phase ? ` · ${humanize(validation.phase)}` : ""}</Text></div></div>) : <FactGap>No named validations were published.</FactGap>}</Stack></DetailSection>
+    <DetailSection title="Product coverage">{item.kind === "harness" ? <Text>Harness diagnostic — no product boundary claimed.</Text> : (item.effective_features?.length ? <div className="plain-list">{item.effective_features.map((feature) => <Identity key={feature}>{feature}</Identity>)}</div> : <FactGap>No effective feature metadata was published.</FactGap>)}</DetailSection>
+    {item.compound && <DetailSection title="Compound context"><CompoundContext item={item} /></DetailSection>}
+    <DetailSection title="Execution boundary"><Text>{item.execution_surface ? humanize(item.execution_surface) : "No product execution surface is claimed."}</Text>{item.execution_label_ids?.length ? <Text size="sm">Labels: {item.execution_label_ids.map(humanize).join(", ")}</Text> : null}</DetailSection>
+    <DetailSection title="Run policy"><Text size="sm">{item.runnable ? "Runnable in the current published catalog." : "Admission is blocked for this declaration."}</Text></DetailSection>
+    <DetailSection title="History"><FactGap>Recent execution history is not published with catalog records.</FactGap></DetailSection>
+    <DetailSection title="Source"><Stack gap={4}>{item.source && <Identity>{item.source}</Identity>}{item.pytest_nodeid && <Identity>{item.pytest_nodeid}</Identity>}{!item.source && !item.pytest_nodeid && <FactGap>Source identity was not published.</FactGap>}</Stack></DetailSection>
+  </aside>;
+}
+
+function CompoundContext({ item, compact = false }: { item: CatalogCase; compact?: boolean }) {
+  const compound = item.compound;
+  if (!compound) return null;
+  return <div className={`compound-context${compact ? " compound-context-compact" : ""}`}>
+    <Text size="sm">Complexity: <Identity>{compound.complexity_id}</Identity></Text>
+    <Text size="sm">Subject domains: {compound.subject_domain_ids.map(humanize).join(", ") || "None published"}</Text>
+    <div className="compound-components">{compound.components.length ? compound.components.map((component) => <Text size="sm" key={`${component.id}:${component.role}`}><Identity>{component.id}</Identity> · {humanize(component.role)}</Text>) : <FactGap>No compound components were published.</FactGap>}</div>
+    <Text size="sm">Workspace: {compound.shared_workspace ? "Shared" : "Not shared"}</Text>
+    <Text size="sm">Teardown: <Identity>{compound.teardown_contract}</Identity></Text>
+  </div>;
 }
 
 function DetailSection({ title, children }: { title: string; children: ReactNode }) {
@@ -420,14 +486,82 @@ function SelectionTray({ selected, revision, onReview, disabledReason }: { selec
 
 function ReviewDialog({ opened, onClose, revision, selected }: { opened: boolean; onClose: () => void; revision: string; selected: Map<string, CatalogCase> }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const isMobile = useMediaQuery("(max-width: 680px)") ?? false;
+  const admissionKey = useRef<{ previewId: string; value: string } | null>(null);
+  const admissionHealthCheck = useRef(0);
+  const [, setExpiryVersion] = useState(0);
+  const [admissionResponseAt, setAdmissionResponseAt] = useState<number | null>(null);
+  const [admissionHealth, setAdmissionHealth] = useState<{ checked: boolean; runId: string | null }>({ checked: false, runId: null });
   const selection = [...selected.values()].map((item) => ({ case: { test_id: item.test_id, case_id: item.case_id } }));
   const selectionKey = selection.map((item) => `${item.case.test_id}:${item.case.case_id}`).join("|");
   const preview = useMutation({ mutationFn: () => api.preview({ schema_version: 1, catalog_revision: revision, include: selection, exclude: [] }), retry: false });
-  const admit = useMutation({ mutationFn: (value: Preview) => api.admit(value), retry: false, onSuccess: (run) => { onClose(); navigate(`/e2e/runs/${run.run_id}`); } });
-  useEffect(() => { if (!opened) return; preview.reset(); preview.mutate(); }, [opened, revision, selectionKey]);
+  const admit = useMutation({
+    mutationFn: ({ value, idempotencyKey }: { value: Preview; idempotencyKey: string }) => api.admit(value, idempotencyKey),
+    retry: false,
+    onError: (error) => {
+      setAdmissionResponseAt(Date.now());
+      const checksLane = error instanceof ApiError && (error.response.code === "active_run_conflict" || (error.status === 409 && error.response.code === "admission_blocked"));
+      if (!checksLane) return;
+      const check = ++admissionHealthCheck.current;
+      setAdmissionHealth({ checked: false, runId: null });
+      void api.health().then((freshHealth) => {
+        if (check !== admissionHealthCheck.current) return;
+        queryClient.setQueryData(["health"], freshHealth);
+        setAdmissionHealth({ checked: true, runId: freshHealth.lane.active_run_id });
+      }).catch(() => {
+        if (check !== admissionHealthCheck.current) return;
+        setAdmissionHealth({ checked: true, runId: null });
+        void queryClient.invalidateQueries({ queryKey: ["health"] });
+      });
+    },
+    onSuccess: (run) => {
+      void queryClient.invalidateQueries({ queryKey: ["health"] });
+      void queryClient.invalidateQueries({ queryKey: ["runs"] });
+      onClose();
+      navigate(`/e2e/runs/${run.run_id}`);
+    },
+  });
+  useEffect(() => {
+    if (!opened) return;
+    admissionHealthCheck.current += 1;
+    admissionKey.current = null;
+    setAdmissionResponseAt(null);
+    setAdmissionHealth({ checked: false, runId: null });
+    admit.reset();
+    preview.reset();
+    preview.mutate();
+  }, [opened, revision, selectionKey]);
   const current = preview.data;
-  const blockedReason = current?.blockers[0]?.message ?? (current ? `Preview is ${humanize(current.state).toLowerCase()}.` : "Start is unavailable while readiness is checked.");
+  const admissionBlockError = admit.error instanceof ApiError && (admit.error.response.code === "active_run_conflict" || (admit.error.status === 409 && admit.error.response.code === "admission_blocked")) ? admit.error : null;
+  const conflictRunId = admissionBlockError ? admissionHealth.runId : null;
+  const admissionConflict = Boolean(admissionBlockError && (admissionBlockError.response.code === "active_run_conflict" || conflictRunId));
+  const admissionConflictError = admissionConflict ? admissionBlockError : null;
+  const resolvingAdmissionBlock = Boolean(admissionBlockError?.response.code === "admission_blocked" && !admissionHealth.checked);
+  const conflictRun = useQuery({
+    queryKey: ["run", conflictRunId ?? "admission-conflict"],
+    queryFn: () => api.run(conflictRunId ?? ""),
+    enabled: Boolean(admissionConflict && conflictRunId),
+    retry: false,
+  });
+  const expiresAt = current ? Date.parse(current.expires_at) : Number.NaN;
+  const expiryInvalid = Boolean(current?.state === "ready" && !Number.isFinite(expiresAt));
+  const expiredByClock = Boolean(current?.state === "ready" && Number.isFinite(expiresAt) && expiresAt <= Date.now());
+  const refreshable = Boolean(current && (expiredByClock || expiryInvalid || current.state === "expired" || current.state === "stale"));
+  const canStart = Boolean(current?.state === "ready" && current.admission_token && !expiredByClock && !expiryInvalid);
+  const startAllowed = canStart && !admissionConflict && !resolvingAdmissionBlock;
+  const blockedReason = expiryInvalid
+    ? "The preview expiry could not be verified. Refresh the preview before starting."
+    : expiredByClock
+      ? "This preview expired before admission. Refresh it to verify readiness again."
+      : current?.blockers[0]?.message ?? (current ? `Preview is ${humanize(current.state).toLowerCase()}.` : "Start is unavailable while readiness is checked.");
+  useEffect(() => {
+    if (!opened || current?.state !== "ready" || !Number.isFinite(expiresAt)) return;
+    const remaining = expiresAt - Date.now();
+    if (remaining <= 0) return;
+    const timer = setTimeout(() => setExpiryVersion((value) => value + 1), Math.min(remaining + 10, 2_147_483_647));
+    return () => clearTimeout(timer);
+  }, [current?.expires_at, current?.preview_id, current?.state, expiresAt, opened]);
   const orderedCases = current?.ordered_cases ?? [];
   const boundaries = useMemo(() => {
     if (!current) return [];
@@ -435,19 +569,34 @@ function ReviewDialog({ opened, onClose, revision, selected }: { opened: boolean
   }, [current]);
   const validations = orderedCases.reduce((sum, item) => sum + (item.validations?.filter((validation) => validation.required !== false).length ?? 0), 0);
   const evidencePolicies = Object.entries(current?.policies ?? {}).filter(([key]) => /evidence|cleanup|retention|purge/i.test(key));
-  const previewHeadline = !current ? "Checking run readiness…" : current.state === "ready" ? `Ready to start ${current.case_count} exact cases.` : current.state === "stale" ? "Review is out of date." : current.state === "expired" ? "This review has expired." : current.state === "checking" ? "Checking run readiness…" : `Run blocked — ${current.blockers[0]?.reason_code ?? current.state}.`;
+  const previewHeadline = !current ? "Checking run readiness…" : expiredByClock ? "This review has expired." : expiryInvalid ? "Preview expiry is invalid." : current.state === "ready" ? `Ready to start ${current.case_count} exact cases.` : current.state === "stale" ? "Review is out of date." : current.state === "expired" ? "This review has expired." : current.state === "checking" ? "Checking run readiness…" : `Run blocked — ${current.blockers[0]?.reason_code ?? current.state}.`;
+
+  function requestPreview() {
+    admissionKey.current = null;
+    setAdmissionResponseAt(null);
+    admit.reset();
+    preview.reset();
+    preview.mutate();
+  }
+
+  function startRun() {
+    if (!current || !startAllowed) return;
+    setAdmissionResponseAt(null);
+    if (admissionKey.current?.previewId !== current.preview_id) admissionKey.current = { previewId: current.preview_id, value: crypto.randomUUID() };
+    admit.mutate({ value: current, idempotencyKey: admissionKey.current.value });
+  }
 
   return <Modal opened={opened} onClose={onClose} title="Review run" fullScreen={isMobile} size="min(920px, calc(100vw - 48px))" classNames={{ root: "review-dialog", header: "review-header", body: "review-body" }}>
     <Stack gap="lg">{preview.isPending && <Loading label="Checking run readiness…" detail="Start is unavailable while readiness is verified." />}{preview.isError && <Failure error={preview.error} headline="Readiness check failed." />}{current && <><div className="review-summary"><Text className="eyebrow">Exact admission preview</Text><Title order={2}>{previewHeadline}</Title><Text>Created <Identity>{formatTime(current.created_at)}</Identity> · expires <Identity>{formatTime(current.expires_at)}</Identity>.</Text></div>
-      <ReviewSection number="01" title="Scope"><Text fw={700}>{current.case_count} exact {current.case_count === 1 ? "case" : "cases"} · {validations} required validation {validations === 1 ? "contract" : "contracts"}</Text><Text size="sm">Catalog <Identity>{current.catalog_revision}</Identity>{current.parent_run_id ? <> · parent run <Identity>{current.parent_run_id}</Identity></> : null}</Text><Stack gap={4}>{orderedCases.map((item) => <div key={`${item.test_id}:${item.case_id}`} className="review-case"><span>{item.title}</span><Identity>{item.test_id}:{item.case_id}</Identity></div>)}</Stack></ReviewSection>
+      <ReviewSection number="01" title="Scope"><Text fw={700}>{current.case_count} exact {current.case_count === 1 ? "case" : "cases"} · {validations} required validation {validations === 1 ? "contract" : "contracts"}</Text><Text size="sm">Catalog <Identity>{current.catalog_revision}</Identity>{current.parent_run_id ? <> · parent run <Identity>{current.parent_run_id}</Identity></> : null}</Text><Stack gap={4}>{orderedCases.map((item) => <div key={`${item.test_id}:${item.case_id}`} className="review-case"><span>{item.title}</span><Identity>{item.test_id}:{item.case_id}</Identity>{item.compound && <CompoundContext item={item} compact />}</div>)}</Stack></ReviewSection>
       <ReviewSection number="02" title="Boundaries">{boundaries.length ? <div className="plain-list">{boundaries.map((value) => <span key={value}>{humanize(value)}</span>)}</div> : <FactGap>No product execution boundary is claimed by this scope.</FactGap>}</ReviewSection>
       <ReviewSection number="03" title="Execution"><Text>{orderedCases.every((item) => item.runnable !== false) ? "Every selected declaration is runnable in this preview." : "The preview includes a declaration that is not runnable."}</Text><div className="input-facts">{Object.entries(current.policies).map(([key, value]) => <div key={key}><Text size="xs">Policy · {humanize(key)}</Text><Identity>{jsonFact(value)}</Identity></div>)}</div>{!Object.keys(current.policies).length && <FactGap>No execution policies were published.</FactGap>}</ReviewSection>
       <ReviewSection number="04" title="Evidence and cleanup"><Text>{validations} required validation {validations === 1 ? "contract" : "contracts"} in scope.</Text>{evidencePolicies.length ? <div className="input-facts">{evidencePolicies.map(([key, value]) => <div key={key}><Text size="xs">{humanize(key)}</Text><Identity>{jsonFact(value)}</Identity></div>)}</div> : <FactGap>No evidence, cleanup, retention, or purge policy key was published in this preview.</FactGap>}</ReviewSection>
       <ReviewSection number="05" title="Inputs"><div className="input-facts"><div><Text size="xs">Frozen source revision</Text><Identity>{current.source_revision}</Identity></div><div><Text size="xs">Workspace template</Text><Identity>{current.workspace_template}</Identity></div><div><Text size="xs">Estimated run storage</Text><Identity>{formatBytes(current.disk_estimate)} · {current.disk_estimate} bytes</Identity></div><div><Text size="xs">Controller bundle</Text><Identity>{current.controller_bundle_digest}</Identity></div><div><Text size="xs">Runner bundle</Text><Identity>{current.runner_bundle_digest}</Identity></div><div><Text size="xs">Preview identity</Text><Identity>{current.preview_id}</Identity></div><div><Text size="xs">Preview digest</Text><Identity>{current.preview_digest}</Identity></div>{Object.entries(current.product_builds).map(([name, value]) => <div key={name}><Text size="xs">Product build · {humanize(name)}</Text><Identity>{jsonFact(value)}</Identity></div>)}</div>{!Object.keys(current.product_builds).length && <FactGap>The controller published no product-build identities.</FactGap>}</ReviewSection>
       <ReviewSection number="06" title="Preflight">{current.preflight.length ? <Stack gap={9}>{current.preflight.map((check) => <div className="preflight-row" key={check.id}><Status value={check.state} /><div><Text fw={650}>{humanize(check.id)}</Text><Text size="sm">{check.message}</Text><Text size="xs"><Identity>{check.reason_code}</Identity> · observed <Identity>{formatTime(check.observed_at)}</Identity></Text>{Object.keys(check.evidence_summary).length ? <Text size="xs">Evidence: <Identity>{jsonFact(check.evidence_summary)}</Identity></Text> : null}</div></div>)}</Stack> : <FactGap>No named preflight checks were published.</FactGap>}{current.blockers.map((blocker) => <Paper className="review-message review-blocker" key={`${blocker.reason_code}:${blocker.message}`}><Status value="blocked" /><div><Identity>{blocker.reason_code}</Identity><Text size="sm">{blocker.message}</Text></div></Paper>)}{current.warnings.map((warning, index) => <Paper className="review-message" key={index}><Status value="degraded" /><Identity>{jsonFact(warning)}</Identity></Paper>)}</ReviewSection>
       {admit.isPending && <AsyncStateNotice state="admission_pending" detail={`The reviewed ${current.case_count} cases are being admitted; duplicate Start is disabled.`} />}
-      {admit.isError && <Failure error={admit.error} headline="Starting one run failed." />}
-      <div className="dialog-actions"><Button variant="default" onClick={onClose}>Cancel</Button><div className="start-action"><Text size="xs" role="status">{current.state === "ready" && current.admission_token ? "Creates one run from this exact frozen preview." : current.state === "ready" ? "The ready preview did not include an admission token." : blockedReason}</Text><Button loading={admit.isPending} disabled={admit.isPending || current.state !== "ready" || !current.admission_token} onClick={() => admit.mutate(current)} leftSection={<Icon name="run" />}>Start run</Button></div></div>
+      {admit.isError && (resolvingAdmissionBlock ? <Loading label="Verifying the admission blocker…" detail="Refreshing lane ownership before offering a recovery action." /> : admissionConflict ? <Paper className="admission-conflict" role="status" aria-live="polite"><Status value="blocked" /><div><Title order={3}>Another run owns the execution lane.</Title><Text>{conflictRunId ? conflictRun.data ? <>Run <Identity>{conflictRunId}</Identity> is {humanize(conflictRun.data.state).toLowerCase()}; your reviewed scope was not started.</> : <>Run <Identity>{conflictRunId}</Identity> owns the lane; your reviewed scope was not started. Its state is being verified.</> : "The controller reported an active-run conflict, but the current lane owner is not available from health."}</Text>{admissionResponseAt && admissionConflictError && <Text size="xs">Conflict observed <Identity>{formatTime(new Date(admissionResponseAt).toISOString())}</Identity>. Request <Identity>{admissionConflictError.response.request_id}</Identity>.</Text>}{conflictRunId && <Button component={Link} to={`/e2e/runs/${conflictRunId}`} variant="light" leftSection={<Icon name="run" />}>Open active run</Button>}</div></Paper> : <Failure error={admit.error} headline="Starting one run failed." />)}
+      <div className="dialog-actions"><Button variant="default" onClick={onClose}>Cancel</Button><div className="start-action"><Text size="xs" role="status">{resolvingAdmissionBlock ? "Start is disabled while current lane ownership is verified." : admissionConflict ? "Start is disabled because another run owns the serial lane; this reviewed scope remains unchanged." : startAllowed ? "Creates one run from this exact frozen preview." : current.state === "ready" && !current.admission_token ? "The ready preview did not include an admission token." : blockedReason}</Text>{refreshable && <Button variant="subtle" onClick={requestPreview} leftSection={<Icon name="refresh" />}>Refresh preview</Button>}<Button loading={admit.isPending} disabled={admit.isPending || !startAllowed} onClick={startRun} leftSection={<Icon name="run" />}>Start run</Button></div></div>
     </>}</Stack>
   </Modal>;
 }
@@ -471,7 +620,7 @@ function RunsPage() {
   const selected = data.items.find((item) => item.run_id === selectedId) ?? data.items[0];
   const stateCounts = data.items.reduce<Record<string, number>>((counts, item) => ({ ...counts, [item.state]: (counts[item.state] ?? 0) + 1 }), {});
   return <Page eyebrow="Run history" title="Operational run history" description="Review the controller’s verified run index, then open a record for structured evidence and failure context." className="runs-page">
-    {health.data?.lane.active_run_id && <Paper className="active-run-callout"><Group gap="sm" wrap="nowrap"><span className="feature-icon"><Icon name="activity" /></span><div><Text className="eyebrow">Active serial lane</Text><Text fw={700}>Run <Identity>{health.data.lane.active_run_id}</Identity> is live.</Text></div></Group><Button component={Link} to={`/e2e/runs/${health.data.lane.active_run_id}`} variant="light">Open live run</Button></Paper>}
+    {health.data?.lane.active_run_id && <Paper className="active-run-callout"><Group gap="sm" wrap="nowrap"><span className="feature-icon"><Icon name="activity" /></span><div><Text className="eyebrow">Active serial lane</Text><Text fw={700}>Run <Identity>{health.data.lane.active_run_id}</Identity> owns the active lane.</Text></div></Group><Button component={Link} to={`/e2e/runs/${health.data.lane.active_run_id}`} variant="light">Open active run</Button></Paper>}
     {data.history_state === "partial" && <AsyncStateNotice state="history_partial" detail={`${data.corrupt_records} run records could not be read; visible rows remain verified.`} />}
     {data.items.length ? <><div className="runs-index-bar"><div><Text fw={700}>{data.items.length} verified {data.items.length === 1 ? "record" : "records"} on this page</Text><Text size="xs">All results · this controller publishes pagination, not server-side history filters.</Text></div><div className="state-summary">{Object.entries(stateCounts).map(([state, count]) => <span key={state}><Status value={state} /><strong>{count}</strong></span>)}</div></div><div className="runs-workspace"><div className="runs-list-column"><RunTable data={data} selectedId={selected?.run_id} onSelect={setSelectedId} />{data.page.next_cursor && <Group justify="flex-end" className="pagination-row"><Button onClick={() => { const next = new URLSearchParams(params); next.set("cursor", data.page.next_cursor ?? ""); setParams(next); }}>Next page</Button></Group>}</div><RunIndexDetail run={selected} /></div></> : <Paper className="empty-state"><span className="feature-icon"><Icon name="history" /></span><Title order={3}>{data.history_state === "partial" ? "No readable runs on this page." : cursor ? "No runs on this page." : "No runs yet."}</Title><Text>{data.history_state === "partial" ? "History is partial; unreadable records are reported above." : cursor ? "Return to the first page or use browser history." : "Start from Catalog to create the first run."}</Text><Button component={Link} to={cursor ? "/e2e/runs" : "/e2e/catalog"}>{cursor ? "First page" : "Open Catalog"}</Button></Paper>}
   </Page>;
@@ -553,7 +702,7 @@ function RunCaseDetail({ item, failures, evidencePurged, onEvidence }: { item: N
   if (!item) return <section className="run-case-detail"><FactGap>Select a case to inspect its projection.</FactGap></section>;
   const evidence = item.evidence ?? [];
   const caseFailures = failures.filter((failure) => failure.test_id === item.test_id && failure.case_id === item.case_id);
-  return <section className="run-case-detail" aria-label="Selected case detail"><div className="detail-hero"><div><Text className="eyebrow">Selected case</Text><Title order={2}>{item.title ?? item.test_id}</Title><Identity>{item.test_id}:{item.case_id}</Identity></div><Status value={item.state} /></div>{item.state === "not_run" && <Paper className="not-run-note"><Icon name="clock" /><Text>Not run · fail-fast</Text></Paper>}<div className="case-detail-grid"><DetailSection title="Phases">{Object.keys(item.phases ?? {}).length ? <Stack gap={7}>{Object.entries(item.phases ?? {}).map(([name, state]) => <div key={name} className="validation-row"><Status value={state} /><Text>Phase: {name} · {humanize(state)}</Text></div>)}</Stack> : <FactGap>No phase projection was published for this case.</FactGap>}</DetailSection><DetailSection title="Validations">{Object.keys(item.validations ?? {}).length ? <Stack gap={7}>{Object.entries(item.validations ?? {}).map(([name, state]) => <div key={name} className="validation-row"><Status value={state} /><Text>Validation: {name} · {humanize(state)}</Text></div>)}</Stack> : <FactGap>No validation projection was published for this case.</FactGap>}</DetailSection><DetailSection title="Cleanup">{Object.keys(item.cleanup ?? {}).length ? <Stack gap={7}>{Object.entries(item.cleanup ?? {}).map(([name, state]) => <div key={name} className="validation-row"><Status value={state} /><Text>Cleanup: {name} · {humanize(state)}</Text></div>)}</Stack> : <FactGap>No cleanup projection was published for this case.</FactGap>}</DetailSection><DetailSection title="Surfaces">{item.surfaces?.length ? <Stack gap={6}>{item.surfaces.map((surface, index) => <Identity key={index}>{jsonFact(surface)}</Identity>)}</Stack> : <FactGap>No surface proof metadata was published for this case.</FactGap>}</DetailSection></div><DetailSection title="Evidence">{evidencePurged ? <FactGap>Evidence was purged; verdict and validation lineage remain.</FactGap> : evidence.length ? <Stack gap={6}>{evidence.map((record, index) => <button type="button" className="evidence-row evidence-button" key={`${item.test_id}:${item.case_id}:${record.seq}:${index}`} onClick={() => onEvidence(record)}><Icon name={record.type === "log.recorded" ? "terminal" : "archive"} /><div><Text fw={700}>{humanize(record.type.replace(".recorded", ""))}</Text><Identity>{record.evidence_id ?? `Event at sequence ${record.seq}`}</Identity><Text size="xs">{record.availability ? humanize(record.availability) : "Availability not published"}</Text></div><Icon name="chevron" /></button>)}</Stack> : <FactGap>No case-level evidence records were published.</FactGap>}</DetailSection>{caseFailures.length ? <DetailSection title="Case failures"><Stack gap={6}>{caseFailures.map((caseFailure) => <Paper className="failure-line" key={caseFailure.id}><Text fw={700}>{caseFailure.message}</Text><Text size="xs">{humanize(caseFailure.severity)} · <Identity>{caseFailure.id}</Identity></Text></Paper>)}</Stack></DetailSection> : null}</section>;
+  return <section className="run-case-detail" aria-label="Selected case detail"><div className="detail-hero"><div><Text className="eyebrow">Selected case</Text><Title order={2}>{item.title ?? item.test_id}</Title><Identity>{item.test_id}:{item.case_id}</Identity></div><Status value={item.state} /></div>{item.state === "not_run" && <Paper className="not-run-note"><Icon name="clock" /><Text>Not run · reason not published by controller.</Text></Paper>}<div className="case-detail-grid"><DetailSection title="Phases">{Object.keys(item.phases ?? {}).length ? <Stack gap={7}>{Object.entries(item.phases ?? {}).map(([name, state]) => <div key={name} className="validation-row"><Status value={state} /><Text>Phase: {name} · {humanize(state)}</Text></div>)}</Stack> : <FactGap>No phase projection was published for this case.</FactGap>}</DetailSection><DetailSection title="Validations">{Object.keys(item.validations ?? {}).length ? <Stack gap={7}>{Object.entries(item.validations ?? {}).map(([name, state]) => <div key={name} className="validation-row"><Status value={state} /><Text>Validation: {name} · {humanize(state)}</Text></div>)}</Stack> : <FactGap>No validation projection was published for this case.</FactGap>}</DetailSection><DetailSection title="Cleanup">{Object.keys(item.cleanup ?? {}).length ? <Stack gap={7}>{Object.entries(item.cleanup ?? {}).map(([name, state]) => <div key={name} className="validation-row"><Status value={state} /><Text>Cleanup: {name} · {humanize(state)}</Text></div>)}</Stack> : <FactGap>No cleanup projection was published for this case.</FactGap>}</DetailSection><DetailSection title="Surfaces">{item.surfaces?.length ? <Stack gap={6}>{item.surfaces.map((surface, index) => <Identity key={index}>{jsonFact(surface)}</Identity>)}</Stack> : <FactGap>No surface proof metadata was published for this case.</FactGap>}</DetailSection></div><DetailSection title="Evidence">{evidencePurged ? <FactGap>Evidence was purged; verdict and validation lineage remain.</FactGap> : evidence.length ? <Stack gap={6}>{evidence.map((record, index) => <button type="button" className="evidence-row evidence-button" key={`${item.test_id}:${item.case_id}:${record.seq}:${index}`} onClick={() => onEvidence(record)}><Icon name={record.type === "log.recorded" ? "terminal" : "archive"} /><div><Text fw={700}>{humanize(record.type.replace(".recorded", ""))}</Text><Identity>{record.evidence_id ?? `Event at sequence ${record.seq}`}</Identity><Text size="xs">{record.availability ? humanize(record.availability) : "Availability not published"}</Text></div><Icon name="chevron" /></button>)}</Stack> : <FactGap>No case-level evidence records were published.</FactGap>}</DetailSection>{caseFailures.length ? <DetailSection title="Case failures"><Stack gap={6}>{caseFailures.map((caseFailure) => <Paper className="failure-line" key={caseFailure.id}><Text fw={700}>{caseFailure.message}</Text><Text size="xs">{humanize(caseFailure.severity)} · <Identity>{caseFailure.id}</Identity></Text></Paper>)}</Stack></DetailSection> : null}</section>;
 }
 
 function EvidenceDrawer({ runId, selected, evidencePurged, onClose }: { runId: string; selected: { caseIdentity: string; record: EvidenceRecord } | null; evidencePurged: boolean; onClose: () => void }) {
@@ -594,7 +743,10 @@ function EvidenceFailure({ error, onRetry }: { error: unknown; onRetry: () => vo
 function WorkspacesPage() {
   const workspaces = useQuery({ queryKey: ["workspaces"], queryFn: () => api.workspaces() });
   const queryClient = useQueryClient();
-  const prepare = useMutation({ mutationFn: () => api.prepareTemplate(), retry: false, onSuccess: () => queryClient.invalidateQueries({ queryKey: ["workspaces"] }) });
+  const prepare = useMutation({ mutationFn: () => api.prepareTemplate(), retry: false, onSuccess: () => {
+    void queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+    void queryClient.invalidateQueries({ queryKey: ["health"] });
+  } });
   if (workspaces.isPending) return <Page eyebrow="Workspace safety" title="Workspaces"><Loading label="Loading workspace ownership…" /></Page>;
   if (workspaces.isError) return <Page eyebrow="Workspace safety" title="Workspaces"><Failure error={workspaces.error} headline="Workspace records are unavailable." /></Page>;
   const data = workspaces.data;

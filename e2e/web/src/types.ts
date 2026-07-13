@@ -20,7 +20,13 @@ export type CatalogCase = {
   validations?: Array<{ id: string; required?: boolean; phase?: string; feature_id?: string }>;
   execution_surface?: string | null;
   execution_label_ids?: string[];
-  compound?: { complexity_id?: string; subject_domain_ids?: string[]; component_roles?: string[] };
+  compound?: {
+    complexity_id: string;
+    subject_domain_ids: string[];
+    components: Array<{ id: string; role: string }>;
+    shared_workspace: boolean;
+    teardown_contract: string;
+  };
   [key: string]: unknown;
 };
 

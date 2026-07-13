@@ -8,17 +8,25 @@ export const refreshBodies: string[] = [];
 export const templateBodies: string[] = [];
 export const runFetches: string[] = [];
 export const evidenceFetches: string[] = [];
+export const admissionBodies: string[] = [];
+export const healthFetches: string[] = [];
 export let catalogFixture = catalog;
 
 export const server = setupServer(
-  http.get("*/api/v1/health", () => HttpResponse.json(envelope(health))),
+  http.get("*/api/v1/health", ({ request }) => {
+    healthFetches.push(request.url);
+    return HttpResponse.json(envelope(health));
+  }),
   http.get("*/api/v1/catalog", () => HttpResponse.json(envelope(catalogFixture))),
   http.post("*/api/v1/catalog/refresh", async ({ request }) => {
     refreshBodies.push(await request.text());
     return HttpResponse.json(envelope({ state: "requested", coalesced: true }));
   }),
   http.post("*/api/v1/previews", () => HttpResponse.json(envelope(preview))),
-  http.post("*/api/v1/runs", () => HttpResponse.json(envelope({ run_id: run.run_id }))),
+  http.post("*/api/v1/runs", async ({ request }) => {
+    admissionBodies.push(await request.text());
+    return HttpResponse.json(envelope({ run_id: run.run_id }));
+  }),
   http.get("*/api/v1/runs", () => HttpResponse.json(envelope(runs))),
   http.get(`*/api/v1/runs/${run.run_id}`, ({ request }) => {
     runFetches.push(request.url);
@@ -48,7 +56,7 @@ export class FixtureEventSource {
     this.listeners.set(type, [...(this.listeners.get(type) ?? []), listener]);
   });
   close = vi.fn();
-  emit(type: string, lastEventId = "43") {
+  emit(type: string, lastEventId = type === "stream.gap" ? "" : "43") {
     const event = new MessageEvent(type, { lastEventId });
     if (type === "message") this.onmessage?.(event);
     for (const listener of this.listeners.get(type) ?? []) listener(event);
@@ -71,6 +79,8 @@ afterEach(() => {
   templateBodies.length = 0;
   runFetches.length = 0;
   evidenceFetches.length = 0;
+  admissionBodies.length = 0;
+  healthFetches.length = 0;
   catalogFixture = catalog;
   FixtureEventSource.instances.length = 0;
 });

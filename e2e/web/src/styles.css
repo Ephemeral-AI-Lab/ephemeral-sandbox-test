@@ -125,10 +125,10 @@ a { color: var(--slate-dark); text-underline-offset: 3px; }
 
 .status { display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: max-content; min-height: 26px; max-width: 100%; border: 1px solid currentColor; border-radius: 999px; padding: 3px 8px; font-size: 11px; font-weight: 760; line-height: 1.2; white-space: nowrap; }
 .status-passed, .status-ready, .status-complete, .status-retained, .status-live, .status-available { border-color: #9dcab0; background: var(--green-soft); color: var(--green); }
-.status-running, .status-checking, .status-preparing { border-color: #a9c4d2; background: var(--slate-soft); color: var(--slate-dark); }
+.status-running, .status-checking, .status-preparing, .status-recovering, .status-cancelling { border-color: #a9c4d2; background: var(--slate-soft); color: var(--slate-dark); }
 .status-failed, .status-error, .status-unavailable, .status-purged, .status-invalid { border-color: #ddb2b2; background: var(--red-soft); color: var(--red); }
 .status-blocked, .status-stale, .status-degraded, .status-reconnecting, .status-partial, .status-unsupported { border-color: #dfc093; background: var(--amber-soft); color: var(--amber); }
-.status-cancelled, .status-not_run, .status-queued, .status-unknown, .status-declared { border-color: var(--border-strong); background: var(--inset); color: var(--secondary); }
+.status-cancelled, .status-not_run, .status-skipped, .status-queued, .status-pending, .status-unknown, .status-declared { border-color: var(--border-strong); background: var(--inset); color: var(--secondary); }
 .status-inverse { border-color: #b8d3df; background: #f5fbfd; color: var(--slate-dark); }
 
 .loading-state { min-height: 240px; justify-content: center; border: 1px solid var(--border); border-radius: 11px; background: var(--surface); }
@@ -208,12 +208,19 @@ a { color: var(--slate-dark); text-underline-offset: 3px; }
 .review-section-title h3 { font-size: 16px; }
 .review-case { display: grid; gap: 2px; padding: 7px 0; }
 .review-case + .review-case { border-top: 1px solid var(--border); }
+.compound-context { display: grid; gap: 5px; }
+.compound-context-compact { margin-top: 6px; padding: 8px 10px; border-left: 2px solid #b7cbd5; background: var(--selection); }
+.compound-components { display: grid; gap: 3px; }
 .input-facts { display: grid; gap: 10px; }
 .input-facts > div { display: grid; gap: 3px; }
 .input-facts p { color: var(--secondary); }
 .preflight-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; }
 .review-message { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; margin-top: 10px; padding: 10px; border: 1px solid #dfc093; border-radius: 7px; background: var(--amber-soft); }
 .review-blocker { border-color: #ddb2b2; background: var(--red-soft); }
+.admission-conflict { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; padding: 14px; border: 1px solid #dfc093; border-radius: 11px; background: var(--amber-soft); }
+.admission-conflict > div { display: grid; gap: 7px; min-width: 0; }
+.admission-conflict h3 { font-size: 17px; }
+.admission-conflict .mantine-Button-root { width: max-content; margin-top: 3px; }
 .dialog-actions { display: flex; align-items: flex-end; justify-content: flex-end; gap: 10px; padding-top: 18px; border-top: 1px solid var(--border); }
 .start-action { display: flex; align-items: flex-end; gap: 10px; }
 .start-action > p { max-width: 260px; color: var(--secondary); text-align: right; }
@@ -442,6 +449,7 @@ a { color: var(--slate-dark); text-underline-offset: 3px; }
   .review-section-title { position: sticky; top: 62px; z-index: 2; padding-block: 4px; background: var(--surface); }
   .dialog-actions { align-items: stretch; flex-direction: column-reverse; position: sticky; bottom: 0; z-index: 3; margin-inline: -14px; padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); background: var(--surface); }
   .dialog-actions > .mantine-Button-root, .start-action, .start-action .mantine-Button-root { width: 100%; }
+  .admission-conflict .mantine-Button-root { width: 100%; }
   .start-action { align-items: stretch; flex-direction: column; }
   .start-action > p { max-width: none; text-align: left; }
   .active-run-callout, .runs-index-bar { align-items: stretch; flex-direction: column; }
