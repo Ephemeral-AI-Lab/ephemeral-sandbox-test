@@ -13,6 +13,7 @@ from harness.catalog.mode import source_tree_digest as catalog_source_tree_diges
 from harness.reducer.events import digest, read_events
 from harness.runner.controller import ControllerError, PreviewController
 from harness.runner import cli as cli_module
+from harness.runner import runner as runner_module
 from harness.runner.recovery import RecoveryAction, recover_interrupted_runs
 from harness.runner.runner import SerialPytestRunner
 from harness.runner.surfaces import SurfaceError, SURFACES, adapter_for
@@ -349,7 +350,7 @@ def test_serial_runner_fail_fast_and_cancellation_are_journal_causal(tmp_path, v
     description="The child resolves frozen node IDs relative to its run-owned e2e root, never the live checkout.",
     validations={"snapshot_child": "A frozen pytest node passes after the live source has been removed from consideration."},
 )
-def test_serial_runner_uses_one_child_from_run_owned_e2e_snapshot(tmp_path, validation):
+def test_serial_runner_uses_one_child_from_run_owned_e2e_snapshot(tmp_path, monkeypatch, validation):
     roots = _roots(tmp_path)
     case = _case("harness.runner.pytest-child", "default", source="e2e/test_child.py")
     case["pytest_nodeid"] = "test_child.py::test_ok"
@@ -366,12 +367,21 @@ def test_serial_runner_uses_one_child_from_run_owned_e2e_snapshot(tmp_path, vali
         f"    assert config.getoption('--product-root') == {str(roots.product_root)!r}\n",
         encoding="utf-8",
     )
+    launches = []
+    subprocess_run = runner_module.subprocess.run
+
+    def record_launch(*args, **kwargs):
+        launches.append(kwargs)
+        return subprocess_run(*args, **kwargs)
+
+    monkeypatch.setattr(runner_module.subprocess, "run", record_launch)
     runner = SerialPytestRunner(roots, producer_revision="sha256:runner")
     projection = runner.run_pytest("run-pytest-child")
 
-    with validation("snapshot_child", expected="passed", actual=lambda: projection["state"]):
+    with validation("snapshot_child", expected=("passed", "no batch timeout"), actual=lambda: (projection["state"], launches[0].get("timeout"))):
         assert projection["state"] == "passed"
         assert projection["cases"][0]["state"] == "passed"
+        assert "timeout" not in launches[0]
 
 
 @e2e_test(
@@ -388,12 +398,13 @@ def test_serial_runner_uses_real_case_results_and_surface_observations(tmp_path,
         encoding="utf-8",
     )
 
-    def run_case(run_id, test_name, body):
+    def run_case(run_id, test_name, body, *, timeout_ms=100):
         case = _case(f"harness.runner.{test_name}", "default", source="e2e/test_child.py")
         case.update(
             kind="product",
             execution_surface="cli",
             pytest_nodeid=f"test_child.py::{test_name}",
+            timeout_ms=timeout_ms,
         )
         case["validations"][0]["phase"] = "call"
         create_run(roots, _manifest(run_id, [case]))
@@ -415,13 +426,15 @@ def test_serial_runner_uses_real_case_results_and_surface_observations(tmp_path,
 
     passed = run_case("run-reporter-pass", "test_surface_pass", "assert True")
     failed = run_case("run-reporter-fail", "test_surface_fail", "assert False, 'real child failure'")
+    timed_out = run_case("run-reporter-timeout", "test_surface_timeout", "import time; time.sleep(0.2)", timeout_ms=20)
 
     with validation(
         "reporter",
-        expected=("passed", "failed", "cli"),
+        expected=("passed", "failed", "failed", "cli"),
         actual=lambda: (
             passed["cases"][0]["state"],
             failed["cases"][0]["state"],
+            timed_out["cases"][0]["state"],
             passed["cases"][0]["surfaces"][0]["observed_surface"],
         ),
     ):
@@ -437,6 +450,8 @@ def test_serial_runner_uses_real_case_results_and_surface_observations(tmp_path,
         assert failed["state"] == failed_case["state"] == "failed"
         assert failed_case["validations"] == {"assertion": "failed"}
         assert failed_case["phases"]["call"] == "failed"
+        assert timed_out["state"] == timed_out["cases"][0]["state"] == "failed"
+        assert "timeout" in timed_out["failures"][0]["message"].lower()
 
 
 @e2e_test(

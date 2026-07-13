@@ -100,7 +100,7 @@ class SerialPytestRunner:
         self._append(run_id, "run.state", {"from": "running", "to": verdict}, producer="controller")
         return load_projection(self.roots, run_id)
 
-    def run_pytest(self, run_id: str, *, timeout_seconds: int = 180) -> dict[str, Any]:
+    def run_pytest(self, run_id: str) -> dict[str, Any]:
         """Launch exactly one pytest child from the run-owned source snapshot.
 
         The run-owned reporter publishes each node's real setup/call/teardown
@@ -153,12 +153,8 @@ class SerialPytestRunner:
                 cwd=e2e_root,
                 capture_output=True,
                 text=True,
-                timeout=timeout_seconds,
                 env=child_environment,
             )
-        except subprocess.TimeoutExpired:
-            process = None
-            launch_error = "pytest child timed out"
         except OSError:
             process = None
             launch_error = "pytest child could not be started"

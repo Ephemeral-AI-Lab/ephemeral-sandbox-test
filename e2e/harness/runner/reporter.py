@@ -52,7 +52,6 @@ def record_surface(
 def pytest_configure(config: pytest.Config) -> None:
     """Load only the manifest and result path supplied by the parent runner."""
 
-    del config
     global _REPORT_PATH, _CASES, _ITEM_CASES, _CURRENT_NODEID, _REPORTS, _OBSERVATIONS
     _REPORT_PATH = None
     _CASES = {}
@@ -64,6 +63,8 @@ def pytest_configure(config: pytest.Config) -> None:
     manifest_path = os.environ.get("E2E_RUN_MANIFEST_PATH")
     if not report_path or not manifest_path:
         return
+    if not config.pluginmanager.hasplugin("timeout"):
+        raise pytest.UsageError("run-owned E2E execution requires pytest-timeout")
     manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
     cases = manifest.get("cases", [])
     _CASES = {
@@ -82,7 +83,9 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
     for item in items:
         manifest_nodeid = _matching_manifest_nodeid(item.nodeid)
         if manifest_nodeid is not None:
-            _ITEM_CASES[item.nodeid] = (manifest_nodeid, _CASES[manifest_nodeid])
+            case = _CASES[manifest_nodeid]
+            _ITEM_CASES[item.nodeid] = (manifest_nodeid, case)
+            item.add_marker(pytest.mark.timeout(case["timeout_ms"] / 1000))
 
 
 @pytest.hookimpl(hookwrapper=True, tryfirst=True)

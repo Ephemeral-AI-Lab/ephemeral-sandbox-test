@@ -96,7 +96,7 @@ def _cases(
         errors.append("pytest collection produced duplicate node IDs")
     e2e_families = {(node["domain_id"], node["family_id"]) for node in e2e_nodes}
     cases: list[dict[str, Any]] = []
-    for item in sorted(items, key=lambda collected: collected.nodeid):
+    for item in items:
         nodeid = item.nodeid
         source = "e2e/" + Path(str(item.path)).resolve().relative_to(roots.e2e_source_root).as_posix()
         try:

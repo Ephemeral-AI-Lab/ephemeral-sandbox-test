@@ -23,6 +23,7 @@ import yaml
 
 from harness.runner import cli as climod
 from harness.runner.config import CONFIG_YAML, REPO_ROOT, START_GATEWAY
+from harness.runner.reporter import record_surface
 from manager.management import helpers as mgmt
 
 _log = logging.getLogger("e2e.config")
@@ -88,7 +89,8 @@ def run_start_script(config_path):
     replace. Returns the script's CompletedProcess; callers decide whether
     failure is an error or the expected outcome.
     """
-    return subprocess.run(
+    started = time.monotonic()
+    completed = subprocess.run(
         [str(START_GATEWAY)],
         cwd=str(REPO_ROOT),
         env=_gateway_env(config_path),
@@ -96,6 +98,12 @@ def run_start_script(config_path):
         text=True,
         timeout=START_SCRIPT_TIMEOUT_S,
     )
+    record_surface(
+        "cli",
+        duration_ms=(time.monotonic() - started) * 1000,
+        evidence={"operation": "start-sandbox-docker-gateway", "returncode": completed.returncode},
+    )
+    return completed
 
 
 def _responding():
