@@ -441,7 +441,8 @@ def test_autosquash_startup_and_interruption_recovery(lane_a_daemon_yaml):
         assert len(aq.layers(sandbox_id)) == 5
         aq.patch_container_threshold(sandbox_id, 3)
         before_restart_records = len(aq.records(sandbox_id))
-        aq.restart_container(sandbox_id)
+        gateway_yaml = lane_a_daemon_yaml.with_name("gateway.yml")
+        aq.restart_container(sandbox_id, gateway_yaml)
         startup_eval, _ = aq.wait_for_record(
             sandbox_id,
             aq.EVALUATE,
@@ -491,7 +492,7 @@ def test_autosquash_startup_and_interruption_recovery(lane_a_daemon_yaml):
             lambda result: result.returncode == 0 and result.stdout.lstrip().startswith("{"),
             timeout_s=120,
         )
-        aq.wait_gateway(sandbox_id, timeout_s=120)
+        aq.recover_gateway(sandbox_id, gateway_yaml, timeout_s=120)
         recovery_eval, _ = aq.wait_for_record(
             sandbox_id,
             aq.EVALUATE,

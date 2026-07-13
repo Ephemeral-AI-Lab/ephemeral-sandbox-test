@@ -6,9 +6,7 @@ import concurrent.futures
 import json
 import os
 import re
-import tempfile
 import time
-from pathlib import Path
 
 import pytest
 
@@ -34,35 +32,6 @@ BURST_P95_DELTA_MS = 100
 BURST_CONVERGENCE_MS = 10_000
 HTTP_SILENCE_MS = 1_500
 LOAD_499_CONVERGENCE_MS = 60_000
-
-HTTP_CLIENT_SOURCE = r'''
-import json
-import socket
-import sys
-import time
-
-port = int(sys.argv[1])
-duration_s = float(sys.argv[2])
-sock = socket.create_connection(("127.0.0.1", port), timeout=2)
-sock.sendall(b"GET /ticks HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n")
-stream = sock.makefile("rb")
-while stream.readline() not in (b"\r\n", b""):
-    pass
-deadline = time.monotonic_ns() + int(duration_s * 1_000_000_000)
-last = None
-gaps_ms = []
-print("CLIENT_READY", flush=True)
-while time.monotonic_ns() < deadline:
-    line = stream.readline()
-    now = time.monotonic_ns()
-    if not line:
-        break
-    if last is not None:
-        gaps_ms.append((now - last) / 1_000_000)
-    last = now
-print("CLIENT_STATS " + json.dumps({"clock":"time.monotonic_ns","gaps_ms":gaps_ms}), flush=True)
-'''
-
 
 def _create_pair(daemon_yaml, enabled_threshold):
     aq.configure(daemon_yaml, None)
@@ -250,9 +219,14 @@ def test_autosquash_one_hundred_commit_burst(lane_a_daemon_yaml):
         disabled_raw = burst(disabled, "disabled")
         enabled_raw = burst(enabled, "enabled")
         last_enabled_ack = max(item[1] for item in enabled_raw)
-        completed, _ = aq.wait_for_record(enabled, aq.COMPLETED, timeout_s=30)
         aq.wait_below(enabled, 8, timeout_s=30)
-        converge_after_ack_ms = (time.monotonic_ns() - last_enabled_ack) / 1_000_000
+        converged_at = time.monotonic_ns()
+        completed_records = [
+            record for record in aq.records(enabled) if record.get("name") == aq.COMPLETED
+        ]
+        assert completed_records, aq.autosquash_records(enabled)
+        completed = max(completed_records, key=lambda record: float(record["ts"]))
+        converge_after_ack_ms = (converged_at - last_enabled_ack) / 1_000_000
         disabled_dist = aq.distribution([item[0] for item in disabled_raw])
         enabled_dist = aq.distribution([item[0] for item in enabled_raw])
         assert enabled_dist["p95"] <= disabled_dist["p95"] + BURST_P95_DELTA_MS, (
@@ -319,11 +293,10 @@ def _stop_command(sandbox_id, command_id):
 )
 @pytest.mark.hard
 def test_autosquash_live_http_tick_continuity(lane_a_daemon_yaml, tmp_path):
-    aq.configure(lane_a_daemon_yaml, 4)
+    aq.configure(lane_a_daemon_yaml, 5)
     workspace = tmp_path / "autosquash-http-workspace"
     workspace.mkdir()
     squash_helpers._compile_http_helper(workspace)
-    (workspace / "autosquash_http_client.py").write_text(HTTP_CLIENT_SOURCE, encoding="utf-8")
     created = mgmt.create_sandbox(workspace_root=str(workspace))
     sandbox_id = created.get("id") if isinstance(created, dict) else None
     assert sandbox_id, created
@@ -333,12 +306,20 @@ def test_autosquash_live_http_tick_continuity(lane_a_daemon_yaml, tmp_path):
     try:
         aq.execute(
             sandbox_id,
-            "cp /workspace/eos_squash_http /tmp/eos_squash_http && chmod 755 /tmp/eos_squash_http && "
-            "cp /workspace/autosquash_http_client.py /tmp/autosquash_http_client.py",
+            "cp /workspace/eos_squash_http /tmp/eos_squash_http && chmod 755 /tmp/eos_squash_http",
         )
         aq.write(sandbox_id, "http-one.txt", "one\n")
         aq.write(sandbox_id, "http-two.txt", "two\n")
-        aq.wait_evaluation_count(sandbox_id, 3)
+        aq.wait_for(
+            "worker observes the pre-trigger layer count",
+            lambda: aq.records(sandbox_id),
+            lambda records: any(
+                record.get("name") == aq.EVALUATE
+                and aq.attrs(record).get("observed_layers") == 3
+                for record in records
+            ),
+            timeout_s=30,
+        )
         session = filemod.create_workspace_session(sandbox_id)
         server = filemod.exec_command(
             sandbox_id,
@@ -356,7 +337,7 @@ def test_autosquash_live_http_tick_continuity(lane_a_daemon_yaml, tmp_path):
 
         client = filemod.exec_command(
             sandbox_id,
-            f"python3 /tmp/autosquash_http_client.py {port} 3",
+            f"cd /tmp && /tmp/eos_squash_http client {port} 3",
             workspace_session_id=session,
             yield_time_ms=100,
             timeout_ms=10_000,
@@ -364,6 +345,17 @@ def test_autosquash_live_http_tick_continuity(lane_a_daemon_yaml, tmp_path):
         assert not climod.is_error(client) and client.get("status") == "running", client
         client_id = client["command_session_id"]
         _wait_command_output(sandbox_id, client_id, "CLIENT_READY")
+        aq.write(sandbox_id, "http-live-pretrigger.txt", "pretrigger\n")
+        aq.wait_for(
+            "worker observes the live pre-trigger layer count",
+            lambda: aq.records(sandbox_id),
+            lambda records: any(
+                record.get("name") == aq.EVALUATE
+                and aq.attrs(record).get("observed_layers") == 4
+                for record in records
+            ),
+            timeout_s=30,
+        )
         completed_before = len(
             [record for record in aq.records(sandbox_id) if record.get("name") == aq.COMPLETED]
         )
@@ -371,7 +363,11 @@ def test_autosquash_live_http_tick_continuity(lane_a_daemon_yaml, tmp_path):
         completed, _ = aq.wait_for_record(
             sandbox_id, aq.COMPLETED, after=completed_before, timeout_s=30
         )
-        aq.wait_below(sandbox_id, 4, timeout_s=30)
+        assert aq.attrs(completed).get("blocks_committed", 0) > 0, (
+            completed,
+            aq.autosquash_records(sandbox_id),
+        )
+        aq.wait_below(sandbox_id, 5, timeout_s=30)
         probe = filemod.exec_command(
             sandbox_id,
             f"/tmp/eos_squash_http probe {port}",
@@ -383,7 +379,7 @@ def test_autosquash_live_http_tick_continuity(lane_a_daemon_yaml, tmp_path):
             line for line in client_done["output"].splitlines() if line.startswith("CLIENT_STATS ")
         )
         stats = json.loads(stats_line.removeprefix("CLIENT_STATS "))
-        assert stats["clock"] == "time.monotonic_ns"
+        assert stats["clock"] == "std::time::Instant"
         assert len(stats["gaps_ms"]) >= WARMUPS + SAMPLES, stats
         gaps = aq.distribution(stats["gaps_ms"][WARMUPS:])
         assert gaps["max"] <= HTTP_SILENCE_MS, gaps
@@ -437,9 +433,10 @@ def test_autosquash_base_plus_499_layers(lane_a_daemon_yaml):
             )
             acknowledgements.append(duration)
             last_ack = ended
-        completed, _ = aq.wait_for_record(sandbox_id, aq.COMPLETED, timeout_s=60)
         aq.wait_below(sandbox_id, 500, timeout_s=60)
-        convergence_after_ack_ms = (time.monotonic_ns() - last_ack) / 1_000_000
+        converged_at = time.monotonic_ns()
+        completed, _ = aq.wait_for_record(sandbox_id, aq.COMPLETED, timeout_s=60)
+        convergence_after_ack_ms = (converged_at - last_ack) / 1_000_000
         assert convergence_after_ack_ms <= LOAD_499_CONVERGENCE_MS, convergence_after_ack_ms
         assert aq.read(sandbox_id, "load-000.txt") == aq.stable_payload(0)
         assert aq.read(sandbox_id, "load-498.txt") == aq.stable_payload(498)

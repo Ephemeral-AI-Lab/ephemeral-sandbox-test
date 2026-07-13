@@ -210,6 +210,7 @@ fn client(args: &[String]) {
     let mut reader = BufReader::new(stream);
     let mut in_body = false;
     let mut last_tick: Option<Instant> = None;
+    let mut gaps_ms: Vec<f64> = Vec::new();
     let mut max_silence_ms = 0.0_f64;
     let mut ok_count = 0_u64;
     let mut failures = 0_u64;
@@ -237,7 +238,9 @@ fn client(args: &[String]) {
         }
         let now = Instant::now();
         if let Some(last) = last_tick {
-            max_silence_ms = max_silence_ms.max(now.duration_since(last).as_secs_f64() * 1000.0);
+            let gap_ms = now.duration_since(last).as_secs_f64() * 1000.0;
+            gaps_ms.push(gap_ms);
+            max_silence_ms = max_silence_ms.max(gap_ms);
         }
         last_tick = Some(now);
         ok_count += 1;
@@ -247,9 +250,14 @@ fn client(args: &[String]) {
             ready = true;
         }
     }
+    let gaps = gaps_ms
+        .iter()
+        .map(|value| format!("{value:.3}"))
+        .collect::<Vec<_>>()
+        .join(",");
     println!(
-        "CLIENT_STATS {{\"failures\":{},\"max_silence_ms\":{:.3},\"ok_count\":{}}}",
-        failures, max_silence_ms, ok_count
+        "CLIENT_STATS {{\"clock\":\"std::time::Instant\",\"failures\":{},\"max_silence_ms\":{:.3},\"ok_count\":{},\"gaps_ms\":[{}]}}",
+        failures, max_silence_ms, ok_count, gaps
     );
 }
 
@@ -1458,6 +1466,39 @@ def _wait_container_ready(rec, sandbox_id, timeout=60):
     raise AssertionError(f"{sandbox_id} daemon did not become ready")
 
 
+def _disable_autosquash_for_manual_boundary(rec, sandbox_id):
+    """Keep high-layer manual-squash cases independent of product autosquash."""
+    docker(
+        rec,
+        sandbox_id,
+        "sh",
+        "-eu",
+        "-c",
+        "sed -i '/^[[:space:]]*autosquash_policies:/,+1d' /eos/config/daemon.yml; "
+        "! grep -q autosquash_policies /eos/config/daemon.yml",
+        check=True,
+    )
+    started = time.monotonic()
+    restarted = subprocess.run(
+        ["docker", "restart", sandbox_id],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    rec.add_command(
+        {
+            "cmd": ["docker", "restart", sandbox_id],
+            "exit_code": restarted.returncode,
+            "elapsed_ms": measure.monotonic_ms(started),
+            "stdout": restarted.stdout,
+            "stderr": restarted.stderr,
+        }
+    )
+    assert restarted.returncode == 0, restarted.stderr
+    _wait_container_ready(rec, sandbox_id)
+    rec.note("autosquash omitted for the manual layer-count boundary")
+
+
 def _scenario_whiteout(case, rec, sandbox_factory):
     sandbox_id = sandbox_factory(rec)
     _exec(rec, sandbox_id, "printf seed > seed.txt")
@@ -1725,6 +1766,7 @@ def _scenario_overcap(case, rec, sandbox_factory):
 
 def _overcap_creation_boundary(case, rec, sandbox_factory, *, failure_attempts, final_teardown=True):
     sandbox_id = sandbox_factory(rec)
+    _disable_autosquash_for_manual_boundary(rec, sandbox_id)
     limit = int(os.environ.get("SQUASH_OVERCAP_LIMIT", "500"))
     over = limit + 1
     success_published = limit - 1
@@ -1987,6 +2029,7 @@ def _scenario_deep(case, rec, sandbox_factory):
 
 def _scenario_load_499(case, rec, sandbox_factory):
     sandbox_id = sandbox_factory(rec)
+    _disable_autosquash_for_manual_boundary(rec, sandbox_id)
     count = int(os.environ.get("SQUASH_LOAD_STACKS", "499"))
     assert 3 <= count <= 499, count
     _publish_small_files_concurrent(rec, sandbox_id, (f"load-{idx}" for idx in range(count)))
@@ -2023,6 +2066,7 @@ def _scenario_load_499(case, rec, sandbox_factory):
 
 def _scenario_load_499_http(case, rec, sandbox_factory):
     sandbox_id = sandbox_factory(rec)
+    _disable_autosquash_for_manual_boundary(rec, sandbox_id)
     count = int(os.environ.get("SQUASH_LOAD_STACKS", "499"))
     assert 3 <= count <= 499, count
     _publish_small_files_concurrent(rec, sandbox_id, (f"load-{idx}" for idx in range(count)))

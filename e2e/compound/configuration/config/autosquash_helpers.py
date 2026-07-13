@@ -456,7 +456,14 @@ def patch_container_threshold(sandbox_id: str, threshold: int) -> None:
     assert result.returncode == 0, result.stderr
 
 
-def restart_container(sandbox_id: str, timeout_s: float = 120) -> None:
+def recover_gateway(sandbox_id: str, gateway_yaml: Path, timeout_s: float = 120) -> dict:
+    helpers.start_gateway(gateway_yaml)
+    return wait_gateway(sandbox_id, timeout_s)
+
+
+def restart_container(
+    sandbox_id: str, gateway_yaml: Path, timeout_s: float = 120
+) -> None:
     result = subprocess.run(
         ["docker", "restart", sandbox_id], capture_output=True, text=True, timeout=60
     )
@@ -467,7 +474,7 @@ def restart_container(sandbox_id: str, timeout_s: float = 120) -> None:
         lambda returncode: returncode == 0,
         timeout_s,
     )
-    wait_gateway(sandbox_id, timeout_s)
+    recover_gateway(sandbox_id, gateway_yaml, timeout_s)
 
 
 def file_sha256(sandbox_id: str, path: str) -> str:
