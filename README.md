@@ -34,6 +34,16 @@ PYTHONPATH=e2e python3 -m harness.api \
 
 Open `http://127.0.0.1:5173/e2e/catalog`.
 
+Retention-cap, finalize/destroy storm, and layer-depth benchmark coverage share
+the `Compound > Stress` family. Selecting that family runs all three without
+per-test enable flags. The equivalent CLI command from `e2e/` is:
+
+```sh
+python3 -m pytest compound/stress \
+  --test-repository-root /absolute/path/to/ephemeral-sandbox-test \
+  --product-root /absolute/path/to/ephemeral-sandbox
+```
+
 ## Benchmark laboratory
 
 `benchmark/` is the complete external EphemeralOS benchmark application, not an

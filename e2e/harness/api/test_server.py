@@ -179,9 +179,11 @@ def test_fourteen_routes_use_existing_controller_owners(tmp_path, validation):
     create_attempt(roots, "attempt-api", run_id=run_id)
     workspace_purge = _request(api, "POST", "/api/v1/workspaces/attempt-api/purge", mutation=True)
     purge = _request(api, "POST", f"/api/v1/runs/{run_id}/purge", mutation=True)
+    purged_projection = load_projection(roots, run_id)
 
     with validation("routes", expected=14, actual=lambda: 14):
         assert health.status == catalog.status == refresh.status == preview.status == admitted.status == run.status == runs.status == cancel.status == workspaces.status == prepare.status == workspace_purge.status == purge.status == 200
+        assert purged_projection["last_event_at"] != "1970-01-01T00:00:00Z"
         assert events.status == 200 and events.headers["Content-Type"].startswith("text/event-stream")
         assert evidence.status == 404
         assert catalog.json()["data"]["facets"]["family_id"] == {"api": 1}

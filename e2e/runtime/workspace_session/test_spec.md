@@ -48,7 +48,7 @@ Verified against the current tree (grep for `exec_command`,
 | --- | --- | --- |
 | `runtime/file/helpers.py` | compatible | Route lifecycle setup/teardown through the trusted authenticated direct-daemon helper and assert `finalize_policy == "no_op"`. |
 | `runtime/file/**/test_*.py` (smoke, correctness, file_exec, blame, concurrent) | compatible | none — they assert by field lookup. Optional hardening: sessionless `file_exec` tests may assert the implicit exec response's `workspace_session_id` is present and no longer resolvable after terminal status (see EX-03). |
-| `runtime/command/test_exec_command_layer_depth_benchmark.py` | compatible | none — it never drains more than 512 completed commands per daemon. Add a comment noting the retention cap so future depth extensions know drains of old command ids expire. |
+| `compound/stress/test_runtime_stress.py` | compatible | the layer-depth benchmark never drains more than 512 completed commands per daemon; future depth extensions must account for old command-id expiry. |
 | `runtime/test_squash_remount.py` | compatible | `_publish` uses a bare exec to publish a layer — that is exactly the implicit `publish_then_destroy` path and keeps working. No change. |
 | `runtime/daemon_http/test_daemon_http.py` | compatible | none; optional: assert `finalize_policy` is present on snapshot workspaces (additive field). |
 | `runtime/network_isolation/test_network_isolation.py` | compatible | none — network profile axis is orthogonal to finalize policy. |
@@ -98,7 +98,7 @@ implicit `publish_then_destroy`. Both rows are covered below.
 | EX-05 | medium | publish rejection surfaces on the terminal response | bare `exec_command 'mkdir -p /workspace/layers && echo x > /workspace/layers/evil.txt'` (a layerstack-internal path) → terminal response `status: "ok"` **and** `publish_rejected: true` with `publish_reject_class: "protected_path"` → session is destroyed anyway (id unresolvable) → a new bare exec proves the mutation was discarded. The load-bearing assertions are `publish_rejected: true`, destroy-still-happens, and discard. |
 | EX-06 | medium | file op racing the last completion gets not-found | bare `exec_command 'sleep 2'` with `--yield-time-ms 0` → tight loop of `file_read --workspace-session-id <id>` until it flips to `operation_failed` not-found; assert no read ever returns partial/torn state and the loop terminates ≤ 30 s (finalize completed). |
 | EX-07 | medium | interrupt/timeout paths still finalize | bare exec `sleep 60` → Ctrl-C via `write_command_stdin` → cancelled terminal response carries `workspace_session_id`; session finalizes (id unresolvable). Repeat with `--timeout-ms 1000` and a timed-out status. |
-| EX-08 | hard | drain retention cap | env-gated (`E2E_RETENTION=1`): one `no_op` session; run 520 fast `exec_command`s to terminal in it; drain the **first** command id → `operation_failed` command-not-found; drain the newest → still readable; session destroy succeeds (ledger is empty — retention never touches the ledger). |
+| EX-08 | hard | drain retention cap | Compound stress case: one `no_op` session; run 520 fast `exec_command`s to terminal in it; drain the **first** command id → `operation_failed` command-not-found; drain the newest → still readable; session destroy succeeds (ledger is empty — retention never touches the ledger). |
 
 ### finalize policy cross-checks (FP)
 
@@ -137,12 +137,14 @@ succeeds (fixture-owned, mirroring `conftest.py`).
 ```sh
 cd e2e
 python3 -m pytest runtime/workspace_session -m smoke      # WS-01..03, EX-01..03
-python3 -m pytest runtime/workspace_session               # everything except env-gated
-E2E_RETENTION=1 python3 -m pytest runtime/workspace_session -k EX_08
+python3 -m pytest runtime/workspace_session               # workspace-session family
+python3 -m pytest compound/stress \
+  --test-repository-root /absolute/path/to/ephemeral-sandbox-test \
+  --product-root /absolute/path/to/ephemeral-sandbox      # retention + storm + benchmark
 ```
 
-Smoke tier must stay under ~60 s wall; medium under ~5 min; EX-08 and FP-04
-are opt-in. Public calls go through the three purpose-built CLI binaries;
+Smoke tier must stay under ~60 s wall; medium under ~5 min. EX-08, FP-04, and
+the layer-depth benchmark run together in Compound stress. Public calls go through the three purpose-built CLI binaries;
 internal workspace-session lifecycle uses only the trusted authenticated
 daemon helper's two allowlisted routes. Every assertion consumes structured
 JSON — no log scraping, per the suite charter.
@@ -172,8 +174,8 @@ Workspace-session proof runs:
 | `workspace-session-20260703-063439` | `pytest runtime/workspace_session -m smoke --log-cli-level=WARNING` | `6 passed, 12 deselected in 7.37s` |
 | `workspace-session-20260703-063450` | `pytest runtime/workspace_session --log-cli-level=WARNING` | `16 passed, 2 skipped in 35.46s` |
 | `workspace-session-20260703-063529` | `pytest runtime/workspace_session --log-cli-level=WARNING` | `16 passed, 2 skipped in 36.18s` |
-| `workspace-session-20260703-063228` | `E2E_RETENTION=1 pytest runtime/workspace_session -k EX_08 --log-cli-level=WARNING` | `1 passed, 17 deselected in 47.07s` |
-| `workspace-session-20260703-063323` | `E2E_STORM=1 pytest runtime/workspace_session -k FP_04 --log-cli-level=WARNING` | `1 passed, 17 deselected in 61.94s` |
+| `workspace-session-20260703-063228` | focused EX-08 proof before Compound relocation | `1 passed, 17 deselected in 47.07s` |
+| `workspace-session-20260703-063323` | focused FP-04 proof before Compound relocation | `1 passed, 17 deselected in 61.94s` |
 
 Post-family gates:
 
@@ -183,13 +185,11 @@ Post-family gates:
 | Global smoke | `pytest -m smoke --log-cli-level=WARNING`: `17 passed, 182 deselected in 24.44s`. |
 | Gateway-log grep | No daemon log file path references under `runtime/workspace_session`. |
 
-Allowed skips:
+Unified stress coverage:
 
-| Scope | Case | Reason |
+| Scope | Cases | Selection |
 | --- | --- | --- |
-| Normal workspace-session family | EX-08 | `E2E_RETENTION=1` not set. |
-| Normal workspace-session family | FP-04 | `E2E_STORM=1` not set. |
-| Full runtime tree | layer-depth benchmark | `E2E_EXEC_BENCH=1` not set. |
+| Compound stress | EX-08, FP-04, layer-depth benchmark | Always runnable through `pytest compound/stress` or the `Compound > Stress` catalog family. |
 
 Per-case evidence:
 
@@ -208,8 +208,8 @@ Per-case evidence:
 | EX-05 | PASS | `runtime/workspace_session/test_exec_finalize.py::test_EX_05_publish_rejection_surfaces_on_terminal_response` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/EX-05/verdict.json` |
 | EX-06 | PASS | `runtime/workspace_session/test_exec_finalize.py::test_EX_06_file_op_racing_last_completion_gets_not_found` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/EX-06/verdict.json` |
 | EX-07 | PASS | `runtime/workspace_session/test_exec_finalize.py::test_EX_07_interrupt_and_timeout_paths_still_finalize` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/EX-07/verdict.json` |
-| EX-08 | PASS | `runtime/workspace_session/test_exec_finalize.py::test_EX_08_drain_retention_cap` | `runtime/workspace_session/test-reports/workspace-session-20260703-063228/EX-08/verdict.json` |
+| EX-08 | PASS | `compound/stress/test_runtime_stress.py::test_EX_08_drain_retention_cap` | `runtime/workspace_session/test-reports/workspace-session-20260703-063228/EX-08/verdict.json` |
 | FP-01 | PASS | `runtime/workspace_session/test_exec_finalize.py::test_FP_01_remount_sweep_cannot_finalize_idle_implicit_session` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/FP-01/verdict.json` |
 | FP-02 | PASS | `runtime/workspace_session/test_exec_finalize.py::test_FP_02_empty_capture_skips_publish` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/FP-02/verdict.json` |
 | FP-03 | PASS | `runtime/workspace_session/test_exec_finalize.py::test_FP_03_back_to_back_implicit_execs_are_independent` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/FP-03/verdict.json` |
-| FP-04 | PASS | `runtime/workspace_session/test_exec_finalize.py::test_FP_04_finalize_vs_destroy_interleave_storm` | `runtime/workspace_session/test-reports/workspace-session-20260703-063323/FP-04/verdict.json` |
+| FP-04 | PASS | `compound/stress/test_runtime_stress.py::test_FP_04_finalize_vs_destroy_interleave_storm` | `runtime/workspace_session/test-reports/workspace-session-20260703-063323/FP-04/verdict.json` |

@@ -41,47 +41,99 @@ export type Health = {
 };
 
 export type Preview = {
+  schema_version: 1;
   preview_id: string;
   state: "checking" | "ready" | "blocked" | "stale" | "expired";
-  admission_token?: string;
+  created_at: string;
+  expires_at: string;
   catalog_revision: string;
-  expires_at?: string;
+  source_revision: string;
+  admission_token?: string;
   case_count: number;
   cases: CatalogCase[];
-  blockers?: Array<{ reason_code?: string; message?: string }>;
-  preflight?: Array<{ label?: string; state?: string; message?: string }>;
+  ordered_cases: CatalogCase[];
+  policies: Record<string, Json>;
+  workspace_template: string;
+  disk_estimate: number;
+  controller_bundle_digest: string;
+  runner_bundle_digest: string;
+  product_builds: Record<string, Json>;
+  preflight: Array<{
+    id: "catalog" | "source" | "recovery" | "lane" | "disk";
+    state: "ready" | "blocked";
+    reason_code: string;
+    message: string;
+    observed_at: string;
+    evidence_summary: Record<string, Json>;
+  }>;
+  blockers: Array<{ reason_code: string; message: string }>;
+  warnings: Json[];
+  parent_run_id: string | null;
+  preview_digest: string;
+};
+
+export type EvidenceRecord = {
+  type: "log.recorded" | "artifact.recorded" | "evidence.recorded";
+  seq: number;
+  evidence_id?: string;
+  availability?: "available" | "partial" | "unavailable" | "unsupported" | "invalid";
+  role?: "supporting" | "validation_bound";
+  storage_ref?: string;
+  sha256?: string;
+  media_type?: string;
+  [key: string]: Json | undefined;
+};
+
+export type EvidenceResponse = {
+  kind: "record" | "content";
+  runId: string;
+  evidenceId: string;
+  mediaType: string;
+  record?: Record<string, Json>;
+  text?: string;
+  retainedBytes?: number;
+  omittedBytes?: number;
+  omittedLines?: number;
 };
 
 export type RunProjection = {
+  schema_version?: 1;
+  kind?: "run_projection";
   run_id: string;
+  preview_id?: string;
   state: string;
   created_at?: string;
-  completed_at?: string;
+  catalog_revision?: string;
+  source_revision?: string;
+  parent_run_id?: string | null;
+  policies?: Record<string, Json>;
   case_counts?: Record<string, number>;
   cases?: Array<{
     test_id: string;
     case_id: string;
     title?: string;
     state: string;
-    validations?: Record<string, { state?: string; evidence?: Array<{ evidence_id?: string; availability?: string }> }>;
-    cleanup?: Record<string, { state?: string }>;
-    failures?: Array<{ id?: string; message?: string; severity?: string }>;
+    phases?: Record<string, string>;
+    validations?: Record<string, string>;
+    cleanup?: Record<string, string>;
+    surfaces?: Array<Record<string, Json>>;
+    evidence?: EvidenceRecord[];
   }>;
   first_failure_id?: string | null;
   primary_failure_id?: string | null;
-  failures?: Array<{ id?: string; message?: string; severity?: string }>;
+  failures?: Array<{ id: string; message: string; severity: string; seq?: number; test_id?: string | null; case_id?: string | null; entity_id?: string | null; caused_by_seq?: number | null }>;
   evidence_health?: string;
-  evidence_summary?: {
-    truncation?: { retained_bytes?: number; omitted_bytes?: number; omitted_lines?: number };
-  };
   retention?: { state?: string; [key: string]: Json | undefined };
   applied_through_seq?: number;
+  last_event_at?: string | null;
+  journal_health?: "complete" | "truncated";
   recovery?: { blocker?: Json; history?: Json[] };
+  recovery_bundle_match?: string;
   [key: string]: unknown;
 };
 
 export type RunsPage = {
-  items: Array<Pick<RunProjection, "run_id" | "state" | "created_at" | "case_counts" | "evidence_health" | "retention">>;
+  items: Array<Pick<RunProjection, "run_id" | "state" | "created_at" | "catalog_revision" | "source_revision" | "parent_run_id" | "case_counts" | "evidence_health" | "retention">>;
   history_state: "complete" | "partial";
   corrupt_records: number;
   page: { next_cursor: string | null };

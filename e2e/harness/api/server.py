@@ -9,12 +9,14 @@ from __future__ import annotations
 
 import base64
 from dataclasses import dataclass, field
+import datetime as dt
 import hashlib
 import json
 from pathlib import Path
 import re
 import secrets
 import shutil
+import time
 from typing import Any, Callable, Mapping
 from urllib.parse import parse_qs, urlsplit
 import uuid
@@ -318,8 +320,8 @@ class ControlRoomApi:
             self.roots,
             run_id,
             {
-                "at": "1970-01-01T00:00:00Z",
-                "monotonic_ns": 0,
+                "at": dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+                "monotonic_ns": time.monotonic_ns(),
                 "producer": "controller",
                 "producer_revision": self.controller.controller_bundle_digest,
                 "type": "retention.state",

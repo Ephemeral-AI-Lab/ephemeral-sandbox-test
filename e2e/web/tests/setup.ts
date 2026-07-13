@@ -1,4 +1,5 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
 import { HttpResponse, http } from "msw";
 import { setupServer } from "msw/node";
 import { catalog, envelope, health, preview, run, runs, workspaces } from "./fixtures";
@@ -6,6 +7,7 @@ import { catalog, envelope, health, preview, run, runs, workspaces } from "./fix
 export const refreshBodies: string[] = [];
 export const templateBodies: string[] = [];
 export const runFetches: string[] = [];
+export const evidenceFetches: string[] = [];
 export let catalogFixture = catalog;
 
 export const server = setupServer(
@@ -21,6 +23,10 @@ export const server = setupServer(
   http.get(`*/api/v1/runs/${run.run_id}`, ({ request }) => {
     runFetches.push(request.url);
     return HttpResponse.json(envelope(run));
+  }),
+  http.get(`*/api/v1/runs/${run.run_id}/evidence/log-runtime-file`, ({ request }) => {
+    evidenceFetches.push(request.url);
+    return new HttpResponse("first bounded log line\nsecond bounded log line\n", { headers: { "Content-Type": "text/plain; charset=utf-8", "X-E2E-Evidence-Retained-Bytes": "1024", "X-E2E-Evidence-Omitted-Bytes": "2048", "X-E2E-Evidence-Omitted-Lines": "16", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "Content-Security-Policy": "sandbox" } });
   }),
   http.post(`*/api/v1/runs/${run.run_id}/cancel`, () => HttpResponse.json(envelope({ run_id: run.run_id, cancellation_seq: 43 }))),
   http.post(`*/api/v1/runs/${run.run_id}/purge`, () => HttpResponse.json(envelope({ run_id: run.run_id, state: "purged" }))),
@@ -59,10 +65,12 @@ beforeAll(() => {
   server.listen({ onUnhandledRequest: "error" });
 });
 afterEach(() => {
+  cleanup();
   server.resetHandlers();
   refreshBodies.length = 0;
   templateBodies.length = 0;
   runFetches.length = 0;
+  evidenceFetches.length = 0;
   catalogFixture = catalog;
   FixtureEventSource.instances.length = 0;
 });

@@ -289,7 +289,12 @@ def _gateway_auth_token():
     token = os.environ.get("SANDBOX_GATEWAY_AUTH_TOKEN")
     if token:
         return token
-    token_file = Path(os.environ.get("SANDBOX_GATEWAY_TOKEN_FILE", "/tmp/eos-gateway.token"))
+    token_file = Path(
+        os.environ.get(
+            "SANDBOX_GATEWAY_TOKEN_FILE",
+            Path.home() / ".ephemeral-sandbox/gateway.token",
+        )
+    )
     if not token_file.is_file():
         return None
     token = token_file.read_text(encoding="utf-8").strip()

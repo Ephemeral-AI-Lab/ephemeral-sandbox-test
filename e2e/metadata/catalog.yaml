@@ -9,6 +9,9 @@ compound_families:
   - id: lifecycle
     title: Lifecycle
     summary: Shared create, use, observe, and destroy journeys.
+  - id: stress
+    title: Stress
+    summary: Cross-domain retention, race, and layer-depth pressure coverage.
 harness_families:
   - id: catalog
     title: Catalog

@@ -6,8 +6,8 @@ import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router";
 import { beforeEach, expect, it } from "vitest";
 import { App } from "../src/App";
-import { asyncStateFixture, catalog, catalogCases, run } from "./fixtures";
-import { FixtureEventSource, refreshBodies, runFetches, server, templateBodies } from "./setup";
+import { asyncStateFixture, catalog, catalogCases, health, run } from "./fixtures";
+import { evidenceFetches, FixtureEventSource, refreshBodies, runFetches, server, templateBodies } from "./setup";
 import { HttpResponse, http } from "msw";
 
 function renderRoom(path = "/e2e/catalog") {
@@ -105,6 +105,42 @@ it("treats a heartbeat-terminated SSE response as a healthy reconnect cycle", as
   expect(runFetches).toHaveLength(1);
 });
 
+it("labels a nonterminal run live only when both lane ownership and a fresh stream are verified", async () => {
+  server.use(
+    http.get("*/api/v1/health", () => HttpResponse.json({ schema_version: 1, data: { ...health, lane: { active_run_id: run.run_id } } })),
+    http.get(`*/api/v1/runs/${run.run_id}`, () => HttpResponse.json({ schema_version: 1, data: { ...run, state: "running" } })),
+  );
+  renderRoom(`/e2e/runs/${run.run_id}`);
+  await screen.findByText("Persisted nonterminal projection");
+  FixtureEventSource.instances[0].emit("stream.heartbeat");
+  await screen.findByText("Live controller projection");
+});
+
+it("renders durable projection states and terminal retention without placeholders", async () => {
+  const passed = {
+    ...run,
+    state: "passed",
+    evidence_health: "complete",
+    retention: { state: "purged" },
+    cases: [{
+      test_id: "harness.api.transport-evidence",
+      case_id: "default",
+      title: "Transport evidence",
+      state: "passed",
+      validations: { transport: "passed", evidence: "passed" },
+      cleanup: { workspace: "passed" },
+    }],
+  };
+  server.use(http.get(`*/api/v1/runs/${run.run_id}`, () => HttpResponse.json({ schema_version: 1, data: passed })));
+  renderRoom(`/e2e/runs/${run.run_id}`);
+  await screen.findByText("Required checks and cleanup passed. Evidence health: Complete.");
+  expect(screen.getByText("Validation: transport · Passed")).toBeTruthy();
+  expect(screen.getByText("Cleanup: workspace · Passed")).toBeTruthy();
+  expect(screen.getByRole("heading", { name: "Evidence was purged." })).toBeTruthy();
+  expect((screen.getByRole("button", { name: "Evidence purged" }) as HTMLButtonElement).disabled).toBe(true);
+  expect(document.body.textContent).not.toContain("{health}");
+});
+
 it("renders a newly discovered catalog record after an ordinary revision notification", async () => {
   const discovered = { ...catalogCases[0], test_id: "runtime.additive", case_id: "folder", title: "New folder catalog record", family_id: "additive", source: "e2e/runtime/additive/test_case.py" };
   const next = { ...catalog, catalog_revision: "sha256:fixture-catalog-v2", items: [...catalog.items, discovered], total: catalog.total + 1, facets: { ...catalog.facets, family_id: { ...catalog.facets.family_id, additive: 1 } } };
@@ -139,7 +175,11 @@ it("does not retry rejected controller actions and keeps response canaries out o
   expect(refreshCalls).toBe(1);
   window.history.pushState({}, "", `/e2e/runs/${run.run_id}`);
   window.dispatchEvent(new PopStateEvent("popstate"));
-  await screen.findByText("Evidence capped: retained 1024 bytes; 2048 bytes and 16 lines omitted.");
+  const evidenceButtons = await screen.findAllByRole("button", { name: /log-runtime-file/i });
+  await user.click(evidenceButtons[0]);
+  await screen.findByText("Response capped: retained 1024 bytes; 2048 bytes and 16 lines omitted.");
+  expect(screen.getByText(/first bounded log line/)).toBeTruthy();
+  expect(evidenceFetches).toHaveLength(1);
   expect(document.body.textContent).not.toContain(secret);
   expect(document.body.textContent).not.toContain(encoded);
 });

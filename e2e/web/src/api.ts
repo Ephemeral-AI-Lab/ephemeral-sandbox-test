@@ -1,4 +1,4 @@
-import type { CatalogPage, Health, Preview, RunProjection, RunsPage, Workspaces } from "./types";
+import type { CatalogPage, EvidenceResponse, Health, Json, Preview, RunProjection, RunsPage, Workspaces } from "./types";
 
 type Envelope<T> = { schema_version: 1; data?: T; error?: { code: string; message: string; retryable: boolean; request_id: string; field?: string } };
 
@@ -31,6 +31,42 @@ export class ControlRoomClient {
     return this.request(`/runs/${encodeURIComponent(runId)}`);
   }
 
+  async evidence(runId: string, evidenceId: string, stored: boolean): Promise<EvidenceResponse> {
+    const response = await fetch(`/api/v1/runs/${encodeURIComponent(runId)}/evidence/${encodeURIComponent(evidenceId)}`, { credentials: "same-origin" });
+    if (!response.ok) {
+      let envelope: Envelope<never> | undefined;
+      try {
+        envelope = (await response.json()) as Envelope<never>;
+      } catch {
+        throw invalidResponse(response.status);
+      }
+      throw new ApiError(envelope.error ?? { code: "invalid_response", message: "The controller returned an invalid response.", retryable: false, request_id: "unknown" }, response.status);
+    }
+    const mediaType = response.headers.get("Content-Type")?.split(";", 1)[0].trim().toLowerCase() || "application/octet-stream";
+    if (!stored) {
+      let envelope: Envelope<{ run_id: string; evidence: Record<string, Json> }>;
+      try {
+        envelope = (await response.json()) as Envelope<{ run_id: string; evidence: Record<string, Json> }>;
+      } catch {
+        throw invalidResponse(response.status);
+      }
+      if (envelope.schema_version !== 1 || !envelope.data || !envelope.data.evidence) throw invalidResponse(response.status);
+      return { kind: "record", runId: envelope.data.run_id, evidenceId, mediaType, record: envelope.data.evidence };
+    }
+    const bytes = await response.arrayBuffer();
+    const isText = mediaType.startsWith("text/") || /(?:json|xml|yaml|javascript|x-sh)$/i.test(mediaType);
+    return {
+      kind: "content",
+      runId,
+      evidenceId,
+      mediaType,
+      text: isText ? new TextDecoder().decode(bytes) : undefined,
+      retainedBytes: numberHeader(response.headers, "X-E2E-Evidence-Retained-Bytes"),
+      omittedBytes: numberHeader(response.headers, "X-E2E-Evidence-Omitted-Bytes"),
+      omittedLines: numberHeader(response.headers, "X-E2E-Evidence-Omitted-Lines"),
+    };
+  }
+
   workspaces(): Promise<Workspaces> {
     return this.request("/workspaces");
   }
@@ -41,18 +77,6 @@ export class ControlRoomClient {
 
   prepareTemplate(): Promise<Record<string, unknown>> {
     return this.mutate("/workspaces/template/prepare");
-  }
-
-  purgeWorkspace(workspaceId: string): Promise<Record<string, unknown>> {
-    return this.mutate(`/workspaces/${encodeURIComponent(workspaceId)}/purge`);
-  }
-
-  cancelRun(runId: string): Promise<Record<string, unknown>> {
-    return this.mutate(`/runs/${encodeURIComponent(runId)}/cancel`);
-  }
-
-  purgeRun(runId: string): Promise<Record<string, unknown>> {
-    return this.mutate(`/runs/${encodeURIComponent(runId)}/purge`);
   }
 
   preview(selection: Record<string, unknown>): Promise<Preview> {
@@ -92,6 +116,13 @@ export class ControlRoomClient {
 
 function invalidResponse(status: number): ApiError {
   return new ApiError({ code: "invalid_response", message: "The controller returned an invalid response.", retryable: false, request_id: "unknown" }, status);
+}
+
+function numberHeader(headers: Headers, name: string): number | undefined {
+  const value = headers.get(name);
+  if (value === null || value.trim() === "") return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
 }
 
 export const api = new ControlRoomClient();
