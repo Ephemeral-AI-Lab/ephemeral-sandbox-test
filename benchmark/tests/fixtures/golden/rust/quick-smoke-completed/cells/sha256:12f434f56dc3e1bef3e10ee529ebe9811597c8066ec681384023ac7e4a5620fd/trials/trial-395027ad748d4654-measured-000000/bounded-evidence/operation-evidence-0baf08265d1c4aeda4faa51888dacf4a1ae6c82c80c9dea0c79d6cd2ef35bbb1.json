@@ -1,0 +1,15 @@
+{
+  "schema_name": "eos_benchmark_operation_evidence",
+  "schema_version": 1,
+  "data": {
+    "operation": "file_write",
+    "evidence": {
+      "requested_bytes": 4096,
+      "observed_bytes": 4096,
+      "expected_sha256": "sha256:f56e5c26946b2c6a077bc9db8b4ba4b3bc771f73ea4ef296790953938a9e070c",
+      "observed_sha256": "sha256:f56e5c26946b2c6a077bc9db8b4ba4b3bc771f73ea4ef296790953938a9e070c",
+      "attribution": "workspace_session",
+      "attributed_layer_count": 0
+    }
+  }
+}

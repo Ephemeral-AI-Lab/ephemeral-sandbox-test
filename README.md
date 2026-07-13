@@ -15,3 +15,12 @@ PYTHONPATH=/absolute/path/to/ephemeral-sandbox-test/e2e python3 -m harness.catal
 
 The `.e2e-state/` and `.benchmark-state/` leaves are disposable runtime state and
 are intentionally ignored by Git.
+
+## Benchmark laboratory
+
+`benchmark/` is the complete external EphemeralOS benchmark application, not an
+optional E2E configuration directory. It owns the Python campaign service and
+the React/TypeScript laboratory while accessing the product only through
+explicit canonical roots, prebuilt executables, catalog export, and the
+authenticated gateway protocol. See `benchmark/README.md` for build and launch
+commands.

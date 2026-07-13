@@ -1,0 +1,15 @@
+{
+  "schema_name": "eos_benchmark_operation_evidence",
+  "schema_version": 1,
+  "data": {
+    "operation": "create_workspace",
+    "evidence": {
+      "requested_count": 5,
+      "created_count": 5,
+      "ready_count": 5,
+      "destroyed_count": 5,
+      "network_profile_matches": 5,
+      "registry_baseline_restored": true
+    }
+  }
+}

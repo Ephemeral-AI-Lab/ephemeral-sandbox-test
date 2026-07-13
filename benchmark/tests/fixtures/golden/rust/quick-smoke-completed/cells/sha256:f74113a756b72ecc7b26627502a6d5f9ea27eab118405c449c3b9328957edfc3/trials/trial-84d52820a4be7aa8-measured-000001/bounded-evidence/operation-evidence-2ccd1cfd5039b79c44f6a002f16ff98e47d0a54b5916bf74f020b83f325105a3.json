@@ -1,0 +1,23 @@
+{
+  "schema_name": "eos_benchmark_operation_evidence",
+  "schema_version": 1,
+  "data": {
+    "operation": "exec_command",
+    "evidence": {
+      "command_case": "noop",
+      "template_revision": 1,
+      "command_sha256": "sha256:b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+      "exit_code": 0,
+      "stdout": {
+        "byte_count": 0,
+        "truncated": false,
+        "sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "byte_count": 0,
+        "truncated": false,
+        "sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  }
+}

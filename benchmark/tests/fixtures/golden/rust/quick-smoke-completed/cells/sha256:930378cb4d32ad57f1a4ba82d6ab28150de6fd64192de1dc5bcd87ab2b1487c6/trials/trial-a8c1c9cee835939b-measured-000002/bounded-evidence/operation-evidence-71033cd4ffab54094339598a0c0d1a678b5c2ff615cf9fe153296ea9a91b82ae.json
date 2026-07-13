@@ -1,0 +1,312 @@
+{
+  "schema_name": "eos_benchmark_operation_evidence",
+  "schema_version": 1,
+  "data": {
+    "operation": "squash_layerstack",
+    "evidence": {
+      "requested_live_sessions": 1,
+      "observed_migrated_sessions": 1,
+      "observed_non_migrated_sessions": 0,
+      "dispositions": {
+        "migrated": 1,
+        "identity": 0,
+        "leased": 0,
+        "faulty": 0,
+        "session_gone": 0
+      },
+      "effective_remount_parallelism": 4,
+      "observed_squashed_block_count": 1,
+      "observed_replaced_layer_count": 8,
+      "source_layer_ids": [
+        "L000002-00000000",
+        "L000003-00000004",
+        "L000004-00000008",
+        "L000005-0000000c",
+        "L000006-00000010",
+        "L000007-00000014",
+        "L000008-00000018",
+        "L000009-0000001c"
+      ],
+      "retained_source_layer_ids": [],
+      "source_layer_allocations": [
+        {
+          "layer_id": "L000002-00000000",
+          "logical_bytes": {
+            "availability": "available",
+            "value": 4096
+          },
+          "allocated_bytes": {
+            "availability": "available",
+            "value": 16384
+          }
+        },
+        {
+          "layer_id": "L000003-00000004",
+          "logical_bytes": {
+            "availability": "available",
+            "value": 4096
+          },
+          "allocated_bytes": {
+            "availability": "available",
+            "value": 16384
+          }
+        },
+        {
+          "layer_id": "L000004-00000008",
+          "logical_bytes": {
+            "availability": "available",
+            "value": 4096
+          },
+          "allocated_bytes": {
+            "availability": "available",
+            "value": 16384
+          }
+        },
+        {
+          "layer_id": "L000005-0000000c",
+          "logical_bytes": {
+            "availability": "available",
+            "value": 4096
+          },
+          "allocated_bytes": {
+            "availability": "available",
+            "value": 16384
+          }
+        },
+        {
+          "layer_id": "L000006-00000010",
+          "logical_bytes": {
+            "availability": "available",
+            "value": 4096
+          },
+          "allocated_bytes": {
+            "availability": "available",
+            "value": 16384
+          }
+        },
+        {
+          "layer_id": "L000007-00000014",
+          "logical_bytes": {
+            "availability": "available",
+            "value": 4096
+          },
+          "allocated_bytes": {
+            "availability": "available",
+            "value": 16384
+          }
+        },
+        {
+          "layer_id": "L000008-00000018",
+          "logical_bytes": {
+            "availability": "available",
+            "value": 4096
+          },
+          "allocated_bytes": {
+            "availability": "available",
+            "value": 16384
+          }
+        },
+        {
+          "layer_id": "L000009-0000001c",
+          "logical_bytes": {
+            "availability": "available",
+            "value": 4096
+          },
+          "allocated_bytes": {
+            "availability": "available",
+            "value": 16384
+          }
+        }
+      ],
+      "reclaimed_bytes": {
+        "availability": "available",
+        "value": 131072
+      },
+      "s0_baseline": {
+        "monotonic_offset_ns": {
+          "availability": "available",
+          "value": 74380481667
+        },
+        "sampled": false,
+        "manifest_version": {
+          "availability": "available",
+          "value": 10
+        },
+        "root_hash": {
+          "availability": "available",
+          "value": "b02af51048b320052badfd25c011c56a384eaec374194605bdf3418ebb38d278"
+        },
+        "active_layer_count": {
+          "availability": "available",
+          "value": 10
+        },
+        "active_lease_count": {
+          "availability": "available",
+          "value": 1
+        },
+        "active_logical_bytes": {
+          "availability": "unavailable",
+          "source": "product_observability.layerstack",
+          "reason": "total_bytes unavailable"
+        },
+        "active_allocated_bytes": {
+          "availability": "unavailable",
+          "source": "product_observability.layerstack",
+          "reason": "total_allocated_bytes unavailable"
+        },
+        "storage_logical_bytes": {
+          "availability": "available",
+          "value": 34829
+        },
+        "storage_allocated_bytes": {
+          "availability": "available",
+          "value": 262144
+        },
+        "staging_entry_count": {
+          "availability": "available",
+          "value": 0
+        }
+      },
+      "s1_sampled_peak": {
+        "monotonic_offset_ns": {
+          "availability": "available",
+          "value": 74440508167
+        },
+        "sampled": true,
+        "manifest_version": {
+          "availability": "available",
+          "value": 11
+        },
+        "root_hash": {
+          "availability": "available",
+          "value": "a8c57117c8b0772202c860a9e539531cd90b7c0391ef545fc0df33d998196ca1"
+        },
+        "active_layer_count": {
+          "availability": "available",
+          "value": 3
+        },
+        "active_lease_count": {
+          "availability": "unavailable",
+          "source": "product_observability.trace",
+          "reason": "active lease count is not emitted at the commit boundary"
+        },
+        "active_logical_bytes": {
+          "availability": "unavailable",
+          "source": "product_observability.trace",
+          "reason": "trace attribute s2_active_logical_bytes unavailable"
+        },
+        "active_allocated_bytes": {
+          "availability": "unavailable",
+          "source": "product_observability.trace",
+          "reason": "trace attribute s2_active_allocated_bytes unavailable"
+        },
+        "storage_logical_bytes": {
+          "availability": "available",
+          "value": 66960
+        },
+        "storage_allocated_bytes": {
+          "availability": "available",
+          "value": 307200
+        },
+        "staging_entry_count": {
+          "availability": "available",
+          "value": 0
+        }
+      },
+      "s2_post_commit": {
+        "monotonic_offset_ns": {
+          "availability": "available",
+          "value": 74440508167
+        },
+        "sampled": false,
+        "manifest_version": {
+          "availability": "available",
+          "value": 11
+        },
+        "root_hash": {
+          "availability": "available",
+          "value": "a8c57117c8b0772202c860a9e539531cd90b7c0391ef545fc0df33d998196ca1"
+        },
+        "active_layer_count": {
+          "availability": "available",
+          "value": 3
+        },
+        "active_lease_count": {
+          "availability": "unavailable",
+          "source": "product_observability.trace",
+          "reason": "active lease count is not emitted at the commit boundary"
+        },
+        "active_logical_bytes": {
+          "availability": "unavailable",
+          "source": "product_observability.trace",
+          "reason": "trace attribute s2_active_logical_bytes unavailable"
+        },
+        "active_allocated_bytes": {
+          "availability": "unavailable",
+          "source": "product_observability.trace",
+          "reason": "trace attribute s2_active_allocated_bytes unavailable"
+        },
+        "storage_logical_bytes": {
+          "availability": "available",
+          "value": 66960
+        },
+        "storage_allocated_bytes": {
+          "availability": "available",
+          "value": 307200
+        },
+        "staging_entry_count": {
+          "availability": "available",
+          "value": 0
+        }
+      },
+      "s3_settled": {
+        "monotonic_offset_ns": {
+          "availability": "available",
+          "value": 74832297750
+        },
+        "sampled": false,
+        "manifest_version": {
+          "availability": "available",
+          "value": 11
+        },
+        "root_hash": {
+          "availability": "available",
+          "value": "a8c57117c8b0772202c860a9e539531cd90b7c0391ef545fc0df33d998196ca1"
+        },
+        "active_layer_count": {
+          "availability": "available",
+          "value": 3
+        },
+        "active_lease_count": {
+          "availability": "available",
+          "value": 1
+        },
+        "active_logical_bytes": {
+          "availability": "unavailable",
+          "source": "product_observability.layerstack",
+          "reason": "total_bytes unavailable"
+        },
+        "active_allocated_bytes": {
+          "availability": "unavailable",
+          "source": "product_observability.layerstack",
+          "reason": "total_allocated_bytes unavailable"
+        },
+        "storage_logical_bytes": {
+          "availability": "available",
+          "value": 33653
+        },
+        "storage_allocated_bytes": {
+          "availability": "available",
+          "value": 114688
+        },
+        "staging_entry_count": {
+          "availability": "available",
+          "value": 0
+        }
+      },
+      "manifest_reduced": true,
+      "content_equivalent": true,
+      "usable_session_count": 1
+    }
+  }
+}
