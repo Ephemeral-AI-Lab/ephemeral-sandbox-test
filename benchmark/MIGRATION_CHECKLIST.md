@@ -65,8 +65,8 @@ recovery retain historical Rust schema v1.
 - [x] Run offline parity, Vitest, fixture Playwright, and zero-Rust guard.
 - [x] Run feature-by-feature live Docker proof and retain append-only evidence.
 - [x] Run final Quick Smoke, cancellation, failure, recovery, SSE, and cleanup proof.
-- [ ] Commit and verify the external implementation.
-- [ ] Only then remove the product Cargo member and old benchmark tree.
+- [x] Commit and verify the external implementation.
+- [x] Only then remove the product Cargo member and old benchmark tree.
 
 Pre-cutover evidence: 131 offline pytest tests, 43 Vitest tests, and 40 fixture
 Playwright tests passed; the production web build passed. Fake process/socket,
@@ -83,3 +83,10 @@ comparison, accessibility, and cleanup. Its proof ledger recorded an unchanged
 source digest, identical baseline/final owned run and runtime entries, identical
 Docker container/network/volume sets, zero violations, and 37/37 authenticated
 mutations carrying both the same-origin header and mutation nonce.
+
+Cutover evidence: external implementation commit
+`5e8b023aba42d3b791442f39a82282e4df927b15` was clean and readable before
+the product cutover. Product commit
+`1ac36033e0e993b1e446c1db1e4ac803f02ac6fb` removed the Cargo member,
+lockfile package, and old benchmark tree, and added a CI boundary check that
+rejects their return without invoking Cargo or Rust tooling.
