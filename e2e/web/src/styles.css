@@ -287,7 +287,7 @@ an.catalog-command { display: flex; align-items: flex-end; justify-content: spac
 .evidence-gap h3 { color: var(--ink); font-size: 17px; }
 .evidence-invalid { border-color: #ddb2b2; background: var(--red-soft); color: var(--red); }
 .live-layout { display: grid; grid-template-columns: minmax(230px, 28%) minmax(0, 72%); gap: 12px; align-items: start; min-width: 0; }
-.case-tree, .run-case-detail, .logs-panel { border: 1px solid var(--border); border-radius: 11px; background: var(--surface); box-shadow: var(--shadow-sm); }
+.case-tree, .run-case-detail { border: 1px solid var(--border); border-radius: 11px; background: var(--surface); box-shadow: var(--shadow-sm); }
 .case-tree { position: sticky; top: 76px; max-height: calc(100dvh - 94px); overflow-y: auto; padding: 14px; }
 .tree-item { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: center; width: 100%; border: 1px solid transparent; padding: 8px; background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
 .tree-item:hover { background: var(--inset); }
@@ -340,7 +340,6 @@ an.catalog-command { display: flex; align-items: flex-end; justify-content: spac
 .chart-failure { color: var(--red); stroke-width: 2; opacity: .9; }
 .runtime-empty-chart { position: absolute; inset: 50% auto auto 50%; max-width: 300px; transform: translate(-50%, -50%); color: var(--secondary); text-align: center; }
 .failure-line { padding: 9px 11px; border: 1px solid #ddb2b2; border-radius: 7px; background: var(--red-soft); }
-.logs-panel { padding: 18px; }
 .evidence-viewer-heading h2 { margin: 4px 0; font-size: 27px; letter-spacing: -.03em; }
 .evidence-metadata { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; overflow: hidden; border: 1px solid var(--border); border-radius: 11px; background: var(--border); }
 .evidence-metadata > div { display: grid; gap: 3px; min-width: 0; padding: 11px; background: var(--inset); }

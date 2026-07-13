@@ -380,6 +380,8 @@ it("does not retry rejected controller actions and keeps response canaries out o
   window.history.pushState({}, "", `/e2e/runs/${run.run_id}`);
   window.dispatchEvent(new PopStateEvent("popstate"));
   const evidenceButtons = await screen.findAllByRole("button", { name: /log-runtime-file/i });
+  expect(evidenceButtons).toHaveLength(1);
+  expect(screen.queryByRole("heading", { name: "Log records" })).toBeNull();
   await user.click(evidenceButtons[0]);
   await screen.findByText("Response capped: retained 1024 bytes; 2048 bytes and 16 lines omitted.");
   expect(screen.getByText(/first bounded log line/)).toBeTruthy();
@@ -425,7 +427,7 @@ const runtimeProjection = (artifact = runtimeArtifact(), retention = { state: "r
   failures: [],
 });
 
-it("loads an accessible multi-scope runtime timeline lazily and preserves honest log emptiness", async () => {
+it("loads an accessible multi-scope runtime timeline lazily without a redundant log section", async () => {
   const runtimeLines = [
     { schema_version: 1, kind: "metadata", offset_ms: 0, run_id: run.run_id, test_id: "runtime.command", case_id: "default", attempt_id: "attempt-fixture", started_at: "2026-07-13T00:00:00Z", sample_interval_ms: 1000 },
     { schema_version: 1, kind: "sample", offset_ms: 0, phase: "setup", sandbox_id: "eos-fixture", scope: { kind: "sandbox", id: "sandbox" }, source: "docker_engine", metrics: { cpu_usec: 0, mem_cur: 268435456 } },
@@ -456,7 +458,7 @@ it("loads an accessible multi-scope runtime timeline lazily and preserves honest
   expect(runtimeView.getByText("Memory is unlimited for this scope; absence of a byte limit is not zero.")).toBeTruthy();
   expect(runtimeView.getByText(/Observed 3 of 4 expected ticks · 1 missed · 2 scopes/)).toBeTruthy();
   expect(runtimeView.getByText(/collector could not maintain its sampling interval/i)).toBeTruthy();
-  expect(screen.getByText("No log records were published for any case.")).toBeTruthy();
+  expect(screen.queryByRole("heading", { name: "Log records" })).toBeNull();
 
   const load = runtimeView.getByRole("button", { name: "Load timeline" });
   load.focus();
