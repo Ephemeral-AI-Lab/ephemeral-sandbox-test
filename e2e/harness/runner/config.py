@@ -7,7 +7,8 @@ Every value is overridable from the environment, e.g.::
 
 import os
 
-from harness.storage.roots import initialize_workspace_variant, parse_startup_roots, workspace_variant_root
+from harness.storage.roots import parse_startup_roots, workspace_variant_root
+from harness.storage.store import prepare_workspace_template
 
 ROOTS = parse_startup_roots()
 TEST_REPOSITORY_ROOT = ROOTS.test_repository_root
@@ -36,7 +37,7 @@ def workspace_variant(name=None):
 
 
 def initialize_workspace(name=None):
-    return str(initialize_workspace_variant(ROOTS, name or WORKSPACE_VARIANT))
+    return str(prepare_workspace_template(ROOTS, name or WORKSPACE_VARIANT))
 
 
 # Default workspace root = the selected state-owned variant. Override with

@@ -16,6 +16,7 @@ from harness.catalog.mode import source_tree_digest
 from harness.runner.controller import PreviewController
 from harness.runner.runner import SerialPytestRunner
 from harness.storage.roots import derive_roots, initialize_e2e_state
+from harness.storage.store import prepare_workspace_template
 
 
 def parser() -> argparse.ArgumentParser:
@@ -35,11 +36,13 @@ def build_server(arguments: argparse.Namespace) -> LoopbackControlRoomServer:
     initialize_e2e_state(roots)
     web_root = (arguments.web_dist or roots.e2e_source_root / "web" / "dist").expanduser().resolve(strict=True)
     bundle_digest = source_tree_digest(roots.e2e_source_root / "harness")
+    workspace_template = os.environ.get("E2E_WORKSPACE_VARIANT", "testbed")
     runner = SerialPytestRunner(roots, producer_revision=bundle_digest)
     controller = PreviewController(
         roots,
         controller_bundle_digest=bundle_digest,
         runner_bundle_digest=bundle_digest,
+        workspace_template=workspace_template,
     )
     authority = f"[{arguments.host}]:{arguments.port}" if ":" in arguments.host else f"{arguments.host}:{arguments.port}"
 
@@ -59,6 +62,7 @@ def build_server(arguments: argparse.Namespace) -> LoopbackControlRoomServer:
         runner=runner,
         run_start=start_run,
         catalog_refresh=lambda: _refresh_catalog(roots),
+        template_prepare=lambda: _prepare_template(roots, workspace_template),
     )
     return make_loopback_server(api, arguments.host, arguments.port, web_root=web_root)
 
@@ -97,6 +101,11 @@ def _refresh_catalog(roots) -> dict[str, object]:
             retryable=True,
         )
     return {"state": "published", "coalesced": False}
+
+
+def _prepare_template(roots, workspace_id: str) -> dict[str, object]:
+    prepare_workspace_template(roots, workspace_id)
+    return {"state": "prepared", "workspace_id": workspace_id}
 
 
 def main(argv: Sequence[str] | None = None) -> int:

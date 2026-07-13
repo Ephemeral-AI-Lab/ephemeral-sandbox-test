@@ -10,6 +10,7 @@ import socket
 import subprocess
 from threading import Thread
 from time import perf_counter
+from types import SimpleNamespace
 
 import pytest
 
@@ -372,6 +373,43 @@ def test_loopback_serves_the_built_control_room_on_the_same_origin(tmp_path, val
     with pytest.raises(app_module.ApiError) as failed:
         app_module._refresh_catalog(roots)
     assert failed.value.code == "catalog_refresh_failed"
+
+
+@e2e_test(
+    id="harness.api.workspace-template",
+    title="Control Room prepares the pytest workspace template",
+    description="The production composition prepares the same owned template root used by pytest and publishes it to the workspace inventory.",
+    validations={"template": "Preparing the default template creates the pytest root and one visible ownership record."},
+)
+def test_control_room_prepares_and_publishes_the_pytest_workspace_template(tmp_path, validation, monkeypatch):
+    test_root = tmp_path / "tests"
+    product_root = tmp_path / "product"
+    web_root = tmp_path / "web-dist"
+    (test_root / "e2e" / "harness").mkdir(parents=True)
+    product_root.mkdir()
+    web_root.mkdir()
+    (web_root / "index.html").write_text("<!doctype html>", encoding="utf-8")
+    captured = {}
+    monkeypatch.delenv("E2E_WORKSPACE_VARIANT", raising=False)
+    monkeypatch.setattr(app_module, "make_loopback_server", lambda api, *_args, **_kwargs: captured.setdefault("api", api))
+
+    app_module.build_server(SimpleNamespace(
+        test_repository_root=test_root,
+        product_root=product_root,
+        host="127.0.0.1",
+        port=9411,
+        web_dist=web_root,
+    ))
+    api = captured["api"]
+    before = _request(api, "GET", "/api/v1/workspaces")
+    prepared = _request(api, "POST", "/api/v1/workspaces/template/prepare", mutation=True)
+    after = _request(api, "GET", "/api/v1/workspaces")
+
+    with validation("template", expected="one prepared testbed template", actual=lambda: after.json()["data"]["template"]):
+        assert before.json()["data"]["template"] == []
+        assert prepared.json()["data"] == {"state": "prepared", "workspace_id": "testbed"}
+        assert (test_root / ".e2e-state" / "workspaces" / "templates" / "testbed").is_dir()
+        assert after.json()["data"]["template"] == [{"workspace_id": "testbed", "role": "template", "run_id": None}]
 
 
 @e2e_test(

@@ -28,6 +28,7 @@ import type { CatalogCase, CatalogPage, EvidenceRecord, Health, Json, Preview, R
 const catalogKey = (search: URLSearchParams) => ["catalog", search.toString()] as const;
 const terminalStates = new Set(["passed", "failed", "error", "cancelled"]);
 type ControllerConnection = "connecting" | "live" | "reconnecting" | "stale" | "disconnected";
+type PreviewSelectionClause = { case: { test_id: string; case_id: string } } | { query: Record<string, string | string[]> };
 const ControllerConnectionContext = createContext<ControllerConnection>("connecting");
 
 type IconName = "activity" | "alert" | "archive" | "catalog" | "check" | "chevron" | "clock" | "database" | "filter" | "folder" | "health" | "history" | "info" | "refresh" | "run" | "search" | "shield" | "terminal" | "x";
@@ -201,12 +202,11 @@ function useControllerEvents() {
 
 const navItems: Array<{ label: string; to: string; icon: IconName }> = [
   { label: "Catalog", to: "/e2e/catalog", icon: "catalog" },
-  { label: "Live run", to: "/e2e/runs", icon: "activity" },
   { label: "Runs", to: "/e2e/runs", icon: "history" },
   { label: "Workspaces", to: "/e2e/workspaces", icon: "folder" },
 ];
 
-function PrimaryNav({ activeRunId, compact = false }: { activeRunId?: string | null; compact?: boolean }) {
+function PrimaryNav({ compact = false }: { compact?: boolean }) {
   const location = useLocation();
   const navigation = useRef<HTMLElement | null>(null);
   useEffect(() => {
@@ -214,15 +214,9 @@ function PrimaryNav({ activeRunId, compact = false }: { activeRunId?: string | n
     const current = navigation.current.querySelector<HTMLElement>('[aria-current="page"]');
     if (!current) return;
     navigation.current.scrollLeft = Math.max(0, current.offsetLeft - (navigation.current.clientWidth - current.clientWidth) / 2);
-  }, [activeRunId, compact, location.pathname]);
+  }, [compact, location.pathname]);
   return <nav ref={navigation} aria-label="Primary" className={compact ? "primary-nav primary-nav-horizontal" : "primary-nav"}>
-    {navItems.map((item) => {
-      const to = item.label === "Live run" && activeRunId ? `/e2e/runs/${activeRunId}` : item.to;
-      if (item.label === "Live run" && !activeRunId) {
-        return <Button key={item.label} component={Link} to={to} variant="subtle" className="nav-link" leftSection={<Icon name={item.icon} />} aria-label="Live run — none active"><span>{item.label}</span></Button>;
-      }
-      return <Button key={item.label} component={NavLink} to={to} end variant="subtle" className="nav-link" leftSection={<Icon name={item.icon} />}><span>{item.label}</span></Button>;
-    })}
+    {navItems.map((item) => <Button key={item.label} component={NavLink} to={item.to} end variant="subtle" className="nav-link" leftSection={<Icon name={item.icon} />}><span>{item.label}</span></Button>)}
   </nav>;
 }
 
@@ -252,12 +246,12 @@ function Shell({ children }: { children: ReactNode }) {
   >
     <AppShell.Navbar className="control-sidebar">
       {!compactNavigation && <><div className="brand-block"><span className="brand-mark"><Icon name="activity" size={22} /></span><div><Text fw={750}>EphemeralOS</Text><Text size="xs">E2E Control Room</Text></div></div>
-        <PrimaryNav activeRunId={activeRunId} />
+        <PrimaryNav />
         <Divider />
         <section className="sidebar-domains" aria-label="Catalog domains">
           <Text className="sidebar-label">Catalog domains</Text>
           {shellCatalog.isPending && <Text size="xs">Loading counts…</Text>}
-          {domains.map(([domain, count]) => <div className="domain-count" key={domain}><span className="domain-glyph" aria-hidden="true" /><span>{humanize(domain)}</span><strong>{count}</strong></div>)}
+          {domains.map(([domain, count]) => <Link className="domain-count" key={domain} to={`/e2e/catalog?domain_id=${encodeURIComponent(domain)}`} aria-label={`${humanize(domain)} · ${count} cases`} aria-current={location.pathname === "/e2e/catalog" && catalogSearch.get("domain_id") === domain ? "page" : undefined}><span className="domain-glyph" aria-hidden="true" /><span>{humanize(domain)}</span><strong>{count}</strong></Link>)}
           {!shellCatalog.isPending && !domains.length && <Text size="xs">Counts load with Catalog.</Text>}
         </section>
         <div className="sidebar-runner">
@@ -267,7 +261,7 @@ function Shell({ children }: { children: ReactNode }) {
     </AppShell.Navbar>
 
     <AppShell.Header className="control-header">
-      {compactNavigation && <div className="mobile-primary"><div className="mobile-brand"><span className="brand-mark"><Icon name="activity" size={18} /></span><span>EphemeralOS</span></div><PrimaryNav activeRunId={activeRunId} compact /></div>}
+      {compactNavigation && <div className="mobile-primary"><div className="mobile-brand"><span className="brand-mark"><Icon name="activity" size={18} /></span><span>EphemeralOS</span></div><PrimaryNav compact /></div>}
       <div className="context-row">
         <div className="context-copy"><Text size="xs">Control room</Text><strong>{routeContext(location.pathname)}</strong></div>
         <Group gap="sm" wrap="nowrap"><span className={`connection connection-${connection}`}><Icon name={connection === "live" ? "activity" : "refresh"} size={14} />{humanize(connection)}</span><Button onClick={healthControls.open} variant="subtle" className="health-button" aria-label="Open runner health" leftSection={<Icon name="health" />}>Health</Button></Group>
@@ -320,6 +314,8 @@ function CatalogPage() {
   const [searchInput, setSearchInput] = useState(params.get("q") ?? "");
   const [selected, setSelected] = useState<Map<string, CatalogCase>>(new Map());
   const [selectionRevision, setSelectionRevision] = useState<string | null>(null);
+  const [reviewSelection, setReviewSelection] = useState<PreviewSelectionClause[]>([]);
+  const [reviewRevision, setReviewRevision] = useState<string | null>(null);
   const [detail, setDetail] = useState<CatalogCase | null>(null);
   const [reviewOpened, reviewControls] = useDisclosure(false);
   const [filtersOpened, filterControls] = useDisclosure(false);
@@ -328,11 +324,13 @@ function CatalogPage() {
   const detailIsFullscreen = useMediaQuery("(max-width: 900px)") ?? false;
   const search = new URLSearchParams(params);
   const catalog = useQuery({ queryKey: catalogKey(search), queryFn: () => api.catalog(search) });
+  const fullCatalog = useQuery({ queryKey: catalogKey(new URLSearchParams()), queryFn: () => api.catalog(new URLSearchParams()) });
   const refresh = useMutation({
     mutationFn: () => api.refreshCatalog(),
     retry: false,
     onSuccess: () => {
       void catalog.refetch();
+      void fullCatalog.refetch();
       void queryClient.invalidateQueries({ queryKey: ["health"] });
     },
   });
@@ -359,18 +357,37 @@ function CatalogPage() {
     setSelected((prior) => { const next = new Map(prior); next.has(identity) ? next.delete(identity) : next.set(identity, item); return next; });
     setSelectionRevision(catalog.data?.catalog_revision ?? null);
   }
-  function clearSelection() { setSelected(new Map()); setSelectionRevision(null); reviewControls.close(); }
+  function clearSelection() { setSelected(new Map()); setSelectionRevision(null); setReviewSelection([]); setReviewRevision(null); reviewControls.close(); }
+  function reviewSelected() {
+    setReviewSelection([...selected.values()].map((item) => ({ case: { test_id: item.test_id, case_id: item.case_id } })));
+    setReviewRevision(catalog.data?.catalog_revision ?? null);
+    reviewControls.open();
+  }
+  function reviewQuery(query: Record<string, string | string[]>, revision: string) {
+    setSelected(new Map());
+    setSelectionRevision(null);
+    setReviewSelection([{ query }]);
+    setReviewRevision(revision);
+    reviewControls.open();
+  }
+  function reviewFacet(field: string, value: string) {
+    const query = Object.fromEntries([...params.entries()].filter(([name]) => name !== "cursor" && name !== "limit"));
+    query[field] = value;
+    reviewQuery(query, catalog.data?.catalog_revision ?? "");
+  }
   function openDetail(item: CatalogCase) { setDetail(item); if (detailIsSheet) detailControls.open(); }
 
   if (catalog.isPending) return <Page eyebrow="Catalog" title="Know what the system can prove"><Loading label="Loading test catalog…" detail="Reading the current published revision." /></Page>;
   if (catalog.isError) return <Page eyebrow="Catalog" title="Know what the system can prove"><Failure error={catalog.error} headline="Test catalog is unavailable." /><Button onClick={() => catalog.refetch()} leftSection={<Icon name="refresh" />}>Refresh catalog</Button></Page>;
   const data = catalog.data;
   const hasFilters = [...params.keys()].some((key) => key !== "cursor");
+  const fullData = fullCatalog.data ?? (!hasFilters ? data : null);
+  const fullCatalogKinds = Object.keys(fullData?.facets.kind ?? {});
 
   return <Page eyebrow="Test catalog" title="Know what the system can prove" description="Find a behavior, inspect its declared boundary and evidence contract, then freeze an exact revision-qualified scope for review." className="catalog-page">
     <section className="catalog-command" aria-label="Catalog search and actions">
       <form onSubmit={submitSearch} className="search-form"><TextInput aria-label="Search catalog" placeholder="Search behavior, purpose, feature, validation, owner, or ID" value={searchInput} onChange={(event) => setSearchInput(event.currentTarget.value)} leftSection={<Icon name="search" />} /><Button type="submit">Search</Button></form>
-      <Button variant="light" loading={refresh.isPending} onClick={() => refresh.mutate()} leftSection={<Icon name="refresh" />}>{refresh.isPending ? "Updating catalog" : "Refresh catalog"}</Button>
+      <div className="catalog-actions"><Button loading={!fullData} disabled={!fullData || !fullCatalogKinds.length || refresh.isError} onClick={() => fullData && reviewQuery({ kind: fullCatalogKinds }, fullData.catalog_revision)} leftSection={<Icon name="run" />}>{fullData ? `Run all ${fullData.total} ${fullData.total === 1 ? "case" : "cases"}` : "Loading full catalog"}</Button><Button variant="light" loading={refresh.isPending} onClick={() => refresh.mutate()} leftSection={<Icon name="refresh" />}>{refresh.isPending ? "Updating catalog" : "Refresh catalog"}</Button></div>
     </section>
     {refresh.isPending && <Text role="status" size="sm">Recollecting now; revision <Identity>{data.catalog_revision}</Identity> remains the last verified catalog.</Text>}
     {refresh.isError && <AsyncStateNotice state="catalog_invalid_last_good" detail="The controller rejected the update. Admission is blocked until a valid refresh succeeds." />}
@@ -380,14 +397,14 @@ function CatalogPage() {
       <div className="section-heading"><div><Text className="eyebrow">Browse declarations</Text><Title order={2} id="catalog-browser-title">Inspect exact cases</Title></div><Button className="filter-trigger" variant="light" onClick={filterControls.open} leftSection={<Icon name="filter" />}>Filters</Button></div>
       <AppliedFilters params={params} onClear={setFilter} />
       <div className="catalog-workspace">
-        <div className="catalog-rail-desktop"><CatalogFilterRail data={data} params={params} onFilter={setFilter} onClearAll={() => setParams(new URLSearchParams())} /></div>
+        <div className="catalog-rail-desktop"><CatalogFilterRail data={data} params={params} onFilter={setFilter} onRun={reviewFacet} runDisabled={refresh.isError} onClearAll={() => setParams(new URLSearchParams())} /></div>
         {data.items.length === 0 ? <EmptyCatalog onClear={() => setParams(new URLSearchParams())} /> : <CatalogResults data={data} selected={selected} detail={detail} onToggle={toggleCase} onDetail={openDetail} onPage={(cursor) => setFilter("cursor", cursor ?? undefined)} />}
         {!detailIsSheet && <CatalogDetail item={detail} />}
       </div>
     </section>
-    <SelectionTray selected={selected} revision={selectionRevision ?? data.catalog_revision} onReview={reviewControls.open} disabledReason={selectionStale ? "Clear and reselect against the current catalog revision." : refresh.isError ? "Admission is blocked until catalog refresh succeeds." : undefined} />
-    <ReviewDialog opened={reviewOpened} onClose={reviewControls.close} revision={data.catalog_revision} selected={selected} />
-    <Drawer opened={filtersOpened} onClose={filterControls.close} title="Filter catalog" position="left" size="100%" classNames={{ root: "catalog-filter-sheet", header: "sheet-header", body: "sheet-body" }}><CatalogFilterRail data={data} params={params} onFilter={(name, value) => { setFilter(name, value); filterControls.close(); }} onClearAll={() => { setParams(new URLSearchParams()); filterControls.close(); }} /></Drawer>
+    <SelectionTray selected={selected} revision={selectionRevision ?? data.catalog_revision} onReview={reviewSelected} disabledReason={selectionStale ? "Clear and reselect against the current catalog revision." : refresh.isError ? "Admission is blocked until catalog refresh succeeds." : undefined} />
+    <ReviewDialog opened={reviewOpened} onClose={reviewControls.close} revision={reviewRevision ?? data.catalog_revision} selection={reviewSelection} />
+    <Drawer opened={filtersOpened} onClose={filterControls.close} title="Filter catalog" position="left" size="100%" classNames={{ root: "catalog-filter-sheet", header: "sheet-header", body: "sheet-body" }}><CatalogFilterRail data={data} params={params} onFilter={(name, value) => { setFilter(name, value); filterControls.close(); }} onRun={(field, value) => { reviewFacet(field, value); filterControls.close(); }} runDisabled={refresh.isError} onClearAll={() => { setParams(new URLSearchParams()); filterControls.close(); }} /></Drawer>
     <Drawer opened={detailOpened} onClose={detailControls.close} title="Case detail" position="right" size={detailIsFullscreen ? "100%" : "min(100%, 560px)"} classNames={{ root: "catalog-detail-sheet", header: "sheet-header", body: "sheet-body" }}><CatalogDetail item={detail} embedded /></Drawer>
   </Page>;
 }
@@ -423,13 +440,13 @@ function AppliedFilters({ params, onClear }: { params: URLSearchParams; onClear:
   return <div role="group" aria-label="Applied filters" className="filter-chips">{active.map((name) => <Button key={name} variant="light" size="compact-md" onClick={() => onClear(name)} rightSection={<Icon name="x" size={14} />}>{humanize(name)}: {params.get(name)}</Button>)}</div>;
 }
 
-function CatalogFilterRail({ data, params, onFilter, onClearAll }: { data: CatalogPage; params: URLSearchParams; onFilter: (name: string, value?: string) => void; onClearAll: () => void }) {
+function CatalogFilterRail({ data, params, onFilter, onRun, runDisabled, onClearAll }: { data: CatalogPage; params: URLSearchParams; onFilter: (name: string, value?: string) => void; onRun: (name: string, value: string) => void; runDisabled: boolean; onClearAll: () => void }) {
   const groups: Array<[string, Record<string, number>]> = [
     ["domain_id", data.facets.domain_id ?? {}],
     ["family_id", data.facets.family_id ?? {}],
     ["kind", data.facets.kind ?? {}],
   ];
-  return <aside className="filter-rail" aria-label="Catalog filters"><Group justify="space-between"><Text fw={750}>Filter catalog</Text>{[...params.keys()].length > 0 && <Button variant="subtle" size="compact-sm" onClick={onClearAll}>Clear</Button>}</Group>{groups.map(([field, values]) => <section key={field} className="filter-group"><Text className="filter-label">{humanize(field)}</Text><Stack gap={2}>{Object.entries(values).sort(([left], [right]) => left.localeCompare(right)).map(([value, count]) => { const active = params.get(field) === value; return <Button key={value} variant={active ? "filled" : "subtle"} className="facet-button" aria-label={`${humanize(value)} (${count})`} aria-pressed={active} onClick={() => onFilter(field, active ? undefined : value)}><span>{humanize(value)}</span><strong>{count}</strong></Button>; })}</Stack></section>)}</aside>;
+  return <aside className="filter-rail" aria-label="Catalog filters"><Group justify="space-between"><Text fw={750}>Filter catalog</Text>{[...params.keys()].length > 0 && <Button variant="subtle" size="compact-sm" onClick={onClearAll}>Clear</Button>}</Group>{groups.map(([field, values]) => <section key={field} className="filter-group"><Text className="filter-label">{humanize(field)}</Text><Stack gap={2}>{Object.entries(values).sort(([left], [right]) => left.localeCompare(right)).map(([value, count]) => { const active = params.get(field) === value; const label = humanize(value); const groupLabel = field === "domain_id" ? "domain" : field === "family_id" ? "family" : "kind"; return <div className="facet-row" key={value}><Button variant={active ? "filled" : "subtle"} className="facet-button" aria-label={`${label} (${count})`} aria-pressed={active} onClick={() => onFilter(field, active ? undefined : value)}><span>{label}</span><strong>{count}</strong></Button><Button variant="light" className="facet-run" disabled={runDisabled} aria-label={`Run all ${count} ${count === 1 ? "case" : "cases"} in ${label} ${groupLabel}`} title={`Run this ${groupLabel} filter`} onClick={() => onRun(field, value)}>Run</Button></div>; })}</Stack></section>)}</aside>;
 }
 
 function EmptyCatalog({ onClear }: { onClear: () => void }) {
@@ -484,7 +501,7 @@ function SelectionTray({ selected, revision, onReview, disabledReason }: { selec
   return <Paper className="selection-tray"><div><Text fw={700}>{selected.size} selected {selected.size === 1 ? "case" : "cases"}</Text><Text size="xs">Exact catalog revision <Identity>{revision}</Identity></Text>{reason && <Text size="xs" className="selection-reason">{reason}</Text>}</div><Button onClick={onReview} disabled={Boolean(reason)} rightSection={<Icon name="chevron" />}>Review run</Button></Paper>;
 }
 
-function ReviewDialog({ opened, onClose, revision, selected }: { opened: boolean; onClose: () => void; revision: string; selected: Map<string, CatalogCase> }) {
+function ReviewDialog({ opened, onClose, revision, selection }: { opened: boolean; onClose: () => void; revision: string; selection: PreviewSelectionClause[] }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const isMobile = useMediaQuery("(max-width: 680px)") ?? false;
@@ -493,8 +510,7 @@ function ReviewDialog({ opened, onClose, revision, selected }: { opened: boolean
   const [, setExpiryVersion] = useState(0);
   const [admissionResponseAt, setAdmissionResponseAt] = useState<number | null>(null);
   const [admissionHealth, setAdmissionHealth] = useState<{ checked: boolean; runId: string | null }>({ checked: false, runId: null });
-  const selection = [...selected.values()].map((item) => ({ case: { test_id: item.test_id, case_id: item.case_id } }));
-  const selectionKey = selection.map((item) => `${item.case.test_id}:${item.case.case_id}`).join("|");
+  const selectionKey = JSON.stringify(selection);
   const preview = useMutation({ mutationFn: () => api.preview({ schema_version: 1, catalog_revision: revision, include: selection, exclude: [] }), retry: false });
   const admit = useMutation({
     mutationFn: ({ value, idempotencyKey }: { value: Preview; idempotencyKey: string }) => api.admit(value, idempotencyKey),

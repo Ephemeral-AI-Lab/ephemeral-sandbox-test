@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import datetime as dt
+from pathlib import Path
+import shutil
 
 import pytest
 
@@ -10,6 +12,7 @@ from harness.catalog.declarations import e2e_test
 from harness.catalog.mode import source_tree_digest as catalog_source_tree_digest
 from harness.reducer.events import digest, read_events
 from harness.runner.controller import ControllerError, PreviewController
+from harness.runner import cli as cli_module
 from harness.runner.recovery import RecoveryAction, recover_interrupted_runs
 from harness.runner.runner import SerialPytestRunner
 from harness.runner.surfaces import SurfaceError, SURFACES, adapter_for
@@ -369,6 +372,98 @@ def test_serial_runner_uses_one_child_from_run_owned_e2e_snapshot(tmp_path, vali
     with validation("snapshot_child", expected="passed", actual=lambda: projection["state"]):
         assert projection["state"] == "passed"
         assert projection["cases"][0]["state"] == "passed"
+
+
+@e2e_test(
+    id="harness.runner.pytest-reporter",
+    title="Pytest reporter preserves real case outcomes and execution-surface proof",
+    description="The child reports each frozen node independently and only attests a boundary that the case actually observed.",
+    validations={"reporter": "A passing CLI case has proof while a failing CLI case remains failed with a failed validation."},
+)
+def test_serial_runner_uses_real_case_results_and_surface_observations(tmp_path, validation):
+    roots = _roots(tmp_path)
+    source_runner = Path(__file__).parent
+    (roots.test_repository_root / "pyproject.toml").write_text(
+        "[tool.pytest.ini_options]\n",
+        encoding="utf-8",
+    )
+
+    def run_case(run_id, test_name, body):
+        case = _case(f"harness.runner.{test_name}", "default", source="e2e/test_child.py")
+        case.update(
+            kind="product",
+            execution_surface="cli",
+            pytest_nodeid=f"test_child.py::{test_name}",
+        )
+        case["validations"][0]["phase"] = "call"
+        create_run(roots, _manifest(run_id, [case]))
+        snapshot = roots.e2e_state_root / "runs" / run_id / "source" / "e2e"
+        runner_package = snapshot / "harness" / "runner"
+        runner_package.mkdir(parents=True)
+        (snapshot / "harness" / "__init__.py").write_text("", encoding="utf-8")
+        (runner_package / "__init__.py").write_text("", encoding="utf-8")
+        shutil.copy2(source_runner / "reporter.py", runner_package / "reporter.py")
+        shutil.copy2(source_runner / "surfaces.py", runner_package / "surfaces.py")
+        (snapshot / "test_child.py").write_text(
+            "from harness.runner.reporter import record_surface\n\n"
+            f"def {test_name}():\n"
+            "    record_surface('cli', duration_ms=12.5, evidence={'operation': 'inspect'})\n"
+            f"    {body}\n",
+            encoding="utf-8",
+        )
+        return SerialPytestRunner(roots, producer_revision="sha256:runner").run_pytest(run_id)
+
+    passed = run_case("run-reporter-pass", "test_surface_pass", "assert True")
+    failed = run_case("run-reporter-fail", "test_surface_fail", "assert False, 'real child failure'")
+
+    with validation(
+        "reporter",
+        expected=("passed", "failed", "cli"),
+        actual=lambda: (
+            passed["cases"][0]["state"],
+            failed["cases"][0]["state"],
+            passed["cases"][0]["surfaces"][0]["observed_surface"],
+        ),
+    ):
+        passed_case = passed["cases"][0]
+        failed_case = failed["cases"][0]
+        assert passed["state"] == passed_case["state"] == "passed"
+        assert passed_case["validations"] == {"assertion": "passed"}
+        assert passed_case["phases"]["call"] == "passed"
+        assert len(passed_case["surfaces"]) == 1
+        assert passed_case["surfaces"][0]["expected_surface"] == "cli"
+        assert passed_case["surfaces"][0]["observed_surface"] == "cli"
+        assert passed_case["surfaces"][0]["evidence"]["operation"] == "inspect"
+        assert failed["state"] == failed_case["state"] == "failed"
+        assert failed_case["validations"] == {"assertion": "failed"}
+        assert failed_case["phases"]["call"] == "failed"
+
+
+@e2e_test(
+    id="harness.runner.cli-surface-observation",
+    title="CLI helper records its real subprocess boundary",
+    description="Every successfully decoded purpose-built CLI response publishes the observation consumed by the run reporter.",
+    validations={"observation": "The CLI wrapper records one CLI observation with operation and exit evidence."},
+)
+def test_cli_helper_records_surface_after_decoding_response(monkeypatch, validation):
+    observations = []
+    process = type("Process", (), {"returncode": 0, "stdout": '{"ok":true}\n', "stderr": ""})()
+    monkeypatch.setattr(cli_module.subprocess, "run", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(
+        cli_module,
+        "record_surface",
+        lambda surface, **details: observations.append((surface, details)),
+    )
+
+    result = cli_module.manager("inspect_sandbox", "--sandbox-id", "sandbox-1")
+
+    with validation("observation", expected="one cli observation", actual=lambda: observations):
+        assert result == {"ok": True}
+        assert len(observations) == 1
+        surface, details = observations[0]
+        assert surface == "cli"
+        assert details["duration_ms"] >= 0
+        assert details["evidence"] == {"operation": "inspect_sandbox", "returncode": 0}
 
 
 @e2e_test(

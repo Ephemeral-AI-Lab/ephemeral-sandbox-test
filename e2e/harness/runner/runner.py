@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 import datetime as dt
+import json
+import os
 import subprocess
 import sys
 from typing import Any
@@ -101,13 +103,14 @@ class SerialPytestRunner:
     def run_pytest(self, run_id: str, *, timeout_seconds: int = 180) -> dict[str, Any]:
         """Launch exactly one pytest child from the run-owned source snapshot.
 
-        A real reporter should call :meth:`execute` through the inherited event
-        pipe.  This conservative fallback treats a nonzero child exit as a
-        failed case and refuses product passes that lack explicit surface proof.
+        The run-owned reporter publishes each node's real setup/call/teardown
+        result plus execution-boundary observations.  Minimal harness-only
+        snapshots without the reporter retain the conservative process fallback.
         """
 
         manifest = load_manifest(self.roots, run_id)
-        source_root = self.roots.e2e_state_root / "runs" / run_id / "source"
+        run_root = self.roots.e2e_state_root / "runs" / run_id
+        source_root = run_root / "source"
         e2e_root = source_root / "e2e"
         if not e2e_root.is_dir():
             raise RunnerError("run-owned E2E source snapshot is unavailable")
@@ -124,15 +127,34 @@ class SerialPytestRunner:
             if (e2e_root / "conftest.py").is_file()
             else []
         )
+        reporter_enabled = (e2e_root / "harness" / "runner" / "reporter.py").is_file()
+        report_path = run_root / "pytest-report.jsonl"
+        report_path.unlink(missing_ok=True)
+        child_environment = dict(os.environ)
+        child_environment.update(
+            {
+                "PYTHONPATH": str(source_root),
+                "PYTHONDONTWRITEBYTECODE": "1",
+            }
+        )
+        reporter_options: list[str] = []
+        if reporter_enabled:
+            reporter_options = ["-p", "harness.runner.reporter"]
+            child_environment.update(
+                {
+                    "E2E_PYTEST_REPORT_PATH": str(report_path),
+                    "E2E_RUN_MANIFEST_PATH": str(run_root / "manifest.json"),
+                }
+            )
         launch_error: str | None = None
         try:
             process = subprocess.run(
-                [sys.executable, "-m", "pytest", *root_options, *nodeids],
+                [sys.executable, "-m", "pytest", *reporter_options, *root_options, *nodeids],
                 cwd=e2e_root,
                 capture_output=True,
                 text=True,
                 timeout=timeout_seconds,
-                env={"PYTHONPATH": str(source_root), "PYTHONDONTWRITEBYTECODE": "1"},
+                env=child_environment,
             )
         except subprocess.TimeoutExpired:
             process = None
@@ -141,13 +163,34 @@ class SerialPytestRunner:
             process = None
             launch_error = "pytest child could not be started"
 
+        reported: dict[str, Mapping[str, Any]] = {}
+        reporter_error: str | None = None
+        if reporter_enabled and report_path.is_file():
+            try:
+                reported = _read_pytest_reports(report_path)
+            except (OSError, RunnerError) as error:
+                reporter_error = str(error)
+
         def outcome(case: Mapping[str, Any]) -> Mapping[str, Any]:
+            nodeid = case.get("pytest_nodeid")
+            if isinstance(nodeid, str) and nodeid in reported:
+                return reported[nodeid]
             if launch_error is not None:
                 return {
                     "state": "error",
                     "validations": {item["id"]: "error" for item in case.get("validations", [])},
                     "surface": None,
                     "message": launch_error,
+                }
+            if reporter_enabled:
+                detail = reporter_error or f"pytest reporter published no result for {nodeid}"
+                if process is not None:
+                    detail = f"{detail} (child exit {process.returncode})"
+                return {
+                    "state": "error",
+                    "validations": {item["id"]: "error" for item in case.get("validations", [])},
+                    "surface": None,
+                    "message": detail,
                 }
             return {
                 "state": "passed" if process.returncode == 0 else "failed",
@@ -371,3 +414,19 @@ def _identity(case: Mapping[str, Any]) -> tuple[str, str]:
     if not isinstance(test_id, str) or not isinstance(case_id, str):
         raise RunnerError("frozen case has no identity")
     return test_id, case_id
+
+
+def _read_pytest_reports(path) -> dict[str, Mapping[str, Any]]:
+    reports: dict[str, Mapping[str, Any]] = {}
+    for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        try:
+            record = json.loads(raw_line)
+        except json.JSONDecodeError as error:
+            raise RunnerError(f"pytest reporter line {line_number} is invalid JSON") from error
+        if not isinstance(record, Mapping) or not isinstance(record.get("nodeid"), str):
+            raise RunnerError(f"pytest reporter line {line_number} is not a case result")
+        nodeid = record["nodeid"]
+        if nodeid in reports:
+            raise RunnerError(f"pytest reporter published duplicate result for {nodeid}")
+        reports[nodeid] = record
+    return reports

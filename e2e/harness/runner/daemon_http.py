@@ -6,6 +6,7 @@ import urllib.error
 import urllib.request
 
 from .cli import manager
+from .reporter import record_surface
 
 
 def daemon_http_endpoint(sandbox_id):
@@ -32,6 +33,7 @@ def http_post(url, document, attempts=20):
 def http_request(url, method="GET", body=None, attempts=20):
     last_error = None
     for _ in range(attempts):
+        started = time.monotonic()
         try:
             request = urllib.request.Request(
                 url,
@@ -40,14 +42,26 @@ def http_request(url, method="GET", body=None, attempts=20):
                 method=method,
             )
             with urllib.request.urlopen(request, timeout=10) as response:
-                return (
+                result = (
                     response.status,
                     response.read().decode("utf-8", "replace"),
                     response.headers.get_content_type(),
                 )
+                record_surface(
+                    "daemon_http",
+                    duration_ms=(time.monotonic() - started) * 1000.0,
+                    evidence={"method": method, "status": response.status},
+                )
+                return result
         except urllib.error.HTTPError as error:
             content_type = error.headers.get_content_type() if error.headers else ""
-            return error.code, error.read().decode("utf-8", "replace"), content_type
+            result = error.code, error.read().decode("utf-8", "replace"), content_type
+            record_surface(
+                "daemon_http",
+                duration_ms=(time.monotonic() - started) * 1000.0,
+                evidence={"method": method, "status": error.code},
+            )
+            return result
         except urllib.error.URLError as error:
             last_error = error
             time.sleep(0.25)

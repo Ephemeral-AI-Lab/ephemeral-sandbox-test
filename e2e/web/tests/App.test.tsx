@@ -40,6 +40,38 @@ it("renders catalog taxonomy directly from records and supports keyboard review/
   expect(document.activeElement?.closest("header")?.textContent).toContain(`Run ${run.run_id}`);
 });
 
+it("reviews the full catalog and every filter through server-side query selections", async () => {
+  const previewSelections: Array<Record<string, unknown>> = [];
+  server.use(http.post("*/api/v1/previews", async ({ request }) => {
+    const body = JSON.parse(await request.text()) as { selection: Record<string, unknown> };
+    previewSelections.push(body.selection);
+    return HttpResponse.json({ schema_version: 1, data: { ...preview, case_count: catalog.total, cases: catalog.items, ordered_cases: catalog.items } });
+  }));
+  const user = userEvent.setup();
+  renderRoom();
+
+  await user.click(await screen.findByRole("button", { name: `Run all ${catalog.total} cases` }));
+  await waitFor(() => expect(previewSelections).toHaveLength(1));
+  expect(previewSelections[0]).toMatchObject({
+    catalog_revision: catalog.catalog_revision,
+    include: [{ query: { kind: Object.keys(catalog.facets.kind) } }],
+    exclude: [],
+  });
+  await user.click(await screen.findByRole("button", { name: "Cancel" }));
+
+  for (const [field, values] of Object.entries(catalog.facets)) {
+    for (const [value, count] of Object.entries(values)) {
+      const label = value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+      const groupLabel = field === "domain_id" ? "domain" : field === "family_id" ? "family" : "kind";
+      expect(screen.getByRole("button", { name: `Run all ${count} ${count === 1 ? "case" : "cases"} in ${label} ${groupLabel}` })).toBeTruthy();
+    }
+  }
+
+  await user.click(screen.getByRole("button", { name: "Run all 1 case in Manager domain" }));
+  await waitFor(() => expect(previewSelections).toHaveLength(2));
+  expect(previewSelections[1]).toMatchObject({ include: [{ query: { domain_id: "manager" } }] });
+});
+
 it("publishes pressed facet state and exact compound facts in detail and Review scope", async () => {
   const compound = catalogCases.find((item) => item.domain_id === "compound");
   if (!compound) throw new Error("Compound fixture is missing.");
@@ -168,6 +200,18 @@ it("renders every domain and the full harness count from facets on a paged catal
   await screen.findByRole("button", { name: "Manager · 1 cases" });
   expect(screen.getByRole("button", { name: "Runtime · 7 cases" })).toBeTruthy();
   expect(screen.getByRole("button", { name: "Harness Diagnostics · 6 cases" })).toBeTruthy();
+});
+
+it("links sidebar domain counts to the matching catalog filter", async () => {
+  const user = userEvent.setup();
+  renderRoom("/e2e/runs");
+  const runtime = await screen.findByRole("link", { name: "Runtime · 7 cases" });
+  expect(runtime.getAttribute("href")).toBe("/e2e/catalog?domain_id=runtime");
+  runtime.focus();
+  await user.keyboard("{Enter}");
+  await waitFor(() => expect(`${window.location.pathname}${window.location.search}`).toBe("/e2e/catalog?domain_id=runtime"));
+  expect((await screen.findByRole("link", { name: "Runtime · 7 cases" })).getAttribute("aria-current")).toBe("page");
+  expect(screen.getByRole("button", { name: "Runtime (7)" }).getAttribute("aria-pressed")).toBe("true");
 });
 
 it("uses a bodyless refresh request, exposes empty workspaces, and has no serious axe violations", async () => {

@@ -38,6 +38,7 @@ from .config import (
     SANDBOX_OBSERVABILITY_CLI,
     SANDBOX_RUNTIME_CLI,
 )
+from .reporter import record_surface
 
 _log = logging.getLogger("e2e.cli")
 _timing_lock = threading.Lock()
@@ -91,11 +92,20 @@ def cli(*args, timeout=180):
     _record_timing(args, returncode, elapsed)
     _log.info("← %s  (exit=%s, %.2fs)", printable, returncode, elapsed)
     try:
-        return json.loads(raw)
+        result = json.loads(raw)
     except json.JSONDecodeError as exc:
         raise CliError(
             f"non-JSON CLI output (exit {returncode}): {raw!r}"
         ) from exc
+    record_surface(
+        "cli",
+        duration_ms=elapsed * 1000.0,
+        evidence={
+            "operation": _classify_operation(args)[1],
+            "returncode": returncode,
+        },
+    )
+    return result
 
 
 def _run_streaming(binary, argv, timeout):
@@ -257,6 +267,7 @@ def raw_gateway(sandbox_id, operation, args=None, *, timeout=180):
         request["_sandbox_gateway_auth_token"] = token
 
     host, port = _gateway_endpoint()
+    started = time.monotonic()
     with socket.create_connection((host, port), timeout=timeout) as stream:
         stream.settimeout(timeout)
         stream.sendall(json.dumps(request, separators=(",", ":")).encode() + b"\n")
@@ -266,9 +277,15 @@ def raw_gateway(sandbox_id, operation, args=None, *, timeout=180):
     if not response_line.endswith(b"\n"):
         raise CliError("raw gateway response was not newline terminated")
     try:
-        return json.loads(response_line)
+        response = json.loads(response_line)
     except json.JSONDecodeError as exc:
         raise CliError(f"non-JSON raw gateway output: {response_line!r}") from exc
+    record_surface(
+        "gateway_rpc",
+        duration_ms=(time.monotonic() - started) * 1000.0,
+        evidence={"operation": operation},
+    )
+    return response
 
 
 def _gateway_endpoint():

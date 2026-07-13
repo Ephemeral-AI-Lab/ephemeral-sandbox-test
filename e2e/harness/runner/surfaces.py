@@ -119,6 +119,29 @@ def adapter_for(
     return SurfaceAdapter(surface, transport, product_digest=product_digest)
 
 
+def successful_surface_proof(
+    surface: str,
+    *,
+    duration_ms: float = 0.0,
+    product_digest: str | None = None,
+    evidence: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build one proof only after a real named boundary was observed."""
+
+    if surface not in SURFACES:
+        raise SurfaceError(f"unsupported execution surface: {surface}")
+    return SurfaceProof(
+        expected=surface,
+        observed=surface,
+        driver=_DRIVER[surface],
+        boundary=_BOUNDARY[surface],
+        dispatch_outcome="succeeded",
+        duration_ms=max(0.0, float(duration_ms)),
+        product_digest=product_digest,
+        evidence=dict(evidence or {}),
+    ).as_event_payload()
+
+
 _DRIVER = {
     "cli": "subprocess",
     "console_rpc": "http_sse",

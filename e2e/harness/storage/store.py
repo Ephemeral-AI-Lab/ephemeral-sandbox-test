@@ -25,7 +25,7 @@ from harness.reducer.events import (
     reduce_run,
     validate_manifest,
 )
-from harness.storage.roots import Roots, RootValidationError, initialize_e2e_state
+from harness.storage.roots import Roots, RootValidationError, initialize_e2e_state, initialize_workspace_variant
 
 
 STORE_SCHEMA_VERSION = 1
@@ -261,6 +261,28 @@ def create_attempt(roots: Roots, attempt_id: str, *, run_id: str) -> Path:
         mode=0o600,
     )
     return path
+
+
+def prepare_workspace_template(roots: Roots, workspace_id: str) -> Path:
+    """Prepare the pytest workspace root and publish its controller-owned record."""
+
+    store = initialize_store(roots)
+    _validate_semantic_id(workspace_id, "workspace")
+    template = initialize_workspace_variant(roots, workspace_id)
+    record = roots.e2e_state_root / "workspaces" / "template" / workspace_id
+    ownership = {
+        "schema_version": STORE_SCHEMA_VERSION,
+        "store_uuid": store["store_uuid"],
+        "role": "template",
+        "workspace_id": workspace_id,
+    }
+    if record.exists():
+        if _read_json(record / _OWNERSHIP_FILE, "template ownership") != ownership:
+            raise StoreError("template ownership does not match this E2E store")
+    else:
+        record.mkdir(mode=0o700)
+        _atomic_write_json(record / _OWNERSHIP_FILE, ownership, mode=0o600)
+    return template
 
 
 def quarantine_attempt(roots: Roots, attempt_id: str, *, reason: str) -> Path:

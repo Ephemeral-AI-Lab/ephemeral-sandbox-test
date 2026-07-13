@@ -7,6 +7,7 @@ import time
 import uuid
 
 from .cli import CliError, is_error, manager
+from .reporter import record_surface
 
 
 ALLOWED_OPERATIONS = frozenset(
@@ -80,6 +81,12 @@ def direct_daemon_result(
         raise CliError("non-JSON direct daemon output") from None
     if auth_token in json.dumps(response, sort_keys=True):
         raise CliError("direct daemon response contained sandbox credentials")
+
+    record_surface(
+        "direct_daemon_rpc",
+        duration_ms=elapsed_ms,
+        evidence={"operation": operation},
+    )
 
     result = DirectDaemonResult(operation, request_args, response, elapsed_ms)
     if recorder is not None:

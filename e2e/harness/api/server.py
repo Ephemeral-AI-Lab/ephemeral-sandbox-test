@@ -574,7 +574,7 @@ def _workspace_records(root: Path, role: str) -> list[dict[str, Any]]:
             ownership = json.loads((path / ".ownership.json").read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             continue
-        result.append({"workspace_id": ownership.get("attempt_id", path.name), "role": role, "run_id": ownership.get("run_id")})
+        result.append({"workspace_id": ownership.get("workspace_id", ownership.get("attempt_id", path.name)), "role": role, "run_id": ownership.get("run_id")})
     return result
 
 
