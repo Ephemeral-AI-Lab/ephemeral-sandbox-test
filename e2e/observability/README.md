@@ -14,7 +14,10 @@ The tests use the shared `core.cli` launcher, so they exercise the same
 semantic route from `sandbox-operation-catalog`, CLI projection from
 `sandbox-cli`, shared request path from `sandbox-operation-client`,
 authenticated gateway RPC, and structured JSON response path as an operator
-invocation. They do not call the daemon directly or inspect logs.
+invocation. They do not call the daemon directly or inspect logs. The bounded
+memory regression installs a large rotated-log fixture before polling the
+public snapshot route, then measures container memory through `docker stats`
+because cgroup memory metrics are unavailable inside Docker Desktop sandboxes.
 
 Run this family after building or rebuilding the gateway binaries:
 

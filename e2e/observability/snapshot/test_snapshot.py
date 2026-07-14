@@ -1,9 +1,39 @@
 """Live aggregate and sandbox-scoped observability through the public CLI."""
 
+import json
+import logging
+import subprocess
+
 import pytest
 
 from harness.runner.cli import cli, is_error
 from harness.catalog.declarations import e2e_test
+from runtime.workspace_session.helpers import workspace_tracker
+
+
+_log = logging.getLogger("e2e.observability.snapshot")
+
+HISTORY_RECORD_COUNT = 67_500
+WORKSPACE_COUNT = 6
+SNAPSHOT_POLL_COUNT = 12
+MAX_MEMORY_GROWTH_BYTES = 50 * 1024 * 1024
+ROTATED_LOG_PATH = "/eos/runtime/daemon/observability/observability.ndjson.1"
+
+
+def _container_memory_bytes(container: str) -> int:
+    result = subprocess.run(
+        ["docker", "stats", "--no-stream", "--format", "{{json .}}", container],
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert result.returncode == 0, result.stderr or result.stdout
+    usage = json.loads(result.stdout)["MemUsage"].partition("/")[0].strip()
+    units = (("GiB", 1024**3), ("MiB", 1024**2), ("KiB", 1024), ("B", 1))
+    for unit, multiplier in units:
+        if usage.endswith(unit):
+            return int(float(usage[: -len(unit)]) * multiplier)
+    raise AssertionError(f"unsupported Docker memory value: {usage}")
 
 
 @e2e_test(
@@ -45,3 +75,77 @@ def test_scoped_snapshot_returns_selected_sandbox(sandbox):
     assert result["sandbox_id"] == sandbox, result
     assert result["lifecycle_state"] == "ready", result
     assert result["availability"] in {"available", "partial"}, result
+
+
+@e2e_test(
+    timeout_ms=60_000,
+    id="observability.snapshot.bounded-memory-history",
+    title="Snapshot Memory Is Bounded By Scope Count",
+    description=(
+        "A large persisted observability history does not make repeated scoped "
+        "snapshots retain history-sized daemon memory."
+    ),
+    features=("observability.snapshot",),
+    validations={
+        "snapshot-memory-growth-bounded": (
+            "Twelve snapshots over 67,500 persisted records and seven live scopes "
+            "grow sandbox memory by no more than 50 MiB."
+        )
+    },
+    execution_surface="cli",
+)
+@pytest.mark.hard
+def test_snapshot_memory_stays_bounded_with_large_persisted_history(
+    sandbox, tmp_path, validation, workspace_tracker
+):
+    for _ in range(WORKSPACE_COUNT):
+        workspace_tracker.create_session()
+
+    record = json.dumps(
+        {
+            "kind": "sample",
+            "ts": 1,
+            "scope": "sandbox",
+            "cpu_usec": 1,
+            "mem_cur": 1,
+            "mem_max": 4_294_967_296,
+            "pids_cur": 7,
+            "io_read_bytes": 1,
+            "io_write_bytes": 1,
+            "_counters": ["cpu_usec", "io_read_bytes", "io_write_bytes"],
+        },
+        separators=(",", ":"),
+    ) + "\n"
+    history_path = tmp_path / "observability.ndjson.1"
+    history_path.write_text(record * HISTORY_RECORD_COUNT, encoding="utf-8")
+    copied = subprocess.run(
+        ["docker", "cp", str(history_path), f"{sandbox}:{ROTATED_LOG_PATH}"],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert copied.returncode == 0, copied.stderr or copied.stdout
+
+    memory_samples = [_container_memory_bytes(sandbox)]
+    for _ in range(SNAPSHOT_POLL_COUNT):
+        snapshot = cli("observability", "snapshot", "--sandbox-id", sandbox)
+        assert not is_error(snapshot), snapshot
+        assert len(snapshot.get("workspaces", [])) == WORKSPACE_COUNT, snapshot
+        memory_samples.append(_container_memory_bytes(sandbox))
+
+    memory_growth = max(memory_samples[1:]) - memory_samples[0]
+    evidence = {
+        "baseline_bytes": memory_samples[0],
+        "peak_bytes": max(memory_samples[1:]),
+        "growth_bytes": memory_growth,
+        "history_records": HISTORY_RECORD_COUNT,
+        "scope_count": WORKSPACE_COUNT + 1,
+        "snapshot_polls": SNAPSHOT_POLL_COUNT,
+    }
+    _log.info("snapshot memory evidence: %s", evidence)
+    with validation(
+        "snapshot-memory-growth-bounded",
+        expected={"max_growth_bytes": MAX_MEMORY_GROWTH_BYTES},
+        actual=evidence,
+    ):
+        assert memory_growth <= MAX_MEMORY_GROWTH_BYTES, evidence
