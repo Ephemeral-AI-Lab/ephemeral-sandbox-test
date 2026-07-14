@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-05aa11ab-f22c-4929-87b4-9080e735c2dc",
+    "--request-id",
+    "p3full-20260714T065654Z-resume:ENGINE.final.src-features-A05-search.json:runtime",
+    "file_read",
+    "--path",
+    "src/features/A05-search.json"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.393,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A05-search.json",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 366,
+    "content": "{\n  \"owner\": \"A05\",\n  \"paths\": {\n    \"a11y\": \"src/features/A05-search-a11y.js\",\n    \"core\": \"src/features/A05-search.js\",\n    \"data\": \"src/features/A05-search-data.js\",\n    \"manifest\": \"src/features/A05-search.json\",\n    \"style\": \"src/features/A05-search.css\",\n    \"view\": \"src/features/A05-search-view.js\"\n  },\n  \"role\": \"Search and facets\",\n  \"schema_version\": 1\n}",
+    "next_offset": null,
+    "num_lines": 13,
+    "path": "src/features/A05-search.json",
+    "start_line": 1,
+    "total_bytes": 367,
+    "total_lines": 13,
+    "truncated": false
+  },
+  "pid": 95602,
+  "provenance": "engine",
+  "request_id": "p3full-20260714T065654Z-resume:ENGINE.final.src-features-A05-search.json:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1545,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A05-search.json\",\"content\":\"{\\n  \\\"owner\\\": \\\"A05\\\",\\n  \\\"paths\\\": {\\n    \\\"a11y\\\": \\\"src/features/A05-search-a11y.js\\\",\\n    \\\"core\\\": \\\"src/features/A05-search.js\\\",\\n    \\\"data\\\": \\\"src/features/A05-search-data.js\\\",\\n    \\\"manifest\\\": \\\"src/features/A05-search.json\\\",\\n    \\\"style\\\": \\\"src/features/A05-search.css\\\",\\n    \\\"view\\\": \\\"src/features/A05-search-view.js\\\"\\n  },\\n  \\\"role\\\": \\\"Search and facets\\\",\\n  \\\"schema_version\\\": 1\\n}\",\"start_line\":1,\"num_lines\":13,\"total_lines\":13,\"bytes_read\":366,\"total_bytes\":367,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

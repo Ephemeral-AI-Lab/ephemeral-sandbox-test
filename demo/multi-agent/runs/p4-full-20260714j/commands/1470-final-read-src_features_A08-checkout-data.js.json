@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--request-id",
+    "p4-full-20260714j:ENGINE.final.src-features-A08-checkout-data.js:runtime",
+    "file_read",
+    "--path",
+    "src/features/A08-checkout-data.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.793,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A08-checkout-data.js",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 231,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\n  root.FlashCart.fixtures.A08 = Object.freeze({ owner: 'A08', label: 'Checkout', revision: 1 });\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A08-checkout-data.js",
+    "start_line": 1,
+    "total_bytes": 232,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 66596,
+  "provenance": "engine",
+  "request_id": "p4-full-20260714j:ENGINE.final.src-features-A08-checkout-data.js:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1470,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A08-checkout-data.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\\n  root.FlashCart.fixtures.A08 = Object.freeze({ owner: 'A08', label: 'Checkout', revision: 1 });\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":231,\"total_bytes\":232,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

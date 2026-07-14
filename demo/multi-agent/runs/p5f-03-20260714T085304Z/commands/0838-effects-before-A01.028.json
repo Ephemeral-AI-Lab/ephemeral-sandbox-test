@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-87d96492-efb1-4bf1-ae1a-d5efea27eb0d",
+    "--request-id",
+    "p5f-03-20260714T085304Z:ENGINE.effects.before.A01.028:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000318c21c005f1bedb8",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { createHash } from 'node:crypto'; import { readdir, readFile } from 'node:fs/promises'; const walk=async(d='.')=>{const out=[];for(const e of await readdir(d,{withFileTypes:true})){const p=(d==='.'?'':d+'/')+e.name;if(p==='.git'||p.startsWith('.git/')||p==='node_modules'||p.startsWith('node_modules/'))continue;if(e.isDirectory())out.push(...await walk(p));else if(e.isFile())out.push([p,createHash('sha256').update(await readFile(p)).digest('hex')]);}return out};console.log(JSON.stringify(Object.fromEntries((await walk()).sort((a,b)=>a[0].localeCompare(b[0])))));\""
+  ],
+  "cancelled": false,
+  "duration_ms": 83.527,
+  "kind": "public_cli_process",
+  "label": "effects-before-A01.028",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.0443785,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "{\"index.html\":\"fea23211d7caa057bf4bbe044d27e19817c9e8a72c16856c989192538aa29ada\",\"package.json\":\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\",\"scripts/serve.mjs\":\"41a386268cd3ae9ba5090bf6a2c558d00f2b6901c993d267c90f406c39410447\",\"src/app.js\":\"67ebc7f26e5ea4d544e1d519a5ebf530b2168d9e14b758f736e0956394974834\",\"src/config.js\":\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\",\"src/features/A01-foundation.js\":\"4236673341799c665a505b3190c86e105bec07f8b42b01c40107627658c521b9\",\"src/registry.js\":\"edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08\",\"src/styles.css\":\"c9aa2bf3bb81d17436e67fb8f0831774d1795adf612c045ed4cc3cb7821ba623\",\"tests/A01-a11y.test.mjs\":\"a4f1b03c743234e91ece369a6fb98c33114f4a6da64f80192b8fedfb394de5d5\",\"tests/A01-data.test.mjs\":\"e17a9141efca489c98a5ebbf614c87cb46d35fdc84d46ba373e0f33a0a555b04\",\"tests/A01-red.test.mjs\":\"9402dd23e4210ff1a37c76cd0f331f12154d52c7282672286fa081b8daaf1ae1\",\"tests/A01-style.test.mjs\":\"7dd5ddcdc05f785677bf4e8be37af46871a108867dc337c542bd4553668e30db\",\"tests/A01-view.test.mjs\":\"ddca6b75d6031a2a37bd4ab3c6b9568285518a5b1fe63093f6ba1a32c6b57afc\"}",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.04444625,
+    "workspace_session_id": "00000318c21c005f1bedb8"
+  },
+  "pid": 70479,
+  "provenance": "engine",
+  "request_id": "p5f-03-20260714T085304Z:ENGINE.effects.before.A01.028:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 838,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.04444625,\"command_total_time_seconds\":0.0443785,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":287,\"output\":\"{\\\"index.html\\\":\\\"fea23211d7caa057bf4bbe044d27e19817c9e8a72c16856c989192538aa29ada\\\",\\\"package.json\\\":\\\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\\\",\\\"scripts/serve.mjs\\\":\\\"41a386268cd3ae9ba5090bf6a2c558d00f2b6901c993d267c90f406c39410447\\\",\\\"src/app.js\\\":\\\"67ebc7f26e5ea4d544e1d519a5ebf530b2168d9e14b758f736e0956394974834\\\",\\\"src/config.js\\\":\\\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\\\",\\\"src/features/A01-foundation.js\\\":\\\"4236673341799c665a505b3190c86e105bec07f8b42b01c40107627658c521b9\\\",\\\"src/registry.js\\\":\\\"edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08\\\",\\\"src/styles.css\\\":\\\"c9aa2bf3bb81d17436e67fb8f0831774d1795adf612c045ed4cc3cb7821ba623\\\",\\\"tests/A01-a11y.test.mjs\\\":\\\"a4f1b03c743234e91ece369a6fb98c33114f4a6da64f80192b8fedfb394de5d5\\\",\\\"tests/A01-data.test.mjs\\\":\\\"e17a9141efca489c98a5ebbf614c87cb46d35fdc84d46ba373e0f33a0a555b04\\\",\\\"tests/A01-red.test.mjs\\\":\\\"9402dd23e4210ff1a37c76cd0f331f12154d52c7282672286fa081b8daaf1ae1\\\",\\\"tests/A01-style.test.mjs\\\":\\\"7dd5ddcdc05f785677bf4e8be37af46871a108867dc337c542bd4553668e30db\\\",\\\"tests/A01-view.test.mjs\\\":\\\"ddca6b75d6031a2a37bd4ab3c6b9568285518a5b1fe63093f6ba1a32c6b57afc\\\"}\",\"workspace_session_id\":\"00000318c21c005f1bedb8\"}\n",
+  "timed_out": false
+}

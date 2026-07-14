@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-6c4325c8-80c0-4df2-916d-23941c6cf2df",
+    "--request-id",
+    "p5q-03-20260714T074545Z:A02.023:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000418c21852f15c80f2",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A02-style.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 116.647,
+  "kind": "public_cli_process",
+  "label": "A02.023",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.078800792,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A02 style keeps focus visible (3.096041ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 43.852958",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.078862792,
+    "workspace_session_id": "00000418c21852f15c80f2"
+  },
+  "pid": 72256,
+  "provenance": "agent",
+  "request_id": "p5q-03-20260714T074545Z:A02.023:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 661,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.078862792,\"command_total_time_seconds\":0.078800792,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":40,\"output\":\"✔ A02 style keeps focus visible (3.096041ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 43.852958\",\"workspace_session_id\":\"00000418c21852f15c80f2\"}\n",
+  "timed_out": false
+}

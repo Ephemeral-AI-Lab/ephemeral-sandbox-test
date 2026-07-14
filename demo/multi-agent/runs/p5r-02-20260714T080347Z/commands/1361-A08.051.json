@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-a0301757-e6eb-4ac8-880c-29a8ef345d7a",
+    "--request-id",
+    "p5r-02-20260714T080347Z:A08.051:runtime",
+    "file_blame",
+    "--path",
+    "src/config.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 36.356,
+  "kind": "public_cli_process",
+  "label": "A08.051",
+  "parse_error": null,
+  "parsed_json": {
+    "path": "src/config.js",
+    "ranges": [
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000118c2194eeb65c6f4",
+        "start_line": 1
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00001118c21958c8b6a2c0",
+        "start_line": 2
+      }
+    ]
+  },
+  "pid": 53486,
+  "provenance": "agent",
+  "request_id": "p5r-02-20260714T080347Z:A08.051:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1361,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/config.js\",\"ranges\":[{\"start_line\":1,\"line_count\":1,\"owner\":\"workspace_session:00000118c2194eeb65c6f4\"},{\"start_line\":2,\"line_count\":1,\"owner\":\"workspace_session:00001118c21958c8b6a2c0\"}]}\n",
+  "timed_out": false
+}

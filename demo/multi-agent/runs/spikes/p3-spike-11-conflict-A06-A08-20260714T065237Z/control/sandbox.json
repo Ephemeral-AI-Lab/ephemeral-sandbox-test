@@ -1,0 +1,27 @@
+{
+  "baseline_ids": [
+    "eos-748ae58f-b87d-4a4d-802b-20da3ae5ade5",
+    "eos-d28b4de3-5ff2-42fa-b3aa-54d55c7a523d",
+    "eos-d5c8ed22-a95a-4f42-943d-502e357165b3"
+  ],
+  "created": {
+    "daemon": {
+      "host": "127.0.0.1",
+      "port": 56500
+    },
+    "daemon_http": {
+      "host": "127.0.0.1",
+      "port": 56501
+    },
+    "id": "eos-b00a8c3e-45c0-4e7d-8ba1-e6cd1cafc3ac",
+    "shared_base": {
+      "readonly": true,
+      "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/flashcart/workspaces/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base",
+      "target": "/eos/layer-stack/base"
+    },
+    "state": "ready",
+    "workspace_root": "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/flashcart/workspaces/p3-spike-11-conflict-A06-A08-20260714T065237Z"
+  },
+  "workspace_bind_root": "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/flashcart/workspaces/p3-spike-11-conflict-A06-A08-20260714T065237Z"
+}

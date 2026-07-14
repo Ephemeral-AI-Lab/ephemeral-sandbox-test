@@ -1,0 +1,113 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "cgroup",
+    "--sandbox-id",
+    "eos-5df6cdc6-26a2-494c-b5a5-9223d93114a7",
+    "--scope",
+    "sandbox",
+    "--window-ms",
+    "600000"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.648,
+  "kind": "public_cli_process",
+  "label": "observer-cgroup-0005",
+  "parse_error": null,
+  "parsed_json": {
+    "scope": "sandbox",
+    "series": [
+      {
+        "deltas": {},
+        "metrics": {
+          "cpu_usec": 102263,
+          "io_rbytes": 0,
+          "io_wbytes": 98304,
+          "mem_cur": 3452928,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": null,
+        "ts": 1784011950253
+      },
+      {
+        "deltas": {
+          "cpu_usec": 55536,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 157799,
+          "io_rbytes": 0,
+          "io_wbytes": 106496,
+          "mem_cur": 5349376,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 540,
+        "ts": 1784011950793
+      },
+      {
+        "deltas": {
+          "cpu_usec": 199672,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 357471,
+          "io_rbytes": 0,
+          "io_wbytes": 110592,
+          "mem_cur": 4083712,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 540,
+        "ts": 1784011951333
+      },
+      {
+        "deltas": {
+          "cpu_usec": 211863,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 569334,
+          "io_rbytes": 0,
+          "io_wbytes": 114688,
+          "mem_cur": 17686528,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 545,
+        "ts": 1784011951878
+      },
+      {
+        "deltas": {
+          "cpu_usec": 161649,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 730983,
+          "io_rbytes": 0,
+          "io_wbytes": 122880,
+          "mem_cur": 4444160,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 542,
+        "ts": 1784011952420
+      }
+    ],
+    "view": "cgroup"
+  },
+  "pid": 29040,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 55,
+  "stderr": "",
+  "stdout": "{\"view\":\"cgroup\",\"scope\":\"sandbox\",\"series\":[{\"ts\":1784011950253,\"sample_delta_ms\":null,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":102263,\"io_rbytes\":0,\"io_wbytes\":98304,\"mem_cur\":3452928,\"mem_max\":4109398016},\"deltas\":{}},{\"ts\":1784011950793,\"sample_delta_ms\":540,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":157799,\"io_rbytes\":0,\"io_wbytes\":106496,\"mem_cur\":5349376,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":55536,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784011951333,\"sample_delta_ms\":540,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":357471,\"io_rbytes\":0,\"io_wbytes\":110592,\"mem_cur\":4083712,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":199672,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784011951878,\"sample_delta_ms\":545,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":569334,\"io_rbytes\":0,\"io_wbytes\":114688,\"mem_cur\":17686528,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":211863,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784011952420,\"sample_delta_ms\":542,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":730983,\"io_rbytes\":0,\"io_wbytes\":122880,\"mem_cur\":4444160,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":161649,\"io_rbytes\":0,\"io_wbytes\":8192}}]}\n",
+  "timed_out": false
+}

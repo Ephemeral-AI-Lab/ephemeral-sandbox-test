@@ -1,0 +1,65 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-6c4325c8-80c0-4df2-916d-23941c6cf2df",
+    "--trace-id",
+    "p5q-03-20260714T074545Z:A10.050:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 89.723,
+  "kind": "public_cli_process",
+  "label": "trace-A10.050",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "publish_then_destroy",
+                "session_created": false
+              },
+              "dur_ms": 4.0,
+              "name": "command.exec",
+              "parent": "d-2236",
+              "span": "d-2237",
+              "status": "completed",
+              "trace": "p5q-03-20260714T074545Z:A10.050:runtime",
+              "ts": 1784015194681
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 4.0,
+          "name": "daemon.dispatch",
+          "span": "d-2236",
+          "status": "completed",
+          "trace": "p5q-03-20260714T074545Z:A10.050:runtime",
+          "ts": 1784015194681
+        }
+      }
+    ],
+    "trace": "p5q-03-20260714T074545Z:A10.050:runtime",
+    "view": "trace"
+  },
+  "pid": 85882,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1411,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p5q-03-20260714T074545Z:A10.050:runtime\",\"spans\":[{\"span\":{\"ts\":1784015194681,\"trace\":\"p5q-03-20260714T074545Z:A10.050:runtime\",\"span\":\"d-2236\",\"name\":\"daemon.dispatch\",\"dur_ms\":4.0,\"status\":\"completed\",\"attrs\":{\"op\":\"exec_command\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784015194681,\"trace\":\"p5q-03-20260714T074545Z:A10.050:runtime\",\"span\":\"d-2237\",\"parent\":\"d-2236\",\"name\":\"command.exec\",\"dur_ms\":4.0,\"status\":\"completed\",\"attrs\":{\"session_created\":false,\"finalize_policy\":\"publish_then_destroy\"}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

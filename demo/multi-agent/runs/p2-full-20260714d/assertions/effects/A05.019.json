@@ -1,0 +1,48 @@
+{
+  "after": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A05-search-data.js": "f9459fc2be8af6d84dd940b564df76be81cefb15b362bfbd515201779b610866",
+    "src/features/A05-search-view.js": "03b4741bb0784ca8a314fd905665c2ae06ab89d72a3e82a7c1bdf877e074f9ad",
+    "src/features/A05-search.js": "9593a9daa2a44b58831cd9fc6de7e919c14f2a7f4bc9b388fb5ed25b4f172e24",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A05-data.test.mjs": "bedf113ada795939be9acb45739694239a335b5fea58cba9a2a1c7c74419711a",
+    "tests/A05-red.test.mjs": "26cf1924b8bf9ebe65b912ce7a53062f9f22d3c85a85f7e77017c62fc0be7fed",
+    "tests/A05-view.test.mjs": "36ebb98b8a750cb5a79363b6bcae3e6c086e2ea8671f3750babf4af1628a21f5"
+  },
+  "attempt_ref": "A05.primary",
+  "before": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A05-search-data.js": "f9459fc2be8af6d84dd940b564df76be81cefb15b362bfbd515201779b610866",
+    "src/features/A05-search-view.js": "03b4741bb0784ca8a314fd905665c2ae06ab89d72a3e82a7c1bdf877e074f9ad",
+    "src/features/A05-search.js": "9593a9daa2a44b58831cd9fc6de7e919c14f2a7f4bc9b388fb5ed25b4f172e24",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A05-data.test.mjs": "bedf113ada795939be9acb45739694239a335b5fea58cba9a2a1c7c74419711a",
+    "tests/A05-red.test.mjs": "26cf1924b8bf9ebe65b912ce7a53062f9f22d3c85a85f7e77017c62fc0be7fed"
+  },
+  "changed_paths": [
+    "tests/A05-view.test.mjs"
+  ],
+  "cumulative_changed_paths": [
+    "src/features/A05-search-data.js",
+    "src/features/A05-search-view.js",
+    "src/features/A05-search.js",
+    "tests/A05-data.test.mjs",
+    "tests/A05-red.test.mjs",
+    "tests/A05-view.test.mjs"
+  ],
+  "cumulative_declared_paths": [
+    "src/features/A05-search-data.js",
+    "src/features/A05-search-view.js",
+    "src/features/A05-search.js",
+    "tests/A05-data.test.mjs",
+    "tests/A05-red.test.mjs",
+    "tests/A05-view.test.mjs"
+  ],
+  "declared_paths": [
+    "tests/A05-view.test.mjs"
+  ],
+  "response_sha256": "0c2964d5e94b4d95daa08114659e4c3bc45cb1839e198b81e2e20398261c1b8f",
+  "row": "A05.019"
+}

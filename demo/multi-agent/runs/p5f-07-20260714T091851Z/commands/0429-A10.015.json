@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-52de8bdd-040c-406d-80ed-2e44db339ded",
+    "--request-id",
+    "p5f-07-20260714T091851Z:A10.015:runtime",
+    "file_write",
+    "--path",
+    "tests/A10-data.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A10-qa-data.js');\ntest('A10 fixture is deterministic', () => assert.equal(globalThis.FlashCart.fixtures.A10.owner, 'A10'));\n",
+    "--workspace-session-id",
+    "00000c18c21d68661c798c"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.755,
+  "kind": "public_cli_process",
+  "label": "A10.015",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 225,
+    "path": "tests/A10-data.test.mjs",
+    "type": "create"
+  },
+  "pid": 93032,
+  "provenance": "agent",
+  "request_id": "p5f-07-20260714T091851Z:A10.015:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 429,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A10-data.test.mjs\",\"bytes_written\":225}\n",
+  "timed_out": false
+}

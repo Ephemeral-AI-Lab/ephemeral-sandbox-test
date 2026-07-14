@@ -1,0 +1,42 @@
+{
+  "request_id": "p2-full-20260714g:A02.024:runtime",
+  "row": "A02.024",
+  "trace": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 2.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 5.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-1149",
+              "span": "d-1153",
+              "status": "completed",
+              "trace": "p2-full-20260714g:A02.024:runtime",
+              "ts": 1784006726109
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 7.0,
+          "name": "daemon.dispatch",
+          "span": "d-1149",
+          "status": "completed",
+          "trace": "p2-full-20260714g:A02.024:runtime",
+          "ts": 1784006726109
+        }
+      }
+    ],
+    "trace": "p2-full-20260714g:A02.024:runtime",
+    "view": "trace"
+  }
+}

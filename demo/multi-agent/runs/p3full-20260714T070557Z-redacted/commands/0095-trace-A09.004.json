@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-adf9180b-82e7-4128-90a2-b7342748f86b",
+    "--trace-id",
+    "p3full-20260714T070557Z-redacted:A09.004:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 75.318,
+  "kind": "public_cli_process",
+  "label": "trace-A09.004",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 2.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 4.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-132",
+              "span": "d-134",
+              "status": "completed",
+              "trace": "p3full-20260714T070557Z-redacted:A09.004:runtime",
+              "ts": 1784012760269
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_read"
+          },
+          "dur_ms": 6.0,
+          "name": "daemon.dispatch",
+          "span": "d-132",
+          "status": "completed",
+          "trace": "p3full-20260714T070557Z-redacted:A09.004:runtime",
+          "ts": 1784012760269
+        }
+      }
+    ],
+    "trace": "p3full-20260714T070557Z-redacted:A09.004:runtime",
+    "view": "trace"
+  },
+  "pid": 64603,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 95,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3full-20260714T070557Z-redacted:A09.004:runtime\",\"spans\":[{\"span\":{\"ts\":1784012760269,\"trace\":\"p3full-20260714T070557Z-redacted:A09.004:runtime\",\"span\":\"d-132\",\"name\":\"daemon.dispatch\",\"dur_ms\":6.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_read\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012760269,\"trace\":\"p3full-20260714T070557Z-redacted:A09.004:runtime\",\"span\":\"d-134\",\"parent\":\"d-132\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":4.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":2.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli",
+    "destroy_sandbox",
+    "--sandbox-id",
+    "eos-3482d145-830c-43cc-843a-6428698e5b95"
+  ],
+  "cancelled": false,
+  "duration_ms": 376.284,
+  "kind": "public_cli_process",
+  "label": "destroy-sandbox",
+  "parse_error": null,
+  "parsed_json": {
+    "daemon": {
+      "host": "127.0.0.1",
+      "port": 56504
+    },
+    "daemon_http": {
+      "host": "127.0.0.1",
+      "port": 56505
+    },
+    "id": "eos-3482d145-830c-43cc-843a-6428698e5b95",
+    "shared_base": {
+      "readonly": true,
+      "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/flashcart/workspaces/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base",
+      "target": "/eos/layer-stack/base"
+    },
+    "state": "stopped",
+    "workspace_root": "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/flashcart/workspaces/p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z"
+  },
+  "pid": 67025,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1281,
+  "stderr": "",
+  "stdout": "{\"id\":\"eos-3482d145-830c-43cc-843a-6428698e5b95\",\"workspace_root\":\"/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/flashcart/workspaces/p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z\",\"state\":\"stopped\",\"daemon\":{\"host\":\"127.0.0.1\",\"port\":56504},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":56505},\"shared_base\":{\"source\":\"/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/flashcart/workspaces/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}}\n",
+  "timed_out": false
+}

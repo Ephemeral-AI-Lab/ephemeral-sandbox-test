@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-adf9180b-82e7-4128-90a2-b7342748f86b",
+    "--request-id",
+    "p3full-20260714T070557Z-redacted:A02.011:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000418c2162702937547",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --check src/features/A02-design-system.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 60.642,
+  "kind": "public_cli_process",
+  "label": "A02.011",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.025498375,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.025548458,
+    "workspace_session_id": "00000418c2162702937547"
+  },
+  "pid": 68183,
+  "provenance": "agent",
+  "request_id": "p3full-20260714T070557Z-redacted:A02.011:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 290,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.025548458,\"command_total_time_seconds\":0.025498375,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00000418c2162702937547\"}\n",
+  "timed_out": false
+}

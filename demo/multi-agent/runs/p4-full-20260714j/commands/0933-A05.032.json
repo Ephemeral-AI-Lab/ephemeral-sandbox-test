@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--request-id",
+    "p4-full-20260714j:A05.032:runtime",
+    "file_read",
+    "--path",
+    "src/features/A05-search-data.js",
+    "--workspace-session-id",
+    "00000718c211d089ca90a7"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.458,
+  "kind": "public_cli_process",
+  "label": "A05.032",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 240,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\n  root.FlashCart.fixtures.A05 = Object.freeze({ owner: 'A05', label: 'Search and facets', revision: 1 });\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A05-search-data.js",
+    "start_line": 1,
+    "total_bytes": 241,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 56784,
+  "provenance": "agent",
+  "request_id": "p4-full-20260714j:A05.032:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 933,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A05-search-data.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\\n  root.FlashCart.fixtures.A05 = Object.freeze({ owner: 'A05', label: 'Search and facets', revision: 1 });\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":240,\"total_bytes\":241,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

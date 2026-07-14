@@ -1,0 +1,77 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-b00a8c3e-45c0-4e7d-8ba1-e6cd1cafc3ac",
+    "--trace-id",
+    "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.010:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.429,
+  "kind": "public_cli_process",
+  "label": "trace-A06.010",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 3.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-93",
+              "span": "d-94",
+              "status": "completed",
+              "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.010:runtime",
+              "ts": 1784011960443
+            }
+          },
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 3.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 4.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-93",
+              "span": "d-95",
+              "status": "completed",
+              "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.010:runtime",
+              "ts": 1784011960447
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_edit"
+          },
+          "dur_ms": 7.0,
+          "name": "daemon.dispatch",
+          "span": "d-93",
+          "status": "completed",
+          "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.010:runtime",
+          "ts": 1784011960447
+        }
+      }
+    ],
+    "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.010:runtime",
+    "view": "trace"
+  },
+  "pid": 31899,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 63,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.010:runtime\",\"spans\":[{\"span\":{\"ts\":1784011960447,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.010:runtime\",\"span\":\"d-93\",\"name\":\"daemon.dispatch\",\"dur_ms\":7.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_edit\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784011960443,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.010:runtime\",\"span\":\"d-94\",\"parent\":\"d-93\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":3.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":0.0,\"children\":[],\"events\":[]},{\"span\":{\"ts\":1784011960447,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.010:runtime\",\"span\":\"d-95\",\"parent\":\"d-93\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":4.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":3.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

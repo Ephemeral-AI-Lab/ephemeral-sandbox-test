@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-71235f98-7a81-439c-8bc4-8f1458449999",
+    "--request-id",
+    "p5r-03-20260714T084208Z:A01.028:runtime",
+    "file_write",
+    "--path",
+    "src/features/A01-foundation.json",
+    "--content",
+    "{\n  \"owner\": \"A01\",\n  \"paths\": {\n    \"a11y\": \"scripts/serve.mjs\",\n    \"core\": \"src/features/A01-foundation.js\",\n    \"data\": \"index.html\",\n    \"manifest\": \"src/features/A01-foundation.json\",\n    \"style\": \"src/styles.css\",\n    \"view\": \"src/app.js\"\n  },\n  \"role\": \"Foundation\",\n  \"schema_version\": 1\n}\n",
+    "--workspace-session-id",
+    "00000318c21b684f5590ae"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.936,
+  "kind": "public_cli_process",
+  "label": "A01.028",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 299,
+    "path": "src/features/A01-foundation.json",
+    "type": "create"
+  },
+  "pid": 75443,
+  "provenance": "agent",
+  "request_id": "p5r-03-20260714T084208Z:A01.028:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 837,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A01-foundation.json\",\"bytes_written\":299}\n",
+  "timed_out": false
+}

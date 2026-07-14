@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-a0301757-e6eb-4ac8-880c-29a8ef345d7a",
+    "--request-id",
+    "p5r-02-20260714T080347Z:A09.005:runtime",
+    "file_read",
+    "--path",
+    "src/features/A09-accessibility.js",
+    "--workspace-session-id",
+    "00000b18c2194f1ead9fa2"
+  ],
+  "cancelled": false,
+  "duration_ms": 81.77,
+  "kind": "public_cli_process",
+  "label": "A09.005",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/features/A09-accessibility.js"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/features/A09-accessibility.js"
+    }
+  },
+  "pid": 30756,
+  "provenance": "agent",
+  "request_id": "p5r-02-20260714T080347Z:A09.005:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 109,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/features/A09-accessibility.js\",\"details\":{\"path\":\"src/features/A09-accessibility.js\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

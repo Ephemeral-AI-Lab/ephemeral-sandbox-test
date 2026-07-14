@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b5b441d3-de98-49a1-81d9-ead243c868b9",
+    "--request-id",
+    "p2-full-20260714c:A03.020:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000318c210479951fe41",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A03-view.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 117.847,
+  "kind": "public_cli_process",
+  "label": "A03.020",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.078875875,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A03 view has a semantic section (0.546167ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 42.947167",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.07893075,
+    "workspace_session_id": "00000318c210479951fe41"
+  },
+  "pid": 75097,
+  "provenance": "agent",
+  "request_id": "p2-full-20260714c:A03.020:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 568,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.07893075,\"command_total_time_seconds\":0.078875875,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":41,\"output\":\"✔ A03 view has a semantic section (0.546167ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 42.947167\",\"workspace_session_id\":\"00000318c210479951fe41\"}\n",
+  "timed_out": false
+}

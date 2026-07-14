@@ -1,0 +1,26 @@
+{
+  "request_id": "p3full-20260714T070557Z-redacted:A08.051:runtime",
+  "row": "A08.051",
+  "trace": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_blame"
+          },
+          "dur_ms": 0.0,
+          "name": "daemon.dispatch",
+          "span": "d-2167",
+          "status": "completed",
+          "trace": "p3full-20260714T070557Z-redacted:A08.051:runtime",
+          "ts": 1784012804375
+        }
+      }
+    ],
+    "trace": "p3full-20260714T070557Z-redacted:A08.051:runtime",
+    "view": "trace"
+  }
+}

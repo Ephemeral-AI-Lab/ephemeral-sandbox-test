@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-05aa11ab-f22c-4929-87b4-9080e735c2dc",
+    "--trace-id",
+    "p3full-20260714T065654Z-resume:A05.015:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 51.948,
+  "kind": "public_cli_process",
+  "label": "trace-A05.015",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 1.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 4.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-663",
+              "span": "d-667",
+              "status": "completed",
+              "trace": "p3full-20260714T065654Z-resume:A05.015:runtime",
+              "ts": 1784012229735
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 5.0,
+          "name": "daemon.dispatch",
+          "span": "d-663",
+          "status": "completed",
+          "trace": "p3full-20260714T065654Z-resume:A05.015:runtime",
+          "ts": 1784012229735
+        }
+      }
+    ],
+    "trace": "p3full-20260714T065654Z-resume:A05.015:runtime",
+    "view": "trace"
+  },
+  "pid": 75469,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 446,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3full-20260714T065654Z-resume:A05.015:runtime\",\"spans\":[{\"span\":{\"ts\":1784012229735,\"trace\":\"p3full-20260714T065654Z-resume:A05.015:runtime\",\"span\":\"d-663\",\"name\":\"daemon.dispatch\",\"dur_ms\":5.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_write\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012229735,\"trace\":\"p3full-20260714T065654Z-resume:A05.015:runtime\",\"span\":\"d-667\",\"parent\":\"d-663\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":4.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":1.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

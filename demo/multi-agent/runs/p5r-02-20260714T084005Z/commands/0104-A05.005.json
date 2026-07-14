@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-f32b2d3a-ac89-4152-86b1-31f0fa16de68",
+    "--request-id",
+    "p5r-02-20260714T084005Z:A05.005:runtime",
+    "file_read",
+    "--path",
+    "src/features/A05-search.js",
+    "--workspace-session-id",
+    "00000718c21b4ac4d4cd93"
+  ],
+  "cancelled": false,
+  "duration_ms": 68.253,
+  "kind": "public_cli_process",
+  "label": "A05.005",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/features/A05-search.js"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/features/A05-search.js"
+    }
+  },
+  "pid": 31206,
+  "provenance": "agent",
+  "request_id": "p5r-02-20260714T084005Z:A05.005:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 104,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/features/A05-search.js\",\"details\":{\"path\":\"src/features/A05-search.js\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

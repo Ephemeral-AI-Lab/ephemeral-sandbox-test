@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b0919f76-a661-4bd5-89c8-f3e7fee299f3",
+    "--request-id",
+    "p3-spike-08-lane-A08-20260714T070316Z:A08.034:runtime",
+    "file_read",
+    "--path",
+    "src/features/A08-checkout.css",
+    "--workspace-session-id",
+    "00000318c2160165dba2ea"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.929,
+  "kind": "public_cli_process",
+  "label": "A08.034",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 116,
+    "content": ".feature-a08 { border-inline-start: 4px solid #175b50; } .feature-a08 :focus-visible { outline: 3px solid #124ea0; }",
+    "next_offset": null,
+    "num_lines": 1,
+    "path": "src/features/A08-checkout.css",
+    "start_line": 1,
+    "total_bytes": 117,
+    "total_lines": 1,
+    "truncated": false
+  },
+  "pid": 21298,
+  "provenance": "agent",
+  "request_id": "p3-spike-08-lane-A08-20260714T070316Z:A08.034:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 114,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A08-checkout.css\",\"content\":\".feature-a08 { border-inline-start: 4px solid #175b50; } .feature-a08 :focus-visible { outline: 3px solid #124ea0; }\",\"start_line\":1,\"num_lines\":1,\"total_lines\":1,\"bytes_read\":116,\"total_bytes\":117,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

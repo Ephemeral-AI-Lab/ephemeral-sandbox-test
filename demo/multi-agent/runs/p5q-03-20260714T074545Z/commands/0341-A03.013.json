@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-6c4325c8-80c0-4df2-916d-23941c6cf2df",
+    "--request-id",
+    "p5q-03-20260714T074545Z:A03.013:runtime",
+    "file_write",
+    "--path",
+    "src/features/A03-products-data.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\n  root.FlashCart.fixtures.A03 = Object.freeze({ owner: 'A03', label: 'Product data', revision: 1 });\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000518c21852f401f966"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.243,
+  "kind": "public_cli_process",
+  "label": "A03.013",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 236,
+    "path": "src/features/A03-products-data.js",
+    "type": "create"
+  },
+  "pid": 66487,
+  "provenance": "agent",
+  "request_id": "p5q-03-20260714T074545Z:A03.013:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 341,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A03-products-data.js\",\"bytes_written\":236}\n",
+  "timed_out": false
+}

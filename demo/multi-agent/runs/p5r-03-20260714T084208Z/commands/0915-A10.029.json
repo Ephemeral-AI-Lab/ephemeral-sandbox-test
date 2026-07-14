@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-71235f98-7a81-439c-8bc4-8f1458449999",
+    "--request-id",
+    "p5r-03-20260714T084208Z:A10.029:runtime",
+    "file_write",
+    "--path",
+    "tests/A10-manifest.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A10 manifest names its owner', async () => assert.equal(JSON.parse(await readFile(new URL('../src/features/A10-qa.json', import.meta.url), 'utf8')).owner, 'A10'));\n",
+    "--workspace-session-id",
+    "00000c18c21b6867dd6661"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.983,
+  "kind": "public_cli_process",
+  "label": "A10.029",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 286,
+    "path": "tests/A10-manifest.test.mjs",
+    "type": "create"
+  },
+  "pid": 76845,
+  "provenance": "agent",
+  "request_id": "p5r-03-20260714T084208Z:A10.029:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 915,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A10-manifest.test.mjs\",\"bytes_written\":286}\n",
+  "timed_out": false
+}

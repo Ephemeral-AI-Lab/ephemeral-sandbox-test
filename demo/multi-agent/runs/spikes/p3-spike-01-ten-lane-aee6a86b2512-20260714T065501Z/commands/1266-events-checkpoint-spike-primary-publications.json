@@ -1,0 +1,238 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-3482d145-830c-43cc-843a-6428698e5b95",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784012102658"
+  ],
+  "cancelled": false,
+  "duration_ms": 72.402,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-spike-primary-publications",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.released",
+        "parent": "d-9",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:ENGINE.bootstrap:runtime",
+        "ts": 1784012102658
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-16",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784012102952
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-21",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784012103005
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-24",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A01.001:runtime",
+        "ts": 1784012103049
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-29",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A02.001:runtime",
+        "ts": 1784012103093
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-34",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A03.001:runtime",
+        "ts": 1784012103134
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-39",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A04.001:runtime",
+        "ts": 1784012103176
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-44",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A05.001:runtime",
+        "ts": 1784012103234
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-49",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A06.001:runtime",
+        "ts": 1784012103274
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-54",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A07.001:runtime",
+        "ts": 1784012103318
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-59",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A08.001:runtime",
+        "ts": 1784012103360
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-64",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A09.001:runtime",
+        "ts": 1784012103404
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-69",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A10.001:runtime",
+        "ts": 1784012103446
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-1966",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A01.001:runtime",
+        "ts": 1784012142019
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-1972",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A02.001:runtime",
+        "ts": 1784012142104
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-1978",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A06.001:runtime",
+        "ts": 1784012142187
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-1984",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A03.001:runtime",
+        "ts": 1784012142272
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-1990",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A10.001:runtime",
+        "ts": 1784012142359
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-1996",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A07.001:runtime",
+        "ts": 1784012142440
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-2002",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A04.001:runtime",
+        "ts": 1784012142521
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-2008",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A09.001:runtime",
+        "ts": 1784012142603
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-2014",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A05.001:runtime",
+        "ts": 1784012142683
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-2020",
+        "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A08.001:runtime",
+        "ts": 1784012142766
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 66751,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1266,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784012102658,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:ENGINE.bootstrap:runtime\",\"parent\":\"d-9\",\"name\":\"lease.released\",\"attrs\":{\"revision\":1}},{\"ts\":1784012102952,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:ENGINE.shared.checkpoint.bootstrap:runtime\",\"parent\":\"d-16\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784012103005,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:ENGINE.shared.checkpoint.bootstrap:runtime\",\"parent\":\"d-21\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}},{\"ts\":1784012103049,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A01.001:runtime\",\"parent\":\"d-24\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784012103093,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A02.001:runtime\",\"parent\":\"d-29\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784012103134,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A03.001:runtime\",\"parent\":\"d-34\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784012103176,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A04.001:runtime\",\"parent\":\"d-39\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784012103234,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A05.001:runtime\",\"parent\":\"d-44\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784012103274,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A06.001:runtime\",\"parent\":\"d-49\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784012103318,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A07.001:runtime\",\"parent\":\"d-54\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784012103360,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A08.001:runtime\",\"parent\":\"d-59\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784012103404,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A09.001:runtime\",\"parent\":\"d-64\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784012103446,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A10.001:runtime\",\"parent\":\"d-69\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784012142019,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A01.001:runtime\",\"parent\":\"d-1966\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}},{\"ts\":1784012142104,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A02.001:runtime\",\"parent\":\"d-1972\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}},{\"ts\":1784012142187,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A06.001:runtime\",\"parent\":\"d-1978\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}},{\"ts\":1784012142272,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A03.001:runtime\",\"parent\":\"d-1984\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}},{\"ts\":1784012142359,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A10.001:runtime\",\"parent\":\"d-1990\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}},{\"ts\":1784012142440,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A07.001:runtime\",\"parent\":\"d-1996\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}},{\"ts\":1784012142521,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A04.001:runtime\",\"parent\":\"d-2002\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}},{\"ts\":1784012142603,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A09.001:runtime\",\"parent\":\"d-2008\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}},{\"ts\":1784012142683,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A05.001:runtime\",\"parent\":\"d-2014\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}},{\"ts\":1784012142766,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A08.001:runtime\",\"parent\":\"d-2020\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}}]}\n",
+  "timed_out": false
+}

@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-52de8bdd-040c-406d-80ed-2e44db339ded",
+    "--request-id",
+    "p5f-07-20260714T091851Z:A02.036:runtime",
+    "file_read",
+    "--path",
+    "src/features/A02-design-system.json",
+    "--workspace-session-id",
+    "00000418c21d6850db90aa"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.642,
+  "kind": "public_cli_process",
+  "label": "A02.036",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 404,
+    "content": "{\n  \"owner\": \"A02\",\n  \"paths\": {\n    \"a11y\": \"src/features/A02-design-system-a11y.js\",\n    \"core\": \"src/features/A02-design-system.js\",\n    \"data\": \"src/features/A02-design-system-data.js\",\n    \"manifest\": \"src/features/A02-design-system.json\",\n    \"style\": \"src/features/A02-design-system.css\",\n    \"view\": \"src/features/A02-design-system-view.js\"\n  },\n  \"role\": \"Design system\",\n  \"schema_version\": 1\n}",
+    "next_offset": null,
+    "num_lines": 13,
+    "path": "src/features/A02-design-system.json",
+    "start_line": 1,
+    "total_bytes": 405,
+    "total_lines": 13,
+    "truncated": false
+  },
+  "pid": 3478,
+  "provenance": "agent",
+  "request_id": "p5f-07-20260714T091851Z:A02.036:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 982,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A02-design-system.json\",\"content\":\"{\\n  \\\"owner\\\": \\\"A02\\\",\\n  \\\"paths\\\": {\\n    \\\"a11y\\\": \\\"src/features/A02-design-system-a11y.js\\\",\\n    \\\"core\\\": \\\"src/features/A02-design-system.js\\\",\\n    \\\"data\\\": \\\"src/features/A02-design-system-data.js\\\",\\n    \\\"manifest\\\": \\\"src/features/A02-design-system.json\\\",\\n    \\\"style\\\": \\\"src/features/A02-design-system.css\\\",\\n    \\\"view\\\": \\\"src/features/A02-design-system-view.js\\\"\\n  },\\n  \\\"role\\\": \\\"Design system\\\",\\n  \\\"schema_version\\\": 1\\n}\",\"start_line\":1,\"num_lines\":13,\"total_lines\":13,\"bytes_read\":404,\"total_bytes\":405,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

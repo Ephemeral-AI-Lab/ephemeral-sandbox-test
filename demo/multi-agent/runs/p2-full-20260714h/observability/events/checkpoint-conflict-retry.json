@@ -1,0 +1,92 @@
+{
+  "label": "checkpoint-conflict-retry",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "name": "lease.acquired",
+      "parent": "d-2198",
+      "trace": "p2-full-20260714h:ENGINE.shared.checkpoint.network-clean:runtime",
+      "ts": 1784007008842
+    },
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "name": "lease.released",
+      "parent": "d-2203",
+      "trace": "p2-full-20260714h:ENGINE.shared.checkpoint.network-clean:runtime",
+      "ts": 1784007008936
+    },
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "name": "lease.acquired",
+      "parent": "d-2208",
+      "trace": "p2-full-20260714h:A10.045:runtime",
+      "ts": 1784007008993
+    },
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "name": "lease.released",
+      "parent": "d-2215",
+      "trace": "p2-full-20260714h:A08.053:runtime",
+      "ts": 1784007009116
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2183",
+        "trace": "e2e-direct-daemon-eae9fd3e-1a2d-4588-9da4-978a77e79e85",
+        "ts": 1784007008343
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2198",
+        "trace": "p2-full-20260714h:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784007008842
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2203",
+        "trace": "p2-full-20260714h:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784007008936
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2208",
+        "trace": "p2-full-20260714h:A10.045:runtime",
+        "ts": 1784007008993
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2215",
+        "trace": "p2-full-20260714h:A08.053:runtime",
+        "ts": 1784007009116
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784007009116
+}

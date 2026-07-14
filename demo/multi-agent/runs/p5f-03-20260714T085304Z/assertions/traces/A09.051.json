@@ -1,0 +1,26 @@
+{
+  "request_id": "p5f-03-20260714T085304Z:A09.051:runtime",
+  "row": "A09.051",
+  "trace": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "read_command_lines"
+          },
+          "dur_ms": 0.0,
+          "name": "daemon.dispatch",
+          "span": "d-2161",
+          "status": "completed",
+          "trace": "p5f-03-20260714T085304Z:A09.051:runtime",
+          "ts": 1784019235091
+        }
+      }
+    ],
+    "trace": "p5f-03-20260714T085304Z:A09.051:runtime",
+    "view": "trace"
+  }
+}

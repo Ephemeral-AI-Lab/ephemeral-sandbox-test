@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--request-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A09.042:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A09: { role: 'Accessibility and performance', entry: 'src/features/A09-accessibility.js' },\",\n    \"old_string\": \"  A09: null,\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000b18c2160e29014212"
+  ],
+  "cancelled": false,
+  "duration_ms": 48.918,
+  "kind": "public_cli_process",
+  "label": "A09.042",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 287,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 61547,
+  "provenance": "agent",
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A09.042:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1221,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":287}\n",
+  "timed_out": false
+}

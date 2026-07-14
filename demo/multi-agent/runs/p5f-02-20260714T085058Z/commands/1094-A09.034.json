@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-9e7a512a-4aa0-4693-94f2-c01838407df4",
+    "--request-id",
+    "p5f-02-20260714T085058Z:A09.034:runtime",
+    "file_read",
+    "--path",
+    "src/features/A09-accessibility.css",
+    "--workspace-session-id",
+    "00000b18c21be30bac3431"
+  ],
+  "cancelled": false,
+  "duration_ms": 47.097,
+  "kind": "public_cli_process",
+  "label": "A09.034",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 116,
+    "content": ".feature-a09 { border-inline-start: 4px solid #175b50; } .feature-a09 :focus-visible { outline: 3px solid #124ea0; }",
+    "next_offset": null,
+    "num_lines": 1,
+    "path": "src/features/A09-accessibility.css",
+    "start_line": 1,
+    "total_bytes": 117,
+    "total_lines": 1,
+    "truncated": false
+  },
+  "pid": 44217,
+  "provenance": "agent",
+  "request_id": "p5f-02-20260714T085058Z:A09.034:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1094,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A09-accessibility.css\",\"content\":\".feature-a09 { border-inline-start: 4px solid #175b50; } .feature-a09 :focus-visible { outline: 3px solid #124ea0; }\",\"start_line\":1,\"num_lines\":1,\"total_lines\":1,\"bytes_read\":116,\"total_bytes\":117,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

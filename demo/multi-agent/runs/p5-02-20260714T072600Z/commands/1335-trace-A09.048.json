@@ -1,0 +1,65 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-7659e24e-1f97-41d1-a34d-7721f1f0178f",
+    "--trace-id",
+    "p5-02-20260714T072600Z:A09.048:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 66.729,
+  "kind": "public_cli_process",
+  "label": "trace-A09.048",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "no_op",
+                "session_created": false
+              },
+              "dur_ms": 3.0,
+              "name": "command.exec",
+              "parent": "d-2142",
+              "span": "d-2143",
+              "status": "completed",
+              "trace": "p5-02-20260714T072600Z:A09.048:runtime",
+              "ts": 1784013983384
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 3.0,
+          "name": "daemon.dispatch",
+          "span": "d-2142",
+          "status": "completed",
+          "trace": "p5-02-20260714T072600Z:A09.048:runtime",
+          "ts": 1784013983384
+        }
+      }
+    ],
+    "trace": "p5-02-20260714T072600Z:A09.048:runtime",
+    "view": "trace"
+  },
+  "pid": 53953,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1335,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p5-02-20260714T072600Z:A09.048:runtime\",\"spans\":[{\"span\":{\"ts\":1784013983384,\"trace\":\"p5-02-20260714T072600Z:A09.048:runtime\",\"span\":\"d-2142\",\"name\":\"daemon.dispatch\",\"dur_ms\":3.0,\"status\":\"completed\",\"attrs\":{\"op\":\"exec_command\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784013983384,\"trace\":\"p5-02-20260714T072600Z:A09.048:runtime\",\"span\":\"d-2143\",\"parent\":\"d-2142\",\"name\":\"command.exec\",\"dur_ms\":3.0,\"status\":\"completed\",\"attrs\":{\"session_created\":false,\"finalize_policy\":\"no_op\"}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

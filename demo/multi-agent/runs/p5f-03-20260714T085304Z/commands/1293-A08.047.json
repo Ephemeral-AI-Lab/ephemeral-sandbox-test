@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-87d96492-efb1-4bf1-ae1a-d5efea27eb0d",
+    "--request-id",
+    "p5f-03-20260714T085304Z:A08.047:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00001118c21c0a0698d4ad",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { mkdir, readFile, writeFile } from 'node:fs/promises'; const path = 'src/config.js'; const value = await readFile(path, 'utf8'); await writeFile(path, value.replace('freeShippingCents: 5000', 'freeShippingCents: 7500')); await mkdir('src/conflict', { recursive: true }); await writeFile('src/conflict/A08-stale-attempt.txt', 'must not publish\\n');\""
+  ],
+  "cancelled": false,
+  "duration_ms": 68.569,
+  "kind": "public_cli_process",
+  "label": "A08.047",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.029392708,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.029459167,
+    "workspace_session_id": "00001118c21c0a0698d4ad"
+  },
+  "pid": 78745,
+  "provenance": "agent",
+  "request_id": "p5f-03-20260714T085304Z:A08.047:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1293,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.029459167,\"command_total_time_seconds\":0.029392708,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00001118c21c0a0698d4ad\"}\n",
+  "timed_out": false
+}

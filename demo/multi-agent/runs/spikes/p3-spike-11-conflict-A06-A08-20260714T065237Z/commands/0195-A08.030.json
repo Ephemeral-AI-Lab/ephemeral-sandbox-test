@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b00a8c3e-45c0-4e7d-8ba1-e6cd1cafc3ac",
+    "--request-id",
+    "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.030:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000418c2156cb69f8226",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A08-manifest.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 110.19,
+  "kind": "public_cli_process",
+  "label": "A08.030",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.071092917,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A08 manifest names its owner (3.04ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 39.535875",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.071180458,
+    "workspace_session_id": "00000418c2156cb69f8226"
+  },
+  "pid": 34262,
+  "provenance": "agent",
+  "request_id": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.030:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 195,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.071180458,\"command_total_time_seconds\":0.071092917,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":39,\"output\":\"✔ A08 manifest names its owner (3.04ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 39.535875\",\"workspace_session_id\":\"00000418c2156cb69f8226\"}\n",
+  "timed_out": false
+}

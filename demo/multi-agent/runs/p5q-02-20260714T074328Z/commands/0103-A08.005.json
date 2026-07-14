@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-6d85707f-f89b-44b7-a68d-98b1f9fae7a7",
+    "--request-id",
+    "p5q-02-20260714T074328Z:A08.005:runtime",
+    "file_read",
+    "--path",
+    "src/features/A08-checkout.js",
+    "--workspace-session-id",
+    "00000a18c218334cca142c"
+  ],
+  "cancelled": false,
+  "duration_ms": 66.59,
+  "kind": "public_cli_process",
+  "label": "A08.005",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/features/A08-checkout.js"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/features/A08-checkout.js"
+    }
+  },
+  "pid": 31378,
+  "provenance": "agent",
+  "request_id": "p5q-02-20260714T074328Z:A08.005:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 103,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/features/A08-checkout.js\",\"details\":{\"path\":\"src/features/A08-checkout.js\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

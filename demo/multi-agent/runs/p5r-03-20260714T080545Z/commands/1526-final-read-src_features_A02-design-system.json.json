@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-63e39ee8-a278-4811-9ee6-62a4ff70f02c",
+    "--request-id",
+    "p5r-03-20260714T080545Z:ENGINE.final.src-features-A02-design-system.json:runtime",
+    "file_read",
+    "--path",
+    "src/features/A02-design-system.json"
+  ],
+  "cancelled": false,
+  "duration_ms": 36.762,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A02-design-system.json",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 404,
+    "content": "{\n  \"owner\": \"A02\",\n  \"paths\": {\n    \"a11y\": \"src/features/A02-design-system-a11y.js\",\n    \"core\": \"src/features/A02-design-system.js\",\n    \"data\": \"src/features/A02-design-system-data.js\",\n    \"manifest\": \"src/features/A02-design-system.json\",\n    \"style\": \"src/features/A02-design-system.css\",\n    \"view\": \"src/features/A02-design-system-view.js\"\n  },\n  \"role\": \"Design system\",\n  \"schema_version\": 1\n}",
+    "next_offset": null,
+    "num_lines": 13,
+    "path": "src/features/A02-design-system.json",
+    "start_line": 1,
+    "total_bytes": 405,
+    "total_lines": 13,
+    "truncated": false
+  },
+  "pid": 87308,
+  "provenance": "engine",
+  "request_id": "p5r-03-20260714T080545Z:ENGINE.final.src-features-A02-design-system.json:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1526,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A02-design-system.json\",\"content\":\"{\\n  \\\"owner\\\": \\\"A02\\\",\\n  \\\"paths\\\": {\\n    \\\"a11y\\\": \\\"src/features/A02-design-system-a11y.js\\\",\\n    \\\"core\\\": \\\"src/features/A02-design-system.js\\\",\\n    \\\"data\\\": \\\"src/features/A02-design-system-data.js\\\",\\n    \\\"manifest\\\": \\\"src/features/A02-design-system.json\\\",\\n    \\\"style\\\": \\\"src/features/A02-design-system.css\\\",\\n    \\\"view\\\": \\\"src/features/A02-design-system-view.js\\\"\\n  },\\n  \\\"role\\\": \\\"Design system\\\",\\n  \\\"schema_version\\\": 1\\n}\",\"start_line\":1,\"num_lines\":13,\"total_lines\":13,\"bytes_read\":404,\"total_bytes\":405,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

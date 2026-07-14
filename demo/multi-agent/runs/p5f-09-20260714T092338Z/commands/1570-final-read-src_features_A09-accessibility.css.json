@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-94fb6e38-dd74-4a9f-b016-6d2e055375ed",
+    "--request-id",
+    "p5f-09-20260714T092338Z:ENGINE.final.src-features-A09-accessibility.css:runtime",
+    "file_read",
+    "--path",
+    "src/features/A09-accessibility.css"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.75,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A09-accessibility.css",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 116,
+    "content": ".feature-a09 { border-inline-start: 4px solid #175b50; } .feature-a09 :focus-visible { outline: 3px solid #124ea0; }",
+    "next_offset": null,
+    "num_lines": 1,
+    "path": "src/features/A09-accessibility.css",
+    "start_line": 1,
+    "total_bytes": 117,
+    "total_lines": 1,
+    "truncated": false
+  },
+  "pid": 76169,
+  "provenance": "engine",
+  "request_id": "p5f-09-20260714T092338Z:ENGINE.final.src-features-A09-accessibility.css:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1570,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A09-accessibility.css\",\"content\":\".feature-a09 { border-inline-start: 4px solid #175b50; } .feature-a09 :focus-visible { outline: 3px solid #124ea0; }\",\"start_line\":1,\"num_lines\":1,\"total_lines\":1,\"bytes_read\":116,\"total_bytes\":117,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

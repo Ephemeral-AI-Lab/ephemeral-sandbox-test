@@ -1,0 +1,63 @@
+{
+  "request_id": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.023:runtime",
+  "row": "A06.023",
+  "trace": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [],
+                "events": [],
+                "offset_ms": 0.0,
+                "span": {
+                  "attrs": {
+                    "exit_code": 0
+                  },
+                  "dur_ms": 74.0,
+                  "name": "namespace.exec.run_shell",
+                  "parent": "d-241",
+                  "span": "d-242",
+                  "status": "completed",
+                  "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.023:runtime",
+                  "ts": 1784011963820
+                }
+              }
+            ],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "publish_then_destroy",
+                "session_created": false
+              },
+              "dur_ms": 74.0,
+              "name": "command.exec",
+              "parent": "d-240",
+              "span": "d-241",
+              "status": "completed",
+              "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.023:runtime",
+              "ts": 1784011963820
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 74.0,
+          "name": "daemon.dispatch",
+          "span": "d-240",
+          "status": "completed",
+          "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.023:runtime",
+          "ts": 1784011963820
+        }
+      }
+    ],
+    "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.023:runtime",
+    "view": "trace"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-138c81b8-2911-43e8-b0d4-ad5a886f243e",
+    "--request-id",
+    "p5f-06-20260714T090501Z:ENGINE.final.src-features-A10-qa.js:runtime",
+    "file_read",
+    "--path",
+    "src/features/A10-qa.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.804,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A10-qa.js",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 418,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A10 = {\n    id: 'A10',\n    label: 'Integration QA',\n    deterministic: true,\n    verify() { return true; },\n    status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }\n  };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 11,
+    "path": "src/features/A10-qa.js",
+    "start_line": 1,
+    "total_bytes": 419,
+    "total_lines": 11,
+    "truncated": false
+  },
+  "pid": 79563,
+  "provenance": "engine",
+  "request_id": "p5f-06-20260714T090501Z:ENGINE.final.src-features-A10-qa.js:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1577,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A10-qa.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A10 = {\\n    id: 'A10',\\n    label: 'Integration QA',\\n    deterministic: true,\\n    verify() { return true; },\\n    status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }\\n  };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":11,\"total_lines\":11,\"bytes_read\":418,\"total_bytes\":419,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

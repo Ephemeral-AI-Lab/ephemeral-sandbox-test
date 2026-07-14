@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--request-id",
+    "p4-full-20260714j:A09.053:runtime",
+    "write_command_stdin",
+    "--command-session-id",
+    "namespace_execution_460",
+    "--yield-time-ms",
+    "30000",
+    "stop\n"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.672,
+  "kind": "public_cli_process",
+  "label": "A09.053",
+  "parse_error": null,
+  "parsed_json": {
+    "command_session_id": "namespace_execution_460",
+    "command_total_time_seconds": 1.578991001,
+    "end_offset": 2,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "PORT_BOUND isolated-one\nstop",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 2,
+    "wall_time_seconds": 1.579047793,
+    "workspace_session_id": "00001318c211da4ef96f73"
+  },
+  "pid": 64586,
+  "provenance": "agent",
+  "request_id": "p4-full-20260714j:A09.053:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1360,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":1.579047793,\"command_total_time_seconds\":1.578991001,\"start_offset\":0,\"end_offset\":2,\"total_lines\":2,\"original_token_count\":7,\"output\":\"PORT_BOUND isolated-one\\nstop\",\"command_session_id\":\"namespace_execution_460\",\"workspace_session_id\":\"00001318c211da4ef96f73\"}\n",
+  "timed_out": false
+}

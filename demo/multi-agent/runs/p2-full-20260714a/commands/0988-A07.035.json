@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-e9b00a7f-4f8f-49ff-a603-757311a522e4",
+    "--request-id",
+    "p2-full-20260714a:A07.035:runtime",
+    "file_read",
+    "--path",
+    "src/features/A07-wishlist-a11y.js",
+    "--workspace-session-id",
+    "00000918c20fbdd2f0c3eb"
+  ],
+  "cancelled": false,
+  "duration_ms": 54.684,
+  "kind": "public_cli_process",
+  "label": "A07.035",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 214,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\n  root.FlashCart.a11y.A07 = { label: 'Wishlist', keyboard: true, reducedMotion: true };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A07-wishlist-a11y.js",
+    "start_line": 1,
+    "total_bytes": 215,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 52756,
+  "provenance": "agent",
+  "request_id": "p2-full-20260714a:A07.035:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 988,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A07-wishlist-a11y.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\\n  root.FlashCart.a11y.A07 = { label: 'Wishlist', keyboard: true, reducedMotion: true };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":214,\"total_bytes\":215,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

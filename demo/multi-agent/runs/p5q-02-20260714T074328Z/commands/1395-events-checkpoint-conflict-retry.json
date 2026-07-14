@@ -1,0 +1,67 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-6d85707f-f89b-44b7-a68d-98b1f9fae7a7",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784015056914"
+  ],
+  "cancelled": false,
+  "duration_ms": 88.132,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-conflict-retry",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2202",
+        "trace": "p5q-02-20260714T074328Z:A08.053:runtime",
+        "ts": 1784015056914
+      },
+      {
+        "attrs": {
+          "revision": 14
+        },
+        "name": "lease.acquired",
+        "parent": "d-2206",
+        "trace": "p5q-02-20260714T074328Z:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784015057055
+      },
+      {
+        "attrs": {
+          "revision": 14
+        },
+        "name": "lease.released",
+        "parent": "d-2211",
+        "trace": "p5q-02-20260714T074328Z:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784015057140
+      },
+      {
+        "attrs": {
+          "revision": 14
+        },
+        "name": "lease.acquired",
+        "parent": "d-2214",
+        "trace": "p5q-02-20260714T074328Z:A10.045:runtime",
+        "ts": 1784015057221
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 54803,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1395,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784015056914,\"trace\":\"p5q-02-20260714T074328Z:A08.053:runtime\",\"parent\":\"d-2202\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}},{\"ts\":1784015057055,\"trace\":\"p5q-02-20260714T074328Z:ENGINE.shared.checkpoint.network-clean:runtime\",\"parent\":\"d-2206\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":14}},{\"ts\":1784015057140,\"trace\":\"p5q-02-20260714T074328Z:ENGINE.shared.checkpoint.network-clean:runtime\",\"parent\":\"d-2211\",\"name\":\"lease.released\",\"attrs\":{\"revision\":14}},{\"ts\":1784015057221,\"trace\":\"p5q-02-20260714T074328Z:A10.045:runtime\",\"parent\":\"d-2214\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":14}}]}\n",
+  "timed_out": false
+}

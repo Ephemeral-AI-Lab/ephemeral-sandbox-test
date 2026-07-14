@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "description": "Normative Phase 0 selected live-canary response-key freeze, not a universal public API schema. Shapes are closed unless listed in open_maps.",
+  "shapes": {
+    "blame": {
+      "required": ["path", "ranges"],
+      "optional": [],
+      "types": {"path": "string", "ranges": "array"}
+    },
+    "blame_range": {
+      "required": ["start_line", "line_count", "owner"],
+      "optional": [],
+      "types": {"start_line": "integer", "line_count": "integer", "owner": "string"}
+    },
+    "cgroup": {
+      "required": ["view", "scope", "series"],
+      "optional": [],
+      "types": {"view": "string", "scope": "string", "series": "array"}
+    },
+    "command_running": {
+      "required": ["status", "exit_code", "wall_time_seconds", "command_total_time_seconds", "start_offset", "end_offset", "total_lines", "original_token_count", "output", "command_session_id", "workspace_session_id"],
+      "optional": [],
+      "types": {"status": "string", "exit_code": "null", "wall_time_seconds": "number", "command_total_time_seconds": "number", "start_offset": "integer", "end_offset": "integer", "total_lines": "integer", "original_token_count": "integer", "output": "string", "command_session_id": "string", "workspace_session_id": "string"}
+    },
+    "command_terminal": {
+      "scope": "gated_canary_path",
+      "required": ["status", "exit_code", "wall_time_seconds", "command_total_time_seconds", "start_offset", "end_offset", "total_lines", "original_token_count", "output", "command_session_id", "workspace_session_id"],
+      "optional": ["publish_rejected", "publish_reject_class"],
+      "types": {"status": "string", "exit_code": "integer", "wall_time_seconds": "number", "command_total_time_seconds": "number", "start_offset": "integer", "end_offset": "integer", "total_lines": "integer", "original_token_count": "integer", "output": "string", "command_session_id": "string", "workspace_session_id": "string", "publish_rejected": "boolean", "publish_reject_class": "string"}
+    },
+    "publication_success": {
+      "scope": "gated_canary_path",
+      "required": ["status", "exit_code", "wall_time_seconds", "command_total_time_seconds", "start_offset", "end_offset", "total_lines", "original_token_count", "output", "command_session_id", "workspace_session_id"],
+      "optional": [],
+      "types": {"status": "string", "exit_code": "integer", "wall_time_seconds": "number", "command_total_time_seconds": "number", "start_offset": "integer", "end_offset": "integer", "total_lines": "integer", "original_token_count": "integer", "output": "string", "command_session_id": "string", "workspace_session_id": "string"}
+    },
+    "error": {
+      "required": ["error"],
+      "optional": [],
+      "types": {"error": "object"}
+    },
+    "error_body": {
+      "required": ["kind", "message", "details"],
+      "optional": [],
+      "types": {"kind": "string", "message": "string", "details": "object"}
+    },
+    "event": {
+      "required": ["ts", "trace", "name", "attrs"],
+      "optional": ["parent"],
+      "types": {"ts": "integer", "trace": "string", "name": "string", "attrs": "object", "parent": "string"}
+    },
+    "events": {
+      "required": ["view", "events"],
+      "optional": [],
+      "types": {"view": "string", "events": "array"}
+    },
+    "file_edit": {
+      "required": ["type", "path", "edits_applied", "replacements", "bytes_written"],
+      "optional": [],
+      "types": {"type": "string", "path": "string", "edits_applied": "integer", "replacements": "integer", "bytes_written": "integer"}
+    },
+    "file_read": {
+      "required": ["path", "content", "start_line", "num_lines", "total_lines", "bytes_read", "total_bytes", "next_offset", "truncated"],
+      "optional": [],
+      "types": {"path": "string", "content": "string", "start_line": "integer", "num_lines": "integer", "total_lines": "integer", "bytes_read": "integer", "total_bytes": "integer", "next_offset": ["integer", "null"], "truncated": "boolean"}
+    },
+    "file_write": {
+      "required": ["type", "path", "bytes_written"],
+      "optional": [],
+      "types": {"type": "string", "path": "string", "bytes_written": "integer"}
+    },
+    "layerstack": {
+      "required": ["view", "manifest_version", "root_hash", "active_lease_count", "total_bytes", "total_allocated_bytes", "storage_logical_bytes", "storage_allocated_bytes", "staging_entry_count", "layers", "trend"],
+      "optional": [],
+      "types": {"view": "string", "manifest_version": "integer", "root_hash": "string", "active_lease_count": "integer", "total_bytes": ["integer", "null"], "total_allocated_bytes": ["integer", "null"], "storage_logical_bytes": ["integer", "null"], "storage_allocated_bytes": ["integer", "null"], "staging_entry_count": ["integer", "null"], "layers": "array", "trend": "array"}
+    },
+    "layerstack_layer": {
+      "required": ["layer_id", "bytes", "allocated_bytes", "leased_by_workspaces", "booked_by"],
+      "optional": [],
+      "types": {"layer_id": "string", "bytes": ["integer", "null"], "allocated_bytes": ["integer", "null"], "leased_by_workspaces": "integer", "booked_by": "array"}
+    },
+    "layerstack_workspace": {
+      "required": ["view", "workspace", "mounts", "upper_bytes"],
+      "optional": [],
+      "types": {"view": "string", "workspace": "string", "mounts": "array", "upper_bytes": ["integer", "null"]}
+    },
+    "layerstack_workspace_mount": {
+      "required": ["layer_id", "shared_with"],
+      "optional": [],
+      "types": {"layer_id": "string", "shared_with": "array"}
+    },
+    "manager_endpoint": {
+      "required": ["host", "port"],
+      "optional": [],
+      "types": {"host": "string", "port": "integer"}
+    },
+    "manager_list": {
+      "required": ["sandboxes"],
+      "optional": [],
+      "types": {"sandboxes": "array"}
+    },
+    "manager_record": {
+      "required": ["id", "workspace_root", "state", "daemon", "daemon_http", "shared_base"],
+      "optional": [],
+      "types": {"id": "string", "workspace_root": "string", "state": "string", "daemon": ["object", "null"], "daemon_http": ["object", "null"], "shared_base": ["object", "null"]}
+    },
+    "manager_shared_base": {
+      "required": ["source", "target", "root_hash", "readonly"],
+      "optional": [],
+      "types": {"source": "string", "target": "string", "root_hash": "string", "readonly": "boolean"}
+    },
+    "resource_bundle": {
+      "required": ["latest", "history"],
+      "optional": [],
+      "types": {"latest": ["object", "null"], "history": "array"}
+    },
+    "resource_sample": {
+      "required": ["ts", "sample_delta_ms", "metrics", "deltas"],
+      "optional": [],
+      "types": {"ts": "integer", "sample_delta_ms": ["integer", "null"], "metrics": "object", "deltas": "object"}
+    },
+    "snapshot": {
+      "required": ["sandbox_id", "lifecycle_state", "availability", "sampled_at_unix_ms", "errors", "daemon", "resources", "workspaces", "stack"],
+      "optional": [],
+      "types": {"sandbox_id": "string", "lifecycle_state": "string", "availability": "string", "sampled_at_unix_ms": "integer", "errors": "array", "daemon": "object", "resources": "object", "workspaces": "array", "stack": "object"}
+    },
+    "snapshot_daemon": {
+      "required": ["daemon_pid", "runtime_dir"],
+      "optional": [],
+      "types": {"daemon_pid": "integer", "runtime_dir": "string"}
+    },
+    "snapshot_execution": {
+      "required": ["namespace_execution_id", "operation", "lifecycle_state"],
+      "optional": [],
+      "types": {"namespace_execution_id": "string", "operation": "string", "lifecycle_state": "string"}
+    },
+    "snapshot_layers": {
+      "required": ["base_root_hash", "layer_count"],
+      "optional": [],
+      "types": {"base_root_hash": ["string", "null"], "layer_count": ["integer", "null"]}
+    },
+    "snapshot_stack": {
+      "required": ["layer_count", "layers_bytes", "layers_allocated_bytes", "storage_allocated_bytes", "staging_entry_count", "active_leases"],
+      "optional": [],
+      "types": {"layer_count": "integer", "layers_bytes": ["integer", "null"], "layers_allocated_bytes": ["integer", "null"], "storage_allocated_bytes": ["integer", "null"], "staging_entry_count": ["integer", "null"], "active_leases": "integer"}
+    },
+    "snapshot_workspace": {
+      "required": ["workspace_id", "lifecycle_state", "network_profile", "finalize_policy", "layers", "namespace_fd_count", "resources", "active_namespace_executions"],
+      "optional": [],
+      "types": {"workspace_id": "string", "lifecycle_state": "string", "network_profile": "string", "finalize_policy": "string", "layers": "object", "namespace_fd_count": ["integer", "null"], "resources": "object", "active_namespace_executions": "array"}
+    },
+    "trace": {
+      "required": ["view", "trace", "spans"],
+      "optional": [],
+      "types": {"view": "string", "trace": "string", "spans": "array"}
+    },
+    "trace_event_node": {
+      "required": ["offset_ms", "event"],
+      "optional": [],
+      "types": {"offset_ms": "number", "event": "object"}
+    },
+    "trace_span": {
+      "required": ["ts", "trace", "span", "name", "dur_ms", "status", "attrs"],
+      "optional": ["parent"],
+      "types": {"ts": "integer", "trace": "string", "span": "string", "name": "string", "dur_ms": "number", "status": "string", "attrs": "object", "parent": "string"}
+    },
+    "trace_span_node": {
+      "required": ["span", "offset_ms", "children", "events"],
+      "optional": [],
+      "types": {"span": "object", "offset_ms": "number", "children": "array", "events": "array"}
+    }
+  },
+  "open_maps": [
+    "event.attrs",
+    "resource_sample.metrics",
+    "resource_sample.deltas",
+    "trace_span.attrs",
+    "layerstack.trend[]"
+  ]
+}

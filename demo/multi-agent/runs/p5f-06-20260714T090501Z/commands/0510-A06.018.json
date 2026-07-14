@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-138c81b8-2911-43e8-b0d4-ad5a886f243e",
+    "--request-id",
+    "p5f-06-20260714T090501Z:A06.018:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000818c21ca6757dac1e",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --check src/features/A06-cart-view.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 64.374,
+  "kind": "public_cli_process",
+  "label": "A06.018",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.025866042,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.025918959,
+    "workspace_session_id": "00000818c21ca6757dac1e"
+  },
+  "pid": 60168,
+  "provenance": "agent",
+  "request_id": "p5f-06-20260714T090501Z:A06.018:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 510,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.025918959,\"command_total_time_seconds\":0.025866042,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00000818c21ca6757dac1e\"}\n",
+  "timed_out": false
+}

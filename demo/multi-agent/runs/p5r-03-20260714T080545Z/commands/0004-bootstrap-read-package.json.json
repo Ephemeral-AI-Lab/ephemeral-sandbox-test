@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-63e39ee8-a278-4811-9ee6-62a4ff70f02c",
+    "--request-id",
+    "p5r-03-20260714T080545Z:ENGINE.bootstrap.package.json:runtime",
+    "file_read",
+    "--path",
+    "package.json"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.676,
+  "kind": "public_cli_process",
+  "label": "bootstrap-read-package.json",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 179,
+    "content": "{\n  \"name\": \"flashcart-offline-demo\",\n  \"private\": true,\n  \"scripts\": {\n    \"serve\": \"node scripts/serve.mjs\",\n    \"test\": \"node --test tests/*.test.mjs\"\n  },\n  \"type\": \"module\"\n}",
+    "next_offset": null,
+    "num_lines": 9,
+    "path": "package.json",
+    "start_line": 1,
+    "total_bytes": 180,
+    "total_lines": 9,
+    "truncated": false
+  },
+  "pid": 59648,
+  "provenance": "engine",
+  "request_id": "p5r-03-20260714T080545Z:ENGINE.bootstrap.package.json:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 4,
+  "stderr": "",
+  "stdout": "{\"path\":\"package.json\",\"content\":\"{\\n  \\\"name\\\": \\\"flashcart-offline-demo\\\",\\n  \\\"private\\\": true,\\n  \\\"scripts\\\": {\\n    \\\"serve\\\": \\\"node scripts/serve.mjs\\\",\\n    \\\"test\\\": \\\"node --test tests/*.test.mjs\\\"\\n  },\\n  \\\"type\\\": \\\"module\\\"\\n}\",\"start_line\":1,\"num_lines\":9,\"total_lines\":9,\"bytes_read\":179,\"total_bytes\":180,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

@@ -1,0 +1,65 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--trace-id",
+    "p4-full-20260714j:A09.047:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 76.118,
+  "kind": "public_cli_process",
+  "label": "trace-A09.047",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "no_op",
+                "session_created": false
+              },
+              "dur_ms": 5.0,
+              "name": "command.exec",
+              "parent": "d-2118",
+              "span": "d-2119",
+              "status": "completed",
+              "trace": "p4-full-20260714j:A09.047:runtime",
+              "ts": 1784008033421
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 5.0,
+          "name": "daemon.dispatch",
+          "span": "d-2118",
+          "status": "completed",
+          "trace": "p4-full-20260714j:A09.047:runtime",
+          "ts": 1784008033421
+        }
+      }
+    ],
+    "trace": "p4-full-20260714j:A09.047:runtime",
+    "view": "trace"
+  },
+  "pid": 63925,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1325,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p4-full-20260714j:A09.047:runtime\",\"spans\":[{\"span\":{\"ts\":1784008033421,\"trace\":\"p4-full-20260714j:A09.047:runtime\",\"span\":\"d-2118\",\"name\":\"daemon.dispatch\",\"dur_ms\":5.0,\"status\":\"completed\",\"attrs\":{\"op\":\"exec_command\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784008033421,\"trace\":\"p4-full-20260714j:A09.047:runtime\",\"span\":\"d-2119\",\"parent\":\"d-2118\",\"name\":\"command.exec\",\"dur_ms\":5.0,\"status\":\"completed\",\"attrs\":{\"session_created\":false,\"finalize_policy\":\"no_op\"}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

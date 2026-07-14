@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-bc06d80c-d1c1-4be3-951c-5db49e779062",
+    "--request-id",
+    "p5f-08-20260714T092139Z:ENGINE.final.tests-A02-manifest.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A02-manifest.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.874,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A02-manifest.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 296,
+    "content": "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A02 manifest names its owner', async () => assert.equal(JSON.parse(await readFile(new URL('../src/features/A02-design-system.json', import.meta.url), 'utf8')).owner, 'A02'));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A02-manifest.test.mjs",
+    "start_line": 1,
+    "total_bytes": 297,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 45818,
+  "provenance": "engine",
+  "request_id": "p5f-08-20260714T092139Z:ENGINE.final.tests-A02-manifest.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1591,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A02-manifest.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport { readFile } from 'node:fs/promises';\\nimport test from 'node:test';\\ntest('A02 manifest names its owner', async () => assert.equal(JSON.parse(await readFile(new URL('../src/features/A02-design-system.json', import.meta.url), 'utf8')).owner, 'A02'));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":296,\"total_bytes\":297,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

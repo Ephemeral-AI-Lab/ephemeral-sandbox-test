@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fe615db6-638c-45fa-99eb-22330d119b1b",
+    "--request-id",
+    "p5q-01-20260714T074128Z:A04.010:runtime",
+    "file_edit",
+    "--path",
+    "src/features/A04-catalog.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A04 = {\\n    id: 'A04',\\n    label: 'Catalog and PDP',\\n    deterministic: true,\\n    verify() { return true; },\\n    selectVariant(product, variant) { return { ...product, variant, selectable: Boolean(variant) }; }\\n  };\\n})(globalThis);\\n\",\n    \"old_string\": \"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A04 = { id: 'A04', verify() { return false; }, implementation: 'broken A04' };\\n})(globalThis);\\n\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000618c21817650b9d45"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.508,
+  "kind": "public_cli_process",
+  "label": "A04.010",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 377,
+    "edits_applied": 1,
+    "path": "src/features/A04-catalog.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 2371,
+  "provenance": "agent",
+  "request_id": "p5q-01-20260714T074128Z:A04.010:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 243,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/features/A04-catalog.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":377}\n",
+  "timed_out": false
+}

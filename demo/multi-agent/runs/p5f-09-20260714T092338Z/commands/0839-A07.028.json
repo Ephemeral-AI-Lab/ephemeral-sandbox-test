@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-94fb6e38-dd74-4a9f-b016-6d2e055375ed",
+    "--request-id",
+    "p5f-09-20260714T092338Z:A07.028:runtime",
+    "file_write",
+    "--path",
+    "src/features/A07-wishlist.json",
+    "--content",
+    "{\n  \"owner\": \"A07\",\n  \"paths\": {\n    \"a11y\": \"src/features/A07-wishlist-a11y.js\",\n    \"core\": \"src/features/A07-wishlist.js\",\n    \"data\": \"src/features/A07-wishlist-data.js\",\n    \"manifest\": \"src/features/A07-wishlist.json\",\n    \"style\": \"src/features/A07-wishlist.css\",\n    \"view\": \"src/features/A07-wishlist-view.js\"\n  },\n  \"role\": \"Wishlist\",\n  \"schema_version\": 1\n}\n",
+    "--workspace-session-id",
+    "00000918c21daa91e8cbed"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.689,
+  "kind": "public_cli_process",
+  "label": "A07.028",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 370,
+    "path": "src/features/A07-wishlist.json",
+    "type": "create"
+  },
+  "pid": 62866,
+  "provenance": "agent",
+  "request_id": "p5f-09-20260714T092338Z:A07.028:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 839,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A07-wishlist.json\",\"bytes_written\":370}\n",
+  "timed_out": false
+}

@@ -1,0 +1,103 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-52de8bdd-040c-406d-80ed-2e44db339ded",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784020780667"
+  ],
+  "cancelled": false,
+  "duration_ms": 73.6,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-network-clean",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2143",
+        "trace": "p5f-07-20260714T091851Z:A08.045:runtime",
+        "ts": 1784020780667
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2155",
+        "trace": "p5f-07-20260714T091851Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784020781294
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2160",
+        "trace": "p5f-07-20260714T091851Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784020781393
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2172",
+        "trace": "e2e-direct-daemon-bfe67ef7-8b1a-4b14-a1d0-90ddb2fcc150",
+        "ts": 1784020781872
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2174",
+        "trace": "e2e-direct-daemon-219cbb56-67e1-4b5c-87d5-c9a887d0196e",
+        "ts": 1784020781947
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2177",
+        "trace": "p5f-07-20260714T091851Z:A08.053:runtime",
+        "ts": 1784020781954
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2181",
+        "trace": "e2e-direct-daemon-a66f9c91-47f7-45ba-85b9-11ad041834a9",
+        "ts": 1784020782045
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2185",
+        "trace": "e2e-direct-daemon-043e6f25-f7b1-40de-8f61-c97969ebd892",
+        "ts": 1784020782150
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 10807,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1384,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784020780667,\"trace\":\"p5f-07-20260714T091851Z:A08.045:runtime\",\"parent\":\"d-2143\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784020781294,\"trace\":\"p5f-07-20260714T091851Z:ENGINE.shared.checkpoint.conflict-rejected:runtime\",\"parent\":\"d-2155\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784020781393,\"trace\":\"p5f-07-20260714T091851Z:ENGINE.shared.checkpoint.conflict-rejected:runtime\",\"parent\":\"d-2160\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}},{\"ts\":1784020781872,\"trace\":\"e2e-direct-daemon-bfe67ef7-8b1a-4b14-a1d0-90ddb2fcc150\",\"parent\":\"d-2172\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784020781947,\"trace\":\"e2e-direct-daemon-219cbb56-67e1-4b5c-87d5-c9a887d0196e\",\"parent\":\"d-2174\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784020781954,\"trace\":\"p5f-07-20260714T091851Z:A08.053:runtime\",\"parent\":\"d-2177\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784020782045,\"trace\":\"e2e-direct-daemon-a66f9c91-47f7-45ba-85b9-11ad041834a9\",\"parent\":\"d-2181\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784020782150,\"trace\":\"e2e-direct-daemon-043e6f25-f7b1-40de-8f61-c97969ebd892\",\"parent\":\"d-2185\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}}]}\n",
+  "timed_out": false
+}

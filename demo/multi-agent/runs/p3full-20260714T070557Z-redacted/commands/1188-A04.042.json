@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-adf9180b-82e7-4128-90a2-b7342748f86b",
+    "--request-id",
+    "p3full-20260714T070557Z-redacted:A04.042:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A04: { role: 'Catalog and PDP', entry: 'src/features/A04-catalog.js' },\",\n    \"old_string\": \"  A04: null,\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000618c216270789063b"
+  ],
+  "cancelled": false,
+  "duration_ms": 51.612,
+  "kind": "public_cli_process",
+  "label": "A04.042",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 267,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 84748,
+  "provenance": "agent",
+  "request_id": "p3full-20260714T070557Z-redacted:A04.042:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1188,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":267}\n",
+  "timed_out": false
+}

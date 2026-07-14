@@ -1,0 +1,27 @@
+{
+  "baseline_ids": [
+    "eos-748ae58f-b87d-4a4d-802b-20da3ae5ade5",
+    "eos-d28b4de3-5ff2-42fa-b3aa-54d55c7a523d",
+    "eos-d5c8ed22-a95a-4f42-943d-502e357165b3"
+  ],
+  "created": {
+    "daemon": {
+      "host": "127.0.0.1",
+      "port": 56514
+    },
+    "daemon_http": {
+      "host": "127.0.0.1",
+      "port": 56515
+    },
+    "id": "eos-d11117e7-fbf9-4e44-950c-c1d5615dd59e",
+    "shared_base": {
+      "readonly": true,
+      "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "<e2e-state-root>/flashcart/workspaces/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base",
+      "target": "/eos/layer-stack/base"
+    },
+    "state": "ready",
+    "workspace_root": "<e2e-state-root>/flashcart/workspaces/p3-spike-04-lane-A04-20260714T070241Z"
+  },
+  "workspace_bind_root": "<e2e-state-root>/flashcart/workspaces/p3-spike-04-lane-A04-20260714T070241Z"
+}

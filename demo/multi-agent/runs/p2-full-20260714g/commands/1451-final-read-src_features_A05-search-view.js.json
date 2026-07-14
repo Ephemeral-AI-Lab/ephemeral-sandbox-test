@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-f15d7124-8b79-4807-861e-ea16ff10aa04",
+    "--request-id",
+    "p2-full-20260714g:ENGINE.final.src-features-A05-search-view.js:runtime",
+    "file_read",
+    "--path",
+    "src/features/A05-search-view.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 37.47,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A05-search-view.js",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 297,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.views = root.FlashCart.views || {};\n  root.FlashCart.views.A05 = function () { return '<section data-feature=\"A05\"><h2>Search and facets</h2><p>query, URL facets, sort, and empty states</p></section>'; };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A05-search-view.js",
+    "start_line": 1,
+    "total_bytes": 298,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 69777,
+  "provenance": "engine",
+  "request_id": "p2-full-20260714g:ENGINE.final.src-features-A05-search-view.js:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1451,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A05-search-view.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.views = root.FlashCart.views || {};\\n  root.FlashCart.views.A05 = function () { return '<section data-feature=\\\"A05\\\"><h2>Search and facets</h2><p>query, URL facets, sort, and empty states</p></section>'; };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":297,\"total_bytes\":298,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

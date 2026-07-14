@@ -1,0 +1,76 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-879870ba-1958-46ed-8a63-deea1c9fed15",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784007784574"
+  ],
+  "cancelled": false,
+  "duration_ms": 105.707,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-conflict-retry",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2183",
+        "trace": "e2e-direct-daemon-9368a1d8-dc75-496d-9d82-467b4106386e",
+        "ts": 1784007784574
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2198",
+        "trace": "p3-full-20260714i:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784007785106
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2203",
+        "trace": "p3-full-20260714i:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784007785173
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2208",
+        "trace": "p3-full-20260714i:A10.045:runtime",
+        "ts": 1784007785230
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2215",
+        "trace": "p3-full-20260714i:A08.053:runtime",
+        "ts": 1784007785374
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 34103,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1400,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784007784574,\"trace\":\"e2e-direct-daemon-9368a1d8-dc75-496d-9d82-467b4106386e\",\"parent\":\"d-2183\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784007785106,\"trace\":\"p3-full-20260714i:ENGINE.shared.checkpoint.network-clean:runtime\",\"parent\":\"d-2198\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784007785173,\"trace\":\"p3-full-20260714i:ENGINE.shared.checkpoint.network-clean:runtime\",\"parent\":\"d-2203\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}},{\"ts\":1784007785230,\"trace\":\"p3-full-20260714i:A10.045:runtime\",\"parent\":\"d-2208\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784007785374,\"trace\":\"p3-full-20260714i:A08.053:runtime\",\"parent\":\"d-2215\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}}]}\n",
+  "timed_out": false
+}

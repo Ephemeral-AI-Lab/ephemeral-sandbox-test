@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-52de8bdd-040c-406d-80ed-2e44db339ded",
+    "--request-id",
+    "p5f-07-20260714T091851Z:A07.005:runtime",
+    "file_read",
+    "--path",
+    "src/features/A07-wishlist.js",
+    "--workspace-session-id",
+    "00000918c21d685e62e016"
+  ],
+  "cancelled": false,
+  "duration_ms": 48.296,
+  "kind": "public_cli_process",
+  "label": "A07.005",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/features/A07-wishlist.js"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/features/A07-wishlist.js"
+    }
+  },
+  "pid": 87021,
+  "provenance": "agent",
+  "request_id": "p5f-07-20260714T091851Z:A07.005:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 103,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/features/A07-wishlist.js\",\"details\":{\"path\":\"src/features/A07-wishlist.js\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-3d561515-4bc3-476b-8c3d-247bda03b00b",
+    "--trace-id",
+    "p2-reduction-20260714d:A03.007:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 56.155,
+  "kind": "public_cli_process",
+  "label": "trace-A03.007",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 3.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 4.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-279",
+              "span": "d-280",
+              "status": "completed",
+              "trace": "p2-reduction-20260714d:A03.007:runtime",
+              "ts": 1784005604538
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 7.0,
+          "name": "daemon.dispatch",
+          "span": "d-279",
+          "status": "completed",
+          "trace": "p2-reduction-20260714d:A03.007:runtime",
+          "ts": 1784005604538
+        }
+      }
+    ],
+    "trace": "p2-reduction-20260714d:A03.007:runtime",
+    "view": "trace"
+  },
+  "pid": 33398,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 189,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p2-reduction-20260714d:A03.007:runtime\",\"spans\":[{\"span\":{\"ts\":1784005604538,\"trace\":\"p2-reduction-20260714d:A03.007:runtime\",\"span\":\"d-279\",\"name\":\"daemon.dispatch\",\"dur_ms\":7.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_write\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784005604538,\"trace\":\"p2-reduction-20260714d:A03.007:runtime\",\"span\":\"d-280\",\"parent\":\"d-279\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":4.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":3.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

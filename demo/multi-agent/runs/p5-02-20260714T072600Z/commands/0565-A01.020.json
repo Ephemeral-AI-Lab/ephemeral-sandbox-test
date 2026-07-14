@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-7659e24e-1f97-41d1-a34d-7721f1f0178f",
+    "--request-id",
+    "p5-02-20260714T072600Z:A01.020:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000318c21739ce191d4e",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A01-view.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 117.782,
+  "kind": "public_cli_process",
+  "label": "A01.020",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.078894167,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A01 view has a semantic section (2.8065ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 45.275708",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.078963042,
+    "workspace_session_id": "00000318c21739ce191d4e"
+  },
+  "pid": 39932,
+  "provenance": "agent",
+  "request_id": "p5-02-20260714T072600Z:A01.020:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 565,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.078963042,\"command_total_time_seconds\":0.078894167,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":40,\"output\":\"✔ A01 view has a semantic section (2.8065ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 45.275708\",\"workspace_session_id\":\"00000318c21739ce191d4e\"}\n",
+  "timed_out": false
+}

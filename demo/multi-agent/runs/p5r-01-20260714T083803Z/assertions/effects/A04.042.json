@@ -1,0 +1,79 @@
+{
+  "after": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A04-catalog-a11y.js": "0187687cf6a485f9a90aef6910693ab5c0c52a9a5227a297718cd92a85d2909f",
+    "src/features/A04-catalog-data.js": "9b8db1f6b7798eb40407055feb10f1d275e0575bab71de5ccacae2cf35c6b666",
+    "src/features/A04-catalog-view.js": "760bd5a63f814742213df94ce47a001aabc952fbb545ba78080fdc907a096848",
+    "src/features/A04-catalog.css": "ccf22d4b0a0f92a96f47e096dc960a387970e1d8d04f29f13121300f900b49b2",
+    "src/features/A04-catalog.js": "ab1783abb0061d9816071e4032635ba2a7c429bdd4cd77954a0f3e44bce7419c",
+    "src/features/A04-catalog.json": "7f4b302aa72846e0e5614c7346eb2d4a577bc65e90963a50a13106b0d6ea9b78",
+    "src/registry.js": "49b7581645443a6468f6f397e4425719dd3e899f443fc5dc32d5539bb16daf6c",
+    "tests/A04-a11y.test.mjs": "c24d611e454f18a550188f81e88e6718b36260e87897afff7963879867f06e15",
+    "tests/A04-data.test.mjs": "fb03e8cd37086d8c4b9abeca6e2a1afbc98c079edc51020078bf09506c52641d",
+    "tests/A04-manifest.test.mjs": "8b2c12aa4535f1774bb051b583a8b325ecd81dc860b254163b919460d0514214",
+    "tests/A04-quality.test.mjs": "9fe32fa297c2f1aec7d7c612e198b34e3a2a5ab64f14deda038cf5587e95ba16",
+    "tests/A04-red.test.mjs": "9d7a32e40cb87319e6688ba5b1d2a1e705e7ea4877ea4bc6f638facb887fdcee",
+    "tests/A04-style.test.mjs": "2596e0384885b8856eba17172ed8efbe06fbdd877231d081ff1f3376c3a16062",
+    "tests/A04-view.test.mjs": "ae1b3ee3043a94abf8afd0ef9c845e432ac7655faef9a57338f8303c936a1104"
+  },
+  "attempt_ref": "A04.primary",
+  "before": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A04-catalog-a11y.js": "0187687cf6a485f9a90aef6910693ab5c0c52a9a5227a297718cd92a85d2909f",
+    "src/features/A04-catalog-data.js": "9b8db1f6b7798eb40407055feb10f1d275e0575bab71de5ccacae2cf35c6b666",
+    "src/features/A04-catalog-view.js": "760bd5a63f814742213df94ce47a001aabc952fbb545ba78080fdc907a096848",
+    "src/features/A04-catalog.css": "ccf22d4b0a0f92a96f47e096dc960a387970e1d8d04f29f13121300f900b49b2",
+    "src/features/A04-catalog.js": "ab1783abb0061d9816071e4032635ba2a7c429bdd4cd77954a0f3e44bce7419c",
+    "src/features/A04-catalog.json": "7f4b302aa72846e0e5614c7346eb2d4a577bc65e90963a50a13106b0d6ea9b78",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A04-a11y.test.mjs": "c24d611e454f18a550188f81e88e6718b36260e87897afff7963879867f06e15",
+    "tests/A04-data.test.mjs": "fb03e8cd37086d8c4b9abeca6e2a1afbc98c079edc51020078bf09506c52641d",
+    "tests/A04-manifest.test.mjs": "8b2c12aa4535f1774bb051b583a8b325ecd81dc860b254163b919460d0514214",
+    "tests/A04-quality.test.mjs": "9fe32fa297c2f1aec7d7c612e198b34e3a2a5ab64f14deda038cf5587e95ba16",
+    "tests/A04-red.test.mjs": "9d7a32e40cb87319e6688ba5b1d2a1e705e7ea4877ea4bc6f638facb887fdcee",
+    "tests/A04-style.test.mjs": "2596e0384885b8856eba17172ed8efbe06fbdd877231d081ff1f3376c3a16062",
+    "tests/A04-view.test.mjs": "ae1b3ee3043a94abf8afd0ef9c845e432ac7655faef9a57338f8303c936a1104"
+  },
+  "changed_paths": [
+    "src/registry.js"
+  ],
+  "cumulative_changed_paths": [
+    "src/features/A04-catalog-a11y.js",
+    "src/features/A04-catalog-data.js",
+    "src/features/A04-catalog-view.js",
+    "src/features/A04-catalog.css",
+    "src/features/A04-catalog.js",
+    "src/features/A04-catalog.json",
+    "src/registry.js",
+    "tests/A04-a11y.test.mjs",
+    "tests/A04-data.test.mjs",
+    "tests/A04-manifest.test.mjs",
+    "tests/A04-quality.test.mjs",
+    "tests/A04-red.test.mjs",
+    "tests/A04-style.test.mjs",
+    "tests/A04-view.test.mjs"
+  ],
+  "cumulative_declared_paths": [
+    "src/features/A04-catalog-a11y.js",
+    "src/features/A04-catalog-data.js",
+    "src/features/A04-catalog-view.js",
+    "src/features/A04-catalog.css",
+    "src/features/A04-catalog.js",
+    "src/features/A04-catalog.json",
+    "src/registry.js",
+    "tests/A04-a11y.test.mjs",
+    "tests/A04-data.test.mjs",
+    "tests/A04-manifest.test.mjs",
+    "tests/A04-quality.test.mjs",
+    "tests/A04-red.test.mjs",
+    "tests/A04-style.test.mjs",
+    "tests/A04-view.test.mjs"
+  ],
+  "declared_paths": [
+    "src/registry.js"
+  ],
+  "response_sha256": "78b1be14836c6a7f646e7a71191b058e131962d719510b1e016f8aa99d936f6a",
+  "row": "A04.042"
+}

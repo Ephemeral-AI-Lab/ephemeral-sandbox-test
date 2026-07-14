@@ -1,0 +1,205 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "layerstack",
+    "--sandbox-id",
+    "eos-c764b9cf-3e43-42cf-9ab9-a15aea7a4819",
+    "--window-ms",
+    "600000"
+  ],
+  "cancelled": false,
+  "duration_ms": 36.308,
+  "kind": "public_cli_process",
+  "label": "checkpoint-ten-workspaces-layerstack",
+  "parse_error": null,
+  "parsed_json": {
+    "active_lease_count": 10,
+    "layers": [
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 527,
+        "layer_id": "L000002-00000001",
+        "leased_by_workspaces": 10
+      },
+      {
+        "allocated_bytes": null,
+        "booked_by": [
+          "L000002-00000001"
+        ],
+        "bytes": null,
+        "layer_id": "B000001-base",
+        "leased_by_workspaces": 0
+      }
+    ],
+    "manifest_version": 2,
+    "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+    "staging_entry_count": 0,
+    "storage_allocated_bytes": 65536,
+    "storage_logical_bytes": 1055,
+    "total_allocated_bytes": null,
+    "total_bytes": null,
+    "trend": [
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521134
+      },
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521181
+      },
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521224
+      },
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521271
+      },
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521479
+      },
+      {
+        "active_leases": 1,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521524
+      },
+      {
+        "active_leases": 2,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521567
+      },
+      {
+        "active_leases": 3,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521609
+      },
+      {
+        "active_leases": 4,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521652
+      },
+      {
+        "active_leases": 5,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521702
+      },
+      {
+        "active_leases": 6,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521747
+      },
+      {
+        "active_leases": 7,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521790
+      },
+      {
+        "active_leases": 8,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521833
+      },
+      {
+        "active_leases": 9,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521874
+      },
+      {
+        "active_leases": 10,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006521915
+      }
+    ],
+    "view": "layerstack"
+  },
+  "pid": 17700,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 35,
+  "stderr": "",
+  "stdout": "{\"view\":\"layerstack\",\"manifest_version\":2,\"root_hash\":\"bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608\",\"active_lease_count\":10,\"total_bytes\":null,\"total_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"layers\":[{\"layer_id\":\"L000002-00000001\",\"bytes\":527,\"allocated_bytes\":20480,\"leased_by_workspaces\":10,\"booked_by\":[]},{\"layer_id\":\"B000001-base\",\"bytes\":null,\"allocated_bytes\":null,\"leased_by_workspaces\":0,\"booked_by\":[\"L000002-00000001\"]}],\"trend\":[{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":0,\"ts\":1784006521134},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":0,\"ts\":1784006521181},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":0,\"ts\":1784006521224},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":0,\"ts\":1784006521271},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":0,\"ts\":1784006521479},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":1,\"ts\":1784006521524},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":2,\"ts\":1784006521567},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":3,\"ts\":1784006521609},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":4,\"ts\":1784006521652},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":5,\"ts\":1784006521702},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":6,\"ts\":1784006521747},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":7,\"ts\":1784006521790},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":8,\"ts\":1784006521833},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":9,\"ts\":1784006521874},{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_logical_bytes\":1055,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":10,\"ts\":1784006521915}]}\n",
+  "timed_out": false
+}

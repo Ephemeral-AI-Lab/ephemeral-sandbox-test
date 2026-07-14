@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-e9b00a7f-4f8f-49ff-a603-757311a522e4",
+    "--request-id",
+    "p2-full-20260714a:A02.027:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000718c20fbdd24ddbd1",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A02-a11y.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 178.269,
+  "kind": "public_cli_process",
+  "label": "A02.027",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.134981625,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A02 honors reduced motion (0.494167ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 69.089708",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.138891417,
+    "workspace_session_id": "00000718c20fbdd24ddbd1"
+  },
+  "pid": 48756,
+  "provenance": "agent",
+  "request_id": "p2-full-20260714a:A02.027:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 775,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.138891417,\"command_total_time_seconds\":0.134981625,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":39,\"output\":\"✔ A02 honors reduced motion (0.494167ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 69.089708\",\"workspace_session_id\":\"00000718c20fbdd24ddbd1\"}\n",
+  "timed_out": false
+}

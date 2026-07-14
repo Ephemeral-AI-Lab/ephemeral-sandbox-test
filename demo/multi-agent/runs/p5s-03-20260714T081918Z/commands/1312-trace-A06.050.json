@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-573f5b3f-5275-4ba9-8e9d-3481b8969c08",
+    "--trace-id",
+    "p5s-03-20260714T081918Z:A06.050:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 99.884,
+  "kind": "public_cli_process",
+  "label": "trace-A06.050",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "write_command_stdin"
+          },
+          "dur_ms": 29.0,
+          "name": "daemon.dispatch",
+          "span": "d-2103",
+          "status": "completed",
+          "trace": "p5s-03-20260714T081918Z:A06.050:runtime",
+          "ts": 1784017208285
+        }
+      }
+    ],
+    "trace": "p5s-03-20260714T081918Z:A06.050:runtime",
+    "view": "trace"
+  },
+  "pid": 81459,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1312,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p5s-03-20260714T081918Z:A06.050:runtime\",\"spans\":[{\"span\":{\"ts\":1784017208285,\"trace\":\"p5s-03-20260714T081918Z:A06.050:runtime\",\"span\":\"d-2103\",\"name\":\"daemon.dispatch\",\"dur_ms\":29.0,\"status\":\"completed\",\"attrs\":{\"op\":\"write_command_stdin\"}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}]}\n",
+  "timed_out": false
+}

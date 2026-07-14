@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-bc06d80c-d1c1-4be3-951c-5db49e779062",
+    "--request-id",
+    "p5f-08-20260714T092139Z:A03.010:runtime",
+    "file_edit",
+    "--path",
+    "src/features/A03-products.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A03 = {\\n    id: 'A03',\\n    label: 'Product data',\\n    deterministic: true,\\n    verify() { return true; },\\n    products() { return [{ id: 'trail-pack', name: 'Trail Pack', cents: 7400, inventory: 8 }, { id: 'studio-mug', name: 'Studio Mug', cents: 2600, inventory: 11 }]; }\\n  };\\n})(globalThis);\\n\",\n    \"old_string\": \"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A03 = { id: 'A03', verify() { return false; }, implementation: 'broken A03' };\\n})(globalThis);\\n\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000518c21d8ec7673a54"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.147,
+  "kind": "public_cli_process",
+  "label": "A03.010",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 439,
+    "edits_applied": 1,
+    "path": "src/features/A03-products.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 21527,
+  "provenance": "agent",
+  "request_id": "p5f-08-20260714T092139Z:A03.010:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 252,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/features/A03-products.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":439}\n",
+  "timed_out": false
+}

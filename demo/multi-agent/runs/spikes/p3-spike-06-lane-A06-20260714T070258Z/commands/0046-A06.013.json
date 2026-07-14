@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-98d16098-283b-41e0-b3fb-dc07d9d7ed8c",
+    "--request-id",
+    "p3-spike-06-lane-A06-20260714T070258Z:A06.013:runtime",
+    "file_write",
+    "--path",
+    "src/features/A06-cart-data.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\n  root.FlashCart.fixtures.A06 = Object.freeze({ owner: 'A06', label: 'Cart and pricing', revision: 1 });\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000318c215fd3f07d047"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.0,
+  "kind": "public_cli_process",
+  "label": "A06.013",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 240,
+    "path": "src/features/A06-cart-data.js",
+    "type": "create"
+  },
+  "pid": 14667,
+  "provenance": "agent",
+  "request_id": "p3-spike-06-lane-A06-20260714T070258Z:A06.013:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 46,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A06-cart-data.js\",\"bytes_written\":240}\n",
+  "timed_out": false
+}

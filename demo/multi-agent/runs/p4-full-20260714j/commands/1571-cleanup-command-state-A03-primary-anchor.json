@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--request-id",
+    "p4-full-20260714j:ENGINE.cleanup.state.A03.primary.anchor:runtime",
+    "read_command_lines",
+    "--command-session-id",
+    "namespace_execution_5",
+    "--start-offset",
+    "0",
+    "--limit",
+    "1000"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.574,
+  "kind": "public_cli_process",
+  "label": "cleanup-command-state-A03-primary-anchor",
+  "parse_error": null,
+  "parsed_json": {
+    "command_session_id": "namespace_execution_5",
+    "command_total_time_seconds": 40.79785256,
+    "end_offset": 2,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "__DEMO_READY__\npublish",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 2,
+    "wall_time_seconds": 54.784465108,
+    "workspace_session_id": "00000518c211d084b4c5b4"
+  },
+  "pid": 68440,
+  "provenance": "engine",
+  "request_id": "p4-full-20260714j:ENGINE.cleanup.state.A03.primary.anchor:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1571,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":54.784465108,\"command_total_time_seconds\":40.79785256,\"start_offset\":0,\"end_offset\":2,\"total_lines\":2,\"original_token_count\":6,\"output\":\"__DEMO_READY__\\npublish\",\"command_session_id\":\"namespace_execution_5\",\"workspace_session_id\":\"00000518c211d084b4c5b4\"}\n",
+  "timed_out": false
+}

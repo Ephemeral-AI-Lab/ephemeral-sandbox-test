@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--request-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A01.016:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000318c2160e121106f2",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A01-data.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 120.751,
+  "kind": "public_cli_process",
+  "label": "A01.016",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.0808615,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A01 fixture is deterministic (2.747084ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 38.906584",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.080953334,
+    "workspace_session_id": "00000318c2160e121106f2"
+  },
+  "pid": 46869,
+  "provenance": "agent",
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A01.016:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 411,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.080953334,\"command_total_time_seconds\":0.0808615,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":40,\"output\":\"✔ A01 fixture is deterministic (2.747084ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 38.906584\",\"workspace_session_id\":\"00000318c2160e121106f2\"}\n",
+  "timed_out": false
+}

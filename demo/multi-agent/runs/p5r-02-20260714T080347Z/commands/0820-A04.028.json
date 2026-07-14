@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-a0301757-e6eb-4ac8-880c-29a8ef345d7a",
+    "--request-id",
+    "p5r-02-20260714T080347Z:A04.028:runtime",
+    "file_write",
+    "--path",
+    "src/features/A04-catalog.json",
+    "--content",
+    "{\n  \"owner\": \"A04\",\n  \"paths\": {\n    \"a11y\": \"src/features/A04-catalog-a11y.js\",\n    \"core\": \"src/features/A04-catalog.js\",\n    \"data\": \"src/features/A04-catalog-data.js\",\n    \"manifest\": \"src/features/A04-catalog.json\",\n    \"style\": \"src/features/A04-catalog.css\",\n    \"view\": \"src/features/A04-catalog-view.js\"\n  },\n  \"role\": \"Catalog and PDP\",\n  \"schema_version\": 1\n}\n",
+    "--workspace-session-id",
+    "00000618c2194f10b1803e"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.291,
+  "kind": "public_cli_process",
+  "label": "A04.028",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 371,
+    "path": "src/features/A04-catalog.json",
+    "type": "create"
+  },
+  "pid": 43669,
+  "provenance": "agent",
+  "request_id": "p5r-02-20260714T080347Z:A04.028:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 820,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A04-catalog.json\",\"bytes_written\":371}\n",
+  "timed_out": false
+}

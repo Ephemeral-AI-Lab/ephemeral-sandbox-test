@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b00a8c3e-45c0-4e7d-8ba1-e6cd1cafc3ac",
+    "--request-id",
+    "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.026:runtime",
+    "file_write",
+    "--path",
+    "tests/A08-a11y.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A08-checkout-a11y.js');\ntest('A08 honors reduced motion', () => assert.equal(globalThis.FlashCart.a11y.A08.reducedMotion, true));\n",
+    "--workspace-session-id",
+    "00000418c2156cb69f8226"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.028,
+  "kind": "public_cli_process",
+  "label": "A08.026",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 231,
+    "path": "tests/A08-a11y.test.mjs",
+    "type": "create"
+  },
+  "pid": 33756,
+  "provenance": "agent",
+  "request_id": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.026:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 165,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A08-a11y.test.mjs\",\"bytes_written\":231}\n",
+  "timed_out": false
+}

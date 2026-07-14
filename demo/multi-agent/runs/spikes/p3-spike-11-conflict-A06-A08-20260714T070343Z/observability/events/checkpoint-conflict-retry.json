@@ -1,0 +1,92 @@
+{
+  "label": "checkpoint-conflict-retry",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 5
+      },
+      "name": "lease.acquired",
+      "parent": "d-492",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+      "ts": 1784012634975
+    },
+    {
+      "attrs": {
+        "revision": 5
+      },
+      "name": "lease.released",
+      "parent": "d-497",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+      "ts": 1784012635044
+    },
+    {
+      "attrs": {
+        "revision": 5
+      },
+      "name": "lease.acquired",
+      "parent": "d-506",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.053:runtime",
+      "ts": 1784012635489
+    },
+    {
+      "attrs": {
+        "revision": 5
+      },
+      "name": "lease.released",
+      "parent": "d-525",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.053:runtime",
+      "ts": 1784012636096
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 4
+        },
+        "name": "lease.released",
+        "parent": "d-488",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.045:runtime",
+        "ts": 1784012634723
+      },
+      {
+        "attrs": {
+          "revision": 5
+        },
+        "name": "lease.acquired",
+        "parent": "d-492",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784012634975
+      },
+      {
+        "attrs": {
+          "revision": 5
+        },
+        "name": "lease.released",
+        "parent": "d-497",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784012635044
+      },
+      {
+        "attrs": {
+          "revision": 5
+        },
+        "name": "lease.acquired",
+        "parent": "d-506",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.053:runtime",
+        "ts": 1784012635489
+      },
+      {
+        "attrs": {
+          "revision": 5
+        },
+        "name": "lease.released",
+        "parent": "d-525",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.053:runtime",
+        "ts": 1784012636096
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784012636096
+}

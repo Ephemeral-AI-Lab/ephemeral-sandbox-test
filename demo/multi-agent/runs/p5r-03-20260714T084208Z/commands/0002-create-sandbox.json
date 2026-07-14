@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-manager-cli",
+    "create_sandbox",
+    "--image",
+    "node:24-bookworm-slim",
+    "--workspace-bind-root",
+    "<e2e-state-root>/flashcart/workspaces/p5r-03-20260714T084208Z"
+  ],
+  "cancelled": false,
+  "duration_ms": 417.708,
+  "kind": "public_cli_process",
+  "label": "create-sandbox",
+  "parse_error": null,
+  "parsed_json": {
+    "daemon": {
+      "host": "127.0.0.1",
+      "port": 56564
+    },
+    "daemon_http": {
+      "host": "127.0.0.1",
+      "port": 56565
+    },
+    "id": "eos-71235f98-7a81-439c-8bc4-8f1458449999",
+    "shared_base": {
+      "readonly": true,
+      "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "<e2e-state-root>/flashcart/workspaces/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base",
+      "target": "/eos/layer-stack/base"
+    },
+    "state": "ready",
+    "workspace_root": "<e2e-state-root>/flashcart/workspaces/p5r-03-20260714T084208Z"
+  },
+  "pid": 60334,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 2,
+  "stderr": "",
+  "stdout": "{\"id\":\"eos-71235f98-7a81-439c-8bc4-8f1458449999\",\"workspace_root\":\"<e2e-state-root>/flashcart/workspaces/p5r-03-20260714T084208Z\",\"state\":\"ready\",\"daemon\":{\"host\":\"127.0.0.1\",\"port\":56564},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":56565},\"shared_base\":{\"source\":\"<e2e-state-root>/flashcart/workspaces/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}}\n",
+  "timed_out": false
+}

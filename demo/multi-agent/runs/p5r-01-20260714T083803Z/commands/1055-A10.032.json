@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-85444414-3f8b-4661-afe0-0572fc39391d",
+    "--request-id",
+    "p5r-01-20260714T083803Z:A10.032:runtime",
+    "file_read",
+    "--path",
+    "src/features/A10-qa-data.js",
+    "--workspace-session-id",
+    "00000c18c21b2e9d3b03a2"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.828,
+  "kind": "public_cli_process",
+  "label": "A10.032",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 237,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\n  root.FlashCart.fixtures.A10 = Object.freeze({ owner: 'A10', label: 'Integration QA', revision: 1 });\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A10-qa-data.js",
+    "start_line": 1,
+    "total_bytes": 238,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 17549,
+  "provenance": "agent",
+  "request_id": "p5r-01-20260714T083803Z:A10.032:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1055,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A10-qa-data.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\\n  root.FlashCart.fixtures.A10 = Object.freeze({ owner: 'A10', label: 'Integration QA', revision: 1 });\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":237,\"total_bytes\":238,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

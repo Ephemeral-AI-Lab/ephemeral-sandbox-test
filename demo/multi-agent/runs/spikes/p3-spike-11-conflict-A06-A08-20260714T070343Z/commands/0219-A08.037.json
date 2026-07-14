@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-ea3a9159-3a64-42ff-9d40-03a96c44e876",
+    "--request-id",
+    "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.037:runtime",
+    "file_read",
+    "--path",
+    "tests/A08-red.test.mjs",
+    "--workspace-session-id",
+    "00000418c216079a352f5b"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.4,
+  "kind": "public_cli_process",
+  "label": "A08.037",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 275,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A08-checkout.js');\ntest('A08 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A08.verify(), true, 'A08 implementation should report verified'));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A08-red.test.mjs",
+    "start_line": 1,
+    "total_bytes": 276,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 31334,
+  "provenance": "agent",
+  "request_id": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.037:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 219,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A08-red.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A08-checkout.js');\\ntest('A08 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A08.verify(), true, 'A08 implementation should report verified'));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":275,\"total_bytes\":276,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

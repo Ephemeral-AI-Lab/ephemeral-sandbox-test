@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-382d7978-94bb-408f-bf3a-b032c5a7f01d",
+    "--request-id",
+    "p3-spike-01-lane-A01-20260714T070214Z:A01.011:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000318c215f2e529aa34",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --check src/features/A01-foundation.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 64.042,
+  "kind": "public_cli_process",
+  "label": "A01.011",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.026108792,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.026156459,
+    "workspace_session_id": "00000318c215f2e529aa34"
+  },
+  "pid": 812,
+  "provenance": "agent",
+  "request_id": "p3-spike-01-lane-A01-20260714T070214Z:A01.011:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 40,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.026156459,\"command_total_time_seconds\":0.026108792,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00000318c215f2e529aa34\"}\n",
+  "timed_out": false
+}

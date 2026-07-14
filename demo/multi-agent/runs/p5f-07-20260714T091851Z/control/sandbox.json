@@ -1,0 +1,27 @@
+{
+  "baseline_ids": [
+    "eos-748ae58f-b87d-4a4d-802b-20da3ae5ade5",
+    "eos-d28b4de3-5ff2-42fa-b3aa-54d55c7a523d",
+    "eos-d5c8ed22-a95a-4f42-943d-502e357165b3"
+  ],
+  "created": {
+    "daemon": {
+      "host": "127.0.0.1",
+      "port": 56578
+    },
+    "daemon_http": {
+      "host": "127.0.0.1",
+      "port": 56579
+    },
+    "id": "eos-52de8bdd-040c-406d-80ed-2e44db339ded",
+    "shared_base": {
+      "readonly": true,
+      "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "<e2e-state-root>/flashcart/workspaces/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base",
+      "target": "/eos/layer-stack/base"
+    },
+    "state": "ready",
+    "workspace_root": "<e2e-state-root>/flashcart/workspaces/p5f-07-20260714T091851Z"
+  },
+  "workspace_bind_root": "<e2e-state-root>/flashcart/workspaces/p5f-07-20260714T091851Z"
+}

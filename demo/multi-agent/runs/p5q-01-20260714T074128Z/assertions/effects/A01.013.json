@@ -1,0 +1,36 @@
+{
+  "after": {
+    "index.html": "fea23211d7caa057bf4bbe044d27e19817c9e8a72c16856c989192538aa29ada",
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A01-foundation.js": "4236673341799c665a505b3190c86e105bec07f8b42b01c40107627658c521b9",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A01-red.test.mjs": "9402dd23e4210ff1a37c76cd0f331f12154d52c7282672286fa081b8daaf1ae1"
+  },
+  "attempt_ref": "A01.primary",
+  "before": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A01-foundation.js": "4236673341799c665a505b3190c86e105bec07f8b42b01c40107627658c521b9",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A01-red.test.mjs": "9402dd23e4210ff1a37c76cd0f331f12154d52c7282672286fa081b8daaf1ae1"
+  },
+  "changed_paths": [
+    "index.html"
+  ],
+  "cumulative_changed_paths": [
+    "index.html",
+    "src/features/A01-foundation.js",
+    "tests/A01-red.test.mjs"
+  ],
+  "cumulative_declared_paths": [
+    "index.html",
+    "src/features/A01-foundation.js",
+    "tests/A01-red.test.mjs"
+  ],
+  "declared_paths": [
+    "index.html"
+  ],
+  "response_sha256": "12b1f28dfa62678ad86cd2ca88d71aa5f826056dae14ac994fdd59c880950795",
+  "row": "A01.013"
+}

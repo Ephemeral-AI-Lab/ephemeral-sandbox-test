@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-6c4e698b-72c5-46bd-8e2a-34908550da5a",
+    "--last-n",
+    "10000"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.463,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-bootstrap",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.acquired",
+        "parent": "d-3",
+        "trace": "p3-spike-07-lane-A07-20260714T065203Z:ENGINE.bootstrap:runtime",
+        "ts": 1784011923750
+      },
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.released",
+        "parent": "d-9",
+        "trace": "p3-spike-07-lane-A07-20260714T065203Z:ENGINE.bootstrap:runtime",
+        "ts": 1784011923809
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 19907,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 9,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784011923750,\"trace\":\"p3-spike-07-lane-A07-20260714T065203Z:ENGINE.bootstrap:runtime\",\"parent\":\"d-3\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":1}},{\"ts\":1784011923809,\"trace\":\"p3-spike-07-lane-A07-20260714T065203Z:ENGINE.bootstrap:runtime\",\"parent\":\"d-9\",\"name\":\"lease.released\",\"attrs\":{\"revision\":1}}]}\n",
+  "timed_out": false
+}

@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-85444414-3f8b-4661-afe0-0572fc39391d",
+    "--trace-id",
+    "p5r-01-20260714T083803Z:A03.019:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 52.328,
+  "kind": "public_cli_process",
+  "label": "trace-A03.019",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 1.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 3.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-870",
+              "span": "d-872",
+              "status": "completed",
+              "trace": "p5r-01-20260714T083803Z:A03.019:runtime",
+              "ts": 1784018305947
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 4.0,
+          "name": "daemon.dispatch",
+          "span": "d-870",
+          "status": "completed",
+          "trace": "p5r-01-20260714T083803Z:A03.019:runtime",
+          "ts": 1784018305947
+        }
+      }
+    ],
+    "trace": "p5r-01-20260714T083803Z:A03.019:runtime",
+    "view": "trace"
+  },
+  "pid": 8543,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 563,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p5r-01-20260714T083803Z:A03.019:runtime\",\"spans\":[{\"span\":{\"ts\":1784018305947,\"trace\":\"p5r-01-20260714T083803Z:A03.019:runtime\",\"span\":\"d-870\",\"name\":\"daemon.dispatch\",\"dur_ms\":4.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_write\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784018305947,\"trace\":\"p5r-01-20260714T083803Z:A03.019:runtime\",\"span\":\"d-872\",\"parent\":\"d-870\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":3.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":1.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-3482d145-830c-43cc-843a-6428698e5b95",
+    "--trace-id",
+    "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A03.032:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 71.81,
+  "kind": "public_cli_process",
+  "label": "trace-A03.032",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 6.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 2.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-1566",
+              "span": "d-1567",
+              "status": "completed",
+              "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A03.032:runtime",
+              "ts": 1784012134877
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_read"
+          },
+          "dur_ms": 8.0,
+          "name": "daemon.dispatch",
+          "span": "d-1566",
+          "status": "completed",
+          "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A03.032:runtime",
+          "ts": 1784012134877
+        }
+      }
+    ],
+    "trace": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A03.032:runtime",
+    "view": "trace"
+  },
+  "pid": 61055,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 953,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A03.032:runtime\",\"spans\":[{\"span\":{\"ts\":1784012134877,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A03.032:runtime\",\"span\":\"d-1566\",\"name\":\"daemon.dispatch\",\"dur_ms\":8.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_read\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012134877,\"trace\":\"p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:A03.032:runtime\",\"span\":\"d-1567\",\"parent\":\"d-1566\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":6.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-85444414-3f8b-4661-afe0-0572fc39391d",
+    "--request-id",
+    "p5r-01-20260714T083803Z:ENGINE.final.tests-A06-view.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A06-view.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.811,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A06-view.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 227,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A06-cart-view.js');\ntest('A06 view has a semantic section', () => assert.match(globalThis.FlashCart.views.A06(), /<section/));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A06-view.test.mjs",
+    "start_line": 1,
+    "total_bytes": 228,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 27930,
+  "provenance": "engine",
+  "request_id": "p5r-01-20260714T083803Z:ENGINE.final.tests-A06-view.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1625,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A06-view.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A06-cart-view.js');\\ntest('A06 view has a semantic section', () => assert.match(globalThis.FlashCart.views.A06(), /<section/));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":227,\"total_bytes\":228,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

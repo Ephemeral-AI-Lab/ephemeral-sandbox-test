@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-6d85707f-f89b-44b7-a68d-98b1f9fae7a7",
+    "--request-id",
+    "p5q-02-20260714T074328Z:A05.033:runtime",
+    "file_read",
+    "--path",
+    "src/features/A05-search-view.js",
+    "--workspace-session-id",
+    "00000718c218334411fa87"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.004,
+  "kind": "public_cli_process",
+  "label": "A05.033",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 297,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.views = root.FlashCart.views || {};\n  root.FlashCart.views.A05 = function () { return '<section data-feature=\"A05\"><h2>Search and facets</h2><p>query, URL facets, sort, and empty states</p></section>'; };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A05-search-view.js",
+    "start_line": 1,
+    "total_bytes": 298,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 49277,
+  "provenance": "agent",
+  "request_id": "p5q-02-20260714T074328Z:A05.033:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1088,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A05-search-view.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.views = root.FlashCart.views || {};\\n  root.FlashCart.views.A05 = function () { return '<section data-feature=\\\"A05\\\"><h2>Search and facets</h2><p>query, URL facets, sort, and empty states</p></section>'; };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":297,\"total_bytes\":298,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

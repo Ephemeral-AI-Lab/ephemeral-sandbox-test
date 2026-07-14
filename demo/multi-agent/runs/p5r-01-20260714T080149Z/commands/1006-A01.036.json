@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-02aa463a-08e3-4fd3-99ac-aba361fa83af",
+    "--request-id",
+    "p5r-01-20260714T080149Z:A01.036:runtime",
+    "file_read",
+    "--path",
+    "src/features/A01-foundation.json",
+    "--workspace-session-id",
+    "00000318c219336ea59ed7"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.0,
+  "kind": "public_cli_process",
+  "label": "A01.036",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 298,
+    "content": "{\n  \"owner\": \"A01\",\n  \"paths\": {\n    \"a11y\": \"scripts/serve.mjs\",\n    \"core\": \"src/features/A01-foundation.js\",\n    \"data\": \"index.html\",\n    \"manifest\": \"src/features/A01-foundation.json\",\n    \"style\": \"src/styles.css\",\n    \"view\": \"src/app.js\"\n  },\n  \"role\": \"Foundation\",\n  \"schema_version\": 1\n}",
+    "next_offset": null,
+    "num_lines": 13,
+    "path": "src/features/A01-foundation.json",
+    "start_line": 1,
+    "total_bytes": 299,
+    "total_lines": 13,
+    "truncated": false
+  },
+  "pid": 16295,
+  "provenance": "agent",
+  "request_id": "p5r-01-20260714T080149Z:A01.036:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1006,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A01-foundation.json\",\"content\":\"{\\n  \\\"owner\\\": \\\"A01\\\",\\n  \\\"paths\\\": {\\n    \\\"a11y\\\": \\\"scripts/serve.mjs\\\",\\n    \\\"core\\\": \\\"src/features/A01-foundation.js\\\",\\n    \\\"data\\\": \\\"index.html\\\",\\n    \\\"manifest\\\": \\\"src/features/A01-foundation.json\\\",\\n    \\\"style\\\": \\\"src/styles.css\\\",\\n    \\\"view\\\": \\\"src/app.js\\\"\\n  },\\n  \\\"role\\\": \\\"Foundation\\\",\\n  \\\"schema_version\\\": 1\\n}\",\"start_line\":1,\"num_lines\":13,\"total_lines\":13,\"bytes_read\":298,\"total_bytes\":299,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

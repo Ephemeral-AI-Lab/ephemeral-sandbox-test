@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-87d96492-efb1-4bf1-ae1a-d5efea27eb0d",
+    "--request-id",
+    "p5f-03-20260714T085304Z:A09.024:runtime",
+    "file_write",
+    "--path",
+    "src/features/A09-accessibility-a11y.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\n  root.FlashCart.a11y.A09 = { label: 'Accessibility and performance', keyboard: true, reducedMotion: true };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000b18c21c007611888d"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.271,
+  "kind": "public_cli_process",
+  "label": "A09.024",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 236,
+    "path": "src/features/A09-accessibility-a11y.js",
+    "type": "create"
+  },
+  "pid": 68579,
+  "provenance": "agent",
+  "request_id": "p5f-03-20260714T085304Z:A09.024:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 731,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A09-accessibility-a11y.js\",\"bytes_written\":236}\n",
+  "timed_out": false
+}

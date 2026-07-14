@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fbe9e67e-eb75-4c15-97b8-68ef24761269",
+    "--request-id",
+    "p5s-01-20260714T081331Z:A05.006:runtime",
+    "file_write",
+    "--path",
+    "src/features/A05-search.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A05 = { id: 'A05', verify() { return false; }, implementation: 'broken A05' };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000718c219d7c71a5d62"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.511,
+  "kind": "public_cli_process",
+  "label": "A05.006",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 240,
+    "path": "src/features/A05-search.js",
+    "type": "create"
+  },
+  "pid": 96827,
+  "provenance": "agent",
+  "request_id": "p5s-01-20260714T081331Z:A05.006:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 135,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A05-search.js\",\"bytes_written\":240}\n",
+  "timed_out": false
+}

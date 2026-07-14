@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-9e7a512a-4aa0-4693-94f2-c01838407df4",
+    "--request-id",
+    "p5f-02-20260714T085058Z:A06.029:runtime",
+    "file_write",
+    "--path",
+    "tests/A06-manifest.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A06 manifest names its owner', async () => assert.equal(JSON.parse(await readFile(new URL('../src/features/A06-cart.json', import.meta.url), 'utf8')).owner, 'A06'));\n",
+    "--workspace-session-id",
+    "00000818c21be30340d286"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.594,
+  "kind": "public_cli_process",
+  "label": "A06.029",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 288,
+    "path": "tests/A06-manifest.test.mjs",
+    "type": "create"
+  },
+  "pid": 40347,
+  "provenance": "agent",
+  "request_id": "p5f-02-20260714T085058Z:A06.029:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 880,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A06-manifest.test.mjs\",\"bytes_written\":288}\n",
+  "timed_out": false
+}

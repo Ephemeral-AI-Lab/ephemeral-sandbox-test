@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-bc06d80c-d1c1-4be3-951c-5db49e779062",
+    "--request-id",
+    "p5f-08-20260714T092139Z:A08.025:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000a18c21d8ed51a6d6d",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --check src/features/A08-checkout-a11y.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 60.182,
+  "kind": "public_cli_process",
+  "label": "A08.025",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.018958333,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.019004417,
+    "workspace_session_id": "00000a18c21d8ed51a6d6d"
+  },
+  "pid": 30555,
+  "provenance": "agent",
+  "request_id": "p5f-08-20260714T092139Z:A08.025:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 751,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.019004417,\"command_total_time_seconds\":0.018958333,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00000a18c21d8ed51a6d6d\"}\n",
+  "timed_out": false
+}

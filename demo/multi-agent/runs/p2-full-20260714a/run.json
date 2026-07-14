@@ -1,0 +1,128 @@
+{
+  "agents": [
+    {
+      "completed": 35,
+      "id": "A01",
+      "planned": 44,
+      "role": "Foundation"
+    },
+    {
+      "completed": 36,
+      "id": "A02",
+      "planned": 44,
+      "role": "Design system"
+    },
+    {
+      "completed": 35,
+      "id": "A03",
+      "planned": 44,
+      "role": "Product data"
+    },
+    {
+      "completed": 36,
+      "id": "A04",
+      "planned": 44,
+      "role": "Catalog and PDP"
+    },
+    {
+      "completed": 35,
+      "id": "A05",
+      "planned": 44,
+      "role": "Search and facets"
+    },
+    {
+      "completed": 37,
+      "id": "A06",
+      "planned": 52,
+      "role": "Cart and pricing"
+    },
+    {
+      "completed": 35,
+      "id": "A07",
+      "planned": 44,
+      "role": "Wishlist"
+    },
+    {
+      "completed": 36,
+      "id": "A08",
+      "planned": 59,
+      "role": "Checkout"
+    },
+    {
+      "completed": 34,
+      "id": "A09",
+      "planned": 54,
+      "role": "Accessibility and performance"
+    },
+    {
+      "completed": 36,
+      "id": "A10",
+      "planned": 53,
+      "role": "Integration QA"
+    }
+  ],
+  "commands": {
+    "A01.primary.anchor": "namespace_execution_3",
+    "A02.primary.anchor": "namespace_execution_7",
+    "A03.primary.anchor": "namespace_execution_4",
+    "A04.primary.anchor": "namespace_execution_6",
+    "A05.primary.anchor": "namespace_execution_5",
+    "A06.primary.anchor": "namespace_execution_8",
+    "A07.primary.anchor": "namespace_execution_9",
+    "A08.primary.anchor": "namespace_execution_10",
+    "A09.primary.anchor": "namespace_execution_11",
+    "A10.primary.anchor": "namespace_execution_12"
+  },
+  "evidence": {
+    "network_probes": {},
+    "preview": null,
+    "raw_owner_mapping": {}
+  },
+  "presentation": {
+    "active_scene": "fanout",
+    "checkpoints": {
+      "bootstrap": {
+        "path": "assertions/checkpoints/bootstrap.json",
+        "revision": 2,
+        "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+        "sha256": "84b46234068666caa98c9a663d79c3ef4c9770fd87701ac92208bb8d6681e794"
+      },
+      "ten-workspaces": {
+        "path": "assertions/checkpoints/ten-workspaces.json",
+        "revision": 2,
+        "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+        "sha256": "ad6caed6fecc62f856e80a7ee66a0c83d91ce38fff9af4771f88393b428cc886"
+      }
+    }
+  },
+  "projection_seq": 360,
+  "run": {
+    "calls": {
+      "agent": 364,
+      "completed": 355,
+      "engine": 648,
+      "planned": 482
+    },
+    "cleanup_verdict": "pending",
+    "elapsed_ms": 10970.585,
+    "execution_verdict": "running",
+    "failed": "DemoFailure: lane failure before gates ('A01.043', 'A02.043', 'A03.043', 'A04.043', 'A05.043', 'A06.043', 'A07.043', 'A08.043', 'A09.043', 'A10.043'): DemoFailure: A06.038: expectation file_read failed against {'error': {'kind': 'not_found', 'message': 'file not found: tests/A06-quality.test.mjs', 'details': {'path': 'tests/A06-quality.test.mjs'}}}",
+    "id": "p2-full-20260714a",
+    "sandbox_id": "eos-e9b00a7f-4f8f-49ff-a603-757311a522e4",
+    "status": "failed",
+    "title": "FlashCart: ten agents, one workspace"
+  },
+  "schema_version": "multiagent-demo/v1",
+  "workspaces": {
+    "A01.primary.workspace": "00000318c20fbdcfa36411",
+    "A02.primary.workspace": "00000718c20fbdd24ddbd1",
+    "A03.primary.workspace": "00000418c20fbdd01cdbc5",
+    "A04.primary.workspace": "00000618c20fbdd0d0fce3",
+    "A05.primary.workspace": "00000518c20fbdd0676bfc",
+    "A06.primary.workspace": "00000818c20fbdd2a15e3c",
+    "A07.primary.workspace": "00000918c20fbdd2f0c3eb",
+    "A08.primary.workspace": "00000a18c20fbdd3371632",
+    "A09.primary.workspace": "00000b18c20fbdd3731cbc",
+    "A10.primary.workspace": "00000c18c20fbdd3f03167"
+  }
+}

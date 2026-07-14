@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--request-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A05.017:runtime",
+    "file_write",
+    "--path",
+    "src/features/A05-search-view.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.views = root.FlashCart.views || {};\n  root.FlashCart.views.A05 = function () { return '<section data-feature=\"A05\"><h2>Search and facets</h2><p>query, URL facets, sort, and empty states</p></section>'; };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000718c2160e1d5470b3"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.683,
+  "kind": "public_cli_process",
+  "label": "A05.017",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 298,
+    "path": "src/features/A05-search-view.js",
+    "type": "create"
+  },
+  "pid": 47858,
+  "provenance": "agent",
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A05.017:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 465,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A05-search-view.js\",\"bytes_written\":298}\n",
+  "timed_out": false
+}

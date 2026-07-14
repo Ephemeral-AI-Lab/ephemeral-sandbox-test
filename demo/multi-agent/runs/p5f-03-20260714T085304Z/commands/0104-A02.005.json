@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-87d96492-efb1-4bf1-ae1a-d5efea27eb0d",
+    "--request-id",
+    "p5f-03-20260714T085304Z:A02.005:runtime",
+    "file_read",
+    "--path",
+    "src/features/A02-design-system.js",
+    "--workspace-session-id",
+    "00000418c21c0061ab1ba1"
+  ],
+  "cancelled": false,
+  "duration_ms": 62.241,
+  "kind": "public_cli_process",
+  "label": "A02.005",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/features/A02-design-system.js"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/features/A02-design-system.js"
+    }
+  },
+  "pid": 57193,
+  "provenance": "agent",
+  "request_id": "p5f-03-20260714T085304Z:A02.005:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 104,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/features/A02-design-system.js\",\"details\":{\"path\":\"src/features/A02-design-system.js\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

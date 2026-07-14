@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b0919f76-a661-4bd5-89c8-f3e7fee299f3",
+    "--request-id",
+    "p3-spike-08-lane-A08-20260714T070316Z:A08.042:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A08: { role: 'Checkout', entry: 'src/features/A08-checkout.js' },\",\n    \"old_string\": \"  A08: null,\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000318c2160165dba2ea"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.65,
+  "kind": "public_cli_process",
+  "label": "A08.042",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 261,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 21677,
+  "provenance": "agent",
+  "request_id": "p3-spike-08-lane-A08-20260714T070316Z:A08.042:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 135,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":261}\n",
+  "timed_out": false
+}

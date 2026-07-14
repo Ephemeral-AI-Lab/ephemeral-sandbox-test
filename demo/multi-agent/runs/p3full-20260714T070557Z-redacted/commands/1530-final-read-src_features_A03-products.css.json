@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-adf9180b-82e7-4128-90a2-b7342748f86b",
+    "--request-id",
+    "p3full-20260714T070557Z-redacted:ENGINE.final.src-features-A03-products.css:runtime",
+    "file_read",
+    "--path",
+    "src/features/A03-products.css"
+  ],
+  "cancelled": false,
+  "duration_ms": 37.319,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A03-products.css",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 116,
+    "content": ".feature-a03 { border-inline-start: 4px solid #175b50; } .feature-a03 :focus-visible { outline: 3px solid #124ea0; }",
+    "next_offset": null,
+    "num_lines": 1,
+    "path": "src/features/A03-products.css",
+    "start_line": 1,
+    "total_bytes": 117,
+    "total_lines": 1,
+    "truncated": false
+  },
+  "pid": 91580,
+  "provenance": "engine",
+  "request_id": "p3full-20260714T070557Z-redacted:ENGINE.final.src-features-A03-products.css:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1530,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A03-products.css\",\"content\":\".feature-a03 { border-inline-start: 4px solid #175b50; } .feature-a03 :focus-visible { outline: 3px solid #124ea0; }\",\"start_line\":1,\"num_lines\":1,\"total_lines\":1,\"bytes_read\":116,\"total_bytes\":117,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

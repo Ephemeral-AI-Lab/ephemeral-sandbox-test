@@ -1,0 +1,162 @@
+{
+  "agents": [
+    {
+      "completed": 0,
+      "id": "A01",
+      "planned": 44,
+      "role": "Foundation"
+    },
+    {
+      "completed": 0,
+      "id": "A02",
+      "planned": 44,
+      "role": "Design system"
+    },
+    {
+      "completed": 0,
+      "id": "A03",
+      "planned": 44,
+      "role": "Product data"
+    },
+    {
+      "completed": 44,
+      "id": "A04",
+      "planned": 44,
+      "role": "Catalog and PDP"
+    },
+    {
+      "completed": 0,
+      "id": "A05",
+      "planned": 44,
+      "role": "Search and facets"
+    },
+    {
+      "completed": 0,
+      "id": "A06",
+      "planned": 52,
+      "role": "Cart and pricing"
+    },
+    {
+      "completed": 0,
+      "id": "A07",
+      "planned": 44,
+      "role": "Wishlist"
+    },
+    {
+      "completed": 0,
+      "id": "A08",
+      "planned": 59,
+      "role": "Checkout"
+    },
+    {
+      "completed": 54,
+      "id": "A09",
+      "planned": 54,
+      "role": "Accessibility and performance"
+    },
+    {
+      "completed": 0,
+      "id": "A10",
+      "planned": 53,
+      "role": "Integration QA"
+    }
+  ],
+  "commands": {
+    "A04.primary.anchor": "namespace_execution_3",
+    "A09.network.isolated1.server": "namespace_execution_99",
+    "A09.network.isolated2.server": "namespace_execution_102",
+    "A09.network.shared1.server": "namespace_execution_93",
+    "A09.primary.anchor": "namespace_execution_4"
+  },
+  "evidence": {
+    "network_probes": {
+      "A09.049": {
+        "body_preview": "ok",
+        "body_sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+        "byte_length": 2,
+        "duration_ms": 14.107,
+        "headers": {},
+        "label": "A09.049",
+        "network_profile": "shared",
+        "provenance": "sandbox_preview",
+        "status": 200,
+        "url": "http://127.0.0.1:56531/forward/shared/4173/",
+        "workspace_session_id": "00000618c2160d0d369121"
+      },
+      "A09.050": {
+        "body_preview": "ok",
+        "body_sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+        "byte_length": 2,
+        "duration_ms": 7.869,
+        "headers": {},
+        "label": "A09.050",
+        "network_profile": "isolated",
+        "provenance": "sandbox_preview",
+        "status": 200,
+        "url": "http://127.0.0.1:56531/forward/isolated=00000818c2160d14c8509b/4173/",
+        "workspace_session_id": "00000818c2160d14c8509b"
+      },
+      "A09.051": {
+        "body_preview": "ok",
+        "body_sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+        "byte_length": 2,
+        "duration_ms": 9.708,
+        "headers": {},
+        "label": "A09.051",
+        "network_profile": "isolated",
+        "provenance": "sandbox_preview",
+        "status": 200,
+        "url": "http://127.0.0.1:56531/forward/isolated=00000918c2160d1a865f91/4173/",
+        "workspace_session_id": "00000918c2160d1a865f91"
+      }
+    },
+    "preview": null,
+    "raw_owner_mapping": {
+      "A04": "workspace_session:00000318c2160ae284794e",
+      "A09": "workspace_session:00000418c2160ae55e18ff"
+    }
+  },
+  "presentation": {
+    "active_scene": "merge",
+    "checkpoints": {
+      "bootstrap": {
+        "path": "assertions/checkpoints/bootstrap.json",
+        "revision": 2,
+        "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+        "sha256": "c0f98fa1e7a36e1e4864980084e29630797216a5e061b02cc7a716c552b3f0c1"
+      },
+      "spike-primary-publications": {
+        "path": "assertions/checkpoints/spike-primary-publications.json",
+        "revision": 4,
+        "root_hash": "c7674abc261340e7c73b9db05af274f5d403cfe38172e9e93d432b112bb44b54",
+        "sha256": "46a515f5a11f739f3ce806b766b941afba5b7d2b6dee2ac6fa3215eaff818b2e"
+      }
+    }
+  },
+  "projection_seq": 106,
+  "run": {
+    "calls": {
+      "agent": 98,
+      "completed": 98,
+      "engine": 222,
+      "engine_runtime_cli": 81,
+      "manager_control_cli": 7,
+      "planned": 482,
+      "telemetry_cli": 126,
+      "trusted_session_control": 8
+    },
+    "cleanup_verdict": "clean",
+    "elapsed_ms": 13424.022,
+    "execution_verdict": "passed",
+    "failed": null,
+    "id": "p3-spike-12-network-A04-A09-20260714T070357Z",
+    "sandbox_id": null,
+    "status": "spike-passed",
+    "title": "FlashCart: ten agents, one workspace"
+  },
+  "schema_version": "multiagent-demo/v1",
+  "workspaces": {
+    "A04.primary.workspace": "00000318c2160ae284794e",
+    "A09.primary.workspace": "00000418c2160ae55e18ff"
+  }
+}

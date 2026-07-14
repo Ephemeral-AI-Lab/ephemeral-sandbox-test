@@ -1,0 +1,47 @@
+{
+  "label": "checkpoint-bootstrap",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 1
+      },
+      "name": "lease.acquired",
+      "parent": "d-3",
+      "trace": "p5r-03-20260714T084208Z:ENGINE.bootstrap:runtime",
+      "ts": 1784018536753
+    },
+    {
+      "attrs": {
+        "revision": 1
+      },
+      "name": "lease.released",
+      "parent": "d-9",
+      "trace": "p5r-03-20260714T084208Z:ENGINE.bootstrap:runtime",
+      "ts": 1784018536808
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.acquired",
+        "parent": "d-3",
+        "trace": "p5r-03-20260714T084208Z:ENGINE.bootstrap:runtime",
+        "ts": 1784018536753
+      },
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.released",
+        "parent": "d-9",
+        "trace": "p5r-03-20260714T084208Z:ENGINE.bootstrap:runtime",
+        "ts": 1784018536808
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784018536808
+}

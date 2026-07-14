@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-573f5b3f-5275-4ba9-8e9d-3481b8969c08",
+    "--request-id",
+    "p5s-03-20260714T081918Z:A05.007:runtime",
+    "file_write",
+    "--path",
+    "tests/A05-red.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A05-search.js');\ntest('A05 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A05.verify(), true, 'A05 implementation should report verified'));\n",
+    "--workspace-session-id",
+    "00000718c21a28e664112e"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.051,
+  "kind": "public_cli_process",
+  "label": "A05.007",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 274,
+    "path": "tests/A05-red.test.mjs",
+    "type": "create"
+  },
+  "pid": 60696,
+  "provenance": "agent",
+  "request_id": "p5s-03-20260714T081918Z:A05.007:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 165,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A05-red.test.mjs\",\"bytes_written\":274}\n",
+  "timed_out": false
+}

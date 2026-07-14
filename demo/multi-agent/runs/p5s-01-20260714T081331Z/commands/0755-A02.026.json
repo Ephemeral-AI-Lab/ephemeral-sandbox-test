@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fbe9e67e-eb75-4c15-97b8-68ef24761269",
+    "--request-id",
+    "p5s-01-20260714T081331Z:A02.026:runtime",
+    "file_write",
+    "--path",
+    "tests/A02-a11y.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A02-design-system-a11y.js');\ntest('A02 honors reduced motion', () => assert.equal(globalThis.FlashCart.a11y.A02.reducedMotion, true));\n",
+    "--workspace-session-id",
+    "00000418c219d7bf2836df"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.731,
+  "kind": "public_cli_process",
+  "label": "A02.026",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 236,
+    "path": "tests/A02-a11y.test.mjs",
+    "type": "create"
+  },
+  "pid": 8487,
+  "provenance": "agent",
+  "request_id": "p5s-01-20260714T081331Z:A02.026:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 755,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A02-a11y.test.mjs\",\"bytes_written\":236}\n",
+  "timed_out": false
+}

@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-85444414-3f8b-4661-afe0-0572fc39391d",
+    "--request-id",
+    "p5r-01-20260714T083803Z:A08.055:runtime",
+    "file_write",
+    "--path",
+    "src/features/A08-checkout-retry.json",
+    "--content",
+    "{\n  \"kind\": \"fresh-head-retry\",\n  \"owner\": \"A08\",\n  \"receipt\": \"checkout conflict retried from A06's published threshold\"\n}\n",
+    "--workspace-session-id",
+    "00001718c21b39213daea8"
+  ],
+  "cancelled": false,
+  "duration_ms": 57.632,
+  "kind": "public_cli_process",
+  "label": "A08.055",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 124,
+    "path": "src/features/A08-checkout-retry.json",
+    "type": "create"
+  },
+  "pid": 23324,
+  "provenance": "agent",
+  "request_id": "p5r-01-20260714T083803Z:A08.055:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1376,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A08-checkout-retry.json\",\"bytes_written\":124}\n",
+  "timed_out": false
+}

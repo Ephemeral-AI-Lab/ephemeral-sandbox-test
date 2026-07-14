@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-87d96492-efb1-4bf1-ae1a-d5efea27eb0d",
+    "--request-id",
+    "p5f-03-20260714T085304Z:A03.005:runtime",
+    "file_read",
+    "--path",
+    "src/features/A03-products.js",
+    "--workspace-session-id",
+    "00000518c21c00651e1646"
+  ],
+  "cancelled": false,
+  "duration_ms": 60.25,
+  "kind": "public_cli_process",
+  "label": "A03.005",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/features/A03-products.js"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/features/A03-products.js"
+    }
+  },
+  "pid": 57112,
+  "provenance": "agent",
+  "request_id": "p5f-03-20260714T085304Z:A03.005:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 99,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/features/A03-products.js\",\"details\":{\"path\":\"src/features/A03-products.js\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

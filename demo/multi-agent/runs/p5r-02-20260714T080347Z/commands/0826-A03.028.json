@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-a0301757-e6eb-4ac8-880c-29a8ef345d7a",
+    "--request-id",
+    "p5r-02-20260714T080347Z:A03.028:runtime",
+    "file_write",
+    "--path",
+    "src/features/A03-products.json",
+    "--content",
+    "{\n  \"owner\": \"A03\",\n  \"paths\": {\n    \"a11y\": \"src/features/A03-products-a11y.js\",\n    \"core\": \"src/features/A03-products.js\",\n    \"data\": \"src/features/A03-products-data.js\",\n    \"manifest\": \"src/features/A03-products.json\",\n    \"style\": \"src/features/A03-products.css\",\n    \"view\": \"src/features/A03-products-view.js\"\n  },\n  \"role\": \"Product data\",\n  \"schema_version\": 1\n}\n",
+    "--workspace-session-id",
+    "00000518c2194f0e31aae0"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.007,
+  "kind": "public_cli_process",
+  "label": "A03.028",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 374,
+    "path": "src/features/A03-products.json",
+    "type": "create"
+  },
+  "pid": 43777,
+  "provenance": "agent",
+  "request_id": "p5r-02-20260714T080347Z:A03.028:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 826,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A03-products.json\",\"bytes_written\":374}\n",
+  "timed_out": false
+}

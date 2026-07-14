@@ -1,0 +1,76 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-63e39ee8-a278-4811-9ee6-62a4ff70f02c",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784016392768"
+  ],
+  "cancelled": false,
+  "duration_ms": 90.21,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-conflict-retry",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2181",
+        "trace": "p5r-03-20260714T080545Z:A08.053:runtime",
+        "ts": 1784016392768
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2198",
+        "trace": "p5r-03-20260714T080545Z:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784016393409
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2203",
+        "trace": "p5r-03-20260714T080545Z:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784016393489
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2208",
+        "trace": "p5r-03-20260714T080545Z:A10.045:runtime",
+        "ts": 1784016393569
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2215",
+        "trace": "p5r-03-20260714T080545Z:A08.053:runtime",
+        "ts": 1784016393685
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 84942,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1399,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784016392768,\"trace\":\"p5r-03-20260714T080545Z:A08.053:runtime\",\"parent\":\"d-2181\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784016393409,\"trace\":\"p5r-03-20260714T080545Z:ENGINE.shared.checkpoint.network-clean:runtime\",\"parent\":\"d-2198\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784016393489,\"trace\":\"p5r-03-20260714T080545Z:ENGINE.shared.checkpoint.network-clean:runtime\",\"parent\":\"d-2203\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}},{\"ts\":1784016393569,\"trace\":\"p5r-03-20260714T080545Z:A10.045:runtime\",\"parent\":\"d-2208\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784016393685,\"trace\":\"p5r-03-20260714T080545Z:A08.053:runtime\",\"parent\":\"d-2215\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}}]}\n",
+  "timed_out": false
+}

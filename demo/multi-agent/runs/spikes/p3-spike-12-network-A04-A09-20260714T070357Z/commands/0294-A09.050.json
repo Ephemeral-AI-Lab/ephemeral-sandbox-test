@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-2d3eb130-3704-413e-bde9-5d2e00004660",
+    "--request-id",
+    "p3-spike-12-network-A04-A09-20260714T070357Z:A09.050:runtime",
+    "read_command_lines",
+    "--command-session-id",
+    "namespace_execution_99",
+    "--start-offset",
+    "0",
+    "--limit",
+    "20"
+  ],
+  "cancelled": false,
+  "duration_ms": 34.273,
+  "kind": "public_cli_process",
+  "label": "A09.050",
+  "parse_error": null,
+  "parsed_json": {
+    "command_session_id": "namespace_execution_99",
+    "command_total_time_seconds": 0.567559084,
+    "end_offset": 1,
+    "exit_code": null,
+    "original_token_count": "[REDACTED]",
+    "output": "PORT_BOUND isolated-one",
+    "start_offset": 0,
+    "status": "running",
+    "total_lines": 1,
+    "wall_time_seconds": 0.567559084,
+    "workspace_session_id": "00000818c2160d14c8509b"
+  },
+  "pid": 38977,
+  "provenance": "agent",
+  "request_id": "p3-spike-12-network-A04-A09-20260714T070357Z:A09.050:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 294,
+  "stderr": "",
+  "stdout": "{\"status\":\"running\",\"exit_code\":null,\"wall_time_seconds\":0.567559084,\"command_total_time_seconds\":0.567559084,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":6,\"output\":\"PORT_BOUND isolated-one\",\"command_session_id\":\"namespace_execution_99\",\"workspace_session_id\":\"00000818c2160d14c8509b\"}\n",
+  "timed_out": false
+}

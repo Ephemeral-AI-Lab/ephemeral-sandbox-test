@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-adf9180b-82e7-4128-90a2-b7342748f86b",
+    "--request-id",
+    "p3full-20260714T070557Z-redacted:A06.047:runtime",
+    "file_edit",
+    "--path",
+    "src/config.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"window.FlashCart = window.FlashCart || {};\\nwindow.FlashCart.config = { freeShippingCents: 6000, standardShippingCents: 700, taxRate: 0.08 };\\n\",\n    \"old_string\": \"window.FlashCart = window.FlashCart || {};\\nwindow.FlashCart.config = { freeShippingCents: 5000, standardShippingCents: 700, taxRate: 0.08 };\\n\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000f18c21630ae7a0840"
+  ],
+  "cancelled": false,
+  "duration_ms": 51.523,
+  "kind": "public_cli_process",
+  "label": "A06.047",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 141,
+    "edits_applied": 1,
+    "path": "src/config.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 86828,
+  "provenance": "agent",
+  "request_id": "p3full-20260714T070557Z-redacted:A06.047:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1291,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/config.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":141}\n",
+  "timed_out": false
+}

@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-85444414-3f8b-4661-afe0-0572fc39391d",
+    "--request-id",
+    "p5r-01-20260714T083803Z:ENGINE.final.tests-A09-data.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A09-data.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 37.585,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A09-data.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 235,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A09-accessibility-data.js');\ntest('A09 fixture is deterministic', () => assert.equal(globalThis.FlashCart.fixtures.A09.owner, 'A09'));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A09-data.test.mjs",
+    "start_line": 1,
+    "total_bytes": 236,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 28236,
+  "provenance": "engine",
+  "request_id": "p5r-01-20260714T083803Z:ENGINE.final.tests-A09-data.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1642,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A09-data.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A09-accessibility-data.js');\\ntest('A09 fixture is deterministic', () => assert.equal(globalThis.FlashCart.fixtures.A09.owner, 'A09'));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":235,\"total_bytes\":236,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

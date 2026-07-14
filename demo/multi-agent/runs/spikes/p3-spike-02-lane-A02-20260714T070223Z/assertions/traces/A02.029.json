@@ -1,0 +1,42 @@
+{
+  "request_id": "p3-spike-02-lane-A02-20260714T070223Z:A02.029:runtime",
+  "row": "A02.029",
+  "trace": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 2.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-167",
+              "span": "d-168",
+              "status": "completed",
+              "trace": "p3-spike-02-lane-A02-20260714T070223Z:A02.029:runtime",
+              "ts": 1784012549372
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 2.0,
+          "name": "daemon.dispatch",
+          "span": "d-167",
+          "status": "completed",
+          "trace": "p3-spike-02-lane-A02-20260714T070223Z:A02.029:runtime",
+          "ts": 1784012549372
+        }
+      }
+    ],
+    "trace": "p3-spike-02-lane-A02-20260714T070223Z:A02.029:runtime",
+    "view": "trace"
+  }
+}

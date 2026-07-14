@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-138c81b8-2911-43e8-b0d4-ad5a886f243e",
+    "--last-n",
+    "10000"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.09,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-bootstrap",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.acquired",
+        "parent": "d-3",
+        "trace": "p5f-06-20260714T090501Z:ENGINE.bootstrap:runtime",
+        "ts": 1784019902947
+      },
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.released",
+        "parent": "d-9",
+        "trace": "p5f-06-20260714T090501Z:ENGINE.bootstrap:runtime",
+        "ts": 1784019903016
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 51111,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 9,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784019902947,\"trace\":\"p5f-06-20260714T090501Z:ENGINE.bootstrap:runtime\",\"parent\":\"d-3\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":1}},{\"ts\":1784019903016,\"trace\":\"p5f-06-20260714T090501Z:ENGINE.bootstrap:runtime\",\"parent\":\"d-9\",\"name\":\"lease.released\",\"attrs\":{\"revision\":1}}]}\n",
+  "timed_out": false
+}

@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-05aa11ab-f22c-4929-87b4-9080e735c2dc",
+    "--request-id",
+    "p3full-20260714T065654Z-resume:ENGINE.final.src-features-A08-checkout-a11y.js:runtime",
+    "file_read",
+    "--path",
+    "src/features/A08-checkout-a11y.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 37.103,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A08-checkout-a11y.js",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 214,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\n  root.FlashCart.a11y.A08 = { label: 'Checkout', keyboard: true, reducedMotion: true };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A08-checkout-a11y.js",
+    "start_line": 1,
+    "total_bytes": 215,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 95857,
+  "provenance": "engine",
+  "request_id": "p3full-20260714T065654Z-resume:ENGINE.final.src-features-A08-checkout-a11y.js:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1559,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A08-checkout-a11y.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\\n  root.FlashCart.a11y.A08 = { label: 'Checkout', keyboard: true, reducedMotion: true };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":214,\"total_bytes\":215,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

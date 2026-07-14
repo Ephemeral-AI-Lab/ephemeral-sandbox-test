@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--request-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A07.031:runtime",
+    "file_read",
+    "--path",
+    "src/features/A07-wishlist.js",
+    "--workspace-session-id",
+    "00000918c2160e239f71db"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.635,
+  "kind": "public_cli_process",
+  "label": "A07.031",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 398,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A07 = {\n    id: 'A07',\n    label: 'Wishlist',\n    deterministic: true,\n    verify() { return true; },\n    toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }\n  };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 11,
+    "path": "src/features/A07-wishlist.js",
+    "start_line": 1,
+    "total_bytes": 399,
+    "total_lines": 11,
+    "truncated": false
+  },
+  "pid": 57570,
+  "provenance": "agent",
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A07.031:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1002,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A07-wishlist.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A07 = {\\n    id: 'A07',\\n    label: 'Wishlist',\\n    deterministic: true,\\n    verify() { return true; },\\n    toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }\\n  };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":11,\"total_lines\":11,\"bytes_read\":398,\"total_bytes\":399,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

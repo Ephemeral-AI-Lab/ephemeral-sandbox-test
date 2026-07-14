@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-ea3a9159-3a64-42ff-9d40-03a96c44e876",
+    "--request-id",
+    "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.006:runtime",
+    "file_write",
+    "--path",
+    "src/features/A08-checkout.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A08 = { id: 'A08', verify() { return false; }, implementation: 'broken A08' };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000418c216079a352f5b"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.592,
+  "kind": "public_cli_process",
+  "label": "A08.006",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 240,
+    "path": "src/features/A08-checkout.js",
+    "type": "create"
+  },
+  "pid": 27986,
+  "provenance": "agent",
+  "request_id": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.006:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 34,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A08-checkout.js\",\"bytes_written\":240}\n",
+  "timed_out": false
+}

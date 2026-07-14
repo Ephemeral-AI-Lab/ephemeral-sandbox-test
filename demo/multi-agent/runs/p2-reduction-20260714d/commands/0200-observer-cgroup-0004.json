@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "cgroup",
+    "--sandbox-id",
+    "eos-3d561515-4bc3-476b-8c3d-247bda03b00b",
+    "--scope",
+    "sandbox",
+    "--window-ms",
+    "600000"
+  ],
+  "cancelled": false,
+  "duration_ms": 28.546,
+  "kind": "public_cli_process",
+  "label": "observer-cgroup-0004",
+  "parse_error": "CLI response did not contain exactly one JSON object",
+  "parsed_json": null,
+  "pid": 33718,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": -15,
+  "schema_version": 1,
+  "sequence": 200,
+  "stderr": "",
+  "stdout": "",
+  "timed_out": false
+}

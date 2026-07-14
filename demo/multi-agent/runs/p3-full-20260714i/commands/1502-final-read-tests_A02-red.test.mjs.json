@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-879870ba-1958-46ed-8a63-deea1c9fed15",
+    "--request-id",
+    "p3-full-20260714i:ENGINE.final.tests-A02-red.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A02-red.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.75,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A02-red.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 280,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A02-design-system.js');\ntest('A02 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A02.verify(), true, 'A02 implementation should report verified'));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A02-red.test.mjs",
+    "start_line": 1,
+    "total_bytes": 281,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 35928,
+  "provenance": "engine",
+  "request_id": "p3-full-20260714i:ENGINE.final.tests-A02-red.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1502,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A02-red.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A02-design-system.js');\\ntest('A02 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A02.verify(), true, 'A02 implementation should report verified'));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":280,\"total_bytes\":281,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

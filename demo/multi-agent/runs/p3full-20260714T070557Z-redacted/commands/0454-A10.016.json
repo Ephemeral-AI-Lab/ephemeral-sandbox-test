@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-adf9180b-82e7-4128-90a2-b7342748f86b",
+    "--request-id",
+    "p3full-20260714T070557Z-redacted:A10.016:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000c18c216271824a421",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A10-data.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 129.858,
+  "kind": "public_cli_process",
+  "label": "A10.016",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.07854175,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A10 fixture is deterministic (0.442625ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 46.299375",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.078615291,
+    "workspace_session_id": "00000c18c216271824a421"
+  },
+  "pid": 71310,
+  "provenance": "agent",
+  "request_id": "p3full-20260714T070557Z-redacted:A10.016:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 454,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.078615291,\"command_total_time_seconds\":0.07854175,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":40,\"output\":\"✔ A10 fixture is deterministic (0.442625ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 46.299375\",\"workspace_session_id\":\"00000c18c216271824a421\"}\n",
+  "timed_out": false
+}

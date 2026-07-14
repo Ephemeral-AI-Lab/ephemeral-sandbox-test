@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-7c622b5f-ddbc-49f4-a447-509f97acee5e",
+    "--request-id",
+    "p5f-04-20260714T090107Z:A02.028:runtime",
+    "file_write",
+    "--path",
+    "src/features/A02-design-system.json",
+    "--content",
+    "{\n  \"owner\": \"A02\",\n  \"paths\": {\n    \"a11y\": \"src/features/A02-design-system-a11y.js\",\n    \"core\": \"src/features/A02-design-system.js\",\n    \"data\": \"src/features/A02-design-system-data.js\",\n    \"manifest\": \"src/features/A02-design-system.json\",\n    \"style\": \"src/features/A02-design-system.css\",\n    \"view\": \"src/features/A02-design-system-view.js\"\n  },\n  \"role\": \"Design system\",\n  \"schema_version\": 1\n}\n",
+    "--workspace-session-id",
+    "00000418c21c6fcdf0a71c"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.971,
+  "kind": "public_cli_process",
+  "label": "A02.028",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 405,
+    "path": "src/features/A02-design-system.json",
+    "type": "create"
+  },
+  "pid": 4871,
+  "provenance": "agent",
+  "request_id": "p5f-04-20260714T090107Z:A02.028:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 852,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A02-design-system.json\",\"bytes_written\":405}\n",
+  "timed_out": false
+}

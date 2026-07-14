@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-8251de1f-cb08-4cdc-b68a-f546b48223cd",
+    "--trace-id",
+    "p3-spike-12-network-A04-A09-20260714T065251Z:A04.026:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.571,
+  "kind": "public_cli_process",
+  "label": "trace-A04.026",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 1.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 4.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-278",
+              "span": "d-280",
+              "status": "completed",
+              "trace": "p3-spike-12-network-A04-A09-20260714T065251Z:A04.026:runtime",
+              "ts": 1784011978555
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 5.0,
+          "name": "daemon.dispatch",
+          "span": "d-278",
+          "status": "completed",
+          "trace": "p3-spike-12-network-A04-A09-20260714T065251Z:A04.026:runtime",
+          "ts": 1784011978555
+        }
+      }
+    ],
+    "trace": "p3-spike-12-network-A04-A09-20260714T065251Z:A04.026:runtime",
+    "view": "trace"
+  },
+  "pid": 40161,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 169,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3-spike-12-network-A04-A09-20260714T065251Z:A04.026:runtime\",\"spans\":[{\"span\":{\"ts\":1784011978555,\"trace\":\"p3-spike-12-network-A04-A09-20260714T065251Z:A04.026:runtime\",\"span\":\"d-278\",\"name\":\"daemon.dispatch\",\"dur_ms\":5.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_write\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784011978555,\"trace\":\"p3-spike-12-network-A04-A09-20260714T065251Z:A04.026:runtime\",\"span\":\"d-280\",\"parent\":\"d-278\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":4.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":1.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

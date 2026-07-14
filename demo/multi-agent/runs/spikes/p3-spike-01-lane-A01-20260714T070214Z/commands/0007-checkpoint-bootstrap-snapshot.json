@@ -1,0 +1,54 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "snapshot",
+    "--sandbox-id",
+    "eos-382d7978-94bb-408f-bf3a-b032c5a7f01d"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.389,
+  "kind": "public_cli_process",
+  "label": "checkpoint-bootstrap-snapshot",
+  "parse_error": null,
+  "parsed_json": {
+    "availability": "available",
+    "daemon": {
+      "daemon_pid": 7,
+      "runtime_dir": "/eos/runtime/daemon"
+    },
+    "errors": [],
+    "lifecycle_state": "ready",
+    "resources": {
+      "history": [],
+      "latest": {
+        "deltas": {},
+        "metrics": {
+          "cgroup_available": false,
+          "cgroup_error": "cgroup root unavailable"
+        },
+        "sample_delta_ms": 45,
+        "ts": 1784012535090
+      }
+    },
+    "sampled_at_unix_ms": 1784012535090,
+    "sandbox_id": "eos-382d7978-94bb-408f-bf3a-b032c5a7f01d",
+    "stack": {
+      "active_leases": 0,
+      "layer_count": 2,
+      "layers_allocated_bytes": null,
+      "layers_bytes": null,
+      "staging_entry_count": 0,
+      "storage_allocated_bytes": 65536
+    },
+    "workspaces": []
+  },
+  "pid": 99852,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 7,
+  "stderr": "",
+  "stdout": "{\"sandbox_id\":\"eos-382d7978-94bb-408f-bf3a-b032c5a7f01d\",\"lifecycle_state\":\"ready\",\"availability\":\"available\",\"sampled_at_unix_ms\":1784012535090,\"errors\":[],\"daemon\":{\"daemon_pid\":7,\"runtime_dir\":\"/eos/runtime/daemon\"},\"resources\":{\"latest\":{\"ts\":1784012535090,\"sample_delta_ms\":45,\"metrics\":{\"cgroup_available\":false,\"cgroup_error\":\"cgroup root unavailable\"},\"deltas\":{}},\"history\":[]},\"workspaces\":[],\"stack\":{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_allocated_bytes\":65536,\"staging_entry_count\":0,\"active_leases\":0}}\n",
+  "timed_out": false
+}

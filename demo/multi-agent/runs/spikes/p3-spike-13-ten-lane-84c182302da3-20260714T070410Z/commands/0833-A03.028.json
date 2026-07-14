@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--request-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A03.028:runtime",
+    "file_write",
+    "--path",
+    "src/features/A03-products.json",
+    "--content",
+    "{\n  \"owner\": \"A03\",\n  \"paths\": {\n    \"a11y\": \"src/features/A03-products-a11y.js\",\n    \"core\": \"src/features/A03-products.js\",\n    \"data\": \"src/features/A03-products-data.js\",\n    \"manifest\": \"src/features/A03-products.json\",\n    \"style\": \"src/features/A03-products.css\",\n    \"view\": \"src/features/A03-products-view.js\"\n  },\n  \"role\": \"Product data\",\n  \"schema_version\": 1\n}\n",
+    "--workspace-session-id",
+    "00000518c2160e17da4793"
+  ],
+  "cancelled": false,
+  "duration_ms": 47.309,
+  "kind": "public_cli_process",
+  "label": "A03.028",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 374,
+    "path": "src/features/A03-products.json",
+    "type": "create"
+  },
+  "pid": 54536,
+  "provenance": "agent",
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A03.028:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 833,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A03-products.json\",\"bytes_written\":374}\n",
+  "timed_out": false
+}

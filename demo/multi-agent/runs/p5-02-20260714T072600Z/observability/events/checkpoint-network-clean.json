@@ -1,0 +1,164 @@
+{
+  "label": "checkpoint-network-clean",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "name": "lease.acquired",
+      "parent": "d-2153",
+      "trace": "p5-02-20260714T072600Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+      "ts": 1784013983951
+    },
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "name": "lease.released",
+      "parent": "d-2159",
+      "trace": "p5-02-20260714T072600Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+      "ts": 1784013984028
+    },
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "name": "lease.acquired",
+      "parent": "d-2173",
+      "trace": "p5-02-20260714T072600Z:A08.053:runtime",
+      "ts": 1784013984577
+    },
+    {
+      "attrs": {
+        "revision": 12
+      },
+      "name": "lease.released",
+      "parent": "d-2177",
+      "trace": "e2e-direct-daemon-f8fb6810-4929-4cbf-a844-dee0bee52a24",
+      "ts": 1784013984679
+    },
+    {
+      "attrs": {
+        "revision": 12
+      },
+      "name": "lease.released",
+      "parent": "d-2181",
+      "trace": "e2e-direct-daemon-d7358fc4-ea27-45fe-86c6-a9ecb30a4e9f",
+      "ts": 1784013984752
+    },
+    {
+      "attrs": {
+        "revision": 12
+      },
+      "name": "lease.released",
+      "parent": "d-2183",
+      "trace": "e2e-direct-daemon-6f95f694-d646-47f7-8b9f-71f693e8c199",
+      "ts": 1784013984849
+    },
+    {
+      "attrs": {
+        "revision": 12
+      },
+      "name": "lease.released",
+      "parent": "d-2188",
+      "trace": "e2e-direct-daemon-4c7bdf7f-9e08-47c5-a30e-eeb30bfc95b4",
+      "ts": 1784013984946
+    },
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "name": "lease.released",
+      "parent": "d-2202",
+      "trace": "p5-02-20260714T072600Z:A08.053:runtime",
+      "ts": 1784013985340
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2141",
+        "trace": "p5-02-20260714T072600Z:A08.045:runtime",
+        "ts": 1784013983344
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2153",
+        "trace": "p5-02-20260714T072600Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784013983951
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2159",
+        "trace": "p5-02-20260714T072600Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784013984028
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2173",
+        "trace": "p5-02-20260714T072600Z:A08.053:runtime",
+        "ts": 1784013984577
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2177",
+        "trace": "e2e-direct-daemon-f8fb6810-4929-4cbf-a844-dee0bee52a24",
+        "ts": 1784013984679
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2181",
+        "trace": "e2e-direct-daemon-d7358fc4-ea27-45fe-86c6-a9ecb30a4e9f",
+        "ts": 1784013984752
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2183",
+        "trace": "e2e-direct-daemon-6f95f694-d646-47f7-8b9f-71f693e8c199",
+        "ts": 1784013984849
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2188",
+        "trace": "e2e-direct-daemon-4c7bdf7f-9e08-47c5-a30e-eeb30bfc95b4",
+        "ts": 1784013984946
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2202",
+        "trace": "p5-02-20260714T072600Z:A08.053:runtime",
+        "ts": 1784013985340
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784013985340
+}

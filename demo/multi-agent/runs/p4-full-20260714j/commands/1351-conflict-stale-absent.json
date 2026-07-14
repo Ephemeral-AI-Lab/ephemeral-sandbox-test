@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--request-id",
+    "p4-full-20260714j:ENGINE.conflict.stale:runtime",
+    "file_read",
+    "--path",
+    "src/conflict/A08-stale-attempt.txt"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.73,
+  "kind": "public_cli_process",
+  "label": "conflict-stale-absent",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/conflict/A08-stale-attempt.txt"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/conflict/A08-stale-attempt.txt"
+    }
+  },
+  "pid": 64410,
+  "provenance": "engine",
+  "request_id": "p4-full-20260714j:ENGINE.conflict.stale:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 1351,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/conflict/A08-stale-attempt.txt\",\"details\":{\"path\":\"src/conflict/A08-stale-attempt.txt\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

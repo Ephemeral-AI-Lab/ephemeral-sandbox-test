@@ -1,0 +1,77 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-45e3aa70-253c-44bf-8081-cab50a6590db",
+    "--trace-id",
+    "p5s-02-20260714T081634Z:A03.010:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 51.46,
+  "kind": "public_cli_process",
+  "label": "trace-A03.010",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 1.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 1.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-385",
+              "span": "d-389",
+              "status": "completed",
+              "trace": "p5s-02-20260714T081634Z:A03.010:runtime",
+              "ts": 1784017006809
+            }
+          },
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 3.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 3.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-385",
+              "span": "d-390",
+              "status": "completed",
+              "trace": "p5s-02-20260714T081634Z:A03.010:runtime",
+              "ts": 1784017006813
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_edit"
+          },
+          "dur_ms": 6.0,
+          "name": "daemon.dispatch",
+          "span": "d-385",
+          "status": "completed",
+          "trace": "p5s-02-20260714T081634Z:A03.010:runtime",
+          "ts": 1784017006813
+        }
+      }
+    ],
+    "trace": "p5s-02-20260714T081634Z:A03.010:runtime",
+    "view": "trace"
+  },
+  "pid": 31757,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 281,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p5s-02-20260714T081634Z:A03.010:runtime\",\"spans\":[{\"span\":{\"ts\":1784017006813,\"trace\":\"p5s-02-20260714T081634Z:A03.010:runtime\",\"span\":\"d-385\",\"name\":\"daemon.dispatch\",\"dur_ms\":6.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_edit\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784017006809,\"trace\":\"p5s-02-20260714T081634Z:A03.010:runtime\",\"span\":\"d-389\",\"parent\":\"d-385\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":1.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":1.0,\"children\":[],\"events\":[]},{\"span\":{\"ts\":1784017006813,\"trace\":\"p5s-02-20260714T081634Z:A03.010:runtime\",\"span\":\"d-390\",\"parent\":\"d-385\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":3.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":3.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

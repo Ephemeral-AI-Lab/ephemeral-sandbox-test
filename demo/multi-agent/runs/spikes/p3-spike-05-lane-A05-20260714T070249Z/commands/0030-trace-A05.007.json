@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-74424d22-6c30-475f-a506-ddf239b37463",
+    "--trace-id",
+    "p3-spike-05-lane-A05-20260714T070249Z:A05.007:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 36.688,
+  "kind": "public_cli_process",
+  "label": "trace-A05.007",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 1.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 3.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-46",
+              "span": "d-47",
+              "status": "completed",
+              "trace": "p3-spike-05-lane-A05-20260714T070249Z:A05.007:runtime",
+              "ts": 1784012571803
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 4.0,
+          "name": "daemon.dispatch",
+          "span": "d-46",
+          "status": "completed",
+          "trace": "p3-spike-05-lane-A05-20260714T070249Z:A05.007:runtime",
+          "ts": 1784012571803
+        }
+      }
+    ],
+    "trace": "p3-spike-05-lane-A05-20260714T070249Z:A05.007:runtime",
+    "view": "trace"
+  },
+  "pid": 11633,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 30,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3-spike-05-lane-A05-20260714T070249Z:A05.007:runtime\",\"spans\":[{\"span\":{\"ts\":1784012571803,\"trace\":\"p3-spike-05-lane-A05-20260714T070249Z:A05.007:runtime\",\"span\":\"d-46\",\"name\":\"daemon.dispatch\",\"dur_ms\":4.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_write\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012571803,\"trace\":\"p3-spike-05-lane-A05-20260714T070249Z:A05.007:runtime\",\"span\":\"d-47\",\"parent\":\"d-46\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":3.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":1.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

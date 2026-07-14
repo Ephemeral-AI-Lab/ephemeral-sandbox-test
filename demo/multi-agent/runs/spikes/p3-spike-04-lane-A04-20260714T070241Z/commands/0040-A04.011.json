@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-d11117e7-fbf9-4e44-950c-c1d5615dd59e",
+    "--request-id",
+    "p3-spike-04-lane-A04-20260714T070241Z:A04.011:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000318c215f9259c00a4",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --check src/features/A04-catalog.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 63.477,
+  "kind": "public_cli_process",
+  "label": "A04.011",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.025845125,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.025891708,
+    "workspace_session_id": "00000318c215f9259c00a4"
+  },
+  "pid": 9033,
+  "provenance": "agent",
+  "request_id": "p3-spike-04-lane-A04-20260714T070241Z:A04.011:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 40,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.025891708,\"command_total_time_seconds\":0.025845125,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00000318c215f9259c00a4\"}\n",
+  "timed_out": false
+}

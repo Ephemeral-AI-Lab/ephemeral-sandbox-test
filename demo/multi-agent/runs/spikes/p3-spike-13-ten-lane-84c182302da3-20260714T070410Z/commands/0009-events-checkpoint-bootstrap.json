@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--last-n",
+    "10000"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.458,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-bootstrap",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.acquired",
+        "parent": "d-3",
+        "trace": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:ENGINE.bootstrap:runtime",
+        "ts": 1784012651624
+      },
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.released",
+        "parent": "d-9",
+        "trace": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:ENGINE.bootstrap:runtime",
+        "ts": 1784012651680
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 39616,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 9,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784012651624,\"trace\":\"p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:ENGINE.bootstrap:runtime\",\"parent\":\"d-3\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":1}},{\"ts\":1784012651680,\"trace\":\"p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:ENGINE.bootstrap:runtime\",\"parent\":\"d-9\",\"name\":\"lease.released\",\"attrs\":{\"revision\":1}}]}\n",
+  "timed_out": false
+}

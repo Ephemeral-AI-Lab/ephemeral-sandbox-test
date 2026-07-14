@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-45e3aa70-253c-44bf-8081-cab50a6590db",
+    "--request-id",
+    "p5s-02-20260714T081634Z:A05.004:runtime",
+    "file_read",
+    "--path",
+    "src/config.js",
+    "--workspace-session-id",
+    "00000718c21a029cc43ee2"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.969,
+  "kind": "public_cli_process",
+  "label": "A05.004",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 140,
+    "content": "window.FlashCart = window.FlashCart || {};\nwindow.FlashCart.config = { freeShippingCents: 5000, standardShippingCents: 700, taxRate: 0.08 };",
+    "next_offset": null,
+    "num_lines": 2,
+    "path": "src/config.js",
+    "start_line": 1,
+    "total_bytes": 141,
+    "total_lines": 2,
+    "truncated": false
+  },
+  "pid": 28161,
+  "provenance": "agent",
+  "request_id": "p5s-02-20260714T081634Z:A05.004:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 84,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/config.js\",\"content\":\"window.FlashCart = window.FlashCart || {};\\nwindow.FlashCart.config = { freeShippingCents: 5000, standardShippingCents: 700, taxRate: 0.08 };\",\"start_line\":1,\"num_lines\":2,\"total_lines\":2,\"bytes_read\":140,\"total_bytes\":141,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

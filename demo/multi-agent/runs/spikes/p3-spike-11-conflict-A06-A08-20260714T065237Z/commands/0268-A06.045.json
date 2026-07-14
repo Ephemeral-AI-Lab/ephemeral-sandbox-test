@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b00a8c3e-45c0-4e7d-8ba1-e6cd1cafc3ac",
+    "--request-id",
+    "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.045:runtime",
+    "exec_command",
+    "--timeout-ms",
+    "180000",
+    "--yield-time-ms",
+    "0",
+    "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.291,
+  "kind": "public_cli_process",
+  "label": "A06.045",
+  "parse_error": null,
+  "parsed_json": {
+    "command_session_id": "namespace_execution_92",
+    "command_total_time_seconds": 0.000595709,
+    "end_offset": 0,
+    "exit_code": null,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "running",
+    "total_lines": 0,
+    "wall_time_seconds": 0.000595709,
+    "workspace_session_id": "00000618c2156eda942090"
+  },
+  "pid": 35677,
+  "provenance": "agent",
+  "request_id": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.045:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 268,
+  "stderr": "",
+  "stdout": "{\"status\":\"running\",\"exit_code\":null,\"wall_time_seconds\":0.000595709,\"command_total_time_seconds\":0.000595709,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"command_session_id\":\"namespace_execution_92\",\"workspace_session_id\":\"00000618c2156eda942090\"}\n",
+  "timed_out": false
+}

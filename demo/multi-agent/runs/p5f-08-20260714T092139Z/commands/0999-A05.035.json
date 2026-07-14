@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-bc06d80c-d1c1-4be3-951c-5db49e779062",
+    "--request-id",
+    "p5f-08-20260714T092139Z:A05.035:runtime",
+    "file_read",
+    "--path",
+    "src/features/A05-search-a11y.js",
+    "--workspace-session-id",
+    "00000718c21d8ecce6534a"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.006,
+  "kind": "public_cli_process",
+  "label": "A05.035",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 223,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\n  root.FlashCart.a11y.A05 = { label: 'Search and facets', keyboard: true, reducedMotion: true };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A05-search-a11y.js",
+    "start_line": 1,
+    "total_bytes": 224,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 35038,
+  "provenance": "agent",
+  "request_id": "p5f-08-20260714T092139Z:A05.035:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 999,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A05-search-a11y.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\\n  root.FlashCart.a11y.A05 = { label: 'Search and facets', keyboard: true, reducedMotion: true };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":223,\"total_bytes\":224,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

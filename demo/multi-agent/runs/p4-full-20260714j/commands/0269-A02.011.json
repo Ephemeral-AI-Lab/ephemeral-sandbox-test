@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--request-id",
+    "p4-full-20260714j:A02.011:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000418c211d0821f2be9",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --check src/features/A02-design-system.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 67.056,
+  "kind": "public_cli_process",
+  "label": "A02.011",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.026132542,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.026194958,
+    "workspace_session_id": "00000418c211d0821f2be9"
+  },
+  "pid": 44656,
+  "provenance": "agent",
+  "request_id": "p4-full-20260714j:A02.011:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 269,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.026194958,\"command_total_time_seconds\":0.026132542,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00000418c211d0821f2be9\"}\n",
+  "timed_out": false
+}

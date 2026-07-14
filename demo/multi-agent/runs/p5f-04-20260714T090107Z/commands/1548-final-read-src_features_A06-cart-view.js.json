@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-7c622b5f-ddbc-49f4-a447-509f97acee5e",
+    "--request-id",
+    "p5f-04-20260714T090107Z:ENGINE.final.src-features-A06-cart-view.js:runtime",
+    "file_read",
+    "--path",
+    "src/features/A06-cart-view.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.67,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A06-cart-view.js",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 303,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.views = root.FlashCart.views || {};\n  root.FlashCart.views.A06 = function () { return '<section data-feature=\"A06\"><h2>Cart and pricing</h2><p>integer-money cart, promotion, tax, and shipping</p></section>'; };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A06-cart-view.js",
+    "start_line": 1,
+    "total_bytes": 304,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 17635,
+  "provenance": "engine",
+  "request_id": "p5f-04-20260714T090107Z:ENGINE.final.src-features-A06-cart-view.js:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1548,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A06-cart-view.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.views = root.FlashCart.views || {};\\n  root.FlashCart.views.A06 = function () { return '<section data-feature=\\\"A06\\\"><h2>Cart and pricing</h2><p>integer-money cart, promotion, tax, and shipping</p></section>'; };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":303,\"total_bytes\":304,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

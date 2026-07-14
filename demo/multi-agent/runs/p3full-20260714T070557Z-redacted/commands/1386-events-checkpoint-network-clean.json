@@ -1,0 +1,103 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-adf9180b-82e7-4128-90a2-b7342748f86b",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784012803348"
+  ],
+  "cancelled": false,
+  "duration_ms": 69.379,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-network-clean",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2140",
+        "trace": "p3full-20260714T070557Z-redacted:A08.045:runtime",
+        "ts": 1784012803348
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2153",
+        "trace": "p3full-20260714T070557Z-redacted:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784012803964
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2159",
+        "trace": "p3full-20260714T070557Z-redacted:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784012804051
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2173",
+        "trace": "p3full-20260714T070557Z-redacted:A08.053:runtime",
+        "ts": 1784012804601
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2177",
+        "trace": "e2e-direct-daemon-60f095d8-d5d7-4e41-b2dc-642cfeddfc13",
+        "ts": 1784012804720
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2181",
+        "trace": "e2e-direct-daemon-826234d9-0318-4057-b996-967686203917",
+        "ts": 1784012804797
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2183",
+        "trace": "e2e-direct-daemon-a9fe3783-32e0-4651-8e88-7a4a9438fd1f",
+        "ts": 1784012804890
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2188",
+        "trace": "e2e-direct-daemon-d3b806e4-4795-4bf0-af61-f28e74341f12",
+        "ts": 1784012804978
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 88531,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1386,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784012803348,\"trace\":\"p3full-20260714T070557Z-redacted:A08.045:runtime\",\"parent\":\"d-2140\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784012803964,\"trace\":\"p3full-20260714T070557Z-redacted:ENGINE.shared.checkpoint.conflict-rejected:runtime\",\"parent\":\"d-2153\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784012804051,\"trace\":\"p3full-20260714T070557Z-redacted:ENGINE.shared.checkpoint.conflict-rejected:runtime\",\"parent\":\"d-2159\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}},{\"ts\":1784012804601,\"trace\":\"p3full-20260714T070557Z-redacted:A08.053:runtime\",\"parent\":\"d-2173\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784012804720,\"trace\":\"e2e-direct-daemon-60f095d8-d5d7-4e41-b2dc-642cfeddfc13\",\"parent\":\"d-2177\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784012804797,\"trace\":\"e2e-direct-daemon-826234d9-0318-4057-b996-967686203917\",\"parent\":\"d-2181\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784012804890,\"trace\":\"e2e-direct-daemon-a9fe3783-32e0-4651-8e88-7a4a9438fd1f\",\"parent\":\"d-2183\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784012804978,\"trace\":\"e2e-direct-daemon-d3b806e4-4795-4bf0-af61-f28e74341f12\",\"parent\":\"d-2188\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}}]}\n",
+  "timed_out": false
+}

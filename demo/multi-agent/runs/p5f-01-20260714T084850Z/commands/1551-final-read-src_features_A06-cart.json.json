@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-2bb2a977-906c-4bb9-b90f-ff7e6e2cfa7e",
+    "--request-id",
+    "p5f-01-20260714T084850Z:ENGINE.final.src-features-A06-cart.json:runtime",
+    "file_read",
+    "--path",
+    "src/features/A06-cart.json"
+  ],
+  "cancelled": false,
+  "duration_ms": 36.945,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A06-cart.json",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 353,
+    "content": "{\n  \"owner\": \"A06\",\n  \"paths\": {\n    \"a11y\": \"src/features/A06-cart-a11y.js\",\n    \"core\": \"src/features/A06-cart.js\",\n    \"data\": \"src/features/A06-cart-data.js\",\n    \"manifest\": \"src/features/A06-cart.json\",\n    \"style\": \"src/features/A06-cart.css\",\n    \"view\": \"src/features/A06-cart-view.js\"\n  },\n  \"role\": \"Cart and pricing\",\n  \"schema_version\": 1\n}",
+    "next_offset": null,
+    "num_lines": 13,
+    "path": "src/features/A06-cart.json",
+    "start_line": 1,
+    "total_bytes": 354,
+    "total_lines": 13,
+    "truncated": false
+  },
+  "pid": 21680,
+  "provenance": "engine",
+  "request_id": "p5f-01-20260714T084850Z:ENGINE.final.src-features-A06-cart.json:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1551,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A06-cart.json\",\"content\":\"{\\n  \\\"owner\\\": \\\"A06\\\",\\n  \\\"paths\\\": {\\n    \\\"a11y\\\": \\\"src/features/A06-cart-a11y.js\\\",\\n    \\\"core\\\": \\\"src/features/A06-cart.js\\\",\\n    \\\"data\\\": \\\"src/features/A06-cart-data.js\\\",\\n    \\\"manifest\\\": \\\"src/features/A06-cart.json\\\",\\n    \\\"style\\\": \\\"src/features/A06-cart.css\\\",\\n    \\\"view\\\": \\\"src/features/A06-cart-view.js\\\"\\n  },\\n  \\\"role\\\": \\\"Cart and pricing\\\",\\n  \\\"schema_version\\\": 1\\n}\",\"start_line\":1,\"num_lines\":13,\"total_lines\":13,\"bytes_read\":353,\"total_bytes\":354,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-573f5b3f-5275-4ba9-8e9d-3481b8969c08",
+    "--request-id",
+    "p5s-03-20260714T081918Z:A07.033:runtime",
+    "file_read",
+    "--path",
+    "src/features/A07-wishlist-view.js",
+    "--workspace-session-id",
+    "00000918c21a28ec1aacc1"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.284,
+  "kind": "public_cli_process",
+  "label": "A07.033",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 286,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.views = root.FlashCart.views || {};\n  root.FlashCart.views.A07 = function () { return '<section data-feature=\"A07\"><h2>Wishlist</h2><p>persistent wishlist and recommendations</p></section>'; };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A07-wishlist-view.js",
+    "start_line": 1,
+    "total_bytes": 287,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 75080,
+  "provenance": "agent",
+  "request_id": "p5s-03-20260714T081918Z:A07.033:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 961,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A07-wishlist-view.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.views = root.FlashCart.views || {};\\n  root.FlashCart.views.A07 = function () { return '<section data-feature=\\\"A07\\\"><h2>Wishlist</h2><p>persistent wishlist and recommendations</p></section>'; };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":286,\"total_bytes\":287,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

@@ -1,0 +1,91 @@
+{
+  "captured_at": "20260714T052924Z",
+  "ordinal": 4,
+  "response": {
+    "scope": "sandbox",
+    "series": [
+      {
+        "deltas": {},
+        "metrics": {
+          "cpu_usec": 91006,
+          "io_rbytes": 0,
+          "io_wbytes": 98304,
+          "mem_cur": 4550656,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": null,
+        "ts": 1784006962720
+      },
+      {
+        "deltas": {
+          "cpu_usec": 71959,
+          "io_rbytes": 0,
+          "io_wbytes": 69632
+        },
+        "metrics": {
+          "cpu_usec": 162965,
+          "io_rbytes": 0,
+          "io_wbytes": 167936,
+          "mem_cur": 14958592,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 540,
+        "ts": 1784006963260
+      },
+      {
+        "deltas": {
+          "cpu_usec": 193901,
+          "io_rbytes": 0,
+          "io_wbytes": 106496
+        },
+        "metrics": {
+          "cpu_usec": 356866,
+          "io_rbytes": 0,
+          "io_wbytes": 274432,
+          "mem_cur": 18575360,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 554,
+        "ts": 1784006963814
+      },
+      {
+        "deltas": {
+          "cpu_usec": 163657,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 520523,
+          "io_rbytes": 0,
+          "io_wbytes": 278528,
+          "mem_cur": 32768000,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 242,
+        "ts": 1784006964056
+      },
+      {
+        "deltas": {
+          "cpu_usec": 165033,
+          "io_rbytes": 0,
+          "io_wbytes": 16384
+        },
+        "metrics": {
+          "cpu_usec": 685556,
+          "io_rbytes": 0,
+          "io_wbytes": 294912,
+          "mem_cur": 32776192,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 311,
+        "ts": 1784006964367
+      }
+    ],
+    "view": "cgroup"
+  }
+}

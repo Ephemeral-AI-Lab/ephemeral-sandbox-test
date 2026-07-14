@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--request-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A09.028:runtime",
+    "file_write",
+    "--path",
+    "src/features/A09-accessibility.json",
+    "--content",
+    "{\n  \"owner\": \"A09\",\n  \"paths\": {\n    \"a11y\": \"src/features/A09-accessibility-a11y.js\",\n    \"core\": \"src/features/A09-accessibility.js\",\n    \"data\": \"src/features/A09-accessibility-data.js\",\n    \"manifest\": \"src/features/A09-accessibility.json\",\n    \"style\": \"src/features/A09-accessibility.css\",\n    \"view\": \"src/features/A09-accessibility-view.js\"\n  },\n  \"role\": \"Accessibility and performance\",\n  \"schema_version\": 1\n}\n",
+    "--workspace-session-id",
+    "00000b18c2160e29014212"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.694,
+  "kind": "public_cli_process",
+  "label": "A09.028",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 421,
+    "path": "src/features/A09-accessibility.json",
+    "type": "create"
+  },
+  "pid": 54772,
+  "provenance": "agent",
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A09.028:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 846,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A09-accessibility.json\",\"bytes_written\":421}\n",
+  "timed_out": false
+}

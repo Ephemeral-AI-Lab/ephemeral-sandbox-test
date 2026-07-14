@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-02aa463a-08e3-4fd3-99ac-aba361fa83af",
+    "--request-id",
+    "p5r-01-20260714T080149Z:ENGINE.final.src-features-A10-qa.json:runtime",
+    "file_read",
+    "--path",
+    "src/features/A10-qa.json"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.563,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A10-qa.json",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 339,
+    "content": "{\n  \"owner\": \"A10\",\n  \"paths\": {\n    \"a11y\": \"src/features/A10-qa-a11y.js\",\n    \"core\": \"src/features/A10-qa.js\",\n    \"data\": \"src/features/A10-qa-data.js\",\n    \"manifest\": \"src/features/A10-qa.json\",\n    \"style\": \"src/features/A10-qa.css\",\n    \"view\": \"src/features/A10-qa-view.js\"\n  },\n  \"role\": \"Integration QA\",\n  \"schema_version\": 1\n}",
+    "next_offset": null,
+    "num_lines": 13,
+    "path": "src/features/A10-qa.json",
+    "start_line": 1,
+    "total_bytes": 340,
+    "total_lines": 13,
+    "truncated": false
+  },
+  "pid": 26749,
+  "provenance": "engine",
+  "request_id": "p5r-01-20260714T080149Z:ENGINE.final.src-features-A10-qa.json:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1578,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A10-qa.json\",\"content\":\"{\\n  \\\"owner\\\": \\\"A10\\\",\\n  \\\"paths\\\": {\\n    \\\"a11y\\\": \\\"src/features/A10-qa-a11y.js\\\",\\n    \\\"core\\\": \\\"src/features/A10-qa.js\\\",\\n    \\\"data\\\": \\\"src/features/A10-qa-data.js\\\",\\n    \\\"manifest\\\": \\\"src/features/A10-qa.json\\\",\\n    \\\"style\\\": \\\"src/features/A10-qa.css\\\",\\n    \\\"view\\\": \\\"src/features/A10-qa-view.js\\\"\\n  },\\n  \\\"role\\\": \\\"Integration QA\\\",\\n  \\\"schema_version\\\": 1\\n}\",\"start_line\":1,\"num_lines\":13,\"total_lines\":13,\"bytes_read\":339,\"total_bytes\":340,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

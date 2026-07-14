@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fbe9e67e-eb75-4c15-97b8-68ef24761269",
+    "--request-id",
+    "p5s-01-20260714T081331Z:A08.059:runtime",
+    "file_blame",
+    "--path",
+    "src/features/A08-checkout-retry.json"
+  ],
+  "cancelled": false,
+  "duration_ms": 36.481,
+  "kind": "public_cli_process",
+  "label": "A08.059",
+  "parse_error": null,
+  "parsed_json": {
+    "path": "src/features/A08-checkout-retry.json",
+    "ranges": [
+      {
+        "line_count": 5,
+        "owner": "workspace_session:00001718c219e28e37d96e",
+        "start_line": 1
+      }
+    ]
+  },
+  "pid": 20469,
+  "provenance": "agent",
+  "request_id": "p5s-01-20260714T081331Z:A08.059:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1412,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A08-checkout-retry.json\",\"ranges\":[{\"start_line\":1,\"line_count\":5,\"owner\":\"workspace_session:00001718c219e28e37d96e\"}]}\n",
+  "timed_out": false
+}

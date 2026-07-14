@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-85444414-3f8b-4661-afe0-0572fc39391d",
+    "--request-id",
+    "p5r-01-20260714T083803Z:A10.010:runtime",
+    "file_edit",
+    "--path",
+    "src/features/A10-qa.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A10 = {\\n    id: 'A10',\\n    label: 'Integration QA',\\n    deterministic: true,\\n    verify() { return true; },\\n    status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }\\n  };\\n})(globalThis);\\n\",\n    \"old_string\": \"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A10 = { id: 'A10', verify() { return false; }, implementation: 'broken A10' };\\n})(globalThis);\\n\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000c18c21b2e9d3b03a2"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.254,
+  "kind": "public_cli_process",
+  "label": "A10.010",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 419,
+    "edits_applied": 1,
+    "path": "src/features/A10-qa.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 3164,
+  "provenance": "agent",
+  "request_id": "p5r-01-20260714T083803Z:A10.010:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 268,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/features/A10-qa.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":419}\n",
+  "timed_out": false
+}

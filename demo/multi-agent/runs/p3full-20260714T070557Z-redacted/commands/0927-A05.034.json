@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-adf9180b-82e7-4128-90a2-b7342748f86b",
+    "--request-id",
+    "p3full-20260714T070557Z-redacted:A05.034:runtime",
+    "file_read",
+    "--path",
+    "src/features/A05-search.css",
+    "--workspace-session-id",
+    "00000718c216270ab51904"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.156,
+  "kind": "public_cli_process",
+  "label": "A05.034",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 116,
+    "content": ".feature-a05 { border-inline-start: 4px solid #175b50; } .feature-a05 :focus-visible { outline: 3px solid #124ea0; }",
+    "next_offset": null,
+    "num_lines": 1,
+    "path": "src/features/A05-search.css",
+    "start_line": 1,
+    "total_bytes": 117,
+    "total_lines": 1,
+    "truncated": false
+  },
+  "pid": 79956,
+  "provenance": "agent",
+  "request_id": "p3full-20260714T070557Z-redacted:A05.034:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 927,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A05-search.css\",\"content\":\".feature-a05 { border-inline-start: 4px solid #175b50; } .feature-a05 :focus-visible { outline: 3px solid #124ea0; }\",\"start_line\":1,\"num_lines\":1,\"total_lines\":1,\"bytes_read\":116,\"total_bytes\":117,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

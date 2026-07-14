@@ -1,0 +1,26 @@
+{
+  "request_id": "p4-full-20260714j:A01.044:runtime",
+  "row": "A01.044",
+  "trace": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "write_command_stdin"
+          },
+          "dur_ms": 38.0,
+          "name": "daemon.dispatch",
+          "span": "d-1988",
+          "status": "completed",
+          "trace": "p4-full-20260714j:A01.044:runtime",
+          "ts": 1784008030431
+        }
+      }
+    ],
+    "trace": "p4-full-20260714j:A01.044:runtime",
+    "view": "trace"
+  }
+}

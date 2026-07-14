@@ -1,0 +1,96 @@
+{
+  "label": "checkpoint-conflict-rejected",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "name": "lease.acquired",
+      "parent": "d-2126",
+      "trace": "p5s-03-20260714T081918Z:ENGINE.shared.checkpoint.conflict-winner:runtime",
+      "ts": 1784017209000
+    },
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "name": "lease.released",
+      "parent": "d-2131",
+      "trace": "p5s-03-20260714T081918Z:ENGINE.shared.checkpoint.conflict-winner:runtime",
+      "ts": 1784017209091
+    },
+    {
+      "attrs": {
+        "detail": "publish rejected: PublishReject { path: Some(LayerPath(\"src/config.js\")), reason: SourceConflict, source_conflict: Some(SourceConflict { path: LayerPath(\"src/config.js\"), expected: File { digest: \"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\", executable: None }, actual: File { digest: \"5183fdab1d846c76445de9bd7da23c22bbf423b5a86823b0344d9d70883f75b8\", executable: None } }), protected_drop: None, message: None }",
+        "reject_class": "source_conflict",
+        "workspace_session_id": "00001118c21a328afb25f1"
+      },
+      "name": "workspace_session.finalize.publish_failed",
+      "parent": "d-2138",
+      "trace": "p5s-03-20260714T081918Z:A08.045:runtime",
+      "ts": 1784017209311
+    },
+    {
+      "attrs": {
+        "revision": 12
+      },
+      "name": "lease.released",
+      "parent": "d-2141",
+      "trace": "p5s-03-20260714T081918Z:A08.045:runtime",
+      "ts": 1784017209325
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2107",
+        "trace": "p5s-03-20260714T081918Z:A06.045:runtime",
+        "ts": 1784017208285
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2126",
+        "trace": "p5s-03-20260714T081918Z:ENGINE.shared.checkpoint.conflict-winner:runtime",
+        "ts": 1784017209000
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2131",
+        "trace": "p5s-03-20260714T081918Z:ENGINE.shared.checkpoint.conflict-winner:runtime",
+        "ts": 1784017209091
+      },
+      {
+        "attrs": {
+          "detail": "publish rejected: PublishReject { path: Some(LayerPath(\"src/config.js\")), reason: SourceConflict, source_conflict: Some(SourceConflict { path: LayerPath(\"src/config.js\"), expected: File { digest: \"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\", executable: None }, actual: File { digest: \"5183fdab1d846c76445de9bd7da23c22bbf423b5a86823b0344d9d70883f75b8\", executable: None } }), protected_drop: None, message: None }",
+          "reject_class": "source_conflict",
+          "workspace_session_id": "00001118c21a328afb25f1"
+        },
+        "name": "workspace_session.finalize.publish_failed",
+        "parent": "d-2138",
+        "trace": "p5s-03-20260714T081918Z:A08.045:runtime",
+        "ts": 1784017209311
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2141",
+        "trace": "p5s-03-20260714T081918Z:A08.045:runtime",
+        "ts": 1784017209325
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784017209325
+}

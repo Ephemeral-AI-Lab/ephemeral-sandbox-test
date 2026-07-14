@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b0919f76-a661-4bd5-89c8-f3e7fee299f3",
+    "--request-id",
+    "p3-spike-08-lane-A08-20260714T070316Z:A08.022:runtime",
+    "file_write",
+    "--path",
+    "tests/A08-style.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A08 style keeps focus visible', async () => assert.match(await readFile(new URL('../src/features/A08-checkout.css', import.meta.url), 'utf8'), /focus-visible/));\n",
+    "--workspace-session-id",
+    "00000318c2160165dba2ea"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.551,
+  "kind": "public_cli_process",
+  "label": "A08.022",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 284,
+    "path": "tests/A08-style.test.mjs",
+    "type": "create"
+  },
+  "pid": 20632,
+  "provenance": "agent",
+  "request_id": "p3-spike-08-lane-A08-20260714T070316Z:A08.022:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 77,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A08-style.test.mjs\",\"bytes_written\":284}\n",
+  "timed_out": false
+}

@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-382d7978-94bb-408f-bf3a-b032c5a7f01d",
+    "--request-id",
+    "p3-spike-01-lane-A01-20260714T070214Z:A01.015:runtime",
+    "file_write",
+    "--path",
+    "tests/A01-data.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A01 fixture is deterministic', async () => assert.match(await readFile(new URL('../index.html', import.meta.url), 'utf8'), /<main/));\n",
+    "--workspace-session-id",
+    "00000318c215f2e529aa34"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.471,
+  "kind": "public_cli_process",
+  "label": "A01.015",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 256,
+    "path": "tests/A01-data.test.mjs",
+    "type": "create"
+  },
+  "pid": 1124,
+  "provenance": "agent",
+  "request_id": "p3-spike-01-lane-A01-20260714T070214Z:A01.015:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 52,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A01-data.test.mjs\",\"bytes_written\":256}\n",
+  "timed_out": false
+}

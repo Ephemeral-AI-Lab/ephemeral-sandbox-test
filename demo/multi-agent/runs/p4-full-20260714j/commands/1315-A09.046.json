@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--request-id",
+    "p4-full-20260714j:A09.046:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00001218c211da4abd0d90",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { mkdir, writeFile } from 'node:fs/promises'; import { createServer } from 'node:http'; await mkdir('.flashcart-network', { recursive: true }); await writeFile('.flashcart-network/shared-two.txt', 'ephemeral network experiment\\n'); const server = createServer((_, response) => response.end('ok')); server.once('error', (error) => { if (error.code === 'EADDRINUSE') { console.log('PORT_COLLISION'); process.exit(0); } throw error; }); process.stdin.setEncoding('utf8'); process.stdin.on('data', (value) => { if (value.trim() === 'stop') server.close(() => process.exit(0)); }); server.listen(4173, '0.0.0.0', () => console.log('PORT_BOUND shared-two'));\""
+  ],
+  "cancelled": false,
+  "duration_ms": 96.936,
+  "kind": "public_cli_process",
+  "label": "A09.046",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.056648916,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "PORT_COLLISION",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.056713,
+    "workspace_session_id": "00001218c211da4abd0d90"
+  },
+  "pid": 63736,
+  "provenance": "agent",
+  "request_id": "p4-full-20260714j:A09.046:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1315,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.056713,\"command_total_time_seconds\":0.056648916,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":4,\"output\":\"PORT_COLLISION\",\"workspace_session_id\":\"00001218c211da4abd0d90\"}\n",
+  "timed_out": false
+}

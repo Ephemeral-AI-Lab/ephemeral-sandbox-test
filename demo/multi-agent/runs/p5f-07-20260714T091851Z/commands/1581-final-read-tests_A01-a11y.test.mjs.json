@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-52de8bdd-040c-406d-80ed-2e44db339ded",
+    "--request-id",
+    "p5f-07-20260714T091851Z:ENGINE.final.tests-A01-a11y.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A01-a11y.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.15,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A01-a11y.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 269,
+    "content": "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A01 honors reduced motion', async () => assert.match(await readFile(new URL('../scripts/serve.mjs', import.meta.url), 'utf8'), /FLASHCART_READY/));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A01-a11y.test.mjs",
+    "start_line": 1,
+    "total_bytes": 270,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 14510,
+  "provenance": "engine",
+  "request_id": "p5f-07-20260714T091851Z:ENGINE.final.tests-A01-a11y.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1581,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A01-a11y.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport { readFile } from 'node:fs/promises';\\nimport test from 'node:test';\\ntest('A01 honors reduced motion', async () => assert.match(await readFile(new URL('../scripts/serve.mjs', import.meta.url), 'utf8'), /FLASHCART_READY/));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":269,\"total_bytes\":270,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

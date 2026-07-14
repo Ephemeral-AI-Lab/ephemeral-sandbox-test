@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-87d96492-efb1-4bf1-ae1a-d5efea27eb0d",
+    "--request-id",
+    "p5f-03-20260714T085304Z:A10.017:runtime",
+    "file_write",
+    "--path",
+    "src/features/A10-qa-view.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.views = root.FlashCart.views || {};\n  root.FlashCart.views.A10 = function () { return '<section data-feature=\"A10\"><h2>Integration QA</h2><p>cross-feature status and final regression</p></section>'; };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000c18c21c0078a82bce"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.196,
+  "kind": "public_cli_process",
+  "label": "A10.017",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 295,
+    "path": "src/features/A10-qa-view.js",
+    "type": "create"
+  },
+  "pid": 64156,
+  "provenance": "agent",
+  "request_id": "p5f-03-20260714T085304Z:A10.017:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 487,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A10-qa-view.js\",\"bytes_written\":295}\n",
+  "timed_out": false
+}

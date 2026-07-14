@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-bc06d80c-d1c1-4be3-951c-5db49e779062",
+    "--request-id",
+    "p5f-08-20260714T092139Z:A10.022:runtime",
+    "file_write",
+    "--path",
+    "tests/A10-style.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A10 style keeps focus visible', async () => assert.match(await readFile(new URL('../src/features/A10-qa.css', import.meta.url), 'utf8'), /focus-visible/));\n",
+    "--workspace-session-id",
+    "00000c18c21d8eda49231f"
+  ],
+  "cancelled": false,
+  "duration_ms": 48.305,
+  "kind": "public_cli_process",
+  "label": "A10.022",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 278,
+    "path": "tests/A10-style.test.mjs",
+    "type": "create"
+  },
+  "pid": 28908,
+  "provenance": "agent",
+  "request_id": "p5f-08-20260714T092139Z:A10.022:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 660,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A10-style.test.mjs\",\"bytes_written\":278}\n",
+  "timed_out": false
+}

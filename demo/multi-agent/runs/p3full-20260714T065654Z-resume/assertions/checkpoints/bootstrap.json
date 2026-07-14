@@ -1,0 +1,158 @@
+{
+  "events": {
+    "label": "checkpoint-bootstrap",
+    "new_events": [
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.acquired",
+        "parent": "d-3",
+        "trace": "p3full-20260714T065654Z-resume:ENGINE.bootstrap:runtime",
+        "ts": 1784012216052
+      },
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.released",
+        "parent": "d-9",
+        "trace": "p3full-20260714T065654Z-resume:ENGINE.bootstrap:runtime",
+        "ts": 1784012216121
+      }
+    ],
+    "response": {
+      "events": [
+        {
+          "attrs": {
+            "revision": 1
+          },
+          "name": "lease.acquired",
+          "parent": "d-3",
+          "trace": "p3full-20260714T065654Z-resume:ENGINE.bootstrap:runtime",
+          "ts": 1784012216052
+        },
+        {
+          "attrs": {
+            "revision": 1
+          },
+          "name": "lease.released",
+          "parent": "d-9",
+          "trace": "p3full-20260714T065654Z-resume:ENGINE.bootstrap:runtime",
+          "ts": 1784012216121
+        }
+      ],
+      "view": "events"
+    },
+    "watermark_ms": 1784012216121
+  },
+  "layerstack": {
+    "active_lease_count": 0,
+    "layers": [
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 527,
+        "layer_id": "L000002-00000001",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": null,
+        "booked_by": [],
+        "bytes": null,
+        "layer_id": "B000001-base",
+        "leased_by_workspaces": 0
+      }
+    ],
+    "manifest_version": 2,
+    "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+    "staging_entry_count": 0,
+    "storage_allocated_bytes": 65536,
+    "storage_logical_bytes": 1055,
+    "total_allocated_bytes": null,
+    "total_bytes": null,
+    "trend": [
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784012216122
+      },
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784012216177
+      },
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784012216224
+      },
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784012216269
+      }
+    ],
+    "view": "layerstack"
+  },
+  "name": "bootstrap",
+  "sandbox_id": "eos-05aa11ab-f22c-4929-87b4-9080e735c2dc",
+  "scene": "fanout",
+  "shared_manifest": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08"
+  },
+  "snapshot": {
+    "availability": "available",
+    "daemon": {
+      "daemon_pid": 6,
+      "runtime_dir": "/eos/runtime/daemon"
+    },
+    "errors": [],
+    "lifecycle_state": "ready",
+    "resources": {
+      "history": [],
+      "latest": {
+        "deltas": {},
+        "metrics": {
+          "cgroup_available": false,
+          "cgroup_error": "cgroup root unavailable"
+        },
+        "sample_delta_ms": 42,
+        "ts": 1784012216311
+      }
+    },
+    "sampled_at_unix_ms": 1784012216311,
+    "sandbox_id": "eos-05aa11ab-f22c-4929-87b4-9080e735c2dc",
+    "stack": {
+      "active_leases": 0,
+      "layer_count": 2,
+      "layers_allocated_bytes": null,
+      "layers_bytes": null,
+      "staging_entry_count": 0,
+      "storage_allocated_bytes": 65536
+    },
+    "workspaces": []
+  }
+}

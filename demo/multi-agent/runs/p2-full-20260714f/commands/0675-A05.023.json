@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-c764b9cf-3e43-42cf-9ab9-a15aea7a4819",
+    "--request-id",
+    "p2-full-20260714f:A05.023:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000718c2107aba2b0bac",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A05-style.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 113.71,
+  "kind": "public_cli_process",
+  "label": "A05.023",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.074464208,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A05 style keeps focus visible (3.505083ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 40.186042",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.074530875,
+    "workspace_session_id": "00000718c2107aba2b0bac"
+  },
+  "pid": 29326,
+  "provenance": "agent",
+  "request_id": "p2-full-20260714f:A05.023:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 675,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.074530875,\"command_total_time_seconds\":0.074464208,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":40,\"output\":\"✔ A05 style keeps focus visible (3.505083ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 40.186042\",\"workspace_session_id\":\"00000718c2107aba2b0bac\"}\n",
+  "timed_out": false
+}

@@ -1,0 +1,128 @@
+{
+  "label": "checkpoint-spike-primary-publications",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-16",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+      "ts": 1784012624156
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.released",
+      "parent": "d-21",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+      "ts": 1784012624212
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-24",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A06.001:runtime",
+      "ts": 1784012624260
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-29",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.001:runtime",
+      "ts": 1784012624304
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.released",
+      "parent": "d-414",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.001:runtime",
+      "ts": 1784012633020
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.released",
+      "parent": "d-420",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A06.001:runtime",
+      "ts": 1784012633108
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.released",
+        "parent": "d-9",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:ENGINE.bootstrap:runtime",
+        "ts": 1784012623851
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-16",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784012624156
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-21",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784012624212
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-24",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A06.001:runtime",
+        "ts": 1784012624260
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-29",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.001:runtime",
+        "ts": 1784012624304
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-414",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A08.001:runtime",
+        "ts": 1784012633020
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-420",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A06.001:runtime",
+        "ts": 1784012633108
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784012633108
+}

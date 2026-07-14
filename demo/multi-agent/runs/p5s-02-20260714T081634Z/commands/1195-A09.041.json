@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-45e3aa70-253c-44bf-8081-cab50a6590db",
+    "--request-id",
+    "p5s-02-20260714T081634Z:A09.041:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000b18c21a02a7b01d12",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A09-quality.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 126.22,
+  "kind": "public_cli_process",
+  "label": "A09.041",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.086373542,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A09 implementation is marked deterministic (0.662125ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 43.43225",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.086473667,
+    "workspace_session_id": "00000b18c21a02a7b01d12"
+  },
+  "pid": 48305,
+  "provenance": "agent",
+  "request_id": "p5s-02-20260714T081634Z:A09.041:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1195,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.086473667,\"command_total_time_seconds\":0.086373542,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":43,\"output\":\"✔ A09 implementation is marked deterministic (0.662125ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 43.43225\",\"workspace_session_id\":\"00000b18c21a02a7b01d12\"}\n",
+  "timed_out": false
+}

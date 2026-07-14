@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-98d16098-283b-41e0-b3fb-dc07d9d7ed8c",
+    "--request-id",
+    "p3-spike-06-lane-A06-20260714T070258Z:A06.001:runtime",
+    "exec_command",
+    "--timeout-ms",
+    "180000",
+    "--yield-time-ms",
+    "0",
+    "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.5,
+  "kind": "public_cli_process",
+  "label": "A06.001",
+  "parse_error": null,
+  "parsed_json": {
+    "command_session_id": "namespace_execution_3",
+    "command_total_time_seconds": 0.0006775,
+    "end_offset": 0,
+    "exit_code": null,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "running",
+    "total_lines": 0,
+    "wall_time_seconds": 0.0006775,
+    "workspace_session_id": "00000318c215fd3f07d047"
+  },
+  "pid": 14027,
+  "provenance": "agent",
+  "request_id": "p3-spike-06-lane-A06-20260714T070258Z:A06.001:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 12,
+  "stderr": "",
+  "stdout": "{\"status\":\"running\",\"exit_code\":null,\"wall_time_seconds\":0.0006775,\"command_total_time_seconds\":0.0006775,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"command_session_id\":\"namespace_execution_3\",\"workspace_session_id\":\"00000318c215fd3f07d047\"}\n",
+  "timed_out": false
+}

@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-94fb6e38-dd74-4a9f-b016-6d2e055375ed",
+    "--request-id",
+    "p5f-09-20260714T092338Z:A05.026:runtime",
+    "file_write",
+    "--path",
+    "tests/A05-a11y.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A05-search-a11y.js');\ntest('A05 honors reduced motion', () => assert.equal(globalThis.FlashCart.a11y.A05.reducedMotion, true));\n",
+    "--workspace-session-id",
+    "00000718c21daa8bd75032"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.019,
+  "kind": "public_cli_process",
+  "label": "A05.026",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 229,
+    "path": "tests/A05-a11y.test.mjs",
+    "type": "create"
+  },
+  "pid": 61840,
+  "provenance": "agent",
+  "request_id": "p5f-09-20260714T092338Z:A05.026:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 783,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A05-a11y.test.mjs\",\"bytes_written\":229}\n",
+  "timed_out": false
+}

@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--request-id",
+    "p4-full-20260714j:A08.055:runtime",
+    "file_write",
+    "--path",
+    "src/features/A08-checkout-retry.json",
+    "--content",
+    "{\n  \"kind\": \"fresh-head-retry\",\n  \"owner\": \"A08\",\n  \"receipt\": \"checkout conflict retried from A06's published threshold\"\n}\n",
+    "--workspace-session-id",
+    "00001718c211db1b78be07"
+  ],
+  "cancelled": false,
+  "duration_ms": 69.31,
+  "kind": "public_cli_process",
+  "label": "A08.055",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 124,
+    "path": "src/features/A08-checkout-retry.json",
+    "type": "create"
+  },
+  "pid": 64883,
+  "provenance": "agent",
+  "request_id": "p4-full-20260714j:A08.055:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1377,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A08-checkout-retry.json\",\"bytes_written\":124}\n",
+  "timed_out": false
+}

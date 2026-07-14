@@ -1,0 +1,36 @@
+{
+  "after": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A05-search-data.js": "f9459fc2be8af6d84dd940b564df76be81cefb15b362bfbd515201779b610866",
+    "src/features/A05-search.js": "9593a9daa2a44b58831cd9fc6de7e919c14f2a7f4bc9b388fb5ed25b4f172e24",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A05-red.test.mjs": "26cf1924b8bf9ebe65b912ce7a53062f9f22d3c85a85f7e77017c62fc0be7fed"
+  },
+  "attempt_ref": "A05.primary",
+  "before": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A05-search.js": "9593a9daa2a44b58831cd9fc6de7e919c14f2a7f4bc9b388fb5ed25b4f172e24",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A05-red.test.mjs": "26cf1924b8bf9ebe65b912ce7a53062f9f22d3c85a85f7e77017c62fc0be7fed"
+  },
+  "changed_paths": [
+    "src/features/A05-search-data.js"
+  ],
+  "cumulative_changed_paths": [
+    "src/features/A05-search-data.js",
+    "src/features/A05-search.js",
+    "tests/A05-red.test.mjs"
+  ],
+  "cumulative_declared_paths": [
+    "src/features/A05-search-data.js",
+    "src/features/A05-search.js",
+    "tests/A05-red.test.mjs"
+  ],
+  "declared_paths": [
+    "src/features/A05-search-data.js"
+  ],
+  "response_sha256": "ed0454532390db77432960143ee1be24f688f1547f73ce29c6fb26f2041f2a3d",
+  "row": "A05.013"
+}

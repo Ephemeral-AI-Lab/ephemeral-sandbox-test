@@ -1,0 +1,99 @@
+{
+  "agents": [
+    {
+      "id": "A01",
+      "plan": "agents/A01-foundation.plan.jsonl",
+      "role": "Foundation",
+      "sha256": "cb157a594ba48d6bc7ca66feea3f3a4f6e6601230d492fd4a05c1f523a35a038"
+    },
+    {
+      "id": "A02",
+      "plan": "agents/A02-design-system.plan.jsonl",
+      "role": "Design system",
+      "sha256": "63a002f11f56891fda6bad37e8ec894725d946fedb1b1bc237030e0e1f161f11"
+    },
+    {
+      "id": "A03",
+      "plan": "agents/A03-products.plan.jsonl",
+      "role": "Product data",
+      "sha256": "019e444d381322f3671f8d17f31c2760bd9d69e9de996a52733964eea14dc863"
+    },
+    {
+      "id": "A04",
+      "plan": "agents/A04-catalog.plan.jsonl",
+      "role": "Catalog and PDP",
+      "sha256": "ac2e12869728b31d9eff1324d4bbdfcac4c67def6004a845e4707c6260ea9f62"
+    },
+    {
+      "id": "A05",
+      "plan": "agents/A05-search.plan.jsonl",
+      "role": "Search and facets",
+      "sha256": "fe10019595abd218e62111662a4091c4b4186a52e8e1b5649b492c853f467708"
+    },
+    {
+      "id": "A06",
+      "plan": "agents/A06-cart.plan.jsonl",
+      "role": "Cart and pricing",
+      "sha256": "14b121300cc83683b87a8ead0ccf82832fe9a6acff50c3fd9ae24c974ab5c042"
+    },
+    {
+      "id": "A07",
+      "plan": "agents/A07-wishlist.plan.jsonl",
+      "role": "Wishlist",
+      "sha256": "7d36f4f10ce0d3d047064915b4a42db1e6c8c0975755c55955a9bd1ea776db9d"
+    },
+    {
+      "id": "A08",
+      "plan": "agents/A08-checkout.plan.jsonl",
+      "role": "Checkout",
+      "sha256": "c0a868830f36beafeae97fc599bd59bd190c8fe90c58f2d596659e8b2b0fb748"
+    },
+    {
+      "id": "A09",
+      "plan": "agents/A09-accessibility.plan.jsonl",
+      "role": "Accessibility and performance",
+      "sha256": "6d1a166a0b36d80737c5499ed70ef5ff5b7e88f86ed09c1ae69f7338ca3bced0"
+    },
+    {
+      "id": "A10",
+      "plan": "agents/A10-qa.plan.jsonl",
+      "role": "Integration QA",
+      "sha256": "7c1fc745fffb4ac38946158c512402d5309571748e989e676f1a807b0ae4ac99"
+    }
+  ],
+  "argv_payload_limit_bytes": 49152,
+  "barriers": [
+    "bootstrap-published",
+    "all-primary-workspaces-ready",
+    "all-primary-feature-gates-green",
+    "all-primary-published",
+    "conflict-contenders-mutated",
+    "network-experiment-clean"
+  ],
+  "call_budget": {
+    "path": "call-budget.json",
+    "sha256": "ce21c8554106186df193871ee8125b5f2c553b5ebc299efc8aeed27cbafd889e"
+  },
+  "demo": "FlashCart",
+  "image": "node:24-bookworm-slim",
+  "payload_digest": "0ddb4357e9089e497a5bcff6aa9adb1a5d5c865e3a707326effd88da7c0bdc0e",
+  "schema_version": 1,
+  "trusted_network_sessions": [
+    {
+      "attempt_ref": "A09.network.shared1",
+      "network": "shared"
+    },
+    {
+      "attempt_ref": "A09.network.shared2",
+      "network": "shared"
+    },
+    {
+      "attempt_ref": "A09.network.isolated1",
+      "network": "isolated"
+    },
+    {
+      "attempt_ref": "A09.network.isolated2",
+      "network": "isolated"
+    }
+  ]
+}

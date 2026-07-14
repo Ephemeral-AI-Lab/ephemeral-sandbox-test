@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fbe9e67e-eb75-4c15-97b8-68ef24761269",
+    "--request-id",
+    "p5s-01-20260714T081331Z:ENGINE.effects.before.A05.022:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000718c219d7c71a5d62",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { createHash } from 'node:crypto'; import { readdir, readFile } from 'node:fs/promises'; const walk=async(d='.')=>{const out=[];for(const e of await readdir(d,{withFileTypes:true})){const p=(d==='.'?'':d+'/')+e.name;if(p==='.git'||p.startsWith('.git/')||p==='node_modules'||p.startsWith('node_modules/'))continue;if(e.isDirectory())out.push(...await walk(p));else if(e.isFile())out.push([p,createHash('sha256').update(await readFile(p)).digest('hex')]);}return out};console.log(JSON.stringify(Object.fromEntries((await walk()).sort((a,b)=>a[0].localeCompare(b[0])))));\""
+  ],
+  "cancelled": false,
+  "duration_ms": 79.586,
+  "kind": "public_cli_process",
+  "label": "effects-before-A05.022",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.038151875,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "{\"package.json\":\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\",\"src/config.js\":\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\",\"src/features/A05-search-data.js\":\"f9459fc2be8af6d84dd940b564df76be81cefb15b362bfbd515201779b610866\",\"src/features/A05-search-view.js\":\"03b4741bb0784ca8a314fd905665c2ae06ab89d72a3e82a7c1bdf877e074f9ad\",\"src/features/A05-search.css\":\"5f2b0b78e4d842792fdb2803557ab010e442b6f83d60c4603f3fe5248a6705be\",\"src/features/A05-search.js\":\"9593a9daa2a44b58831cd9fc6de7e919c14f2a7f4bc9b388fb5ed25b4f172e24\",\"src/registry.js\":\"edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08\",\"tests/A05-data.test.mjs\":\"bedf113ada795939be9acb45739694239a335b5fea58cba9a2a1c7c74419711a\",\"tests/A05-red.test.mjs\":\"26cf1924b8bf9ebe65b912ce7a53062f9f22d3c85a85f7e77017c62fc0be7fed\",\"tests/A05-view.test.mjs\":\"36ebb98b8a750cb5a79363b6bcae3e6c086e2ea8671f3750babf4af1628a21f5\"}",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.038215167,
+    "workspace_session_id": "00000718c219d7c71a5d62"
+  },
+  "pid": 6624,
+  "provenance": "engine",
+  "request_id": "p5s-01-20260714T081331Z:ENGINE.effects.before.A05.022:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 653,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.038215167,\"command_total_time_seconds\":0.038151875,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":231,\"output\":\"{\\\"package.json\\\":\\\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\\\",\\\"src/config.js\\\":\\\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\\\",\\\"src/features/A05-search-data.js\\\":\\\"f9459fc2be8af6d84dd940b564df76be81cefb15b362bfbd515201779b610866\\\",\\\"src/features/A05-search-view.js\\\":\\\"03b4741bb0784ca8a314fd905665c2ae06ab89d72a3e82a7c1bdf877e074f9ad\\\",\\\"src/features/A05-search.css\\\":\\\"5f2b0b78e4d842792fdb2803557ab010e442b6f83d60c4603f3fe5248a6705be\\\",\\\"src/features/A05-search.js\\\":\\\"9593a9daa2a44b58831cd9fc6de7e919c14f2a7f4bc9b388fb5ed25b4f172e24\\\",\\\"src/registry.js\\\":\\\"edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08\\\",\\\"tests/A05-data.test.mjs\\\":\\\"bedf113ada795939be9acb45739694239a335b5fea58cba9a2a1c7c74419711a\\\",\\\"tests/A05-red.test.mjs\\\":\\\"26cf1924b8bf9ebe65b912ce7a53062f9f22d3c85a85f7e77017c62fc0be7fed\\\",\\\"tests/A05-view.test.mjs\\\":\\\"36ebb98b8a750cb5a79363b6bcae3e6c086e2ea8671f3750babf4af1628a21f5\\\"}\",\"workspace_session_id\":\"00000718c219d7c71a5d62\"}\n",
+  "timed_out": false
+}

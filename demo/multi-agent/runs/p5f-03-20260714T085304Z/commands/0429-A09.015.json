@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-87d96492-efb1-4bf1-ae1a-d5efea27eb0d",
+    "--request-id",
+    "p5f-03-20260714T085304Z:A09.015:runtime",
+    "file_write",
+    "--path",
+    "tests/A09-data.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A09-accessibility-data.js');\ntest('A09 fixture is deterministic', () => assert.equal(globalThis.FlashCart.fixtures.A09.owner, 'A09'));\n",
+    "--workspace-session-id",
+    "00000b18c21c007611888d"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.739,
+  "kind": "public_cli_process",
+  "label": "A09.015",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 236,
+    "path": "tests/A09-data.test.mjs",
+    "type": "create"
+  },
+  "pid": 63110,
+  "provenance": "agent",
+  "request_id": "p5f-03-20260714T085304Z:A09.015:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 429,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A09-data.test.mjs\",\"bytes_written\":236}\n",
+  "timed_out": false
+}

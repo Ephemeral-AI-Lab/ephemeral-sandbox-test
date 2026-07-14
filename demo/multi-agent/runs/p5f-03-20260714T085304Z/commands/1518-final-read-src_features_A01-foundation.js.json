@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-87d96492-efb1-4bf1-ae1a-d5efea27eb0d",
+    "--request-id",
+    "p5f-03-20260714T085304Z:ENGINE.final.src-features-A01-foundation.js:runtime",
+    "file_read",
+    "--path",
+    "src/features/A01-foundation.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.384,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A01-foundation.js",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 368,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A01 = {\n    id: 'A01',\n    label: 'Foundation',\n    deterministic: true,\n    verify() { return true; },\n    routeFor(path) { return ['/', '/catalog', '/checkout'].includes(path) ? path : '/not-found'; }\n  };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 11,
+    "path": "src/features/A01-foundation.js",
+    "start_line": 1,
+    "total_bytes": 369,
+    "total_lines": 11,
+    "truncated": false
+  },
+  "pid": 82923,
+  "provenance": "engine",
+  "request_id": "p5f-03-20260714T085304Z:ENGINE.final.src-features-A01-foundation.js:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1518,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A01-foundation.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A01 = {\\n    id: 'A01',\\n    label: 'Foundation',\\n    deterministic: true,\\n    verify() { return true; },\\n    routeFor(path) { return ['/', '/catalog', '/checkout'].includes(path) ? path : '/not-found'; }\\n  };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":11,\"total_lines\":11,\"bytes_read\":368,\"total_bytes\":369,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

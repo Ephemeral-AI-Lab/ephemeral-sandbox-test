@@ -1,0 +1,92 @@
+{
+  "label": "checkpoint-conflict-retry",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "name": "lease.released",
+      "parent": "d-2202",
+      "trace": "p5r-01-20260714T083803Z:A08.053:runtime",
+      "ts": 1784018335450
+    },
+    {
+      "attrs": {
+        "revision": 14
+      },
+      "name": "lease.acquired",
+      "parent": "d-2206",
+      "trace": "p5r-01-20260714T083803Z:ENGINE.shared.checkpoint.network-clean:runtime",
+      "ts": 1784018335500
+    },
+    {
+      "attrs": {
+        "revision": 14
+      },
+      "name": "lease.released",
+      "parent": "d-2211",
+      "trace": "p5r-01-20260714T083803Z:ENGINE.shared.checkpoint.network-clean:runtime",
+      "ts": 1784018335584
+    },
+    {
+      "attrs": {
+        "revision": 14
+      },
+      "name": "lease.acquired",
+      "parent": "d-2214",
+      "trace": "p5r-01-20260714T083803Z:A10.045:runtime",
+      "ts": 1784018335667
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2188",
+        "trace": "e2e-direct-daemon-c7b76df2-5e9c-4415-9d0d-6820066a46b9",
+        "ts": 1784018334986
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2202",
+        "trace": "p5r-01-20260714T083803Z:A08.053:runtime",
+        "ts": 1784018335450
+      },
+      {
+        "attrs": {
+          "revision": 14
+        },
+        "name": "lease.acquired",
+        "parent": "d-2206",
+        "trace": "p5r-01-20260714T083803Z:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784018335500
+      },
+      {
+        "attrs": {
+          "revision": 14
+        },
+        "name": "lease.released",
+        "parent": "d-2211",
+        "trace": "p5r-01-20260714T083803Z:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784018335584
+      },
+      {
+        "attrs": {
+          "revision": 14
+        },
+        "name": "lease.acquired",
+        "parent": "d-2214",
+        "trace": "p5r-01-20260714T083803Z:A10.045:runtime",
+        "ts": 1784018335667
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784018335667
+}

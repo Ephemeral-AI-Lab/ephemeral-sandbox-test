@@ -1,0 +1,110 @@
+{
+  "label": "checkpoint-conflict-winner",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 4
+      },
+      "name": "lease.acquired",
+      "parent": "d-424",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.spike-primary-publications:runtime",
+      "ts": 1784011968144
+    },
+    {
+      "attrs": {
+        "revision": 4
+      },
+      "name": "lease.released",
+      "parent": "d-429",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.spike-primary-publications:runtime",
+      "ts": 1784011968207
+    },
+    {
+      "attrs": {
+        "revision": 4
+      },
+      "name": "lease.acquired",
+      "parent": "d-432",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.045:runtime",
+      "ts": 1784011968254
+    },
+    {
+      "attrs": {
+        "revision": 4
+      },
+      "name": "lease.acquired",
+      "parent": "d-437",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.045:runtime",
+      "ts": 1784011968296
+    },
+    {
+      "attrs": {
+        "revision": 4
+      },
+      "name": "lease.released",
+      "parent": "d-473",
+      "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.045:runtime",
+      "ts": 1784011969041
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-420",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.001:runtime",
+        "ts": 1784011967905
+      },
+      {
+        "attrs": {
+          "revision": 4
+        },
+        "name": "lease.acquired",
+        "parent": "d-424",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.spike-primary-publications:runtime",
+        "ts": 1784011968144
+      },
+      {
+        "attrs": {
+          "revision": 4
+        },
+        "name": "lease.released",
+        "parent": "d-429",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.spike-primary-publications:runtime",
+        "ts": 1784011968207
+      },
+      {
+        "attrs": {
+          "revision": 4
+        },
+        "name": "lease.acquired",
+        "parent": "d-432",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.045:runtime",
+        "ts": 1784011968254
+      },
+      {
+        "attrs": {
+          "revision": 4
+        },
+        "name": "lease.acquired",
+        "parent": "d-437",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.045:runtime",
+        "ts": 1784011968296
+      },
+      {
+        "attrs": {
+          "revision": 4
+        },
+        "name": "lease.released",
+        "parent": "d-473",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.045:runtime",
+        "ts": 1784011969041
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784011969041
+}

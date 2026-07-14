@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--trace-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A06.043:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 69.424,
+  "kind": "public_cli_process",
+  "label": "trace-A06.043",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 3.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 2.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-1905",
+              "span": "d-1906",
+              "status": "completed",
+              "trace": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A06.043:runtime",
+              "ts": 1784012690764
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_read"
+          },
+          "dur_ms": 5.0,
+          "name": "daemon.dispatch",
+          "span": "d-1905",
+          "status": "completed",
+          "trace": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A06.043:runtime",
+          "ts": 1784012690764
+        }
+      }
+    ],
+    "trace": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A06.043:runtime",
+    "view": "trace"
+  },
+  "pid": 61259,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1205,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A06.043:runtime\",\"spans\":[{\"span\":{\"ts\":1784012690764,\"trace\":\"p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A06.043:runtime\",\"span\":\"d-1905\",\"name\":\"daemon.dispatch\",\"dur_ms\":5.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_read\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012690764,\"trace\":\"p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A06.043:runtime\",\"span\":\"d-1906\",\"parent\":\"d-1905\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":3.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

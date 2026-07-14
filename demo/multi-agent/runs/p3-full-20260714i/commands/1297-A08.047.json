@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-879870ba-1958-46ed-8a63-deea1c9fed15",
+    "--request-id",
+    "p3-full-20260714i:A08.047:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00001118c2119fe797c123",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { mkdir, readFile, writeFile } from 'node:fs/promises'; const path = 'src/config.js'; const value = await readFile(path, 'utf8'); await writeFile(path, value.replace('freeShippingCents: 5000', 'freeShippingCents: 7500')); await mkdir('src/conflict', { recursive: true }); await writeFile('src/conflict/A08-stale-attempt.txt', 'must not publish\\n');\""
+  ],
+  "cancelled": false,
+  "duration_ms": 72.268,
+  "kind": "public_cli_process",
+  "label": "A08.047",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.033194625,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.033272125,
+    "workspace_session_id": "00001118c2119fe797c123"
+  },
+  "pid": 32219,
+  "provenance": "agent",
+  "request_id": "p3-full-20260714i:A08.047:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1297,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.033272125,\"command_total_time_seconds\":0.033194625,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00001118c2119fe797c123\"}\n",
+  "timed_out": false
+}

@@ -1,0 +1,76 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-b00a8c3e-45c0-4e7d-8ba1-e6cd1cafc3ac",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784011969414"
+  ],
+  "cancelled": false,
+  "duration_ms": 50.889,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-conflict-retry",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 4
+        },
+        "name": "lease.released",
+        "parent": "d-488",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.045:runtime",
+        "ts": 1784011969414
+      },
+      {
+        "attrs": {
+          "revision": 5
+        },
+        "name": "lease.acquired",
+        "parent": "d-492",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784011969663
+      },
+      {
+        "attrs": {
+          "revision": 5
+        },
+        "name": "lease.released",
+        "parent": "d-497",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784011969727
+      },
+      {
+        "attrs": {
+          "revision": 5
+        },
+        "name": "lease.acquired",
+        "parent": "d-506",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.053:runtime",
+        "ts": 1784011970144
+      },
+      {
+        "attrs": {
+          "revision": 5
+        },
+        "name": "lease.released",
+        "parent": "d-525",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.053:runtime",
+        "ts": 1784011970696
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 36866,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 334,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784011969414,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.045:runtime\",\"parent\":\"d-488\",\"name\":\"lease.released\",\"attrs\":{\"revision\":4}},{\"ts\":1784011969663,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.conflict-rejected:runtime\",\"parent\":\"d-492\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":5}},{\"ts\":1784011969727,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.conflict-rejected:runtime\",\"parent\":\"d-497\",\"name\":\"lease.released\",\"attrs\":{\"revision\":5}},{\"ts\":1784011970144,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.053:runtime\",\"parent\":\"d-506\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":5}},{\"ts\":1784011970696,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.053:runtime\",\"parent\":\"d-525\",\"name\":\"lease.released\",\"attrs\":{\"revision\":5}}]}\n",
+  "timed_out": false
+}

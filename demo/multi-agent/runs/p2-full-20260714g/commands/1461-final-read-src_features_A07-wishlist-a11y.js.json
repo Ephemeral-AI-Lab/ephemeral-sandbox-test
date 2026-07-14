@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-f15d7124-8b79-4807-861e-ea16ff10aa04",
+    "--request-id",
+    "p2-full-20260714g:ENGINE.final.src-features-A07-wishlist-a11y.js:runtime",
+    "file_read",
+    "--path",
+    "src/features/A07-wishlist-a11y.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 36.157,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A07-wishlist-a11y.js",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 214,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\n  root.FlashCart.a11y.A07 = { label: 'Wishlist', keyboard: true, reducedMotion: true };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A07-wishlist-a11y.js",
+    "start_line": 1,
+    "total_bytes": 215,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 69966,
+  "provenance": "engine",
+  "request_id": "p2-full-20260714g:ENGINE.final.src-features-A07-wishlist-a11y.js:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1461,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A07-wishlist-a11y.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\\n  root.FlashCart.a11y.A07 = { label: 'Wishlist', keyboard: true, reducedMotion: true };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":214,\"total_bytes\":215,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

@@ -1,0 +1,40 @@
+{
+  "captured_at": "20260714T081641Z",
+  "ordinal": 2,
+  "response": {
+    "scope": "sandbox",
+    "series": [
+      {
+        "deltas": {},
+        "metrics": {
+          "cpu_usec": 101401,
+          "io_rbytes": 0,
+          "io_wbytes": 98304,
+          "mem_cur": 3756032,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": null,
+        "ts": 1784017000750
+      },
+      {
+        "deltas": {
+          "cpu_usec": 65750,
+          "io_rbytes": 0,
+          "io_wbytes": 69632
+        },
+        "metrics": {
+          "cpu_usec": 167151,
+          "io_rbytes": 0,
+          "io_wbytes": 167936,
+          "mem_cur": 13045760,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 537,
+        "ts": 1784017001287
+      }
+    ],
+    "view": "cgroup"
+  }
+}

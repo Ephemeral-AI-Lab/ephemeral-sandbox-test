@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-573f5b3f-5275-4ba9-8e9d-3481b8969c08",
+    "--request-id",
+    "p5s-03-20260714T081918Z:ENGINE.final.tests-A02-a11y.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A02-a11y.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 48.387,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A02-a11y.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 235,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A02-design-system-a11y.js');\ntest('A02 honors reduced motion', () => assert.equal(globalThis.FlashCart.a11y.A02.reducedMotion, true));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A02-a11y.test.mjs",
+    "start_line": 1,
+    "total_bytes": 236,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 86554,
+  "provenance": "engine",
+  "request_id": "p5s-03-20260714T081918Z:ENGINE.final.tests-A02-a11y.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1589,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A02-a11y.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A02-design-system-a11y.js');\\ntest('A02 honors reduced motion', () => assert.equal(globalThis.FlashCart.a11y.A02.reducedMotion, true));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":235,\"total_bytes\":236,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

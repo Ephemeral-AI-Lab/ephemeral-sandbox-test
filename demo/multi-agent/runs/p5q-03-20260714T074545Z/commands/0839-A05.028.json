@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-6c4325c8-80c0-4df2-916d-23941c6cf2df",
+    "--request-id",
+    "p5q-03-20260714T074545Z:A05.028:runtime",
+    "file_write",
+    "--path",
+    "src/features/A05-search.json",
+    "--content",
+    "{\n  \"owner\": \"A05\",\n  \"paths\": {\n    \"a11y\": \"src/features/A05-search-a11y.js\",\n    \"core\": \"src/features/A05-search.js\",\n    \"data\": \"src/features/A05-search-data.js\",\n    \"manifest\": \"src/features/A05-search.json\",\n    \"style\": \"src/features/A05-search.css\",\n    \"view\": \"src/features/A05-search-view.js\"\n  },\n  \"role\": \"Search and facets\",\n  \"schema_version\": 1\n}\n",
+    "--workspace-session-id",
+    "00000718c21852f9417a93"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.712,
+  "kind": "public_cli_process",
+  "label": "A05.028",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 367,
+    "path": "src/features/A05-search.json",
+    "type": "create"
+  },
+  "pid": 75512,
+  "provenance": "agent",
+  "request_id": "p5q-03-20260714T074545Z:A05.028:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 839,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A05-search.json\",\"bytes_written\":367}\n",
+  "timed_out": false
+}

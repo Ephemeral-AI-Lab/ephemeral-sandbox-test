@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fbe9e67e-eb75-4c15-97b8-68ef24761269",
+    "--request-id",
+    "p5s-01-20260714T081331Z:A09.033:runtime",
+    "file_read",
+    "--path",
+    "src/features/A09-accessibility-view.js",
+    "--workspace-session-id",
+    "00000b18c219d7d1d17387"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.567,
+  "kind": "public_cli_process",
+  "label": "A09.033",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 319,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.views = root.FlashCart.views || {};\n  root.FlashCart.views.A09 = function () { return '<section data-feature=\"A09\"><h2>Accessibility and performance</h2><p>keyboard, live regions, reduced motion, and budgets</p></section>'; };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A09-accessibility-view.js",
+    "start_line": 1,
+    "total_bytes": 320,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 14125,
+  "provenance": "agent",
+  "request_id": "p5s-01-20260714T081331Z:A09.033:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1064,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A09-accessibility-view.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.views = root.FlashCart.views || {};\\n  root.FlashCart.views.A09 = function () { return '<section data-feature=\\\"A09\\\"><h2>Accessibility and performance</h2><p>keyboard, live regions, reduced motion, and budgets</p></section>'; };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":319,\"total_bytes\":320,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

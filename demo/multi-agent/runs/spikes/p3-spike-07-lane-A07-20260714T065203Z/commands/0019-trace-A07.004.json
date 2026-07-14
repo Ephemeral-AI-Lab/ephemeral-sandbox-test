@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-6c4e698b-72c5-46bd-8e2a-34908550da5a",
+    "--trace-id",
+    "p3-spike-07-lane-A07-20260714T065203Z:A07.004:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 35.398,
+  "kind": "public_cli_process",
+  "label": "trace-A07.004",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 2.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-31",
+              "span": "d-32",
+              "status": "completed",
+              "trace": "p3-spike-07-lane-A07-20260714T065203Z:A07.004:runtime",
+              "ts": 1784011924450
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_read"
+          },
+          "dur_ms": 2.0,
+          "name": "daemon.dispatch",
+          "span": "d-31",
+          "status": "completed",
+          "trace": "p3-spike-07-lane-A07-20260714T065203Z:A07.004:runtime",
+          "ts": 1784011924450
+        }
+      }
+    ],
+    "trace": "p3-spike-07-lane-A07-20260714T065203Z:A07.004:runtime",
+    "view": "trace"
+  },
+  "pid": 20088,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 19,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3-spike-07-lane-A07-20260714T065203Z:A07.004:runtime\",\"spans\":[{\"span\":{\"ts\":1784011924450,\"trace\":\"p3-spike-07-lane-A07-20260714T065203Z:A07.004:runtime\",\"span\":\"d-31\",\"name\":\"daemon.dispatch\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_read\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784011924450,\"trace\":\"p3-spike-07-lane-A07-20260714T065203Z:A07.004:runtime\",\"span\":\"d-32\",\"parent\":\"d-31\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

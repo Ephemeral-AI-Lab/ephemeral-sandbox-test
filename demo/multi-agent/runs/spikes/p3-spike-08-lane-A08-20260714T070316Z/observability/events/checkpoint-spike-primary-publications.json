@@ -1,0 +1,92 @@
+{
+  "label": "checkpoint-spike-primary-publications",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-16",
+      "trace": "p3-spike-08-lane-A08-20260714T070316Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+      "ts": 1784012597554
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.released",
+      "parent": "d-21",
+      "trace": "p3-spike-08-lane-A08-20260714T070316Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+      "ts": 1784012597611
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-24",
+      "trace": "p3-spike-08-lane-A08-20260714T070316Z:A08.001:runtime",
+      "ts": 1784012597655
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.released",
+      "parent": "d-220",
+      "trace": "p3-spike-08-lane-A08-20260714T070316Z:A08.001:runtime",
+      "ts": 1784012604611
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.released",
+        "parent": "d-9",
+        "trace": "p3-spike-08-lane-A08-20260714T070316Z:ENGINE.bootstrap:runtime",
+        "ts": 1784012597251
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-16",
+        "trace": "p3-spike-08-lane-A08-20260714T070316Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784012597554
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-21",
+        "trace": "p3-spike-08-lane-A08-20260714T070316Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784012597611
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-24",
+        "trace": "p3-spike-08-lane-A08-20260714T070316Z:A08.001:runtime",
+        "ts": 1784012597655
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-220",
+        "trace": "p3-spike-08-lane-A08-20260714T070316Z:A08.001:runtime",
+        "ts": 1784012604611
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784012604611
+}

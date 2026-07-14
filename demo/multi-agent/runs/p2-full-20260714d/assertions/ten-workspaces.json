@@ -1,0 +1,377 @@
+{
+  "primary_workspace_refs": {
+    "A01.primary.workspace": "00000318c21068ce4c9ad1",
+    "A02.primary.workspace": "00000418c21068d0cad99b",
+    "A03.primary.workspace": "00000518c21068d348b833",
+    "A04.primary.workspace": "00000618c21068d60ed78b",
+    "A05.primary.workspace": "00000718c21068d8a0921f",
+    "A06.primary.workspace": "00000818c21068dbe74b80",
+    "A07.primary.workspace": "00000918c21068de5c4f7f",
+    "A08.primary.workspace": "00000a18c21068e0fbc4ba",
+    "A09.primary.workspace": "00000b18c21068e3987cc8",
+    "A10.primary.workspace": "00000c18c21068e6368c1a"
+  },
+  "snapshot": {
+    "availability": "available",
+    "daemon": {
+      "daemon_pid": 7,
+      "runtime_dir": "/eos/runtime/daemon"
+    },
+    "errors": [],
+    "lifecycle_state": "ready",
+    "resources": {
+      "history": [],
+      "latest": {
+        "deltas": {},
+        "metrics": {
+          "cgroup_available": false,
+          "cgroup_error": "cgroup root unavailable"
+        },
+        "sample_delta_ms": 74,
+        "ts": 1784006445197
+      }
+    },
+    "sampled_at_unix_ms": 1784006445197,
+    "sandbox_id": "eos-3233c92d-1074-431a-a89d-eb7d527b97f3",
+    "stack": {
+      "active_leases": 10,
+      "layer_count": 2,
+      "layers_allocated_bytes": null,
+      "layers_bytes": null,
+      "staging_entry_count": 0,
+      "storage_allocated_bytes": 65536
+    },
+    "workspaces": [
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_3",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 73,
+            "ts": 1784006445197
+          }
+        },
+        "workspace_id": "00000318c21068ce4c9ad1"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_4",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 73,
+            "ts": 1784006445197
+          }
+        },
+        "workspace_id": "00000418c21068d0cad99b"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_5",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 73,
+            "ts": 1784006445197
+          }
+        },
+        "workspace_id": "00000518c21068d348b833"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_6",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 73,
+            "ts": 1784006445197
+          }
+        },
+        "workspace_id": "00000618c21068d60ed78b"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_7",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 73,
+            "ts": 1784006445197
+          }
+        },
+        "workspace_id": "00000718c21068d8a0921f"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_8",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 73,
+            "ts": 1784006445197
+          }
+        },
+        "workspace_id": "00000818c21068dbe74b80"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_9",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 73,
+            "ts": 1784006445197
+          }
+        },
+        "workspace_id": "00000918c21068de5c4f7f"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_10",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 73,
+            "ts": 1784006445197
+          }
+        },
+        "workspace_id": "00000a18c21068e0fbc4ba"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_11",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 73,
+            "ts": 1784006445197
+          }
+        },
+        "workspace_id": "00000b18c21068e3987cc8"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_12",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 73,
+            "ts": 1784006445197
+          }
+        },
+        "workspace_id": "00000c18c21068e6368c1a"
+      }
+    ]
+  }
+}

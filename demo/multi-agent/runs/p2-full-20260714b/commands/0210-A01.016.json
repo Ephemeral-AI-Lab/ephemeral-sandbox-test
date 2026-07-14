@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-0146fa3c-46af-4952-89e0-29f9609fc54c",
+    "--request-id",
+    "p2-full-20260714b:A01.016:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000418c20fe07deb10c5",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A01-data.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 112.737,
+  "kind": "public_cli_process",
+  "label": "A01.016",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.073485333,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A01 fixture is deterministic (2.8325ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 39.39075",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.073567166,
+    "workspace_session_id": "00000418c20fe07deb10c5"
+  },
+  "pid": 59731,
+  "provenance": "agent",
+  "request_id": "p2-full-20260714b:A01.016:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 210,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.073567166,\"command_total_time_seconds\":0.073485333,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":39,\"output\":\"✔ A01 fixture is deterministic (2.8325ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 39.39075\",\"workspace_session_id\":\"00000418c20fe07deb10c5\"}\n",
+  "timed_out": false
+}

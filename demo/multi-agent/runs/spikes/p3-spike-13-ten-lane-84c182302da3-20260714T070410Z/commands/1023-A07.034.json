@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--request-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A07.034:runtime",
+    "file_read",
+    "--path",
+    "src/features/A07-wishlist.css",
+    "--workspace-session-id",
+    "00000918c2160e239f71db"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.436,
+  "kind": "public_cli_process",
+  "label": "A07.034",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 116,
+    "content": ".feature-a07 { border-inline-start: 4px solid #175b50; } .feature-a07 :focus-visible { outline: 3px solid #124ea0; }",
+    "next_offset": null,
+    "num_lines": 1,
+    "path": "src/features/A07-wishlist.css",
+    "start_line": 1,
+    "total_bytes": 117,
+    "total_lines": 1,
+    "truncated": false
+  },
+  "pid": 57939,
+  "provenance": "agent",
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A07.034:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1023,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A07-wishlist.css\",\"content\":\".feature-a07 { border-inline-start: 4px solid #175b50; } .feature-a07 :focus-visible { outline: 3px solid #124ea0; }\",\"start_line\":1,\"num_lines\":1,\"total_lines\":1,\"bytes_read\":116,\"total_bytes\":117,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

@@ -1,0 +1,151 @@
+{
+  "errors": [],
+  "expected_agent_calls": 482,
+  "expected_budget": {
+    "authored_plan_digest": "55b96a125ffedfd4d7e1af897f32949afc6ff036fb88c0d5b57106f48ebf6139",
+    "matrix_digest": "e500b4c4f62943ee05d5caac415d2f5d22891c84dc678445932e69d802d35253",
+    "per_agent": {
+      "A01": 44,
+      "A02": 44,
+      "A03": 44,
+      "A04": 44,
+      "A05": 44,
+      "A06": 52,
+      "A07": 44,
+      "A08": 59,
+      "A09": 54,
+      "A10": 53
+    },
+    "per_agent_category": {
+      "A01": {
+        "build_lint": 5,
+        "conflict_network_audit": 0,
+        "inspect": 14,
+        "patch": 15,
+        "test_debug": 8,
+        "workspace_control": 2
+      },
+      "A02": {
+        "build_lint": 5,
+        "conflict_network_audit": 0,
+        "inspect": 14,
+        "patch": 15,
+        "test_debug": 8,
+        "workspace_control": 2
+      },
+      "A03": {
+        "build_lint": 5,
+        "conflict_network_audit": 0,
+        "inspect": 14,
+        "patch": 15,
+        "test_debug": 8,
+        "workspace_control": 2
+      },
+      "A04": {
+        "build_lint": 5,
+        "conflict_network_audit": 0,
+        "inspect": 14,
+        "patch": 15,
+        "test_debug": 8,
+        "workspace_control": 2
+      },
+      "A05": {
+        "build_lint": 5,
+        "conflict_network_audit": 0,
+        "inspect": 14,
+        "patch": 15,
+        "test_debug": 8,
+        "workspace_control": 2
+      },
+      "A06": {
+        "build_lint": 6,
+        "conflict_network_audit": 3,
+        "inspect": 17,
+        "patch": 16,
+        "test_debug": 8,
+        "workspace_control": 2
+      },
+      "A07": {
+        "build_lint": 5,
+        "conflict_network_audit": 0,
+        "inspect": 14,
+        "patch": 15,
+        "test_debug": 8,
+        "workspace_control": 2
+      },
+      "A08": {
+        "build_lint": 5,
+        "conflict_network_audit": 6,
+        "inspect": 21,
+        "patch": 17,
+        "test_debug": 8,
+        "workspace_control": 2
+      },
+      "A09": {
+        "build_lint": 5,
+        "conflict_network_audit": 10,
+        "inspect": 14,
+        "patch": 15,
+        "test_debug": 8,
+        "workspace_control": 2
+      },
+      "A10": {
+        "build_lint": 6,
+        "conflict_network_audit": 0,
+        "inspect": 16,
+        "patch": 15,
+        "test_debug": 11,
+        "workspace_control": 5
+      }
+    },
+    "per_category": {
+      "build_lint": 52,
+      "conflict_network_audit": 19,
+      "inspect": 152,
+      "patch": 153,
+      "test_debug": 83,
+      "workspace_control": 23
+    },
+    "plan_digests": {
+      "agents/A01-foundation.plan.jsonl": "69a38fb155e0be85245e7328e0d2e3e969615401b8c67bf547d6639e8c715b04",
+      "agents/A02-design-system.plan.jsonl": "63a002f11f56891fda6bad37e8ec894725d946fedb1b1bc237030e0e1f161f11",
+      "agents/A03-products.plan.jsonl": "019e444d381322f3671f8d17f31c2760bd9d69e9de996a52733964eea14dc863",
+      "agents/A04-catalog.plan.jsonl": "ac2e12869728b31d9eff1324d4bbdfcac4c67def6004a845e4707c6260ea9f62",
+      "agents/A05-search.plan.jsonl": "fe10019595abd218e62111662a4091c4b4186a52e8e1b5649b492c853f467708",
+      "agents/A06-cart.plan.jsonl": "39973d7d3b643397806b776af7f4b0f9e68c151e60ab17273b4689f9f9dc6e86",
+      "agents/A07-wishlist.plan.jsonl": "7d36f4f10ce0d3d047064915b4a42db1e6c8c0975755c55955a9bd1ea776db9d",
+      "agents/A08-checkout.plan.jsonl": "d967b370ae4b9744c0869ebdb23c6ab11418cd760b07bf3a36eeeaa97341bac0",
+      "agents/A09-accessibility.plan.jsonl": "6d1a166a0b36d80737c5499ed70ef5ff5b7e88f86ed09c1ae69f7338ca3bced0",
+      "agents/A10-qa.plan.jsonl": "7c1fc745fffb4ac38946158c512402d5309571748e989e676f1a807b0ae4ac99"
+    },
+    "planned_authored_public_cli_calls": 482,
+    "preferred_band": {
+      "maximum": 500,
+      "minimum": 450
+    },
+    "schema_version": 1
+  },
+  "per_agent": {
+    "A01": 44,
+    "A02": 44,
+    "A03": 44,
+    "A04": 44,
+    "A05": 44,
+    "A06": 52,
+    "A07": 44,
+    "A08": 59,
+    "A09": 54,
+    "A10": 53
+  },
+  "per_category": {
+    "build_lint": 52,
+    "conflict_network_audit": 19,
+    "inspect": 152,
+    "patch": 153,
+    "test_debug": 83,
+    "workspace_control": 23
+  },
+  "planned_authored_calls": 482,
+  "quality_warning": false,
+  "status": "PASS"
+}

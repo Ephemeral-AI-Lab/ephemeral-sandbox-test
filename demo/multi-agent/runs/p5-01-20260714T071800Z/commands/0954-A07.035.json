@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-94d8294f-2bab-4784-a381-b4a7c9f9f42e",
+    "--request-id",
+    "p5-01-20260714T071800Z:A07.035:runtime",
+    "file_read",
+    "--path",
+    "src/features/A07-wishlist-a11y.js",
+    "--workspace-session-id",
+    "00000918c217182b241eb6"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.626,
+  "kind": "public_cli_process",
+  "label": "A07.035",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 214,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\n  root.FlashCart.a11y.A07 = { label: 'Wishlist', keyboard: true, reducedMotion: true };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A07-wishlist-a11y.js",
+    "start_line": 1,
+    "total_bytes": 215,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 16198,
+  "provenance": "agent",
+  "request_id": "p5-01-20260714T071800Z:A07.035:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 954,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A07-wishlist-a11y.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\\n  root.FlashCart.a11y.A07 = { label: 'Wishlist', keyboard: true, reducedMotion: true };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":214,\"total_bytes\":215,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

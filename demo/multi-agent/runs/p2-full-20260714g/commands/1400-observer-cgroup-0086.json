@@ -1,0 +1,1694 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "cgroup",
+    "--sandbox-id",
+    "eos-f15d7124-8b79-4807-861e-ea16ff10aa04",
+    "--scope",
+    "sandbox",
+    "--window-ms",
+    "600000"
+  ],
+  "cancelled": false,
+  "duration_ms": 53.346,
+  "kind": "public_cli_process",
+  "label": "observer-cgroup-0086",
+  "parse_error": null,
+  "parsed_json": {
+    "scope": "sandbox",
+    "series": [
+      {
+        "deltas": {},
+        "metrics": {
+          "cpu_usec": 87978,
+          "io_rbytes": 0,
+          "io_wbytes": 98304,
+          "mem_cur": 3371008,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": null,
+        "ts": 1784006702313
+      },
+      {
+        "deltas": {
+          "cpu_usec": 69661,
+          "io_rbytes": 0,
+          "io_wbytes": 69632
+        },
+        "metrics": {
+          "cpu_usec": 157639,
+          "io_rbytes": 0,
+          "io_wbytes": 167936,
+          "mem_cur": 13004800,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 553,
+        "ts": 1784006702866
+      },
+      {
+        "deltas": {
+          "cpu_usec": 224195,
+          "io_rbytes": 0,
+          "io_wbytes": 106496
+        },
+        "metrics": {
+          "cpu_usec": 381834,
+          "io_rbytes": 0,
+          "io_wbytes": 274432,
+          "mem_cur": 16437248,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 552,
+        "ts": 1784006703418
+      },
+      {
+        "deltas": {
+          "cpu_usec": 293222,
+          "io_rbytes": 0,
+          "io_wbytes": 24576
+        },
+        "metrics": {
+          "cpu_usec": 675056,
+          "io_rbytes": 0,
+          "io_wbytes": 299008,
+          "mem_cur": 18313216,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 551,
+        "ts": 1784006703969
+      },
+      {
+        "deltas": {
+          "cpu_usec": 82349,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 757405,
+          "io_rbytes": 0,
+          "io_wbytes": 303104,
+          "mem_cur": 22896640,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 92,
+        "ts": 1784006704061
+      },
+      {
+        "deltas": {
+          "cpu_usec": 247163,
+          "io_rbytes": 0,
+          "io_wbytes": 12288
+        },
+        "metrics": {
+          "cpu_usec": 1004568,
+          "io_rbytes": 0,
+          "io_wbytes": 315392,
+          "mem_cur": 17424384,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 450,
+        "ts": 1784006704511
+      },
+      {
+        "deltas": {
+          "cpu_usec": 290133,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 1294701,
+          "io_rbytes": 0,
+          "io_wbytes": 315392,
+          "mem_cur": 28774400,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 542,
+        "ts": 1784006705053
+      },
+      {
+        "deltas": {
+          "cpu_usec": 289065,
+          "io_rbytes": 0,
+          "io_wbytes": 20480
+        },
+        "metrics": {
+          "cpu_usec": 1583766,
+          "io_rbytes": 0,
+          "io_wbytes": 335872,
+          "mem_cur": 17547264,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 543,
+        "ts": 1784006705596
+      },
+      {
+        "deltas": {
+          "cpu_usec": 298120,
+          "io_rbytes": 0,
+          "io_wbytes": 20480
+        },
+        "metrics": {
+          "cpu_usec": 1881886,
+          "io_rbytes": 0,
+          "io_wbytes": 356352,
+          "mem_cur": 30285824,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 544,
+        "ts": 1784006706140
+      },
+      {
+        "deltas": {
+          "cpu_usec": 415758,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 2297644,
+          "io_rbytes": 0,
+          "io_wbytes": 356352,
+          "mem_cur": 23027712,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 546,
+        "ts": 1784006706686
+      },
+      {
+        "deltas": {
+          "cpu_usec": 404459,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 2702103,
+          "io_rbytes": 0,
+          "io_wbytes": 356352,
+          "mem_cur": 22118400,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 548,
+        "ts": 1784006707234
+      },
+      {
+        "deltas": {
+          "cpu_usec": 429178,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 3131281,
+          "io_rbytes": 0,
+          "io_wbytes": 356352,
+          "mem_cur": 49344512,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 542,
+        "ts": 1784006707776
+      },
+      {
+        "deltas": {
+          "cpu_usec": 290930,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 3422211,
+          "io_rbytes": 0,
+          "io_wbytes": 360448,
+          "mem_cur": 26034176,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 319,
+        "ts": 1784006708095
+      },
+      {
+        "deltas": {
+          "cpu_usec": 127140,
+          "io_rbytes": 0,
+          "io_wbytes": 12288
+        },
+        "metrics": {
+          "cpu_usec": 3549351,
+          "io_rbytes": 0,
+          "io_wbytes": 372736,
+          "mem_cur": 36376576,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 227,
+        "ts": 1784006708322
+      },
+      {
+        "deltas": {
+          "cpu_usec": 287938,
+          "io_rbytes": 0,
+          "io_wbytes": 20480
+        },
+        "metrics": {
+          "cpu_usec": 3837289,
+          "io_rbytes": 0,
+          "io_wbytes": 393216,
+          "mem_cur": 26574848,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 548,
+        "ts": 1784006708870
+      },
+      {
+        "deltas": {
+          "cpu_usec": 369128,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 4206417,
+          "io_rbytes": 0,
+          "io_wbytes": 397312,
+          "mem_cur": 29020160,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 543,
+        "ts": 1784006709413
+      },
+      {
+        "deltas": {
+          "cpu_usec": 322714,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 4529131,
+          "io_rbytes": 0,
+          "io_wbytes": 397312,
+          "mem_cur": 27680768,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 543,
+        "ts": 1784006709956
+      },
+      {
+        "deltas": {
+          "cpu_usec": 373961,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 4903092,
+          "io_rbytes": 0,
+          "io_wbytes": 397312,
+          "mem_cur": 37486592,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 544,
+        "ts": 1784006710500
+      },
+      {
+        "deltas": {
+          "cpu_usec": 380042,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 5283134,
+          "io_rbytes": 0,
+          "io_wbytes": 401408,
+          "mem_cur": 51326976,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 547,
+        "ts": 1784006711047
+      },
+      {
+        "deltas": {
+          "cpu_usec": 378533,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 5661667,
+          "io_rbytes": 0,
+          "io_wbytes": 409600,
+          "mem_cur": 40652800,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 545,
+        "ts": 1784006711592
+      },
+      {
+        "deltas": {
+          "cpu_usec": 380302,
+          "io_rbytes": 0,
+          "io_wbytes": 16384
+        },
+        "metrics": {
+          "cpu_usec": 6041969,
+          "io_rbytes": 0,
+          "io_wbytes": 425984,
+          "mem_cur": 27414528,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 535,
+        "ts": 1784006712127
+      },
+      {
+        "deltas": {
+          "cpu_usec": 143,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 6042112,
+          "io_rbytes": 0,
+          "io_wbytes": 425984,
+          "mem_cur": 27381760,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 11,
+        "ts": 1784006712138
+      },
+      {
+        "deltas": {
+          "cpu_usec": 303470,
+          "io_rbytes": 0,
+          "io_wbytes": 12288
+        },
+        "metrics": {
+          "cpu_usec": 6345582,
+          "io_rbytes": 0,
+          "io_wbytes": 438272,
+          "mem_cur": 30437376,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 543,
+        "ts": 1784006712681
+      },
+      {
+        "deltas": {
+          "cpu_usec": 342109,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 6687691,
+          "io_rbytes": 0,
+          "io_wbytes": 438272,
+          "mem_cur": 40787968,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 546,
+        "ts": 1784006713227
+      },
+      {
+        "deltas": {
+          "cpu_usec": 311944,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 6999635,
+          "io_rbytes": 0,
+          "io_wbytes": 446464,
+          "mem_cur": 29229056,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 546,
+        "ts": 1784006713773
+      },
+      {
+        "deltas": {
+          "cpu_usec": 291105,
+          "io_rbytes": 0,
+          "io_wbytes": 20480
+        },
+        "metrics": {
+          "cpu_usec": 7290740,
+          "io_rbytes": 0,
+          "io_wbytes": 466944,
+          "mem_cur": 32452608,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 551,
+        "ts": 1784006714324
+      },
+      {
+        "deltas": {
+          "cpu_usec": 367784,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 7658524,
+          "io_rbytes": 0,
+          "io_wbytes": 475136,
+          "mem_cur": 28491776,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 552,
+        "ts": 1784006714876
+      },
+      {
+        "deltas": {
+          "cpu_usec": 399402,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 8057926,
+          "io_rbytes": 0,
+          "io_wbytes": 479232,
+          "mem_cur": 28614656,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 548,
+        "ts": 1784006715424
+      },
+      {
+        "deltas": {
+          "cpu_usec": 413403,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 8471329,
+          "io_rbytes": 0,
+          "io_wbytes": 479232,
+          "mem_cur": 48795648,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 547,
+        "ts": 1784006715971
+      },
+      {
+        "deltas": {
+          "cpu_usec": 229974,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 8701303,
+          "io_rbytes": 0,
+          "io_wbytes": 483328,
+          "mem_cur": 41975808,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 185,
+        "ts": 1784006716156
+      },
+      {
+        "deltas": {
+          "cpu_usec": 254544,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 8955847,
+          "io_rbytes": 0,
+          "io_wbytes": 487424,
+          "mem_cur": 29630464,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 361,
+        "ts": 1784006716517
+      },
+      {
+        "deltas": {
+          "cpu_usec": 343449,
+          "io_rbytes": 0,
+          "io_wbytes": 24576
+        },
+        "metrics": {
+          "cpu_usec": 9299296,
+          "io_rbytes": 0,
+          "io_wbytes": 512000,
+          "mem_cur": 32452608,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 544,
+        "ts": 1784006717061
+      },
+      {
+        "deltas": {
+          "cpu_usec": 301802,
+          "io_rbytes": 0,
+          "io_wbytes": 12288
+        },
+        "metrics": {
+          "cpu_usec": 9601098,
+          "io_rbytes": 0,
+          "io_wbytes": 524288,
+          "mem_cur": 29888512,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 547,
+        "ts": 1784006717608
+      },
+      {
+        "deltas": {
+          "cpu_usec": 360171,
+          "io_rbytes": 0,
+          "io_wbytes": 1495040
+        },
+        "metrics": {
+          "cpu_usec": 9961269,
+          "io_rbytes": 0,
+          "io_wbytes": 2019328,
+          "mem_cur": 30257152,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 548,
+        "ts": 1784006718156
+      },
+      {
+        "deltas": {
+          "cpu_usec": 357798,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 10319067,
+          "io_rbytes": 0,
+          "io_wbytes": 2023424,
+          "mem_cur": 44326912,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 549,
+        "ts": 1784006718705
+      },
+      {
+        "deltas": {
+          "cpu_usec": 313584,
+          "io_rbytes": 0,
+          "io_wbytes": 12288
+        },
+        "metrics": {
+          "cpu_usec": 10632651,
+          "io_rbytes": 0,
+          "io_wbytes": 2035712,
+          "mem_cur": 35377152,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 546,
+        "ts": 1784006719251
+      },
+      {
+        "deltas": {
+          "cpu_usec": 363279,
+          "io_rbytes": 0,
+          "io_wbytes": 16384
+        },
+        "metrics": {
+          "cpu_usec": 10995930,
+          "io_rbytes": 0,
+          "io_wbytes": 2052096,
+          "mem_cur": 31535104,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 545,
+        "ts": 1784006719796
+      },
+      {
+        "deltas": {
+          "cpu_usec": 400770,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 11396700,
+          "io_rbytes": 0,
+          "io_wbytes": 2056192,
+          "mem_cur": 35192832,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 384,
+        "ts": 1784006720180
+      },
+      {
+        "deltas": {
+          "cpu_usec": 131316,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 11528016,
+          "io_rbytes": 0,
+          "io_wbytes": 2060288,
+          "mem_cur": 48680960,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 165,
+        "ts": 1784006720345
+      },
+      {
+        "deltas": {
+          "cpu_usec": 418489,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 11946505,
+          "io_rbytes": 0,
+          "io_wbytes": 2060288,
+          "mem_cur": 43470848,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 546,
+        "ts": 1784006720891
+      },
+      {
+        "deltas": {
+          "cpu_usec": 429015,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 12375520,
+          "io_rbytes": 0,
+          "io_wbytes": 2064384,
+          "mem_cur": 35504128,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 548,
+        "ts": 1784006721439
+      },
+      {
+        "deltas": {
+          "cpu_usec": 408957,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 12784477,
+          "io_rbytes": 0,
+          "io_wbytes": 2072576,
+          "mem_cur": 50069504,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 547,
+        "ts": 1784006721986
+      },
+      {
+        "deltas": {
+          "cpu_usec": 305217,
+          "io_rbytes": 0,
+          "io_wbytes": 20480
+        },
+        "metrics": {
+          "cpu_usec": 13089694,
+          "io_rbytes": 0,
+          "io_wbytes": 2093056,
+          "mem_cur": 35901440,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 549,
+        "ts": 1784006722535
+      },
+      {
+        "deltas": {
+          "cpu_usec": 392192,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 13481886,
+          "io_rbytes": 0,
+          "io_wbytes": 2101248,
+          "mem_cur": 46235648,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 548,
+        "ts": 1784006723083
+      },
+      {
+        "deltas": {
+          "cpu_usec": 353565,
+          "io_rbytes": 0,
+          "io_wbytes": 12288
+        },
+        "metrics": {
+          "cpu_usec": 13835451,
+          "io_rbytes": 0,
+          "io_wbytes": 2113536,
+          "mem_cur": 36327424,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 552,
+        "ts": 1784006723635
+      },
+      {
+        "deltas": {
+          "cpu_usec": 473614,
+          "io_rbytes": 0,
+          "io_wbytes": 20480
+        },
+        "metrics": {
+          "cpu_usec": 14309065,
+          "io_rbytes": 0,
+          "io_wbytes": 2134016,
+          "mem_cur": 53219328,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 546,
+        "ts": 1784006724181
+      },
+      {
+        "deltas": {
+          "cpu_usec": 80790,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 14389855,
+          "io_rbytes": 0,
+          "io_wbytes": 2134016,
+          "mem_cur": 70819840,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 40,
+        "ts": 1784006724221
+      },
+      {
+        "deltas": {
+          "cpu_usec": 364122,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 14753977,
+          "io_rbytes": 0,
+          "io_wbytes": 2138112,
+          "mem_cur": 43651072,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 505,
+        "ts": 1784006724726
+      },
+      {
+        "deltas": {
+          "cpu_usec": 468360,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 15222337,
+          "io_rbytes": 0,
+          "io_wbytes": 2142208,
+          "mem_cur": 70569984,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 546,
+        "ts": 1784006725272
+      },
+      {
+        "deltas": {
+          "cpu_usec": 419931,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 15642268,
+          "io_rbytes": 0,
+          "io_wbytes": 2146304,
+          "mem_cur": 45821952,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 546,
+        "ts": 1784006725818
+      },
+      {
+        "deltas": {
+          "cpu_usec": 433386,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 16075654,
+          "io_rbytes": 0,
+          "io_wbytes": 2150400,
+          "mem_cur": 44265472,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 548,
+        "ts": 1784006726366
+      },
+      {
+        "deltas": {
+          "cpu_usec": 336622,
+          "io_rbytes": 0,
+          "io_wbytes": 20480
+        },
+        "metrics": {
+          "cpu_usec": 16412276,
+          "io_rbytes": 0,
+          "io_wbytes": 2170880,
+          "mem_cur": 44331008,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 550,
+        "ts": 1784006726916
+      },
+      {
+        "deltas": {
+          "cpu_usec": 392038,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 16804314,
+          "io_rbytes": 0,
+          "io_wbytes": 2179072,
+          "mem_cur": 44679168,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 550,
+        "ts": 1784006727466
+      },
+      {
+        "deltas": {
+          "cpu_usec": 415203,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 17219517,
+          "io_rbytes": 0,
+          "io_wbytes": 2183168,
+          "mem_cur": 51982336,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 551,
+        "ts": 1784006728017
+      },
+      {
+        "deltas": {
+          "cpu_usec": 385984,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 17605501,
+          "io_rbytes": 0,
+          "io_wbytes": 2183168,
+          "mem_cur": 71974912,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 238,
+        "ts": 1784006728255
+      },
+      {
+        "deltas": {
+          "cpu_usec": 217440,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 17822941,
+          "io_rbytes": 0,
+          "io_wbytes": 2191360,
+          "mem_cur": 66760704,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 311,
+        "ts": 1784006728566
+      },
+      {
+        "deltas": {
+          "cpu_usec": 345317,
+          "io_rbytes": 0,
+          "io_wbytes": 12288
+        },
+        "metrics": {
+          "cpu_usec": 18168258,
+          "io_rbytes": 0,
+          "io_wbytes": 2203648,
+          "mem_cur": 61440000,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 549,
+        "ts": 1784006729115
+      },
+      {
+        "deltas": {
+          "cpu_usec": 400187,
+          "io_rbytes": 0,
+          "io_wbytes": 12288
+        },
+        "metrics": {
+          "cpu_usec": 18568445,
+          "io_rbytes": 0,
+          "io_wbytes": 2215936,
+          "mem_cur": 61362176,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 550,
+        "ts": 1784006729665
+      },
+      {
+        "deltas": {
+          "cpu_usec": 459146,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 19027591,
+          "io_rbytes": 0,
+          "io_wbytes": 2224128,
+          "mem_cur": 62189568,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 553,
+        "ts": 1784006730218
+      },
+      {
+        "deltas": {
+          "cpu_usec": 505989,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 19533580,
+          "io_rbytes": 0,
+          "io_wbytes": 2224128,
+          "mem_cur": 73064448,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 551,
+        "ts": 1784006730769
+      },
+      {
+        "deltas": {
+          "cpu_usec": 448210,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 19981790,
+          "io_rbytes": 0,
+          "io_wbytes": 2228224,
+          "mem_cur": 61845504,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 551,
+        "ts": 1784006731320
+      },
+      {
+        "deltas": {
+          "cpu_usec": 437177,
+          "io_rbytes": 0,
+          "io_wbytes": 12288
+        },
+        "metrics": {
+          "cpu_usec": 20418967,
+          "io_rbytes": 0,
+          "io_wbytes": 2240512,
+          "mem_cur": 62164992,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 552,
+        "ts": 1784006731872
+      },
+      {
+        "deltas": {
+          "cpu_usec": 542983,
+          "io_rbytes": 0,
+          "io_wbytes": 16384
+        },
+        "metrics": {
+          "cpu_usec": 20961950,
+          "io_rbytes": 0,
+          "io_wbytes": 2256896,
+          "mem_cur": 67207168,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 444,
+        "ts": 1784006732316
+      },
+      {
+        "deltas": {
+          "cpu_usec": 76637,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 21038587,
+          "io_rbytes": 0,
+          "io_wbytes": 2256896,
+          "mem_cur": 67768320,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 105,
+        "ts": 1784006732421
+      },
+      {
+        "deltas": {
+          "cpu_usec": 448768,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 21487355,
+          "io_rbytes": 0,
+          "io_wbytes": 2265088,
+          "mem_cur": 81567744,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 549,
+        "ts": 1784006732970
+      },
+      {
+        "deltas": {
+          "cpu_usec": 398300,
+          "io_rbytes": 0,
+          "io_wbytes": 12288
+        },
+        "metrics": {
+          "cpu_usec": 21885655,
+          "io_rbytes": 0,
+          "io_wbytes": 2277376,
+          "mem_cur": 67891200,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 553,
+        "ts": 1784006733523
+      },
+      {
+        "deltas": {
+          "cpu_usec": 350718,
+          "io_rbytes": 0,
+          "io_wbytes": 20480
+        },
+        "metrics": {
+          "cpu_usec": 22236373,
+          "io_rbytes": 0,
+          "io_wbytes": 2297856,
+          "mem_cur": 68321280,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 553,
+        "ts": 1784006734076
+      },
+      {
+        "deltas": {
+          "cpu_usec": 639362,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 22875735,
+          "io_rbytes": 0,
+          "io_wbytes": 2306048,
+          "mem_cur": 98095104,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 547,
+        "ts": 1784006734623
+      },
+      {
+        "deltas": {
+          "cpu_usec": 899711,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 23775446,
+          "io_rbytes": 0,
+          "io_wbytes": 2306048,
+          "mem_cur": 82792448,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 553,
+        "ts": 1784006735176
+      },
+      {
+        "deltas": {
+          "cpu_usec": 973819,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 24749265,
+          "io_rbytes": 0,
+          "io_wbytes": 2306048,
+          "mem_cur": 113381376,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 559,
+        "ts": 1784006735735
+      },
+      {
+        "deltas": {
+          "cpu_usec": 1105719,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 25854984,
+          "io_rbytes": 0,
+          "io_wbytes": 2306048,
+          "mem_cur": 112857088,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 555,
+        "ts": 1784006736290
+      },
+      {
+        "deltas": {
+          "cpu_usec": 528302,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 26383286,
+          "io_rbytes": 0,
+          "io_wbytes": 2306048,
+          "mem_cur": 109477888,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 226,
+        "ts": 1784006736516
+      },
+      {
+        "deltas": {
+          "cpu_usec": 525662,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 26908948,
+          "io_rbytes": 0,
+          "io_wbytes": 2306048,
+          "mem_cur": 117960704,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 330,
+        "ts": 1784006736846
+      },
+      {
+        "deltas": {
+          "cpu_usec": 732813,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 27641761,
+          "io_rbytes": 0,
+          "io_wbytes": 2314240,
+          "mem_cur": 113725440,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 552,
+        "ts": 1784006737398
+      },
+      {
+        "deltas": {
+          "cpu_usec": 669881,
+          "io_rbytes": 0,
+          "io_wbytes": 16384
+        },
+        "metrics": {
+          "cpu_usec": 28311642,
+          "io_rbytes": 0,
+          "io_wbytes": 2330624,
+          "mem_cur": 114909184,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 551,
+        "ts": 1784006737949
+      },
+      {
+        "deltas": {
+          "cpu_usec": 648309,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 28959951,
+          "io_rbytes": 0,
+          "io_wbytes": 2338816,
+          "mem_cur": 125829120,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 553,
+        "ts": 1784006738502
+      },
+      {
+        "deltas": {
+          "cpu_usec": 656785,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 29616736,
+          "io_rbytes": 0,
+          "io_wbytes": 2338816,
+          "mem_cur": 113123328,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 553,
+        "ts": 1784006739055
+      },
+      {
+        "deltas": {
+          "cpu_usec": 589457,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 30206193,
+          "io_rbytes": 0,
+          "io_wbytes": 2347008,
+          "mem_cur": 130420736,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 550,
+        "ts": 1784006739605
+      },
+      {
+        "deltas": {
+          "cpu_usec": 645337,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 30851530,
+          "io_rbytes": 0,
+          "io_wbytes": 2355200,
+          "mem_cur": 120758272,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 551,
+        "ts": 1784006740156
+      },
+      {
+        "deltas": {
+          "cpu_usec": 539530,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 31391060,
+          "io_rbytes": 0,
+          "io_wbytes": 2363392,
+          "mem_cur": 128483328,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 317,
+        "ts": 1784006740473
+      },
+      {
+        "deltas": {
+          "cpu_usec": 269993,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 31661053,
+          "io_rbytes": 0,
+          "io_wbytes": 2367488,
+          "mem_cur": 122904576,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 234,
+        "ts": 1784006740707
+      },
+      {
+        "deltas": {
+          "cpu_usec": 603618,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 32264671,
+          "io_rbytes": 0,
+          "io_wbytes": 2375680,
+          "mem_cur": 149057536,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 551,
+        "ts": 1784006741258
+      },
+      {
+        "deltas": {
+          "cpu_usec": 711144,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 32975815,
+          "io_rbytes": 0,
+          "io_wbytes": 2383872,
+          "mem_cur": 136716288,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 550,
+        "ts": 1784006741808
+      },
+      {
+        "deltas": {
+          "cpu_usec": 608430,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 33584245,
+          "io_rbytes": 0,
+          "io_wbytes": 2387968,
+          "mem_cur": 139141120,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 551,
+        "ts": 1784006742359
+      },
+      {
+        "deltas": {
+          "cpu_usec": 223086,
+          "io_rbytes": 0,
+          "io_wbytes": 897024
+        },
+        "metrics": {
+          "cpu_usec": 33807331,
+          "io_rbytes": 0,
+          "io_wbytes": 3284992,
+          "mem_cur": 134135808,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 555,
+        "ts": 1784006742914
+      },
+      {
+        "deltas": {
+          "cpu_usec": 228705,
+          "io_rbytes": 0,
+          "io_wbytes": 2932736
+        },
+        "metrics": {
+          "cpu_usec": 34036036,
+          "io_rbytes": 0,
+          "io_wbytes": 6217728,
+          "mem_cur": 127389696,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 555,
+        "ts": 1784006743469
+      },
+      {
+        "deltas": {
+          "cpu_usec": 275597,
+          "io_rbytes": 0,
+          "io_wbytes": 53248
+        },
+        "metrics": {
+          "cpu_usec": 34311633,
+          "io_rbytes": 0,
+          "io_wbytes": 6270976,
+          "mem_cur": 133857280,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 551,
+        "ts": 1784006744020
+      },
+      {
+        "deltas": {
+          "cpu_usec": 394142,
+          "io_rbytes": 0,
+          "io_wbytes": 20480
+        },
+        "metrics": {
+          "cpu_usec": 34705775,
+          "io_rbytes": 0,
+          "io_wbytes": 6291456,
+          "mem_cur": 135938048,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 241,
+        "ts": 1784006744261
+      },
+      {
+        "deltas": {
+          "cpu_usec": 183566,
+          "io_rbytes": 0,
+          "io_wbytes": 4096
+        },
+        "metrics": {
+          "cpu_usec": 34889341,
+          "io_rbytes": 0,
+          "io_wbytes": 6295552,
+          "mem_cur": 153243648,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 315,
+        "ts": 1784006744576
+      },
+      {
+        "deltas": {
+          "cpu_usec": 537083,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 35426424,
+          "io_rbytes": 0,
+          "io_wbytes": 6295552,
+          "mem_cur": 161083392,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 551,
+        "ts": 1784006745127
+      },
+      {
+        "deltas": {
+          "cpu_usec": 635574,
+          "io_rbytes": 0,
+          "io_wbytes": 28672
+        },
+        "metrics": {
+          "cpu_usec": 36061998,
+          "io_rbytes": 0,
+          "io_wbytes": 6324224,
+          "mem_cur": 176820224,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 553,
+        "ts": 1784006745680
+      },
+      {
+        "deltas": {
+          "cpu_usec": 552724,
+          "io_rbytes": 0,
+          "io_wbytes": 360448
+        },
+        "metrics": {
+          "cpu_usec": 36614722,
+          "io_rbytes": 0,
+          "io_wbytes": 6684672,
+          "mem_cur": 205524992,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 553,
+        "ts": 1784006746233
+      },
+      {
+        "deltas": {
+          "cpu_usec": 492307,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 37107029,
+          "io_rbytes": 0,
+          "io_wbytes": 6692864,
+          "mem_cur": 207609856,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 556,
+        "ts": 1784006746789
+      },
+      {
+        "deltas": {
+          "cpu_usec": 308305,
+          "io_rbytes": 0,
+          "io_wbytes": 69632
+        },
+        "metrics": {
+          "cpu_usec": 37415334,
+          "io_rbytes": 0,
+          "io_wbytes": 6762496,
+          "mem_cur": 174206976,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 554,
+        "ts": 1784006747343
+      },
+      {
+        "deltas": {
+          "cpu_usec": 398926,
+          "io_rbytes": 0,
+          "io_wbytes": 53248
+        },
+        "metrics": {
+          "cpu_usec": 37814260,
+          "io_rbytes": 0,
+          "io_wbytes": 6815744,
+          "mem_cur": 173936640,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 562,
+        "ts": 1784006747905
+      },
+      {
+        "deltas": {
+          "cpu_usec": 312820,
+          "io_rbytes": 0,
+          "io_wbytes": 8192
+        },
+        "metrics": {
+          "cpu_usec": 38127080,
+          "io_rbytes": 0,
+          "io_wbytes": 6823936,
+          "mem_cur": 186109952,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 233,
+        "ts": 1784006748138
+      },
+      {
+        "deltas": {
+          "cpu_usec": 252550,
+          "io_rbytes": 0,
+          "io_wbytes": 114688
+        },
+        "metrics": {
+          "cpu_usec": 38379630,
+          "io_rbytes": 0,
+          "io_wbytes": 6938624,
+          "mem_cur": 182685696,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 319,
+        "ts": 1784006748457
+      },
+      {
+        "deltas": {
+          "cpu_usec": 1065261,
+          "io_rbytes": 5386240,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 39444891,
+          "io_rbytes": 5386240,
+          "io_wbytes": 6938624,
+          "mem_cur": 224374784,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 559,
+        "ts": 1784006749016
+      }
+    ],
+    "view": "cgroup"
+  },
+  "pid": 68869,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1400,
+  "stderr": "",
+  "stdout": "{\"view\":\"cgroup\",\"scope\":\"sandbox\",\"series\":[{\"ts\":1784006702313,\"sample_delta_ms\":null,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":87978,\"io_rbytes\":0,\"io_wbytes\":98304,\"mem_cur\":3371008,\"mem_max\":4109398016},\"deltas\":{}},{\"ts\":1784006702866,\"sample_delta_ms\":553,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":157639,\"io_rbytes\":0,\"io_wbytes\":167936,\"mem_cur\":13004800,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":69661,\"io_rbytes\":0,\"io_wbytes\":69632}},{\"ts\":1784006703418,\"sample_delta_ms\":552,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":381834,\"io_rbytes\":0,\"io_wbytes\":274432,\"mem_cur\":16437248,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":224195,\"io_rbytes\":0,\"io_wbytes\":106496}},{\"ts\":1784006703969,\"sample_delta_ms\":551,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":675056,\"io_rbytes\":0,\"io_wbytes\":299008,\"mem_cur\":18313216,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":293222,\"io_rbytes\":0,\"io_wbytes\":24576}},{\"ts\":1784006704061,\"sample_delta_ms\":92,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":757405,\"io_rbytes\":0,\"io_wbytes\":303104,\"mem_cur\":22896640,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":82349,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006704511,\"sample_delta_ms\":450,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":1004568,\"io_rbytes\":0,\"io_wbytes\":315392,\"mem_cur\":17424384,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":247163,\"io_rbytes\":0,\"io_wbytes\":12288}},{\"ts\":1784006705053,\"sample_delta_ms\":542,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":1294701,\"io_rbytes\":0,\"io_wbytes\":315392,\"mem_cur\":28774400,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":290133,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006705596,\"sample_delta_ms\":543,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":1583766,\"io_rbytes\":0,\"io_wbytes\":335872,\"mem_cur\":17547264,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":289065,\"io_rbytes\":0,\"io_wbytes\":20480}},{\"ts\":1784006706140,\"sample_delta_ms\":544,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":1881886,\"io_rbytes\":0,\"io_wbytes\":356352,\"mem_cur\":30285824,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":298120,\"io_rbytes\":0,\"io_wbytes\":20480}},{\"ts\":1784006706686,\"sample_delta_ms\":546,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":2297644,\"io_rbytes\":0,\"io_wbytes\":356352,\"mem_cur\":23027712,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":415758,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006707234,\"sample_delta_ms\":548,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":2702103,\"io_rbytes\":0,\"io_wbytes\":356352,\"mem_cur\":22118400,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":404459,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006707776,\"sample_delta_ms\":542,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":3131281,\"io_rbytes\":0,\"io_wbytes\":356352,\"mem_cur\":49344512,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":429178,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006708095,\"sample_delta_ms\":319,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":3422211,\"io_rbytes\":0,\"io_wbytes\":360448,\"mem_cur\":26034176,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":290930,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006708322,\"sample_delta_ms\":227,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":3549351,\"io_rbytes\":0,\"io_wbytes\":372736,\"mem_cur\":36376576,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":127140,\"io_rbytes\":0,\"io_wbytes\":12288}},{\"ts\":1784006708870,\"sample_delta_ms\":548,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":3837289,\"io_rbytes\":0,\"io_wbytes\":393216,\"mem_cur\":26574848,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":287938,\"io_rbytes\":0,\"io_wbytes\":20480}},{\"ts\":1784006709413,\"sample_delta_ms\":543,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":4206417,\"io_rbytes\":0,\"io_wbytes\":397312,\"mem_cur\":29020160,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":369128,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006709956,\"sample_delta_ms\":543,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":4529131,\"io_rbytes\":0,\"io_wbytes\":397312,\"mem_cur\":27680768,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":322714,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006710500,\"sample_delta_ms\":544,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":4903092,\"io_rbytes\":0,\"io_wbytes\":397312,\"mem_cur\":37486592,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":373961,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006711047,\"sample_delta_ms\":547,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":5283134,\"io_rbytes\":0,\"io_wbytes\":401408,\"mem_cur\":51326976,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":380042,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006711592,\"sample_delta_ms\":545,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":5661667,\"io_rbytes\":0,\"io_wbytes\":409600,\"mem_cur\":40652800,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":378533,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006712127,\"sample_delta_ms\":535,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":6041969,\"io_rbytes\":0,\"io_wbytes\":425984,\"mem_cur\":27414528,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":380302,\"io_rbytes\":0,\"io_wbytes\":16384}},{\"ts\":1784006712138,\"sample_delta_ms\":11,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":6042112,\"io_rbytes\":0,\"io_wbytes\":425984,\"mem_cur\":27381760,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":143,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006712681,\"sample_delta_ms\":543,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":6345582,\"io_rbytes\":0,\"io_wbytes\":438272,\"mem_cur\":30437376,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":303470,\"io_rbytes\":0,\"io_wbytes\":12288}},{\"ts\":1784006713227,\"sample_delta_ms\":546,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":6687691,\"io_rbytes\":0,\"io_wbytes\":438272,\"mem_cur\":40787968,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":342109,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006713773,\"sample_delta_ms\":546,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":6999635,\"io_rbytes\":0,\"io_wbytes\":446464,\"mem_cur\":29229056,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":311944,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006714324,\"sample_delta_ms\":551,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":7290740,\"io_rbytes\":0,\"io_wbytes\":466944,\"mem_cur\":32452608,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":291105,\"io_rbytes\":0,\"io_wbytes\":20480}},{\"ts\":1784006714876,\"sample_delta_ms\":552,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":7658524,\"io_rbytes\":0,\"io_wbytes\":475136,\"mem_cur\":28491776,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":367784,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006715424,\"sample_delta_ms\":548,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":8057926,\"io_rbytes\":0,\"io_wbytes\":479232,\"mem_cur\":28614656,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":399402,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006715971,\"sample_delta_ms\":547,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":8471329,\"io_rbytes\":0,\"io_wbytes\":479232,\"mem_cur\":48795648,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":413403,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006716156,\"sample_delta_ms\":185,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":8701303,\"io_rbytes\":0,\"io_wbytes\":483328,\"mem_cur\":41975808,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":229974,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006716517,\"sample_delta_ms\":361,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":8955847,\"io_rbytes\":0,\"io_wbytes\":487424,\"mem_cur\":29630464,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":254544,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006717061,\"sample_delta_ms\":544,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":9299296,\"io_rbytes\":0,\"io_wbytes\":512000,\"mem_cur\":32452608,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":343449,\"io_rbytes\":0,\"io_wbytes\":24576}},{\"ts\":1784006717608,\"sample_delta_ms\":547,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":9601098,\"io_rbytes\":0,\"io_wbytes\":524288,\"mem_cur\":29888512,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":301802,\"io_rbytes\":0,\"io_wbytes\":12288}},{\"ts\":1784006718156,\"sample_delta_ms\":548,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":9961269,\"io_rbytes\":0,\"io_wbytes\":2019328,\"mem_cur\":30257152,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":360171,\"io_rbytes\":0,\"io_wbytes\":1495040}},{\"ts\":1784006718705,\"sample_delta_ms\":549,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":10319067,\"io_rbytes\":0,\"io_wbytes\":2023424,\"mem_cur\":44326912,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":357798,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006719251,\"sample_delta_ms\":546,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":10632651,\"io_rbytes\":0,\"io_wbytes\":2035712,\"mem_cur\":35377152,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":313584,\"io_rbytes\":0,\"io_wbytes\":12288}},{\"ts\":1784006719796,\"sample_delta_ms\":545,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":10995930,\"io_rbytes\":0,\"io_wbytes\":2052096,\"mem_cur\":31535104,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":363279,\"io_rbytes\":0,\"io_wbytes\":16384}},{\"ts\":1784006720180,\"sample_delta_ms\":384,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":11396700,\"io_rbytes\":0,\"io_wbytes\":2056192,\"mem_cur\":35192832,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":400770,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006720345,\"sample_delta_ms\":165,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":11528016,\"io_rbytes\":0,\"io_wbytes\":2060288,\"mem_cur\":48680960,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":131316,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006720891,\"sample_delta_ms\":546,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":11946505,\"io_rbytes\":0,\"io_wbytes\":2060288,\"mem_cur\":43470848,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":418489,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006721439,\"sample_delta_ms\":548,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":12375520,\"io_rbytes\":0,\"io_wbytes\":2064384,\"mem_cur\":35504128,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":429015,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006721986,\"sample_delta_ms\":547,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":12784477,\"io_rbytes\":0,\"io_wbytes\":2072576,\"mem_cur\":50069504,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":408957,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006722535,\"sample_delta_ms\":549,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":13089694,\"io_rbytes\":0,\"io_wbytes\":2093056,\"mem_cur\":35901440,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":305217,\"io_rbytes\":0,\"io_wbytes\":20480}},{\"ts\":1784006723083,\"sample_delta_ms\":548,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":13481886,\"io_rbytes\":0,\"io_wbytes\":2101248,\"mem_cur\":46235648,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":392192,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006723635,\"sample_delta_ms\":552,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":13835451,\"io_rbytes\":0,\"io_wbytes\":2113536,\"mem_cur\":36327424,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":353565,\"io_rbytes\":0,\"io_wbytes\":12288}},{\"ts\":1784006724181,\"sample_delta_ms\":546,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":14309065,\"io_rbytes\":0,\"io_wbytes\":2134016,\"mem_cur\":53219328,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":473614,\"io_rbytes\":0,\"io_wbytes\":20480}},{\"ts\":1784006724221,\"sample_delta_ms\":40,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":14389855,\"io_rbytes\":0,\"io_wbytes\":2134016,\"mem_cur\":70819840,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":80790,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006724726,\"sample_delta_ms\":505,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":14753977,\"io_rbytes\":0,\"io_wbytes\":2138112,\"mem_cur\":43651072,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":364122,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006725272,\"sample_delta_ms\":546,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":15222337,\"io_rbytes\":0,\"io_wbytes\":2142208,\"mem_cur\":70569984,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":468360,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006725818,\"sample_delta_ms\":546,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":15642268,\"io_rbytes\":0,\"io_wbytes\":2146304,\"mem_cur\":45821952,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":419931,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006726366,\"sample_delta_ms\":548,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":16075654,\"io_rbytes\":0,\"io_wbytes\":2150400,\"mem_cur\":44265472,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":433386,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006726916,\"sample_delta_ms\":550,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":16412276,\"io_rbytes\":0,\"io_wbytes\":2170880,\"mem_cur\":44331008,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":336622,\"io_rbytes\":0,\"io_wbytes\":20480}},{\"ts\":1784006727466,\"sample_delta_ms\":550,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":16804314,\"io_rbytes\":0,\"io_wbytes\":2179072,\"mem_cur\":44679168,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":392038,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006728017,\"sample_delta_ms\":551,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":17219517,\"io_rbytes\":0,\"io_wbytes\":2183168,\"mem_cur\":51982336,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":415203,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006728255,\"sample_delta_ms\":238,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":17605501,\"io_rbytes\":0,\"io_wbytes\":2183168,\"mem_cur\":71974912,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":385984,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006728566,\"sample_delta_ms\":311,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":17822941,\"io_rbytes\":0,\"io_wbytes\":2191360,\"mem_cur\":66760704,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":217440,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006729115,\"sample_delta_ms\":549,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":18168258,\"io_rbytes\":0,\"io_wbytes\":2203648,\"mem_cur\":61440000,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":345317,\"io_rbytes\":0,\"io_wbytes\":12288}},{\"ts\":1784006729665,\"sample_delta_ms\":550,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":18568445,\"io_rbytes\":0,\"io_wbytes\":2215936,\"mem_cur\":61362176,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":400187,\"io_rbytes\":0,\"io_wbytes\":12288}},{\"ts\":1784006730218,\"sample_delta_ms\":553,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":19027591,\"io_rbytes\":0,\"io_wbytes\":2224128,\"mem_cur\":62189568,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":459146,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006730769,\"sample_delta_ms\":551,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":19533580,\"io_rbytes\":0,\"io_wbytes\":2224128,\"mem_cur\":73064448,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":505989,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006731320,\"sample_delta_ms\":551,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":19981790,\"io_rbytes\":0,\"io_wbytes\":2228224,\"mem_cur\":61845504,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":448210,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006731872,\"sample_delta_ms\":552,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":20418967,\"io_rbytes\":0,\"io_wbytes\":2240512,\"mem_cur\":62164992,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":437177,\"io_rbytes\":0,\"io_wbytes\":12288}},{\"ts\":1784006732316,\"sample_delta_ms\":444,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":20961950,\"io_rbytes\":0,\"io_wbytes\":2256896,\"mem_cur\":67207168,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":542983,\"io_rbytes\":0,\"io_wbytes\":16384}},{\"ts\":1784006732421,\"sample_delta_ms\":105,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":21038587,\"io_rbytes\":0,\"io_wbytes\":2256896,\"mem_cur\":67768320,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":76637,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006732970,\"sample_delta_ms\":549,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":21487355,\"io_rbytes\":0,\"io_wbytes\":2265088,\"mem_cur\":81567744,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":448768,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006733523,\"sample_delta_ms\":553,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":21885655,\"io_rbytes\":0,\"io_wbytes\":2277376,\"mem_cur\":67891200,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":398300,\"io_rbytes\":0,\"io_wbytes\":12288}},{\"ts\":1784006734076,\"sample_delta_ms\":553,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":22236373,\"io_rbytes\":0,\"io_wbytes\":2297856,\"mem_cur\":68321280,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":350718,\"io_rbytes\":0,\"io_wbytes\":20480}},{\"ts\":1784006734623,\"sample_delta_ms\":547,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":22875735,\"io_rbytes\":0,\"io_wbytes\":2306048,\"mem_cur\":98095104,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":639362,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006735176,\"sample_delta_ms\":553,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":23775446,\"io_rbytes\":0,\"io_wbytes\":2306048,\"mem_cur\":82792448,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":899711,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006735735,\"sample_delta_ms\":559,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":24749265,\"io_rbytes\":0,\"io_wbytes\":2306048,\"mem_cur\":113381376,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":973819,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006736290,\"sample_delta_ms\":555,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":25854984,\"io_rbytes\":0,\"io_wbytes\":2306048,\"mem_cur\":112857088,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":1105719,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006736516,\"sample_delta_ms\":226,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":26383286,\"io_rbytes\":0,\"io_wbytes\":2306048,\"mem_cur\":109477888,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":528302,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006736846,\"sample_delta_ms\":330,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":26908948,\"io_rbytes\":0,\"io_wbytes\":2306048,\"mem_cur\":117960704,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":525662,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006737398,\"sample_delta_ms\":552,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":27641761,\"io_rbytes\":0,\"io_wbytes\":2314240,\"mem_cur\":113725440,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":732813,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006737949,\"sample_delta_ms\":551,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":28311642,\"io_rbytes\":0,\"io_wbytes\":2330624,\"mem_cur\":114909184,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":669881,\"io_rbytes\":0,\"io_wbytes\":16384}},{\"ts\":1784006738502,\"sample_delta_ms\":553,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":28959951,\"io_rbytes\":0,\"io_wbytes\":2338816,\"mem_cur\":125829120,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":648309,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006739055,\"sample_delta_ms\":553,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":29616736,\"io_rbytes\":0,\"io_wbytes\":2338816,\"mem_cur\":113123328,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":656785,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006739605,\"sample_delta_ms\":550,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":30206193,\"io_rbytes\":0,\"io_wbytes\":2347008,\"mem_cur\":130420736,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":589457,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006740156,\"sample_delta_ms\":551,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":30851530,\"io_rbytes\":0,\"io_wbytes\":2355200,\"mem_cur\":120758272,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":645337,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006740473,\"sample_delta_ms\":317,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":31391060,\"io_rbytes\":0,\"io_wbytes\":2363392,\"mem_cur\":128483328,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":539530,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006740707,\"sample_delta_ms\":234,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":31661053,\"io_rbytes\":0,\"io_wbytes\":2367488,\"mem_cur\":122904576,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":269993,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006741258,\"sample_delta_ms\":551,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":32264671,\"io_rbytes\":0,\"io_wbytes\":2375680,\"mem_cur\":149057536,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":603618,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006741808,\"sample_delta_ms\":550,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":32975815,\"io_rbytes\":0,\"io_wbytes\":2383872,\"mem_cur\":136716288,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":711144,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006742359,\"sample_delta_ms\":551,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":33584245,\"io_rbytes\":0,\"io_wbytes\":2387968,\"mem_cur\":139141120,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":608430,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006742914,\"sample_delta_ms\":555,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":33807331,\"io_rbytes\":0,\"io_wbytes\":3284992,\"mem_cur\":134135808,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":223086,\"io_rbytes\":0,\"io_wbytes\":897024}},{\"ts\":1784006743469,\"sample_delta_ms\":555,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":34036036,\"io_rbytes\":0,\"io_wbytes\":6217728,\"mem_cur\":127389696,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":228705,\"io_rbytes\":0,\"io_wbytes\":2932736}},{\"ts\":1784006744020,\"sample_delta_ms\":551,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":34311633,\"io_rbytes\":0,\"io_wbytes\":6270976,\"mem_cur\":133857280,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":275597,\"io_rbytes\":0,\"io_wbytes\":53248}},{\"ts\":1784006744261,\"sample_delta_ms\":241,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":34705775,\"io_rbytes\":0,\"io_wbytes\":6291456,\"mem_cur\":135938048,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":394142,\"io_rbytes\":0,\"io_wbytes\":20480}},{\"ts\":1784006744576,\"sample_delta_ms\":315,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":34889341,\"io_rbytes\":0,\"io_wbytes\":6295552,\"mem_cur\":153243648,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":183566,\"io_rbytes\":0,\"io_wbytes\":4096}},{\"ts\":1784006745127,\"sample_delta_ms\":551,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":35426424,\"io_rbytes\":0,\"io_wbytes\":6295552,\"mem_cur\":161083392,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":537083,\"io_rbytes\":0,\"io_wbytes\":0}},{\"ts\":1784006745680,\"sample_delta_ms\":553,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":36061998,\"io_rbytes\":0,\"io_wbytes\":6324224,\"mem_cur\":176820224,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":635574,\"io_rbytes\":0,\"io_wbytes\":28672}},{\"ts\":1784006746233,\"sample_delta_ms\":553,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":36614722,\"io_rbytes\":0,\"io_wbytes\":6684672,\"mem_cur\":205524992,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":552724,\"io_rbytes\":0,\"io_wbytes\":360448}},{\"ts\":1784006746789,\"sample_delta_ms\":556,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":37107029,\"io_rbytes\":0,\"io_wbytes\":6692864,\"mem_cur\":207609856,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":492307,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006747343,\"sample_delta_ms\":554,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":37415334,\"io_rbytes\":0,\"io_wbytes\":6762496,\"mem_cur\":174206976,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":308305,\"io_rbytes\":0,\"io_wbytes\":69632}},{\"ts\":1784006747905,\"sample_delta_ms\":562,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":37814260,\"io_rbytes\":0,\"io_wbytes\":6815744,\"mem_cur\":173936640,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":398926,\"io_rbytes\":0,\"io_wbytes\":53248}},{\"ts\":1784006748138,\"sample_delta_ms\":233,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":38127080,\"io_rbytes\":0,\"io_wbytes\":6823936,\"mem_cur\":186109952,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":312820,\"io_rbytes\":0,\"io_wbytes\":8192}},{\"ts\":1784006748457,\"sample_delta_ms\":319,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":38379630,\"io_rbytes\":0,\"io_wbytes\":6938624,\"mem_cur\":182685696,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":252550,\"io_rbytes\":0,\"io_wbytes\":114688}},{\"ts\":1784006749016,\"sample_delta_ms\":559,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":39444891,\"io_rbytes\":5386240,\"io_wbytes\":6938624,\"mem_cur\":224374784,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":1065261,\"io_rbytes\":5386240,\"io_wbytes\":0}}]}\n",
+  "timed_out": false
+}

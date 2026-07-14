@@ -1,0 +1,91 @@
+{
+  "blame": {
+    "path": "src/registry.js",
+    "ranges": [
+      {
+        "line_count": 2,
+        "owner": "workspace_session:00000118c21758f2122fb3",
+        "start_line": 1
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000318c217590e335a12",
+        "start_line": 3
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000418c2175910f8435b",
+        "start_line": 4
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000518c2175913e308db",
+        "start_line": 5
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000618c2175916b3a27d",
+        "start_line": 6
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000718c21759193e50df",
+        "start_line": 7
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000818c217591c7ae374",
+        "start_line": 8
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000918c217591f1f364a",
+        "start_line": 9
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000a18c2175921d48acd",
+        "start_line": 10
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000b18c217592470827a",
+        "start_line": 11
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000c18c2175926e7a765",
+        "start_line": 12
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000118c21758f2122fb3",
+        "start_line": 13
+      }
+    ]
+  },
+  "display_mapping_provenance": "runner_join",
+  "raw_owner_to_agent": {
+    "workspace_session:00000318c217590e335a12": "A01",
+    "workspace_session:00000418c2175910f8435b": "A02",
+    "workspace_session:00000518c2175913e308db": "A03",
+    "workspace_session:00000618c2175916b3a27d": "A04",
+    "workspace_session:00000718c21759193e50df": "A05",
+    "workspace_session:00000818c217591c7ae374": "A06",
+    "workspace_session:00000918c217591f1f364a": "A07",
+    "workspace_session:00000a18c2175921d48acd": "A08",
+    "workspace_session:00000b18c217592470827a": "A09",
+    "workspace_session:00000c18c2175926e7a765": "A10"
+  },
+  "registry": {
+    "bytes_read": 816,
+    "content": "window.FlashCart = window.FlashCart || {};\nwindow.FlashCart.registry = {\n  A01: { role: 'Foundation', entry: 'src/features/A01-foundation.js' },\n  A02: { role: 'Design system', entry: 'src/features/A02-design-system.js' },\n  A03: { role: 'Product data', entry: 'src/features/A03-products.js' },\n  A04: { role: 'Catalog and PDP', entry: 'src/features/A04-catalog.js' },\n  A05: { role: 'Search and facets', entry: 'src/features/A05-search.js' },\n  A06: { role: 'Cart and pricing', entry: 'src/features/A06-cart.js' },\n  A07: { role: 'Wishlist', entry: 'src/features/A07-wishlist.js' },\n  A08: { role: 'Checkout', entry: 'src/features/A08-checkout.js' },\n  A09: { role: 'Accessibility and performance', entry: 'src/features/A09-accessibility.js' },\n  A10: { role: 'Integration QA', entry: 'src/features/A10-qa.js' },\n};",
+    "next_offset": null,
+    "num_lines": 13,
+    "path": "src/registry.js",
+    "start_line": 1,
+    "total_bytes": 817,
+    "total_lines": 13,
+    "truncated": false
+  }
+}

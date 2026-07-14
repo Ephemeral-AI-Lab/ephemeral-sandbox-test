@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fbe9e67e-eb75-4c15-97b8-68ef24761269",
+    "--request-id",
+    "p5s-01-20260714T081331Z:A09.006:runtime",
+    "file_write",
+    "--path",
+    "src/features/A09-accessibility.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A09 = { id: 'A09', verify() { return false; }, implementation: 'broken A09' };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000b18c219d7d1d17387"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.94,
+  "kind": "public_cli_process",
+  "label": "A09.006",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 240,
+    "path": "src/features/A09-accessibility.js",
+    "type": "create"
+  },
+  "pid": 96863,
+  "provenance": "agent",
+  "request_id": "p5s-01-20260714T081331Z:A09.006:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 137,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A09-accessibility.js\",\"bytes_written\":240}\n",
+  "timed_out": false
+}

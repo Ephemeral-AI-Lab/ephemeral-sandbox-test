@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-e9b00a7f-4f8f-49ff-a603-757311a522e4",
+    "--request-id",
+    "p2-full-20260714a:A03.026:runtime",
+    "file_write",
+    "--path",
+    "tests/A03-a11y.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A03-products-a11y.js');\ntest('A03 honors reduced motion', () => assert.equal(globalThis.FlashCart.a11y.A03.reducedMotion, true));\n",
+    "--workspace-session-id",
+    "00000418c20fbdd01cdbc5"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.932,
+  "kind": "public_cli_process",
+  "label": "A03.026",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 231,
+    "path": "tests/A03-a11y.test.mjs",
+    "type": "create"
+  },
+  "pid": 48194,
+  "provenance": "agent",
+  "request_id": "p2-full-20260714a:A03.026:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 740,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A03-a11y.test.mjs\",\"bytes_written\":231}\n",
+  "timed_out": false
+}

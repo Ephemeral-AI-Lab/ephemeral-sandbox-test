@@ -1,0 +1,6 @@
+[
+  {
+    "new_string": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A06 = {\n    id: 'A06',\n    label: 'Cart and pricing',\n    deterministic: true,\n    verify() { return true; },\n    quoteCart(subtotalCents, promotionCents = 0) { const config = root.FlashCart.config; const discounted = Math.max(0, subtotalCents - promotionCents); const shippingCents = discounted >= config.freeShippingCents ? 0 : config.standardShippingCents; return { discounted, shippingCents, taxCents: Math.round(discounted * config.taxRate), totalCents: discounted + shippingCents + Math.round(discounted * config.taxRate) }; }\n  };\n})(globalThis);\n",
+    "old_string": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A06 = { id: 'A06', verify() { return false; }, implementation: 'broken A06' };\n})(globalThis);\n"
+  }
+]

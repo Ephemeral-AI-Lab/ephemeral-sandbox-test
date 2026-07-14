@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-9e7a512a-4aa0-4693-94f2-c01838407df4",
+    "--request-id",
+    "p5f-02-20260714T085058Z:ENGINE.effects.after.A09.015:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000b18c21be30bac3431",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { createHash } from 'node:crypto'; import { readdir, readFile } from 'node:fs/promises'; const walk=async(d='.')=>{const out=[];for(const e of await readdir(d,{withFileTypes:true})){const p=(d==='.'?'':d+'/')+e.name;if(p==='.git'||p.startsWith('.git/')||p==='node_modules'||p.startsWith('node_modules/'))continue;if(e.isDirectory())out.push(...await walk(p));else if(e.isFile())out.push([p,createHash('sha256').update(await readFile(p)).digest('hex')]);}return out};console.log(JSON.stringify(Object.fromEntries((await walk()).sort((a,b)=>a[0].localeCompare(b[0])))));\""
+  ],
+  "cancelled": false,
+  "duration_ms": 76.337,
+  "kind": "public_cli_process",
+  "label": "effects-after-A09.015",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.038370458,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "{\"package.json\":\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\",\"src/config.js\":\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\",\"src/features/A09-accessibility-data.js\":\"10ad4889d5e4c765203772aed2da82e5d3872b7cd9b09f840a49bbba33858e72\",\"src/features/A09-accessibility.js\":\"3ace9941a4530d974b0c069cea0fa4fa4c7d7d4fc142161be97577996d528aa7\",\"src/registry.js\":\"edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08\",\"tests/A09-data.test.mjs\":\"4d4b9d5701db0ac85889bb4b7b744ed743002053ad6b66abb094f58ffc1e858a\",\"tests/A09-red.test.mjs\":\"90bbbfd2568fa3ec28886a5ee32065ac21ab23858f6cb1ea9f5983a1c79eac40\"}",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.038424166,
+    "workspace_session_id": "00000b18c21be30bac3431"
+  },
+  "pid": 32783,
+  "provenance": "engine",
+  "request_id": "p5f-02-20260714T085058Z:ENGINE.effects.after.A09.015:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 462,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.038424166,\"command_total_time_seconds\":0.038370458,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":162,\"output\":\"{\\\"package.json\\\":\\\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\\\",\\\"src/config.js\\\":\\\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\\\",\\\"src/features/A09-accessibility-data.js\\\":\\\"10ad4889d5e4c765203772aed2da82e5d3872b7cd9b09f840a49bbba33858e72\\\",\\\"src/features/A09-accessibility.js\\\":\\\"3ace9941a4530d974b0c069cea0fa4fa4c7d7d4fc142161be97577996d528aa7\\\",\\\"src/registry.js\\\":\\\"edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08\\\",\\\"tests/A09-data.test.mjs\\\":\\\"4d4b9d5701db0ac85889bb4b7b744ed743002053ad6b66abb094f58ffc1e858a\\\",\\\"tests/A09-red.test.mjs\\\":\\\"90bbbfd2568fa3ec28886a5ee32065ac21ab23858f6cb1ea9f5983a1c79eac40\\\"}\",\"workspace_session_id\":\"00000b18c21be30bac3431\"}\n",
+  "timed_out": false
+}

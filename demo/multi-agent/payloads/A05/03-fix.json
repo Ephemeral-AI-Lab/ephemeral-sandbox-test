@@ -1,0 +1,6 @@
+[
+  {
+    "new_string": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A05 = {\n    id: 'A05',\n    label: 'Search and facets',\n    deterministic: true,\n    verify() { return true; },\n    search(items, query) { const needle = String(query).toLowerCase(); return items.filter((item) => item.name.toLowerCase().includes(needle)); }\n  };\n})(globalThis);\n",
+    "old_string": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A05 = { id: 'A05', verify() { return false; }, implementation: 'broken A05' };\n})(globalThis);\n"
+  }
+]

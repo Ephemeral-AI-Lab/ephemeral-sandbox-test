@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--request-id",
+    "p4-full-20260714j:ENGINE.final.tests-A05-style.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A05-style.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 36.484,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A05-style.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 281,
+    "content": "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A05 style keeps focus visible', async () => assert.match(await readFile(new URL('../src/features/A05-search.css', import.meta.url), 'utf8'), /focus-visible/));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A05-style.test.mjs",
+    "start_line": 1,
+    "total_bytes": 282,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 67638,
+  "provenance": "engine",
+  "request_id": "p4-full-20260714j:ENGINE.final.tests-A05-style.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1527,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A05-style.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport { readFile } from 'node:fs/promises';\\nimport test from 'node:test';\\ntest('A05 style keeps focus visible', async () => assert.match(await readFile(new URL('../src/features/A05-search.css', import.meta.url), 'utf8'), /focus-visible/));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":281,\"total_bytes\":282,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

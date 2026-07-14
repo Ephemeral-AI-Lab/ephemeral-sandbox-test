@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-5df6cdc6-26a2-494c-b5a5-9223d93114a7",
+    "--request-id",
+    "p3-spike-10-lane-A10-20260714T065228Z:A10.022:runtime",
+    "file_write",
+    "--path",
+    "tests/A10-style.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A10 style keeps focus visible', async () => assert.match(await readFile(new URL('../src/features/A10-qa.css', import.meta.url), 'utf8'), /focus-visible/));\n",
+    "--workspace-session-id",
+    "00000318c2156aa9a876df"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.441,
+  "kind": "public_cli_process",
+  "label": "A10.022",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 278,
+    "path": "tests/A10-style.test.mjs",
+    "type": "create"
+  },
+  "pid": 29440,
+  "provenance": "agent",
+  "request_id": "p3-spike-10-lane-A10-20260714T065228Z:A10.022:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 77,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A10-style.test.mjs\",\"bytes_written\":278}\n",
+  "timed_out": false
+}

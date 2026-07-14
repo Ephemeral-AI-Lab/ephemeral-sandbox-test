@@ -1,0 +1,42 @@
+{
+  "request_id": "p5r-03-20260714T084208Z:A02.019:runtime",
+  "row": "A02.019",
+  "trace": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 1.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 4.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-860",
+              "span": "d-864",
+              "status": "completed",
+              "trace": "p5r-03-20260714T084208Z:A02.019:runtime",
+              "ts": 1784018554094
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 5.0,
+          "name": "daemon.dispatch",
+          "span": "d-860",
+          "status": "completed",
+          "trace": "p5r-03-20260714T084208Z:A02.019:runtime",
+          "ts": 1784018554094
+        }
+      }
+    ],
+    "trace": "p5r-03-20260714T084208Z:A02.019:runtime",
+    "view": "trace"
+  }
+}

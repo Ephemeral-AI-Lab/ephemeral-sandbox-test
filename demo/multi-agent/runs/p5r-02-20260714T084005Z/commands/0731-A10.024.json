@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-f32b2d3a-ac89-4152-86b1-31f0fa16de68",
+    "--request-id",
+    "p5r-02-20260714T084005Z:A10.024:runtime",
+    "file_write",
+    "--path",
+    "src/features/A10-qa-a11y.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\n  root.FlashCart.a11y.A10 = { label: 'Integration QA', keyboard: true, reducedMotion: true };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000c18c21b4ad2a01510"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.148,
+  "kind": "public_cli_process",
+  "label": "A10.024",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 221,
+    "path": "src/features/A10-qa-a11y.js",
+    "type": "create"
+  },
+  "pid": 42592,
+  "provenance": "agent",
+  "request_id": "p5r-02-20260714T084005Z:A10.024:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 731,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A10-qa-a11y.js\",\"bytes_written\":221}\n",
+  "timed_out": false
+}

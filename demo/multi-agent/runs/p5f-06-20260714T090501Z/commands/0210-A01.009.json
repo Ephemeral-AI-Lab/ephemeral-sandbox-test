@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-138c81b8-2911-43e8-b0d4-ad5a886f243e",
+    "--request-id",
+    "p5f-06-20260714T090501Z:A01.009:runtime",
+    "file_read",
+    "--path",
+    "src/features/A01-foundation.js",
+    "--workspace-session-id",
+    "00000318c21ca667ed5df6"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.732,
+  "kind": "public_cli_process",
+  "label": "A01.009",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 239,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A01 = { id: 'A01', verify() { return false; }, implementation: 'broken A01' };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A01-foundation.js",
+    "start_line": 1,
+    "total_bytes": 240,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 54765,
+  "provenance": "agent",
+  "request_id": "p5f-06-20260714T090501Z:A01.009:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 210,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A01-foundation.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A01 = { id: 'A01', verify() { return false; }, implementation: 'broken A01' };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":239,\"total_bytes\":240,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

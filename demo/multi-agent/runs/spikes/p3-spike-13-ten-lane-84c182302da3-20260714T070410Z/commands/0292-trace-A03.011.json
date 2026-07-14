@@ -1,0 +1,83 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--trace-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A03.011:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 47.076,
+  "kind": "public_cli_process",
+  "label": "trace-A03.011",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [],
+                "events": [],
+                "offset_ms": 0.0,
+                "span": {
+                  "attrs": {
+                    "exit_code": 0
+                  },
+                  "dur_ms": 27.0,
+                  "name": "namespace.exec.run_shell",
+                  "parent": "d-462",
+                  "span": "d-463",
+                  "status": "completed",
+                  "trace": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A03.011:runtime",
+                  "ts": 1784012659571
+                }
+              }
+            ],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "publish_then_destroy",
+                "session_created": false
+              },
+              "dur_ms": 27.0,
+              "name": "command.exec",
+              "parent": "d-461",
+              "span": "d-462",
+              "status": "completed",
+              "trace": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A03.011:runtime",
+              "ts": 1784012659571
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 27.0,
+          "name": "daemon.dispatch",
+          "span": "d-461",
+          "status": "completed",
+          "trace": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A03.011:runtime",
+          "ts": 1784012659571
+        }
+      }
+    ],
+    "trace": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A03.011:runtime",
+    "view": "trace"
+  },
+  "pid": 44736,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 292,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A03.011:runtime\",\"spans\":[{\"span\":{\"ts\":1784012659571,\"trace\":\"p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A03.011:runtime\",\"span\":\"d-461\",\"name\":\"daemon.dispatch\",\"dur_ms\":27.0,\"status\":\"completed\",\"attrs\":{\"op\":\"exec_command\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012659571,\"trace\":\"p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A03.011:runtime\",\"span\":\"d-462\",\"parent\":\"d-461\",\"name\":\"command.exec\",\"dur_ms\":27.0,\"status\":\"completed\",\"attrs\":{\"session_created\":false,\"finalize_policy\":\"publish_then_destroy\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012659571,\"trace\":\"p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A03.011:runtime\",\"span\":\"d-463\",\"parent\":\"d-462\",\"name\":\"namespace.exec.run_shell\",\"dur_ms\":27.0,\"status\":\"completed\",\"attrs\":{\"exit_code\":0}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

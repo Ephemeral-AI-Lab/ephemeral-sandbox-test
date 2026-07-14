@@ -1,0 +1,158 @@
+{
+  "agents": [
+    {
+      "completed": 44,
+      "id": "A01",
+      "planned": 44,
+      "role": "Foundation"
+    },
+    {
+      "completed": 44,
+      "id": "A02",
+      "planned": 44,
+      "role": "Design system"
+    },
+    {
+      "completed": 44,
+      "id": "A03",
+      "planned": 44,
+      "role": "Product data"
+    },
+    {
+      "completed": 44,
+      "id": "A04",
+      "planned": 44,
+      "role": "Catalog and PDP"
+    },
+    {
+      "completed": 44,
+      "id": "A05",
+      "planned": 44,
+      "role": "Search and facets"
+    },
+    {
+      "completed": 49,
+      "id": "A06",
+      "planned": 52,
+      "role": "Cart and pricing"
+    },
+    {
+      "completed": 44,
+      "id": "A07",
+      "planned": 44,
+      "role": "Wishlist"
+    },
+    {
+      "completed": 47,
+      "id": "A08",
+      "planned": 59,
+      "role": "Checkout"
+    },
+    {
+      "completed": 45,
+      "id": "A09",
+      "planned": 54,
+      "role": "Accessibility and performance"
+    },
+    {
+      "completed": 44,
+      "id": "A10",
+      "planned": 53,
+      "role": "Integration QA"
+    }
+  ],
+  "commands": {
+    "A01.primary.anchor": "namespace_execution_3",
+    "A02.primary.anchor": "namespace_execution_4",
+    "A03.primary.anchor": "namespace_execution_5",
+    "A04.primary.anchor": "namespace_execution_6",
+    "A05.primary.anchor": "namespace_execution_7",
+    "A06.conflict.anchor": "namespace_execution_445",
+    "A06.primary.anchor": "namespace_execution_8",
+    "A07.primary.anchor": "namespace_execution_9",
+    "A08.conflict.anchor": "namespace_execution_446",
+    "A08.primary.anchor": "namespace_execution_10",
+    "A09.network.shared1.server": "namespace_execution_449",
+    "A09.primary.anchor": "namespace_execution_11",
+    "A10.primary.anchor": "namespace_execution_12"
+  },
+  "evidence": {
+    "network_probes": {},
+    "preview": null,
+    "raw_owner_mapping": {
+      "A01": "workspace_session:00000318c21068ce4c9ad1",
+      "A02": "workspace_session:00000418c21068d0cad99b",
+      "A03": "workspace_session:00000518c21068d348b833",
+      "A04": "workspace_session:00000618c21068d60ed78b",
+      "A05": "workspace_session:00000718c21068d8a0921f",
+      "A06": "workspace_session:00000818c21068dbe74b80",
+      "A07": "workspace_session:00000918c21068de5c4f7f",
+      "A08": "workspace_session:00000a18c21068e0fbc4ba",
+      "A09": "workspace_session:00000b18c21068e3987cc8",
+      "A10": "workspace_session:00000c18c21068e6368c1a"
+    }
+  },
+  "presentation": {
+    "active_scene": "merge",
+    "checkpoints": {
+      "bootstrap": {
+        "path": "assertions/checkpoints/bootstrap.json",
+        "revision": 2,
+        "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+        "sha256": "e246ff272dc78548d9dc9dcbeb62a818833d3bee3fc28f90456217bd8d29f159"
+      },
+      "primary-publications": {
+        "path": "assertions/checkpoints/primary-publications.json",
+        "revision": 12,
+        "root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+        "sha256": "e5f6894a8a5b69e7a5e148e5c206798019fbaad5331474fc138fcb17ae7b8a4f"
+      },
+      "ten-workspaces": {
+        "path": "assertions/checkpoints/ten-workspaces.json",
+        "revision": 2,
+        "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+        "sha256": "14ecf225a700564e63f8403be683a50c9ac9b70ade4bbb31b553d75fd67111f2"
+      }
+    }
+  },
+  "projection_seq": 456,
+  "run": {
+    "calls": {
+      "agent": 451,
+      "completed": 449,
+      "engine": 882,
+      "engine_runtime_cli": 332,
+      "manager_control_cli": 4,
+      "planned": 482,
+      "telemetry_cli": 538,
+      "trusted_session_control": 8
+    },
+    "cleanup_verdict": "clean",
+    "elapsed_ms": 45613.719,
+    "execution_verdict": "running",
+    "failed": "DemoFailure: lane failure before gates ('A06.049', 'A08.048'): DemoFailure: A09.046: invalid/rebound command id",
+    "id": "p2-full-20260714d",
+    "sandbox_id": null,
+    "status": "failed",
+    "title": "FlashCart: ten agents, one workspace"
+  },
+  "schema_version": "multiagent-demo/v1",
+  "workspaces": {
+    "A01.primary.workspace": "00000318c21068ce4c9ad1",
+    "A02.primary.workspace": "00000418c21068d0cad99b",
+    "A03.primary.workspace": "00000518c21068d348b833",
+    "A04.primary.workspace": "00000618c21068d60ed78b",
+    "A05.primary.workspace": "00000718c21068d8a0921f",
+    "A06.conflict.workspace": "00000f18c210727a90c15b",
+    "A06.primary.workspace": "00000818c21068dbe74b80",
+    "A07.primary.workspace": "00000918c21068de5c4f7f",
+    "A08.conflict.workspace": "00001118c210727dbd6142",
+    "A08.primary.workspace": "00000a18c21068e0fbc4ba",
+    "A09.network.isolated1.workspace": "00001318c2107285373b39",
+    "A09.network.isolated2.workspace": "00001418c210728a8b8656",
+    "A09.network.shared1.workspace": "00001018c210727c7e094e",
+    "A09.network.shared2.workspace": "00001218c2107280c0f077",
+    "A09.primary.workspace": "00000b18c21068e3987cc8",
+    "A10.primary.workspace": "00000c18c21068e6368c1a"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-3482d145-830c-43cc-843a-6428698e5b95",
+    "--request-id",
+    "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:ENGINE.primary.blame:runtime",
+    "file_blame",
+    "--path",
+    "src/registry.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.774,
+  "kind": "public_cli_process",
+  "label": "primary-registry-blame",
+  "parse_error": null,
+  "parsed_json": {
+    "path": "src/registry.js",
+    "ranges": [
+      {
+        "line_count": 2,
+        "owner": "workspace_session:00000118c2158e212ee075",
+        "start_line": 1
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000318c2158e3d0729c4",
+        "start_line": 3
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000418c2158e3f852e20",
+        "start_line": 4
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000518c2158e421ac3d9",
+        "start_line": 5
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000618c2158e449c5080",
+        "start_line": 6
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000718c2158e470a64f1",
+        "start_line": 7
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000818c2158e4a6d1898",
+        "start_line": 8
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000918c2158e4cf2b03d",
+        "start_line": 9
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000a18c2158e4f834875",
+        "start_line": 10
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000b18c2158e5213a2d3",
+        "start_line": 11
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000c18c2158e54a26f14",
+        "start_line": 12
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000118c2158e212ee075",
+        "start_line": 13
+      }
+    ]
+  },
+  "pid": 66825,
+  "provenance": "engine",
+  "request_id": "p3-spike-01-ten-lane-aee6a86b2512-20260714T065501Z:ENGINE.primary.blame:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1270,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/registry.js\",\"ranges\":[{\"start_line\":1,\"line_count\":2,\"owner\":\"workspace_session:00000118c2158e212ee075\"},{\"start_line\":3,\"line_count\":1,\"owner\":\"workspace_session:00000318c2158e3d0729c4\"},{\"start_line\":4,\"line_count\":1,\"owner\":\"workspace_session:00000418c2158e3f852e20\"},{\"start_line\":5,\"line_count\":1,\"owner\":\"workspace_session:00000518c2158e421ac3d9\"},{\"start_line\":6,\"line_count\":1,\"owner\":\"workspace_session:00000618c2158e449c5080\"},{\"start_line\":7,\"line_count\":1,\"owner\":\"workspace_session:00000718c2158e470a64f1\"},{\"start_line\":8,\"line_count\":1,\"owner\":\"workspace_session:00000818c2158e4a6d1898\"},{\"start_line\":9,\"line_count\":1,\"owner\":\"workspace_session:00000918c2158e4cf2b03d\"},{\"start_line\":10,\"line_count\":1,\"owner\":\"workspace_session:00000a18c2158e4f834875\"},{\"start_line\":11,\"line_count\":1,\"owner\":\"workspace_session:00000b18c2158e5213a2d3\"},{\"start_line\":12,\"line_count\":1,\"owner\":\"workspace_session:00000c18c2158e54a26f14\"},{\"start_line\":13,\"line_count\":1,\"owner\":\"workspace_session:00000118c2158e212ee075\"}]}\n",
+  "timed_out": false
+}

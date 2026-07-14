@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-3bd6d6ec-7188-490d-8451-f3b099e19c9f",
+    "--request-id",
+    "p5f-05-20260714T090303Z:A09.017:runtime",
+    "file_write",
+    "--path",
+    "src/features/A09-accessibility-view.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.views = root.FlashCart.views || {};\n  root.FlashCart.views.A09 = function () { return '<section data-feature=\"A09\"><h2>Accessibility and performance</h2><p>keyboard, live regions, reduced motion, and budgets</p></section>'; };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000b18c21c8b2077b022"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.406,
+  "kind": "public_cli_process",
+  "label": "A09.017",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 320,
+    "path": "src/features/A09-accessibility-view.js",
+    "type": "create"
+  },
+  "pid": 29196,
+  "provenance": "agent",
+  "request_id": "p5f-05-20260714T090303Z:A09.017:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 494,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A09-accessibility-view.js\",\"bytes_written\":320}\n",
+  "timed_out": false
+}

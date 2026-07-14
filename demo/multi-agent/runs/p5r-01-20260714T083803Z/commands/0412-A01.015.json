@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-85444414-3f8b-4661-afe0-0572fc39391d",
+    "--request-id",
+    "p5r-01-20260714T083803Z:A01.015:runtime",
+    "file_write",
+    "--path",
+    "tests/A01-data.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A01 fixture is deterministic', async () => assert.match(await readFile(new URL('../index.html', import.meta.url), 'utf8'), /<main/));\n",
+    "--workspace-session-id",
+    "00000318c21b2e82990c0e"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.314,
+  "kind": "public_cli_process",
+  "label": "A01.015",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 256,
+    "path": "tests/A01-data.test.mjs",
+    "type": "create"
+  },
+  "pid": 5804,
+  "provenance": "agent",
+  "request_id": "p5r-01-20260714T083803Z:A01.015:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 412,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A01-data.test.mjs\",\"bytes_written\":256}\n",
+  "timed_out": false
+}

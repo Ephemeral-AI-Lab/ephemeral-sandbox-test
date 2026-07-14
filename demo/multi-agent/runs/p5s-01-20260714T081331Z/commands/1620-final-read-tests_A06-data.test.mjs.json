@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fbe9e67e-eb75-4c15-97b8-68ef24761269",
+    "--request-id",
+    "p5s-01-20260714T081331Z:ENGINE.final.tests-A06-data.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A06-data.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 69.197,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A06-data.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 226,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A06-cart-data.js');\ntest('A06 fixture is deterministic', () => assert.equal(globalThis.FlashCart.fixtures.A06.owner, 'A06'));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A06-data.test.mjs",
+    "start_line": 1,
+    "total_bytes": 227,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 24580,
+  "provenance": "engine",
+  "request_id": "p5s-01-20260714T081331Z:ENGINE.final.tests-A06-data.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1620,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A06-data.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A06-cart-data.js');\\ntest('A06 fixture is deterministic', () => assert.equal(globalThis.FlashCart.fixtures.A06.owner, 'A06'));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":226,\"total_bytes\":227,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

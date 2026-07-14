@@ -1,0 +1,83 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-94d8294f-2bab-4784-a381-b4a7c9f9f42e",
+    "--trace-id",
+    "p5-01-20260714T071800Z:A07.014:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 48.593,
+  "kind": "public_cli_process",
+  "label": "trace-A07.014",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [],
+                "events": [],
+                "offset_ms": 0.0,
+                "span": {
+                  "attrs": {
+                    "exit_code": 0
+                  },
+                  "dur_ms": 27.0,
+                  "name": "namespace.exec.run_shell",
+                  "parent": "d-585",
+                  "span": "d-586",
+                  "status": "completed",
+                  "trace": "p5-01-20260714T071800Z:A07.014:runtime",
+                  "ts": 1784013805064
+                }
+              }
+            ],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "publish_then_destroy",
+                "session_created": false
+              },
+              "dur_ms": 27.0,
+              "name": "command.exec",
+              "parent": "d-584",
+              "span": "d-585",
+              "status": "completed",
+              "trace": "p5-01-20260714T071800Z:A07.014:runtime",
+              "ts": 1784013805064
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 27.0,
+          "name": "daemon.dispatch",
+          "span": "d-584",
+          "status": "completed",
+          "trace": "p5-01-20260714T071800Z:A07.014:runtime",
+          "ts": 1784013805064
+        }
+      }
+    ],
+    "trace": "p5-01-20260714T071800Z:A07.014:runtime",
+    "view": "trace"
+  },
+  "pid": 5465,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 367,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p5-01-20260714T071800Z:A07.014:runtime\",\"spans\":[{\"span\":{\"ts\":1784013805064,\"trace\":\"p5-01-20260714T071800Z:A07.014:runtime\",\"span\":\"d-584\",\"name\":\"daemon.dispatch\",\"dur_ms\":27.0,\"status\":\"completed\",\"attrs\":{\"op\":\"exec_command\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784013805064,\"trace\":\"p5-01-20260714T071800Z:A07.014:runtime\",\"span\":\"d-585\",\"parent\":\"d-584\",\"name\":\"command.exec\",\"dur_ms\":27.0,\"status\":\"completed\",\"attrs\":{\"session_created\":false,\"finalize_policy\":\"publish_then_destroy\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784013805064,\"trace\":\"p5-01-20260714T071800Z:A07.014:runtime\",\"span\":\"d-586\",\"parent\":\"d-585\",\"name\":\"namespace.exec.run_shell\",\"dur_ms\":27.0,\"status\":\"completed\",\"attrs\":{\"exit_code\":0}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

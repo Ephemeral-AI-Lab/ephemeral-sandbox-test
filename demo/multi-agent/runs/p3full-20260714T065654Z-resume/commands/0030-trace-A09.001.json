@@ -1,0 +1,112 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-05aa11ab-f22c-4929-87b4-9080e735c2dc",
+    "--trace-id",
+    "p3full-20260714T065654Z-resume:A09.001:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 69.089,
+  "kind": "public_cli_process",
+  "label": "trace-A09.001",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "events": [],
+                    "offset_ms": 2.0,
+                    "span": {
+                      "attrs": {},
+                      "dur_ms": 2.0,
+                      "name": "namespace.exec.mount_overlay",
+                      "parent": "d-64",
+                      "span": "d-65",
+                      "status": "completed",
+                      "trace": "p3full-20260714T065654Z-resume:A09.001:runtime",
+                      "ts": 1784012217133
+                    }
+                  }
+                ],
+                "events": [
+                  {
+                    "event": {
+                      "attrs": {
+                        "revision": 2
+                      },
+                      "name": "lease.acquired",
+                      "parent": "d-64",
+                      "trace": "p3full-20260714T065654Z-resume:A09.001:runtime",
+                      "ts": 1784012217136
+                    },
+                    "offset_ms": 7.0
+                  }
+                ],
+                "offset_ms": 0.0,
+                "span": {
+                  "attrs": {
+                    "finalize_policy": "publish_then_destroy"
+                  },
+                  "dur_ms": 7.0,
+                  "name": "workspace_session.create",
+                  "parent": "d-63",
+                  "span": "d-64",
+                  "status": "completed",
+                  "trace": "p3full-20260714T065654Z-resume:A09.001:runtime",
+                  "ts": 1784012217136
+                }
+              }
+            ],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "publish_then_destroy",
+                "session_created": true
+              },
+              "dur_ms": 9.0,
+              "name": "command.exec",
+              "parent": "d-62",
+              "span": "d-63",
+              "status": "completed",
+              "trace": "p3full-20260714T065654Z-resume:A09.001:runtime",
+              "ts": 1784012217138
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 9.0,
+          "name": "daemon.dispatch",
+          "span": "d-62",
+          "status": "completed",
+          "trace": "p3full-20260714T065654Z-resume:A09.001:runtime",
+          "ts": 1784012217138
+        }
+      }
+    ],
+    "trace": "p3full-20260714T065654Z-resume:A09.001:runtime",
+    "view": "trace"
+  },
+  "pid": 67912,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 30,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3full-20260714T065654Z-resume:A09.001:runtime\",\"spans\":[{\"span\":{\"ts\":1784012217138,\"trace\":\"p3full-20260714T065654Z-resume:A09.001:runtime\",\"span\":\"d-62\",\"name\":\"daemon.dispatch\",\"dur_ms\":9.0,\"status\":\"completed\",\"attrs\":{\"op\":\"exec_command\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012217138,\"trace\":\"p3full-20260714T065654Z-resume:A09.001:runtime\",\"span\":\"d-63\",\"parent\":\"d-62\",\"name\":\"command.exec\",\"dur_ms\":9.0,\"status\":\"completed\",\"attrs\":{\"session_created\":true,\"finalize_policy\":\"publish_then_destroy\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012217136,\"trace\":\"p3full-20260714T065654Z-resume:A09.001:runtime\",\"span\":\"d-64\",\"parent\":\"d-63\",\"name\":\"workspace_session.create\",\"dur_ms\":7.0,\"status\":\"completed\",\"attrs\":{\"finalize_policy\":\"publish_then_destroy\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012217133,\"trace\":\"p3full-20260714T065654Z-resume:A09.001:runtime\",\"span\":\"d-65\",\"parent\":\"d-64\",\"name\":\"namespace.exec.mount_overlay\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":2.0,\"children\":[],\"events\":[]}],\"events\":[{\"offset_ms\":7.0,\"event\":{\"ts\":1784012217136,\"trace\":\"p3full-20260714T065654Z-resume:A09.001:runtime\",\"parent\":\"d-64\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}}}]}],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

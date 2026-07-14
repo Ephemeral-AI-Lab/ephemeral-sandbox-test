@@ -1,0 +1,92 @@
+{
+  "request_id": "p3full-20260714T065654Z-resume:A08.053:runtime",
+  "row": "A08.053",
+  "trace": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "events": [],
+                    "offset_ms": 7.0,
+                    "span": {
+                      "attrs": {},
+                      "dur_ms": 1.0,
+                      "name": "namespace.exec.mount_overlay",
+                      "parent": "d-2181",
+                      "span": "d-2182",
+                      "status": "completed",
+                      "trace": "p3full-20260714T065654Z-resume:A08.053:runtime",
+                      "ts": 1784012264750
+                    }
+                  }
+                ],
+                "events": [
+                  {
+                    "event": {
+                      "attrs": {
+                        "revision": 13
+                      },
+                      "name": "lease.acquired",
+                      "parent": "d-2181",
+                      "trace": "p3full-20260714T065654Z-resume:A08.053:runtime",
+                      "ts": 1784012264752
+                    },
+                    "offset_ms": 10.0
+                  }
+                ],
+                "offset_ms": 0.0,
+                "span": {
+                  "attrs": {
+                    "finalize_policy": "publish_then_destroy"
+                  },
+                  "dur_ms": 10.0,
+                  "name": "workspace_session.create",
+                  "parent": "d-2180",
+                  "span": "d-2181",
+                  "status": "completed",
+                  "trace": "p3full-20260714T065654Z-resume:A08.053:runtime",
+                  "ts": 1784012264752
+                }
+              }
+            ],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "publish_then_destroy",
+                "session_created": true
+              },
+              "dur_ms": 13.0,
+              "name": "command.exec",
+              "parent": "d-2179",
+              "span": "d-2180",
+              "status": "completed",
+              "trace": "p3full-20260714T065654Z-resume:A08.053:runtime",
+              "ts": 1784012264755
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 13.0,
+          "name": "daemon.dispatch",
+          "span": "d-2179",
+          "status": "completed",
+          "trace": "p3full-20260714T065654Z-resume:A08.053:runtime",
+          "ts": 1784012264755
+        }
+      }
+    ],
+    "trace": "p3full-20260714T065654Z-resume:A08.053:runtime",
+    "view": "trace"
+  }
+}

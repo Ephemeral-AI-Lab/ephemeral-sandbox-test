@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-7659e24e-1f97-41d1-a34d-7721f1f0178f",
+    "--request-id",
+    "p5-02-20260714T072600Z:ENGINE.effects.after.A10.042:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000c18c21739e8eefd4b",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { createHash } from 'node:crypto'; import { readdir, readFile } from 'node:fs/promises'; const walk=async(d='.')=>{const out=[];for(const e of await readdir(d,{withFileTypes:true})){const p=(d==='.'?'':d+'/')+e.name;if(p==='.git'||p.startsWith('.git/')||p==='node_modules'||p.startsWith('node_modules/'))continue;if(e.isDirectory())out.push(...await walk(p));else if(e.isFile())out.push([p,createHash('sha256').update(await readFile(p)).digest('hex')]);}return out};console.log(JSON.stringify(Object.fromEntries((await walk()).sort((a,b)=>a[0].localeCompare(b[0])))));\""
+  ],
+  "cancelled": false,
+  "duration_ms": 80.398,
+  "kind": "public_cli_process",
+  "label": "effects-after-A10.042",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.043915375,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "{\"package.json\":\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\",\"src/config.js\":\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\",\"src/features/A10-qa-a11y.js\":\"af97bb0411e9f51e1b63f803cc7b82e8733a39224f3e218e4a41175b540b2c29\",\"src/features/A10-qa-data.js\":\"1918f732947dce25c1e04ebd718a375c39669b8ac5b9bf378b02174be9496a52\",\"src/features/A10-qa-view.js\":\"f1aa969aeaad4a195b0a9bb40d57c355239514b9a67c203fb4366a6138110c76\",\"src/features/A10-qa.css\":\"094ad775b499f6c50c2073c34e58f0d49f02c659d0848899d4290627a0c248cc\",\"src/features/A10-qa.js\":\"73865df2ceb2f157927565c264bc735842aa5ea87bece799e36d827f71797155\",\"src/features/A10-qa.json\":\"b90e9f390808a459c31132e02dc3c84edf3e81f07b7d57bc4cdff4ad199110aa\",\"src/registry.js\":\"b0ca7e9df21f7b8adf753872c709b5ecc8bcd0c79e3a9e64521d02112a739172\",\"tests/A10-a11y.test.mjs\":\"d51d56d97fbe7e4425cce350f67b094971770fa5bfe748cafa5017f36fe37b7f\",\"tests/A10-data.test.mjs\":\"31be63f88c8c18ad69b713886a09026f5f342fc7a1e49959daabd1f1667e7d32\",\"tests/A10-manifest.test.mjs\":\"54fab5b08f29975bc2d15820ae9b43cfe6fa6fb4ed9bf5eba3c4bf75dc81af8a\",\"tests/A10-quality.test.mjs\":\"06ca1dc0751b21f57cae60104c8ae3e70cef39804d2f3d6ca7bbcbbb663ccef8\",\"tests/A10-red.test.mjs\":\"91900352f8eb6c85a7bcb9ad9b7df2bc554fdd041890a299d8e0887f6f597bd5\",\"tests/A10-style.test.mjs\":\"fdc764dff80c5a80f5bdf035c3113e41116d3c7007cf798248faa07eceb0ba6a\",\"tests/A10-view.test.mjs\":\"f064307148cf8d4ec93aa8ce1f9eb1538aff7437794bef5feac67bb5cf4af5f4\"}",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.043988459,
+    "workspace_session_id": "00000c18c21739e8eefd4b"
+  },
+  "pid": 52182,
+  "provenance": "engine",
+  "request_id": "p5-02-20260714T072600Z:ENGINE.effects.after.A10.042:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1241,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.043988459,\"command_total_time_seconds\":0.043915375,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":370,\"output\":\"{\\\"package.json\\\":\\\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\\\",\\\"src/config.js\\\":\\\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\\\",\\\"src/features/A10-qa-a11y.js\\\":\\\"af97bb0411e9f51e1b63f803cc7b82e8733a39224f3e218e4a41175b540b2c29\\\",\\\"src/features/A10-qa-data.js\\\":\\\"1918f732947dce25c1e04ebd718a375c39669b8ac5b9bf378b02174be9496a52\\\",\\\"src/features/A10-qa-view.js\\\":\\\"f1aa969aeaad4a195b0a9bb40d57c355239514b9a67c203fb4366a6138110c76\\\",\\\"src/features/A10-qa.css\\\":\\\"094ad775b499f6c50c2073c34e58f0d49f02c659d0848899d4290627a0c248cc\\\",\\\"src/features/A10-qa.js\\\":\\\"73865df2ceb2f157927565c264bc735842aa5ea87bece799e36d827f71797155\\\",\\\"src/features/A10-qa.json\\\":\\\"b90e9f390808a459c31132e02dc3c84edf3e81f07b7d57bc4cdff4ad199110aa\\\",\\\"src/registry.js\\\":\\\"b0ca7e9df21f7b8adf753872c709b5ecc8bcd0c79e3a9e64521d02112a739172\\\",\\\"tests/A10-a11y.test.mjs\\\":\\\"d51d56d97fbe7e4425cce350f67b094971770fa5bfe748cafa5017f36fe37b7f\\\",\\\"tests/A10-data.test.mjs\\\":\\\"31be63f88c8c18ad69b713886a09026f5f342fc7a1e49959daabd1f1667e7d32\\\",\\\"tests/A10-manifest.test.mjs\\\":\\\"54fab5b08f29975bc2d15820ae9b43cfe6fa6fb4ed9bf5eba3c4bf75dc81af8a\\\",\\\"tests/A10-quality.test.mjs\\\":\\\"06ca1dc0751b21f57cae60104c8ae3e70cef39804d2f3d6ca7bbcbbb663ccef8\\\",\\\"tests/A10-red.test.mjs\\\":\\\"91900352f8eb6c85a7bcb9ad9b7df2bc554fdd041890a299d8e0887f6f597bd5\\\",\\\"tests/A10-style.test.mjs\\\":\\\"fdc764dff80c5a80f5bdf035c3113e41116d3c7007cf798248faa07eceb0ba6a\\\",\\\"tests/A10-view.test.mjs\\\":\\\"f064307148cf8d4ec93aa8ce1f9eb1538aff7437794bef5feac67bb5cf4af5f4\\\"}\",\"workspace_session_id\":\"00000c18c21739e8eefd4b\"}\n",
+  "timed_out": false
+}

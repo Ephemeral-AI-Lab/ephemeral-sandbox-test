@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-7659e24e-1f97-41d1-a34d-7721f1f0178f",
+    "--request-id",
+    "p5-02-20260714T072600Z:A08.031:runtime",
+    "file_read",
+    "--path",
+    "src/features/A08-checkout.js",
+    "--workspace-session-id",
+    "00000a18c21739e21e8237"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.102,
+  "kind": "public_cli_process",
+  "label": "A08.031",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 441,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A08 = {\n    id: 'A08',\n    label: 'Checkout',\n    deterministic: true,\n    verify() { return true; },\n    validateCheckout(form) { const missing = ['email', 'address', 'postal'].filter((key) => !String(form[key] || '').trim()); return { ok: missing.length === 0, missing }; }\n  };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 11,
+    "path": "src/features/A08-checkout.js",
+    "start_line": 1,
+    "total_bytes": 442,
+    "total_lines": 11,
+    "truncated": false
+  },
+  "pid": 48693,
+  "provenance": "agent",
+  "request_id": "p5-02-20260714T072600Z:A08.031:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1048,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A08-checkout.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A08 = {\\n    id: 'A08',\\n    label: 'Checkout',\\n    deterministic: true,\\n    verify() { return true; },\\n    validateCheckout(form) { const missing = ['email', 'address', 'postal'].filter((key) => !String(form[key] || '').trim()); return { ok: missing.length === 0, missing }; }\\n  };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":11,\"total_lines\":11,\"bytes_read\":441,\"total_bytes\":442,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

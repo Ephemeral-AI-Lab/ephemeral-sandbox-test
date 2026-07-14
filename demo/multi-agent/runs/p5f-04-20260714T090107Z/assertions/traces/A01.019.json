@@ -1,0 +1,42 @@
+{
+  "request_id": "p5f-04-20260714T090107Z:A01.019:runtime",
+  "row": "A01.019",
+  "trace": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 1.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 3.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-862",
+              "span": "d-864",
+              "status": "completed",
+              "trace": "p5f-04-20260714T090107Z:A01.019:runtime",
+              "ts": 1784019685607
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 4.0,
+          "name": "daemon.dispatch",
+          "span": "d-862",
+          "status": "completed",
+          "trace": "p5f-04-20260714T090107Z:A01.019:runtime",
+          "ts": 1784019685607
+        }
+      }
+    ],
+    "trace": "p5f-04-20260714T090107Z:A01.019:runtime",
+    "view": "trace"
+  }
+}

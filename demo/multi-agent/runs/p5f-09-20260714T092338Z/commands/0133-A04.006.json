@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-94fb6e38-dd74-4a9f-b016-6d2e055375ed",
+    "--request-id",
+    "p5f-09-20260714T092338Z:A04.006:runtime",
+    "file_write",
+    "--path",
+    "src/features/A04-catalog.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A04 = { id: 'A04', verify() { return false; }, implementation: 'broken A04' };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000618c21daa89295d2b"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.102,
+  "kind": "public_cli_process",
+  "label": "A04.006",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 240,
+    "path": "src/features/A04-catalog.js",
+    "type": "create"
+  },
+  "pid": 50091,
+  "provenance": "agent",
+  "request_id": "p5f-09-20260714T092338Z:A04.006:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 133,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A04-catalog.js\",\"bytes_written\":240}\n",
+  "timed_out": false
+}

@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-71235f98-7a81-439c-8bc4-8f1458449999",
+    "--request-id",
+    "p5r-03-20260714T084208Z:ENGINE.final.tests-A07-red.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A07-red.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.896,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A07-red.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 275,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A07-wishlist.js');\ntest('A07 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A07.verify(), true, 'A07 implementation should report verified'));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A07-red.test.mjs",
+    "start_line": 1,
+    "total_bytes": 276,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 89919,
+  "provenance": "engine",
+  "request_id": "p5r-03-20260714T084208Z:ENGINE.final.tests-A07-red.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1630,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A07-red.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A07-wishlist.js');\\ntest('A07 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A07.verify(), true, 'A07 implementation should report verified'));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":275,\"total_bytes\":276,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

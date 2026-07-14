@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-94d8294f-2bab-4784-a381-b4a7c9f9f42e",
+    "--request-id",
+    "p5-01-20260714T071800Z:A04.032:runtime",
+    "file_read",
+    "--path",
+    "src/features/A04-catalog-data.js",
+    "--workspace-session-id",
+    "00000618c2171820e97039"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.474,
+  "kind": "public_cli_process",
+  "label": "A04.032",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 238,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\n  root.FlashCart.fixtures.A04 = Object.freeze({ owner: 'A04', label: 'Catalog and PDP', revision: 1 });\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A04-catalog-data.js",
+    "start_line": 1,
+    "total_bytes": 239,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 17645,
+  "provenance": "agent",
+  "request_id": "p5-01-20260714T071800Z:A04.032:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1034,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A04-catalog-data.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\\n  root.FlashCart.fixtures.A04 = Object.freeze({ owner: 'A04', label: 'Catalog and PDP', revision: 1 });\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":238,\"total_bytes\":239,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-48c1370b-f1a0-4ba9-bf8a-523326acef0a",
+    "--request-id",
+    "p5-03-20260714T073000Z:A09.027:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000b18c217592470827a",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A09-a11y.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 101.519,
+  "kind": "public_cli_process",
+  "label": "A09.027",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.065215792,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A09 honors reduced motion (0.437875ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 36.495041",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.065291167,
+    "workspace_session_id": "00000b18c217592470827a"
+  },
+  "pid": 75325,
+  "provenance": "agent",
+  "request_id": "p5-03-20260714T073000Z:A09.027:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 816,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.065291167,\"command_total_time_seconds\":0.065215792,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":39,\"output\":\"✔ A09 honors reduced motion (0.437875ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 36.495041\",\"workspace_session_id\":\"00000b18c217592470827a\"}\n",
+  "timed_out": false
+}

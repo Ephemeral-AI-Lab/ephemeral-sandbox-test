@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-05aa11ab-f22c-4929-87b4-9080e735c2dc",
+    "--request-id",
+    "p3full-20260714T065654Z-resume:A04.023:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000618c215a8b832d94b",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A04-style.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 114.492,
+  "kind": "public_cli_process",
+  "label": "A04.023",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.073833209,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A04 style keeps focus visible (3.209458ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 41.124875",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.073894292,
+    "workspace_session_id": "00000618c215a8b832d94b"
+  },
+  "pid": 79666,
+  "provenance": "agent",
+  "request_id": "p3full-20260714T065654Z-resume:A04.023:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 680,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.073894292,\"command_total_time_seconds\":0.073833209,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":40,\"output\":\"✔ A04 style keeps focus visible (3.209458ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 41.124875\",\"workspace_session_id\":\"00000618c215a8b832d94b\"}\n",
+  "timed_out": false
+}

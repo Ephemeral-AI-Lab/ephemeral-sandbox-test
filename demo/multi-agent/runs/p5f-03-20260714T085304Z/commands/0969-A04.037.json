@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-87d96492-efb1-4bf1-ae1a-d5efea27eb0d",
+    "--request-id",
+    "p5f-03-20260714T085304Z:A04.037:runtime",
+    "file_read",
+    "--path",
+    "tests/A04-red.test.mjs",
+    "--workspace-session-id",
+    "00000618c21c0067c5f044"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.379,
+  "kind": "public_cli_process",
+  "label": "A04.037",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 274,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A04-catalog.js');\ntest('A04 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A04.verify(), true, 'A04 implementation should report verified'));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A04-red.test.mjs",
+    "start_line": 1,
+    "total_bytes": 275,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 72869,
+  "provenance": "agent",
+  "request_id": "p5f-03-20260714T085304Z:A04.037:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 969,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A04-red.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A04-catalog.js');\\ntest('A04 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A04.verify(), true, 'A04 implementation should report verified'));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":274,\"total_bytes\":275,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b0919f76-a661-4bd5-89c8-f3e7fee299f3",
+    "--request-id",
+    "p3-spike-08-lane-A08-20260714T070316Z:A08.028:runtime",
+    "file_write",
+    "--path",
+    "src/features/A08-checkout.json",
+    "--content",
+    "{\n  \"owner\": \"A08\",\n  \"paths\": {\n    \"a11y\": \"src/features/A08-checkout-a11y.js\",\n    \"core\": \"src/features/A08-checkout.js\",\n    \"data\": \"src/features/A08-checkout-data.js\",\n    \"manifest\": \"src/features/A08-checkout.json\",\n    \"style\": \"src/features/A08-checkout.css\",\n    \"view\": \"src/features/A08-checkout-view.js\"\n  },\n  \"role\": \"Checkout\",\n  \"schema_version\": 1\n}\n",
+    "--workspace-session-id",
+    "00000318c2160165dba2ea"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.937,
+  "kind": "public_cli_process",
+  "label": "A08.028",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 370,
+    "path": "src/features/A08-checkout.json",
+    "type": "create"
+  },
+  "pid": 20992,
+  "provenance": "agent",
+  "request_id": "p3-spike-08-lane-A08-20260714T070316Z:A08.028:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 97,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A08-checkout.json\",\"bytes_written\":370}\n",
+  "timed_out": false
+}

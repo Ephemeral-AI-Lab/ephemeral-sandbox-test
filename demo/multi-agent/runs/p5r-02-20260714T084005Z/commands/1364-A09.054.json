@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-f32b2d3a-ac89-4152-86b1-31f0fa16de68",
+    "--request-id",
+    "p5r-02-20260714T084005Z:A09.054:runtime",
+    "write_command_stdin",
+    "--command-session-id",
+    "namespace_execution_464",
+    "--yield-time-ms",
+    "30000",
+    "stop\n"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.946,
+  "kind": "public_cli_process",
+  "label": "A09.054",
+  "parse_error": null,
+  "parsed_json": {
+    "command_session_id": "namespace_execution_464",
+    "command_total_time_seconds": 1.190779376,
+    "end_offset": 2,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "PORT_BOUND isolated-two\nstop",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 2,
+    "wall_time_seconds": 1.190839709,
+    "workspace_session_id": "00001418c21b5495795d1d"
+  },
+  "pid": 54049,
+  "provenance": "agent",
+  "request_id": "p5r-02-20260714T084005Z:A09.054:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1364,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":1.190839709,\"command_total_time_seconds\":1.190779376,\"start_offset\":0,\"end_offset\":2,\"total_lines\":2,\"original_token_count\":7,\"output\":\"PORT_BOUND isolated-two\\nstop\",\"command_session_id\":\"namespace_execution_464\",\"workspace_session_id\":\"00001418c21b5495795d1d\"}\n",
+  "timed_out": false
+}

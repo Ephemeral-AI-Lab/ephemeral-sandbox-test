@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-02aa463a-08e3-4fd3-99ac-aba361fa83af",
+    "--request-id",
+    "p5r-01-20260714T080149Z:A07.007:runtime",
+    "file_write",
+    "--path",
+    "tests/A07-red.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A07-wishlist.js');\ntest('A07 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A07.verify(), true, 'A07 implementation should report verified'));\n",
+    "--workspace-session-id",
+    "00000918c219337f376d05"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.244,
+  "kind": "public_cli_process",
+  "label": "A07.007",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 276,
+    "path": "tests/A07-red.test.mjs",
+    "type": "create"
+  },
+  "pid": 1141,
+  "provenance": "agent",
+  "request_id": "p5r-01-20260714T080149Z:A07.007:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 174,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A07-red.test.mjs\",\"bytes_written\":276}\n",
+  "timed_out": false
+}

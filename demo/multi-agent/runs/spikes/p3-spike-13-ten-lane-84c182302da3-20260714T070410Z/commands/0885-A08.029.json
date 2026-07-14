@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--request-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A08.029:runtime",
+    "file_write",
+    "--path",
+    "tests/A08-manifest.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A08 manifest names its owner', async () => assert.equal(JSON.parse(await readFile(new URL('../src/features/A08-checkout.json', import.meta.url), 'utf8')).owner, 'A08'));\n",
+    "--workspace-session-id",
+    "00000a18c2160e26445ac1"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.151,
+  "kind": "public_cli_process",
+  "label": "A08.029",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 292,
+    "path": "tests/A08-manifest.test.mjs",
+    "type": "create"
+  },
+  "pid": 55474,
+  "provenance": "agent",
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A08.029:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 885,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A08-manifest.test.mjs\",\"bytes_written\":292}\n",
+  "timed_out": false
+}

@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-05aa11ab-f22c-4929-87b4-9080e735c2dc",
+    "--trace-id",
+    "p3full-20260714T065654Z-resume:A02.009:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.228,
+  "kind": "public_cli_process",
+  "label": "trace-A02.009",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 1.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 2.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-302",
+              "span": "d-303",
+              "status": "completed",
+              "trace": "p3full-20260714T065654Z-resume:A02.009:runtime",
+              "ts": 1784012221679
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_read"
+          },
+          "dur_ms": 3.0,
+          "name": "daemon.dispatch",
+          "span": "d-302",
+          "status": "completed",
+          "trace": "p3full-20260714T065654Z-resume:A02.009:runtime",
+          "ts": 1784012221679
+        }
+      }
+    ],
+    "trace": "p3full-20260714T065654Z-resume:A02.009:runtime",
+    "view": "trace"
+  },
+  "pid": 70872,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 194,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3full-20260714T065654Z-resume:A02.009:runtime\",\"spans\":[{\"span\":{\"ts\":1784012221679,\"trace\":\"p3full-20260714T065654Z-resume:A02.009:runtime\",\"span\":\"d-302\",\"name\":\"daemon.dispatch\",\"dur_ms\":3.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_read\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012221679,\"trace\":\"p3full-20260714T065654Z-resume:A02.009:runtime\",\"span\":\"d-303\",\"parent\":\"d-302\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":1.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

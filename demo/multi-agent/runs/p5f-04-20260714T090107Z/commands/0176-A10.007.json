@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-7c622b5f-ddbc-49f4-a447-509f97acee5e",
+    "--request-id",
+    "p5f-04-20260714T090107Z:A10.007:runtime",
+    "file_write",
+    "--path",
+    "tests/A10-red.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A10-qa.js');\ntest('A10 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A10.verify(), true, 'A10 implementation should report verified'));\n",
+    "--workspace-session-id",
+    "00000c18c21c6fe3d273d2"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.769,
+  "kind": "public_cli_process",
+  "label": "A10.007",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 270,
+    "path": "tests/A10-red.test.mjs",
+    "type": "create"
+  },
+  "pid": 92165,
+  "provenance": "agent",
+  "request_id": "p5f-04-20260714T090107Z:A10.007:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 176,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A10-red.test.mjs\",\"bytes_written\":270}\n",
+  "timed_out": false
+}

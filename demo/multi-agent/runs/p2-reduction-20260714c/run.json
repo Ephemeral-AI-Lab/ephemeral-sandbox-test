@@ -1,0 +1,100 @@
+{
+  "agents": [
+    {
+      "completed": 0,
+      "id": "A01",
+      "planned": 44,
+      "role": "Foundation"
+    },
+    {
+      "completed": 0,
+      "id": "A02",
+      "planned": 44,
+      "role": "Design system"
+    },
+    {
+      "completed": 0,
+      "id": "A03",
+      "planned": 44,
+      "role": "Product data"
+    },
+    {
+      "completed": 0,
+      "id": "A04",
+      "planned": 44,
+      "role": "Catalog and PDP"
+    },
+    {
+      "completed": 0,
+      "id": "A05",
+      "planned": 44,
+      "role": "Search and facets"
+    },
+    {
+      "completed": 0,
+      "id": "A06",
+      "planned": 52,
+      "role": "Cart and pricing"
+    },
+    {
+      "completed": 0,
+      "id": "A07",
+      "planned": 44,
+      "role": "Wishlist"
+    },
+    {
+      "completed": 0,
+      "id": "A08",
+      "planned": 59,
+      "role": "Checkout"
+    },
+    {
+      "completed": 0,
+      "id": "A09",
+      "planned": 54,
+      "role": "Accessibility and performance"
+    },
+    {
+      "completed": 0,
+      "id": "A10",
+      "planned": 53,
+      "role": "Integration QA"
+    }
+  ],
+  "commands": {},
+  "evidence": {
+    "network_probes": {},
+    "preview": null,
+    "raw_owner_mapping": {}
+  },
+  "presentation": {
+    "active_scene": "fanout",
+    "checkpoints": {
+      "bootstrap": {
+        "path": "assertions/checkpoints/bootstrap.json",
+        "revision": 2,
+        "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+        "sha256": "28146816765660697c16a5831f6e6dfaf75b3f69adb056dac6372f0c8a394800"
+      }
+    }
+  },
+  "projection_seq": 5,
+  "run": {
+    "calls": {
+      "agent": 0,
+      "completed": 0,
+      "engine": 445,
+      "planned": 482
+    },
+    "cleanup_verdict": "clean",
+    "elapsed_ms": 256551.821,
+    "execution_verdict": "running",
+    "failed": "CancelledError: ",
+    "id": "p2-reduction-20260714c",
+    "sandbox_id": null,
+    "status": "failed",
+    "title": "FlashCart: ten agents, one workspace"
+  },
+  "schema_version": "multiagent-demo/v1",
+  "workspaces": {}
+}

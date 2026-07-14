@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-94d8294f-2bab-4784-a381-b4a7c9f9f42e",
+    "--request-id",
+    "p5-01-20260714T071800Z:A01.022:runtime",
+    "file_write",
+    "--path",
+    "tests/A01-style.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A01 style keeps focus visible', async () => assert.match(await readFile(new URL('../src/styles.css', import.meta.url), 'utf8'), /focus-visible/));\n",
+    "--workspace-session-id",
+    "00000318c2171818676cc5"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.948,
+  "kind": "public_cli_process",
+  "label": "A01.022",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 269,
+    "path": "tests/A01-style.test.mjs",
+    "type": "create"
+  },
+  "pid": 10275,
+  "provenance": "agent",
+  "request_id": "p5-01-20260714T071800Z:A01.022:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 629,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A01-style.test.mjs\",\"bytes_written\":269}\n",
+  "timed_out": false
+}

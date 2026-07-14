@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-b0919f76-a661-4bd5-89c8-f3e7fee299f3",
+    "--last-n",
+    "10000"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.539,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-bootstrap",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.acquired",
+        "parent": "d-3",
+        "trace": "p3-spike-08-lane-A08-20260714T070316Z:ENGINE.bootstrap:runtime",
+        "ts": 1784012597197
+      },
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.released",
+        "parent": "d-9",
+        "trace": "p3-spike-08-lane-A08-20260714T070316Z:ENGINE.bootstrap:runtime",
+        "ts": 1784012597251
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 19406,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 9,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784012597197,\"trace\":\"p3-spike-08-lane-A08-20260714T070316Z:ENGINE.bootstrap:runtime\",\"parent\":\"d-3\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":1}},{\"ts\":1784012597251,\"trace\":\"p3-spike-08-lane-A08-20260714T070316Z:ENGINE.bootstrap:runtime\",\"parent\":\"d-9\",\"name\":\"lease.released\",\"attrs\":{\"revision\":1}}]}\n",
+  "timed_out": false
+}

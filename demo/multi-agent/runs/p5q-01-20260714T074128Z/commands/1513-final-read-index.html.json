@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fe615db6-638c-45fa-99eb-22330d119b1b",
+    "--request-id",
+    "p5q-01-20260714T074128Z:ENGINE.final.index.html:runtime",
+    "file_read",
+    "--path",
+    "index.html"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.132,
+  "kind": "public_cli_process",
+  "label": "final-read-index.html",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 1877,
+    "content": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <meta name=\"description\" content=\"FlashCart offline storefront\">\n    <title>FlashCart — offline storefront</title>\n    <link rel=\"stylesheet\" href=\"./src/styles.css\">\n    <link rel=\"stylesheet\" href=\"./src/features/A02-design-system.css\">\n    <link rel=\"stylesheet\" href=\"./src/features/A03-products.css\">\n    <link rel=\"stylesheet\" href=\"./src/features/A04-catalog.css\">\n    <link rel=\"stylesheet\" href=\"./src/features/A05-search.css\">\n    <link rel=\"stylesheet\" href=\"./src/features/A06-cart.css\">\n    <link rel=\"stylesheet\" href=\"./src/features/A07-wishlist.css\">\n    <link rel=\"stylesheet\" href=\"./src/features/A08-checkout.css\">\n    <link rel=\"stylesheet\" href=\"./src/features/A09-accessibility.css\">\n    <link rel=\"stylesheet\" href=\"./src/features/A10-qa.css\">\n  </head>\n  <body>\n    <a class=\"skip\" href=\"#app\">Skip to storefront</a>\n    <main id=\"app\" tabindex=\"-1\" aria-live=\"polite\"></main>\n    <noscript>FlashCart needs JavaScript enabled for its offline checkout demo.</noscript>\n    <script src=\"./src/config.js\"></script>\n    <script src=\"./src/registry.js\"></script>\n    <script src=\"./src/features/A01-foundation.js\"></script>\n    <script src=\"./src/features/A02-design-system.js\"></script>\n    <script src=\"./src/features/A03-products.js\"></script>\n    <script src=\"./src/features/A04-catalog.js\"></script>\n    <script src=\"./src/features/A05-search.js\"></script>\n    <script src=\"./src/features/A06-cart.js\"></script>\n    <script src=\"./src/features/A07-wishlist.js\"></script>\n    <script src=\"./src/features/A08-checkout.js\"></script>\n    <script src=\"./src/features/A09-accessibility.js\"></script>\n    <script src=\"./src/features/A10-qa.js\"></script>\n    <script src=\"./src/app.js\"></script>\n  </body>\n</html>",
+    "next_offset": null,
+    "num_lines": 37,
+    "path": "index.html",
+    "start_line": 1,
+    "total_bytes": 1878,
+    "total_lines": 37,
+    "truncated": false
+  },
+  "pid": 26264,
+  "provenance": "engine",
+  "request_id": "p5q-01-20260714T074128Z:ENGINE.final.index.html:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1513,
+  "stderr": "",
+  "stdout": "{\"path\":\"index.html\",\"content\":\"<!doctype html>\\n<html lang=\\\"en\\\">\\n  <head>\\n    <meta charset=\\\"utf-8\\\">\\n    <meta name=\\\"viewport\\\" content=\\\"width=device-width, initial-scale=1\\\">\\n    <meta name=\\\"description\\\" content=\\\"FlashCart offline storefront\\\">\\n    <title>FlashCart — offline storefront</title>\\n    <link rel=\\\"stylesheet\\\" href=\\\"./src/styles.css\\\">\\n    <link rel=\\\"stylesheet\\\" href=\\\"./src/features/A02-design-system.css\\\">\\n    <link rel=\\\"stylesheet\\\" href=\\\"./src/features/A03-products.css\\\">\\n    <link rel=\\\"stylesheet\\\" href=\\\"./src/features/A04-catalog.css\\\">\\n    <link rel=\\\"stylesheet\\\" href=\\\"./src/features/A05-search.css\\\">\\n    <link rel=\\\"stylesheet\\\" href=\\\"./src/features/A06-cart.css\\\">\\n    <link rel=\\\"stylesheet\\\" href=\\\"./src/features/A07-wishlist.css\\\">\\n    <link rel=\\\"stylesheet\\\" href=\\\"./src/features/A08-checkout.css\\\">\\n    <link rel=\\\"stylesheet\\\" href=\\\"./src/features/A09-accessibility.css\\\">\\n    <link rel=\\\"stylesheet\\\" href=\\\"./src/features/A10-qa.css\\\">\\n  </head>\\n  <body>\\n    <a class=\\\"skip\\\" href=\\\"#app\\\">Skip to storefront</a>\\n    <main id=\\\"app\\\" tabindex=\\\"-1\\\" aria-live=\\\"polite\\\"></main>\\n    <noscript>FlashCart needs JavaScript enabled for its offline checkout demo.</noscript>\\n    <script src=\\\"./src/config.js\\\"></script>\\n    <script src=\\\"./src/registry.js\\\"></script>\\n    <script src=\\\"./src/features/A01-foundation.js\\\"></script>\\n    <script src=\\\"./src/features/A02-design-system.js\\\"></script>\\n    <script src=\\\"./src/features/A03-products.js\\\"></script>\\n    <script src=\\\"./src/features/A04-catalog.js\\\"></script>\\n    <script src=\\\"./src/features/A05-search.js\\\"></script>\\n    <script src=\\\"./src/features/A06-cart.js\\\"></script>\\n    <script src=\\\"./src/features/A07-wishlist.js\\\"></script>\\n    <script src=\\\"./src/features/A08-checkout.js\\\"></script>\\n    <script src=\\\"./src/features/A09-accessibility.js\\\"></script>\\n    <script src=\\\"./src/features/A10-qa.js\\\"></script>\\n    <script src=\\\"./src/app.js\\\"></script>\\n  </body>\\n</html>\",\"start_line\":1,\"num_lines\":37,\"total_lines\":37,\"bytes_read\":1877,\"total_bytes\":1878,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

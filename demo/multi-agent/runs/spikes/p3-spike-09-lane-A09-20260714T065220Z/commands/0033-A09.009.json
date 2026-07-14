@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-bd679d35-f280-42bd-9fa0-e11950d29e87",
+    "--request-id",
+    "p3-spike-09-lane-A09-20260714T065220Z:A09.009:runtime",
+    "file_read",
+    "--path",
+    "src/features/A09-accessibility.js",
+    "--workspace-session-id",
+    "00000318c215689fdd11fc"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.224,
+  "kind": "public_cli_process",
+  "label": "A09.009",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 239,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A09 = { id: 'A09', verify() { return false; }, implementation: 'broken A09' };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A09-accessibility.js",
+    "start_line": 1,
+    "total_bytes": 240,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 25729,
+  "provenance": "agent",
+  "request_id": "p3-spike-09-lane-A09-20260714T065220Z:A09.009:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 33,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A09-accessibility.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A09 = { id: 'A09', verify() { return false; }, implementation: 'broken A09' };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":239,\"total_bytes\":240,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-f9e1cfc0-6b02-4455-89cb-86ed202de04a",
+    "--request-id",
+    "p2-full-20260714h:A10.015:runtime",
+    "file_write",
+    "--path",
+    "tests/A10-data.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A10-qa-data.js');\ntest('A10 fixture is deterministic', () => assert.equal(globalThis.FlashCart.fixtures.A10.owner, 'A10'));\n",
+    "--workspace-session-id",
+    "00000c18c210e1816994e5"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.336,
+  "kind": "public_cli_process",
+  "label": "A10.015",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 225,
+    "path": "tests/A10-data.test.mjs",
+    "type": "create"
+  },
+  "pid": 81186,
+  "provenance": "agent",
+  "request_id": "p2-full-20260714h:A10.015:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 405,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A10-data.test.mjs\",\"bytes_written\":225}\n",
+  "timed_out": false
+}

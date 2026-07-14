@@ -1,0 +1,26 @@
+{
+  "request_id": "p2-full-20260714g:A06.051:runtime",
+  "row": "A06.051",
+  "trace": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_read"
+          },
+          "dur_ms": 0.0,
+          "name": "daemon.dispatch",
+          "span": "d-2141",
+          "status": "completed",
+          "trace": "p2-full-20260714g:A06.051:runtime",
+          "ts": 1784006746221
+        }
+      }
+    ],
+    "trace": "p2-full-20260714g:A06.051:runtime",
+    "view": "trace"
+  }
+}

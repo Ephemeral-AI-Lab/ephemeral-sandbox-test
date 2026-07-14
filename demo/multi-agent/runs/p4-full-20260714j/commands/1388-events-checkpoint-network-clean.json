@@ -1,0 +1,112 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784008033943"
+  ],
+  "cancelled": false,
+  "duration_ms": 72.673,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-network-clean",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2140",
+        "trace": "p4-full-20260714j:A08.045:runtime",
+        "ts": 1784008033943
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2153",
+        "trace": "p4-full-20260714j:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784008034538
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2159",
+        "trace": "p4-full-20260714j:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784008034634
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2173",
+        "trace": "p4-full-20260714j:A08.053:runtime",
+        "ts": 1784008035156
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2178",
+        "trace": "e2e-direct-daemon-ea024a8d-8f6d-4ae6-806a-1f1f55b05efb",
+        "ts": 1784008035294
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2181",
+        "trace": "e2e-direct-daemon-993a1ad7-bcc3-4929-b43b-e7b41620a9f3",
+        "ts": 1784008035372
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2186",
+        "trace": "e2e-direct-daemon-c549d545-078e-4eb9-b22f-cdc82659e013",
+        "ts": 1784008035466
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2188",
+        "trace": "e2e-direct-daemon-923ff3b4-c7bb-478c-ab22-c1d6780bf259",
+        "ts": 1784008035561
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2202",
+        "trace": "p4-full-20260714j:A08.053:runtime",
+        "ts": 1784008035950
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 65083,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1388,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784008033943,\"trace\":\"p4-full-20260714j:A08.045:runtime\",\"parent\":\"d-2140\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784008034538,\"trace\":\"p4-full-20260714j:ENGINE.shared.checkpoint.conflict-rejected:runtime\",\"parent\":\"d-2153\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784008034634,\"trace\":\"p4-full-20260714j:ENGINE.shared.checkpoint.conflict-rejected:runtime\",\"parent\":\"d-2159\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}},{\"ts\":1784008035156,\"trace\":\"p4-full-20260714j:A08.053:runtime\",\"parent\":\"d-2173\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784008035294,\"trace\":\"e2e-direct-daemon-ea024a8d-8f6d-4ae6-806a-1f1f55b05efb\",\"parent\":\"d-2178\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784008035372,\"trace\":\"e2e-direct-daemon-993a1ad7-bcc3-4929-b43b-e7b41620a9f3\",\"parent\":\"d-2181\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784008035466,\"trace\":\"e2e-direct-daemon-c549d545-078e-4eb9-b22f-cdc82659e013\",\"parent\":\"d-2186\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784008035561,\"trace\":\"e2e-direct-daemon-923ff3b4-c7bb-478c-ab22-c1d6780bf259\",\"parent\":\"d-2188\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784008035950,\"trace\":\"p4-full-20260714j:A08.053:runtime\",\"parent\":\"d-2202\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}}]}\n",
+  "timed_out": false
+}

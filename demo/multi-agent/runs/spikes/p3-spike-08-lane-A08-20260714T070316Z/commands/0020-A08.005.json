@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b0919f76-a661-4bd5-89c8-f3e7fee299f3",
+    "--request-id",
+    "p3-spike-08-lane-A08-20260714T070316Z:A08.005:runtime",
+    "file_read",
+    "--path",
+    "src/features/A08-checkout.js",
+    "--workspace-session-id",
+    "00000318c2160165dba2ea"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.805,
+  "kind": "public_cli_process",
+  "label": "A08.005",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/features/A08-checkout.js"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/features/A08-checkout.js"
+    }
+  },
+  "pid": 19604,
+  "provenance": "agent",
+  "request_id": "p3-spike-08-lane-A08-20260714T070316Z:A08.005:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 20,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/features/A08-checkout.js\",\"details\":{\"path\":\"src/features/A08-checkout.js\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-05aa11ab-f22c-4929-87b4-9080e735c2dc",
+    "--trace-id",
+    "p3full-20260714T065654Z-resume:A10.044:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 67.732,
+  "kind": "public_cli_process",
+  "label": "trace-A10.044",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "write_command_stdin"
+          },
+          "dur_ms": 48.0,
+          "name": "daemon.dispatch",
+          "span": "d-2012",
+          "status": "completed",
+          "trace": "p3full-20260714T065654Z-resume:A10.044:runtime",
+          "ts": 1784012260185
+        }
+      }
+    ],
+    "trace": "p3full-20260714T065654Z-resume:A10.044:runtime",
+    "view": "trace"
+  },
+  "pid": 90477,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1270,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3full-20260714T065654Z-resume:A10.044:runtime\",\"spans\":[{\"span\":{\"ts\":1784012260185,\"trace\":\"p3full-20260714T065654Z-resume:A10.044:runtime\",\"span\":\"d-2012\",\"name\":\"daemon.dispatch\",\"dur_ms\":48.0,\"status\":\"completed\",\"attrs\":{\"op\":\"write_command_stdin\"}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}]}\n",
+  "timed_out": false
+}

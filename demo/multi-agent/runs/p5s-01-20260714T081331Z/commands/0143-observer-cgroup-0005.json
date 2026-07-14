@@ -1,0 +1,113 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "cgroup",
+    "--sandbox-id",
+    "eos-fbe9e67e-eb75-4c15-97b8-68ef24761269",
+    "--scope",
+    "sandbox",
+    "--window-ms",
+    "600000"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.648,
+  "kind": "public_cli_process",
+  "label": "observer-cgroup-0005",
+  "parse_error": null,
+  "parsed_json": {
+    "scope": "sandbox",
+    "series": [
+      {
+        "deltas": {},
+        "metrics": {
+          "cpu_usec": 99730,
+          "io_rbytes": 0,
+          "io_wbytes": 98304,
+          "mem_cur": 3342336,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": null,
+        "ts": 1784016816770
+      },
+      {
+        "deltas": {
+          "cpu_usec": 69905,
+          "io_rbytes": 0,
+          "io_wbytes": 69632
+        },
+        "metrics": {
+          "cpu_usec": 169635,
+          "io_rbytes": 0,
+          "io_wbytes": 167936,
+          "mem_cur": 13565952,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 540,
+        "ts": 1784016817310
+      },
+      {
+        "deltas": {
+          "cpu_usec": 179117,
+          "io_rbytes": 0,
+          "io_wbytes": 106496
+        },
+        "metrics": {
+          "cpu_usec": 348752,
+          "io_rbytes": 0,
+          "io_wbytes": 274432,
+          "mem_cur": 15908864,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 572,
+        "ts": 1784016817882
+      },
+      {
+        "deltas": {
+          "cpu_usec": 285205,
+          "io_rbytes": 0,
+          "io_wbytes": 20480
+        },
+        "metrics": {
+          "cpu_usec": 633957,
+          "io_rbytes": 0,
+          "io_wbytes": 294912,
+          "mem_cur": 18563072,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 563,
+        "ts": 1784016818445
+      },
+      {
+        "deltas": {
+          "cpu_usec": 312030,
+          "io_rbytes": 0,
+          "io_wbytes": 20480
+        },
+        "metrics": {
+          "cpu_usec": 945987,
+          "io_rbytes": 0,
+          "io_wbytes": 315392,
+          "mem_cur": 17477632,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 544,
+        "ts": 1784016818989
+      }
+    ],
+    "view": "cgroup"
+  },
+  "pid": 96971,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 143,
+  "stderr": "",
+  "stdout": "{\"view\":\"cgroup\",\"scope\":\"sandbox\",\"series\":[{\"ts\":1784016816770,\"sample_delta_ms\":null,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":99730,\"io_rbytes\":0,\"io_wbytes\":98304,\"mem_cur\":3342336,\"mem_max\":4109398016},\"deltas\":{}},{\"ts\":1784016817310,\"sample_delta_ms\":540,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":169635,\"io_rbytes\":0,\"io_wbytes\":167936,\"mem_cur\":13565952,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":69905,\"io_rbytes\":0,\"io_wbytes\":69632}},{\"ts\":1784016817882,\"sample_delta_ms\":572,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":348752,\"io_rbytes\":0,\"io_wbytes\":274432,\"mem_cur\":15908864,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":179117,\"io_rbytes\":0,\"io_wbytes\":106496}},{\"ts\":1784016818445,\"sample_delta_ms\":563,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":633957,\"io_rbytes\":0,\"io_wbytes\":294912,\"mem_cur\":18563072,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":285205,\"io_rbytes\":0,\"io_wbytes\":20480}},{\"ts\":1784016818989,\"sample_delta_ms\":544,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":945987,\"io_rbytes\":0,\"io_wbytes\":315392,\"mem_cur\":17477632,\"mem_max\":4109398016},\"deltas\":{\"cpu_usec\":312030,\"io_rbytes\":0,\"io_wbytes\":20480}}]}\n",
+  "timed_out": false
+}

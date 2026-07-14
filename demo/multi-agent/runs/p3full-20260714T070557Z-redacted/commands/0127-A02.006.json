@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-adf9180b-82e7-4128-90a2-b7342748f86b",
+    "--request-id",
+    "p3full-20260714T070557Z-redacted:A02.006:runtime",
+    "file_write",
+    "--path",
+    "src/features/A02-design-system.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A02 = { id: 'A02', verify() { return false; }, implementation: 'broken A02' };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000418c2162702937547"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.304,
+  "kind": "public_cli_process",
+  "label": "A02.006",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 240,
+    "path": "src/features/A02-design-system.js",
+    "type": "create"
+  },
+  "pid": 65238,
+  "provenance": "agent",
+  "request_id": "p3full-20260714T070557Z-redacted:A02.006:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 127,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A02-design-system.js\",\"bytes_written\":240}\n",
+  "timed_out": false
+}

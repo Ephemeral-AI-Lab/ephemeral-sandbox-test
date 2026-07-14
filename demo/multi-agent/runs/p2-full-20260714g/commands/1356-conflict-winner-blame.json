@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-f15d7124-8b79-4807-861e-ea16ff10aa04",
+    "--request-id",
+    "p2-full-20260714g:ENGINE.conflict.blame:runtime",
+    "file_blame",
+    "--path",
+    "src/config.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.522,
+  "kind": "public_cli_process",
+  "label": "conflict-winner-blame",
+  "parse_error": null,
+  "parsed_json": {
+    "path": "src/config.js",
+    "ranges": [
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000118c210a4ad3e9ba6",
+        "start_line": 1
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00001118c210ae7519dc98",
+        "start_line": 2
+      }
+    ]
+  },
+  "pid": 68068,
+  "provenance": "engine",
+  "request_id": "p2-full-20260714g:ENGINE.conflict.blame:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1356,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/config.js\",\"ranges\":[{\"start_line\":1,\"line_count\":1,\"owner\":\"workspace_session:00000118c210a4ad3e9ba6\"},{\"start_line\":2,\"line_count\":1,\"owner\":\"workspace_session:00001118c210ae7519dc98\"}]}\n",
+  "timed_out": false
+}

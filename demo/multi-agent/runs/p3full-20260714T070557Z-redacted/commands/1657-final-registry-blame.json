@@ -1,0 +1,91 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-adf9180b-82e7-4128-90a2-b7342748f86b",
+    "--request-id",
+    "p3full-20260714T070557Z-redacted:ENGINE.final.registry:runtime",
+    "file_blame",
+    "--path",
+    "src/registry.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.616,
+  "kind": "public_cli_process",
+  "label": "final-registry-blame",
+  "parse_error": null,
+  "parsed_json": {
+    "path": "src/registry.js",
+    "ranges": [
+      {
+        "line_count": 2,
+        "owner": "workspace_session:00000118c21626e3fac42b",
+        "start_line": 1
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000318c2162700041801",
+        "start_line": 3
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000418c2162702937547",
+        "start_line": 4
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000518c2162705001e9a",
+        "start_line": 5
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000618c216270789063b",
+        "start_line": 6
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000718c216270ab51904",
+        "start_line": 7
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000818c216270e2ff349",
+        "start_line": 8
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000918c2162710a497bd",
+        "start_line": 9
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000a18c21627133e59d2",
+        "start_line": 10
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000b18c2162715c22217",
+        "start_line": 11
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000c18c216271824a421",
+        "start_line": 12
+      },
+      {
+        "line_count": 1,
+        "owner": "workspace_session:00000118c21626e3fac42b",
+        "start_line": 13
+      }
+    ]
+  },
+  "pid": 93887,
+  "provenance": "engine",
+  "request_id": "p3full-20260714T070557Z-redacted:ENGINE.final.registry:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1657,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/registry.js\",\"ranges\":[{\"start_line\":1,\"line_count\":2,\"owner\":\"workspace_session:00000118c21626e3fac42b\"},{\"start_line\":3,\"line_count\":1,\"owner\":\"workspace_session:00000318c2162700041801\"},{\"start_line\":4,\"line_count\":1,\"owner\":\"workspace_session:00000418c2162702937547\"},{\"start_line\":5,\"line_count\":1,\"owner\":\"workspace_session:00000518c2162705001e9a\"},{\"start_line\":6,\"line_count\":1,\"owner\":\"workspace_session:00000618c216270789063b\"},{\"start_line\":7,\"line_count\":1,\"owner\":\"workspace_session:00000718c216270ab51904\"},{\"start_line\":8,\"line_count\":1,\"owner\":\"workspace_session:00000818c216270e2ff349\"},{\"start_line\":9,\"line_count\":1,\"owner\":\"workspace_session:00000918c2162710a497bd\"},{\"start_line\":10,\"line_count\":1,\"owner\":\"workspace_session:00000a18c21627133e59d2\"},{\"start_line\":11,\"line_count\":1,\"owner\":\"workspace_session:00000b18c2162715c22217\"},{\"start_line\":12,\"line_count\":1,\"owner\":\"workspace_session:00000c18c216271824a421\"},{\"start_line\":13,\"line_count\":1,\"owner\":\"workspace_session:00000118c21626e3fac42b\"}]}\n",
+  "timed_out": false
+}

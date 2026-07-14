@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-8251de1f-cb08-4cdc-b68a-f546b48223cd",
+    "--request-id",
+    "p3-spike-12-network-A04-A09-20260714T065251Z:A09.020:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000418c2156ff909e24d",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A09-view.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 106.184,
+  "kind": "public_cli_process",
+  "label": "A09.020",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.067685208,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A09 view has a semantic section (0.601458ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 39.261459",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.06775775,
+    "workspace_session_id": "00000418c2156ff909e24d"
+  },
+  "pid": 39298,
+  "provenance": "agent",
+  "request_id": "p3-spike-12-network-A04-A09-20260714T065251Z:A09.020:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 123,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.06775775,\"command_total_time_seconds\":0.067685208,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":41,\"output\":\"✔ A09 view has a semantic section (0.601458ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 39.261459\",\"workspace_session_id\":\"00000418c2156ff909e24d\"}\n",
+  "timed_out": false
+}

@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-f32b2d3a-ac89-4152-86b1-31f0fa16de68",
+    "--request-id",
+    "p5r-02-20260714T084005Z:ENGINE.network-blame:runtime",
+    "file_blame",
+    "--path",
+    ".flashcart-network/shared-one.txt"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.415,
+  "kind": "public_cli_process",
+  "label": "network-sentinel-blame",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": ".flashcart-network/shared-one.txt"
+      },
+      "kind": "not_found",
+      "message": "no auditability record for path: .flashcart-network/shared-one.txt"
+    }
+  },
+  "pid": 54333,
+  "provenance": "engine",
+  "request_id": "p5r-02-20260714T084005Z:ENGINE.network-blame:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 1379,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"no auditability record for path: .flashcart-network/shared-one.txt\",\"details\":{\"path\":\".flashcart-network/shared-one.txt\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

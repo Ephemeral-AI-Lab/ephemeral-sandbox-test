@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--request-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A08.036:runtime",
+    "file_read",
+    "--path",
+    "src/features/A08-checkout.json",
+    "--workspace-session-id",
+    "00000a18c2160e26445ac1"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.546,
+  "kind": "public_cli_process",
+  "label": "A08.036",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 369,
+    "content": "{\n  \"owner\": \"A08\",\n  \"paths\": {\n    \"a11y\": \"src/features/A08-checkout-a11y.js\",\n    \"core\": \"src/features/A08-checkout.js\",\n    \"data\": \"src/features/A08-checkout-data.js\",\n    \"manifest\": \"src/features/A08-checkout.json\",\n    \"style\": \"src/features/A08-checkout.css\",\n    \"view\": \"src/features/A08-checkout-view.js\"\n  },\n  \"role\": \"Checkout\",\n  \"schema_version\": 1\n}",
+    "next_offset": null,
+    "num_lines": 13,
+    "path": "src/features/A08-checkout.json",
+    "start_line": 1,
+    "total_bytes": 370,
+    "total_lines": 13,
+    "truncated": false
+  },
+  "pid": 58528,
+  "provenance": "agent",
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A08.036:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1055,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A08-checkout.json\",\"content\":\"{\\n  \\\"owner\\\": \\\"A08\\\",\\n  \\\"paths\\\": {\\n    \\\"a11y\\\": \\\"src/features/A08-checkout-a11y.js\\\",\\n    \\\"core\\\": \\\"src/features/A08-checkout.js\\\",\\n    \\\"data\\\": \\\"src/features/A08-checkout-data.js\\\",\\n    \\\"manifest\\\": \\\"src/features/A08-checkout.json\\\",\\n    \\\"style\\\": \\\"src/features/A08-checkout.css\\\",\\n    \\\"view\\\": \\\"src/features/A08-checkout-view.js\\\"\\n  },\\n  \\\"role\\\": \\\"Checkout\\\",\\n  \\\"schema_version\\\": 1\\n}\",\"start_line\":1,\"num_lines\":13,\"total_lines\":13,\"bytes_read\":369,\"total_bytes\":370,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

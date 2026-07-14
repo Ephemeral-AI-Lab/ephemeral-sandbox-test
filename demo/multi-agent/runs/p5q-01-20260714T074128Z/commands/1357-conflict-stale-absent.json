@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fe615db6-638c-45fa-99eb-22330d119b1b",
+    "--request-id",
+    "p5q-01-20260714T074128Z:ENGINE.conflict.stale:runtime",
+    "file_read",
+    "--path",
+    "src/conflict/A08-stale-attempt.txt"
+  ],
+  "cancelled": false,
+  "duration_ms": 37.912,
+  "kind": "public_cli_process",
+  "label": "conflict-stale-absent",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/conflict/A08-stale-attempt.txt"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/conflict/A08-stale-attempt.txt"
+    }
+  },
+  "pid": 23000,
+  "provenance": "engine",
+  "request_id": "p5q-01-20260714T074128Z:ENGINE.conflict.stale:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 1357,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/conflict/A08-stale-attempt.txt\",\"details\":{\"path\":\"src/conflict/A08-stale-attempt.txt\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

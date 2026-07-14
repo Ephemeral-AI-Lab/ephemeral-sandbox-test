@@ -1,0 +1,97 @@
+{
+  "agents": [
+    {
+      "completed": 0,
+      "id": "A01",
+      "planned": 44,
+      "role": "Foundation"
+    },
+    {
+      "completed": 0,
+      "id": "A02",
+      "planned": 44,
+      "role": "Design system"
+    },
+    {
+      "completed": 0,
+      "id": "A03",
+      "planned": 44,
+      "role": "Product data"
+    },
+    {
+      "completed": 0,
+      "id": "A04",
+      "planned": 44,
+      "role": "Catalog and PDP"
+    },
+    {
+      "completed": 0,
+      "id": "A05",
+      "planned": 44,
+      "role": "Search and facets"
+    },
+    {
+      "completed": 0,
+      "id": "A06",
+      "planned": 52,
+      "role": "Cart and pricing"
+    },
+    {
+      "completed": 0,
+      "id": "A07",
+      "planned": 44,
+      "role": "Wishlist"
+    },
+    {
+      "completed": 0,
+      "id": "A08",
+      "planned": 59,
+      "role": "Checkout"
+    },
+    {
+      "completed": 0,
+      "id": "A09",
+      "planned": 54,
+      "role": "Accessibility and performance"
+    },
+    {
+      "completed": 0,
+      "id": "A10",
+      "planned": 53,
+      "role": "Integration QA"
+    }
+  ],
+  "commands": {},
+  "evidence": {
+    "network_probes": {},
+    "preview": null,
+    "raw_owner_mapping": {}
+  },
+  "presentation": {
+    "active_scene": "preflight",
+    "checkpoints": {}
+  },
+  "projection_seq": 3,
+  "run": {
+    "calls": {
+      "agent": 0,
+      "completed": 0,
+      "engine": 2,
+      "engine_runtime_cli": 0,
+      "manager_control_cli": 2,
+      "planned": 482,
+      "telemetry_cli": 0,
+      "trusted_session_control": 0
+    },
+    "cleanup_verdict": "clean",
+    "elapsed_ms": 38.103,
+    "execution_verdict": "running",
+    "failed": "DemoFailure: create_sandbox response lacks id",
+    "id": "p3-spike-01-lane-A01-20260714T061623Z",
+    "sandbox_id": null,
+    "status": "failed",
+    "title": "FlashCart: ten agents, one workspace"
+  },
+  "schema_version": "multiagent-demo/v1",
+  "workspaces": {}
+}

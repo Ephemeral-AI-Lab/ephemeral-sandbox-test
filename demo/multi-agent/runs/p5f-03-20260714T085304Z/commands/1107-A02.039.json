@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-87d96492-efb1-4bf1-ae1a-d5efea27eb0d",
+    "--request-id",
+    "p5f-03-20260714T085304Z:A02.039:runtime",
+    "file_write",
+    "--path",
+    "tests/A02-quality.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A02-design-system.js');\ntest('A02 implementation is marked deterministic', () => assert.equal(globalThis.FlashCart.features.A02.deterministic, true));\n",
+    "--workspace-session-id",
+    "00000418c21c0061ab1ba1"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.216,
+  "kind": "public_cli_process",
+  "label": "A02.039",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 252,
+    "path": "tests/A02-quality.test.mjs",
+    "type": "create"
+  },
+  "pid": 75378,
+  "provenance": "agent",
+  "request_id": "p5f-03-20260714T085304Z:A02.039:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1107,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A02-quality.test.mjs\",\"bytes_written\":252}\n",
+  "timed_out": false
+}

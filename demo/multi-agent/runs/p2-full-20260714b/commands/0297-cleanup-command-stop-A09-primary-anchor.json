@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-0146fa3c-46af-4952-89e0-29f9609fc54c",
+    "--request-id",
+    "p2-full-20260714b:ENGINE.cleanup.stop.A09.primary.anchor:runtime",
+    "write_command_stdin",
+    "--command-session-id",
+    "namespace_execution_11",
+    "--yield-time-ms",
+    "30000",
+    "stop\n"
+  ],
+  "cancelled": false,
+  "duration_ms": 30041.746,
+  "kind": "public_cli_process",
+  "label": "cleanup-command-stop-A09-primary-anchor",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {},
+      "kind": "internal_error",
+      "message": "sandbox daemon forwarding failed: daemon request timed out after 30000 ms"
+    }
+  },
+  "pid": 61361,
+  "provenance": "engine",
+  "request_id": "p2-full-20260714b:ENGINE.cleanup.stop.A09.primary.anchor:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 297,
+  "stderr": "{\"error\":{\"kind\":\"internal_error\",\"message\":\"sandbox daemon forwarding failed: daemon request timed out after 30000 ms\",\"details\":{}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

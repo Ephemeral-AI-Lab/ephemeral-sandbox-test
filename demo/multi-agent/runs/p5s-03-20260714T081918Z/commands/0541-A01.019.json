@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-573f5b3f-5275-4ba9-8e9d-3481b8969c08",
+    "--request-id",
+    "p5s-03-20260714T081918Z:A01.019:runtime",
+    "file_write",
+    "--path",
+    "tests/A01-view.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A01 view has a semantic section', async () => assert.match(await readFile(new URL('../src/app.js', import.meta.url), 'utf8'), /product-grid/));\n",
+    "--workspace-session-id",
+    "00000318c21a28dab3fecd"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.054,
+  "kind": "public_cli_process",
+  "label": "A01.019",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 266,
+    "path": "tests/A01-view.test.mjs",
+    "type": "create"
+  },
+  "pid": 67485,
+  "provenance": "agent",
+  "request_id": "p5s-03-20260714T081918Z:A01.019:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 541,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A01-view.test.mjs\",\"bytes_written\":266}\n",
+  "timed_out": false
+}

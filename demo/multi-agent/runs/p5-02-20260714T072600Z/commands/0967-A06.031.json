@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-7659e24e-1f97-41d1-a34d-7721f1f0178f",
+    "--request-id",
+    "p5-02-20260714T072600Z:A06.031:runtime",
+    "file_read",
+    "--path",
+    "src/features/A06-cart.js",
+    "--workspace-session-id",
+    "00000818c21739dcb8cc1e"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.881,
+  "kind": "public_cli_process",
+  "label": "A06.031",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 698,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A06 = {\n    id: 'A06',\n    label: 'Cart and pricing',\n    deterministic: true,\n    verify() { return true; },\n    quoteCart(subtotalCents, promotionCents = 0) { const config = root.FlashCart.config; const discounted = Math.max(0, subtotalCents - promotionCents); const shippingCents = discounted >= config.freeShippingCents ? 0 : config.standardShippingCents; return { discounted, shippingCents, taxCents: Math.round(discounted * config.taxRate), totalCents: discounted + shippingCents + Math.round(discounted * config.taxRate) }; }\n  };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 11,
+    "path": "src/features/A06-cart.js",
+    "start_line": 1,
+    "total_bytes": 699,
+    "total_lines": 11,
+    "truncated": false
+  },
+  "pid": 47245,
+  "provenance": "agent",
+  "request_id": "p5-02-20260714T072600Z:A06.031:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 967,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A06-cart.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A06 = {\\n    id: 'A06',\\n    label: 'Cart and pricing',\\n    deterministic: true,\\n    verify() { return true; },\\n    quoteCart(subtotalCents, promotionCents = 0) { const config = root.FlashCart.config; const discounted = Math.max(0, subtotalCents - promotionCents); const shippingCents = discounted >= config.freeShippingCents ? 0 : config.standardShippingCents; return { discounted, shippingCents, taxCents: Math.round(discounted * config.taxRate), totalCents: discounted + shippingCents + Math.round(discounted * config.taxRate) }; }\\n  };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":11,\"total_lines\":11,\"bytes_read\":698,\"total_bytes\":699,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

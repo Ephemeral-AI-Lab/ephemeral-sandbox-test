@@ -1,0 +1,78 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-b00a8c3e-45c0-4e7d-8ba1-e6cd1cafc3ac",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784011969041"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.128,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-conflict-rejected",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 4
+        },
+        "name": "lease.released",
+        "parent": "d-473",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.045:runtime",
+        "ts": 1784011969041
+      },
+      {
+        "attrs": {
+          "revision": 5
+        },
+        "name": "lease.acquired",
+        "parent": "d-477",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.conflict-winner:runtime",
+        "ts": 1784011969286
+      },
+      {
+        "attrs": {
+          "revision": 5
+        },
+        "name": "lease.released",
+        "parent": "d-482",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.conflict-winner:runtime",
+        "ts": 1784011969352
+      },
+      {
+        "attrs": {
+          "detail": "publish rejected: PublishReject { path: Some(LayerPath(\"src/config.js\")), reason: SourceConflict, source_conflict: Some(SourceConflict { path: LayerPath(\"src/config.js\"), expected: File { digest: \"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\", executable: None }, actual: File { digest: \"5183fdab1d846c76445de9bd7da23c22bbf423b5a86823b0344d9d70883f75b8\", executable: None } }), protected_drop: None, message: None }",
+          "reject_class": "source_conflict",
+          "workspace_session_id": "00000718c2156edd1ea6be"
+        },
+        "name": "workspace_session.finalize.publish_failed",
+        "parent": "d-485",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.045:runtime",
+        "ts": 1784011969399
+      },
+      {
+        "attrs": {
+          "revision": 4
+        },
+        "name": "lease.released",
+        "parent": "d-488",
+        "trace": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.045:runtime",
+        "ts": 1784011969414
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 36379,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 307,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784011969041,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:A06.045:runtime\",\"parent\":\"d-473\",\"name\":\"lease.released\",\"attrs\":{\"revision\":4}},{\"ts\":1784011969286,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.conflict-winner:runtime\",\"parent\":\"d-477\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":5}},{\"ts\":1784011969352,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:ENGINE.shared.checkpoint.conflict-winner:runtime\",\"parent\":\"d-482\",\"name\":\"lease.released\",\"attrs\":{\"revision\":5}},{\"ts\":1784011969399,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.045:runtime\",\"parent\":\"d-485\",\"name\":\"workspace_session.finalize.publish_failed\",\"attrs\":{\"workspace_session_id\":\"00000718c2156edd1ea6be\",\"reject_class\":\"source_conflict\",\"detail\":\"publish rejected: PublishReject { path: Some(LayerPath(\\\"src/config.js\\\")), reason: SourceConflict, source_conflict: Some(SourceConflict { path: LayerPath(\\\"src/config.js\\\"), expected: File { digest: \\\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\\\", executable: None }, actual: File { digest: \\\"5183fdab1d846c76445de9bd7da23c22bbf423b5a86823b0344d9d70883f75b8\\\", executable: None } }), protected_drop: None, message: None }\"}},{\"ts\":1784011969414,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.045:runtime\",\"parent\":\"d-488\",\"name\":\"lease.released\",\"attrs\":{\"revision\":4}}]}\n",
+  "timed_out": false
+}

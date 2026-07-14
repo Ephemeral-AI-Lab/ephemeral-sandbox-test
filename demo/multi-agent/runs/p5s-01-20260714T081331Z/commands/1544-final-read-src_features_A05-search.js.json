@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fbe9e67e-eb75-4c15-97b8-68ef24761269",
+    "--request-id",
+    "p5s-01-20260714T081331Z:ENGINE.final.src-features-A05-search.js:runtime",
+    "file_read",
+    "--path",
+    "src/features/A05-search.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.541,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A05-search.js",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 422,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A05 = {\n    id: 'A05',\n    label: 'Search and facets',\n    deterministic: true,\n    verify() { return true; },\n    search(items, query) { const needle = String(query).toLowerCase(); return items.filter((item) => item.name.toLowerCase().includes(needle)); }\n  };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 11,
+    "path": "src/features/A05-search.js",
+    "start_line": 1,
+    "total_bytes": 423,
+    "total_lines": 11,
+    "truncated": false
+  },
+  "pid": 23191,
+  "provenance": "engine",
+  "request_id": "p5s-01-20260714T081331Z:ENGINE.final.src-features-A05-search.js:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1544,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A05-search.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A05 = {\\n    id: 'A05',\\n    label: 'Search and facets',\\n    deterministic: true,\\n    verify() { return true; },\\n    search(items, query) { const needle = String(query).toLowerCase(); return items.filter((item) => item.name.toLowerCase().includes(needle)); }\\n  };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":11,\"total_lines\":11,\"bytes_read\":422,\"total_bytes\":423,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

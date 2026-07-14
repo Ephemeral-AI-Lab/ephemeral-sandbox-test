@@ -1,0 +1,230 @@
+{
+  "agents": [
+    {
+      "completed": 44,
+      "id": "A01",
+      "planned": 44,
+      "role": "Foundation"
+    },
+    {
+      "completed": 44,
+      "id": "A02",
+      "planned": 44,
+      "role": "Design system"
+    },
+    {
+      "completed": 44,
+      "id": "A03",
+      "planned": 44,
+      "role": "Product data"
+    },
+    {
+      "completed": 44,
+      "id": "A04",
+      "planned": 44,
+      "role": "Catalog and PDP"
+    },
+    {
+      "completed": 44,
+      "id": "A05",
+      "planned": 44,
+      "role": "Search and facets"
+    },
+    {
+      "completed": 52,
+      "id": "A06",
+      "planned": 52,
+      "role": "Cart and pricing"
+    },
+    {
+      "completed": 44,
+      "id": "A07",
+      "planned": 44,
+      "role": "Wishlist"
+    },
+    {
+      "completed": 59,
+      "id": "A08",
+      "planned": 59,
+      "role": "Checkout"
+    },
+    {
+      "completed": 54,
+      "id": "A09",
+      "planned": 54,
+      "role": "Accessibility and performance"
+    },
+    {
+      "completed": 53,
+      "id": "A10",
+      "planned": 53,
+      "role": "Integration QA"
+    }
+  ],
+  "commands": {
+    "A01.primary.anchor": "namespace_execution_3",
+    "A02.primary.anchor": "namespace_execution_4",
+    "A03.primary.anchor": "namespace_execution_5",
+    "A04.primary.anchor": "namespace_execution_6",
+    "A05.primary.anchor": "namespace_execution_7",
+    "A06.conflict.anchor": "namespace_execution_446",
+    "A06.primary.anchor": "namespace_execution_8",
+    "A07.primary.anchor": "namespace_execution_9",
+    "A08.conflict.anchor": "namespace_execution_445",
+    "A08.primary.anchor": "namespace_execution_10",
+    "A08.retry.anchor": "namespace_execution_467",
+    "A09.network.isolated1.server": "namespace_execution_460",
+    "A09.network.isolated2.server": "namespace_execution_463",
+    "A09.network.shared1.server": "namespace_execution_451",
+    "A09.primary.anchor": "namespace_execution_11",
+    "A10.final.anchor": "namespace_execution_471",
+    "A10.final.preview": "namespace_execution_475",
+    "A10.primary.anchor": "namespace_execution_12"
+  },
+  "evidence": {
+    "network_probes": {
+      "A09.049": {
+        "body_preview": "ok",
+        "body_sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+        "byte_length": 2,
+        "duration_ms": 21.994,
+        "headers": {},
+        "label": "A09.049",
+        "network_profile": "shared",
+        "provenance": "sandbox_preview",
+        "status": 200,
+        "url": "http://127.0.0.1:56469/forward/shared/4173/",
+        "workspace_session_id": "00001018c210ae73b23578"
+      },
+      "A09.050": {
+        "body_preview": "ok",
+        "body_sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+        "byte_length": 2,
+        "duration_ms": 3.828,
+        "headers": {},
+        "label": "A09.050",
+        "network_profile": "isolated",
+        "provenance": "sandbox_preview",
+        "status": 200,
+        "url": "http://127.0.0.1:56469/forward/isolated=00001318c210ae7c88bbda/4173/",
+        "workspace_session_id": "00001318c210ae7c88bbda"
+      },
+      "A09.051": {
+        "body_preview": "ok",
+        "body_sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+        "byte_length": 2,
+        "duration_ms": 4.347,
+        "headers": {},
+        "label": "A09.051",
+        "network_profile": "isolated",
+        "provenance": "sandbox_preview",
+        "status": 200,
+        "url": "http://127.0.0.1:56469/forward/isolated=00001418c210ae828b4499/4173/",
+        "workspace_session_id": "00001418c210ae828b4499"
+      }
+    },
+    "preview": {
+      "path": "preview/index.html",
+      "sha256": "fea23211d7caa057bf4bbe044d27e19817c9e8a72c16856c989192538aa29ada",
+      "state": "live",
+      "status": 200
+    },
+    "raw_owner_mapping": {
+      "A01": "workspace_session:00000318c210a4c82fbd2e",
+      "A02": "workspace_session:00000418c210a4cac5de63",
+      "A03": "workspace_session:00000518c210a4cd3ff824",
+      "A04": "workspace_session:00000618c210a4cfb7d988",
+      "A05": "workspace_session:00000718c210a4d23bccc5",
+      "A06": "workspace_session:00001118c210ae7519dc98",
+      "A07": "workspace_session:00000918c210a4d7cc0849",
+      "A08": "workspace_session:00001718c210af4aff884f",
+      "A09": "workspace_session:00000b18c210a4dcb61ccf",
+      "A10": "workspace_session:00001918c210af7a564f36"
+    }
+  },
+  "presentation": {
+    "active_scene": "conflict",
+    "checkpoints": {
+      "bootstrap": {
+        "path": "assertions/checkpoints/bootstrap.json",
+        "revision": 2,
+        "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+        "sha256": "b8a6700dd1b17649ca399f7a35df017a8a8b655cd558b8e3384ae9e36fe59b55"
+      },
+      "conflict-rejected": {
+        "path": "assertions/checkpoints/conflict-rejected.json",
+        "revision": 13,
+        "root_hash": "8b49bc81770c3c79c8f5e7306ddfe8c5ab358625389ac9158edf963bf367d5f2",
+        "sha256": "d7e5009fe365537b41aa3cab4a07dc87b1f84f26f49c10792877461d0ee3f738"
+      },
+      "conflict-retry": {
+        "path": "assertions/checkpoints/conflict-retry.json",
+        "revision": 14,
+        "root_hash": "a419070e09e2ffcb6653070bb747a12550571eed27519db0fabf5727392e2513",
+        "sha256": "002bf24bcb246f3331b1b65a2f257b3d2756a8414c9ac820c6f7760075a1d119"
+      },
+      "conflict-winner": {
+        "path": "assertions/checkpoints/conflict-winner.json",
+        "revision": 13,
+        "root_hash": "8b49bc81770c3c79c8f5e7306ddfe8c5ab358625389ac9158edf963bf367d5f2",
+        "sha256": "b4e5c045edb141ec1935d4c99c08c4518e95ef1542520df3698afd5e73b0deed"
+      },
+      "network-clean": {
+        "path": "assertions/checkpoints/network-clean.json",
+        "revision": 13,
+        "root_hash": "8b49bc81770c3c79c8f5e7306ddfe8c5ab358625389ac9158edf963bf367d5f2",
+        "sha256": "2441115e5939e9b3ac670ec0a4971d756ca5d98e41fdd63135b2f510161b028c"
+      },
+      "primary-publications": {
+        "path": "assertions/checkpoints/primary-publications.json",
+        "revision": 12,
+        "root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+        "sha256": "03f76532f2316b75f8b8db3076580176c84269ac3a66418d4e5e7fa5cead40b2"
+      },
+      "ten-workspaces": {
+        "path": "assertions/checkpoints/ten-workspaces.json",
+        "revision": 2,
+        "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+        "sha256": "1132a37a7b2e99bb2c08a975dca8ffe785e0b9222e7af3eae445734c912d03d6"
+      }
+    }
+  },
+  "projection_seq": 493,
+  "run": {
+    "calls": {
+      "agent": 482,
+      "completed": 482,
+      "engine": 1105,
+      "engine_runtime_cli": 486,
+      "manager_control_cli": 8,
+      "planned": 482,
+      "telemetry_cli": 603,
+      "trusted_session_control": 8
+    },
+    "cleanup_verdict": "clean",
+    "elapsed_ms": 56460.646,
+    "execution_verdict": "running",
+    "failed": "DemoFailure: raw registry blame did not retain exactly the ten mapped owners: ['workspace_session:00000118c210a4ad3e9ba6', 'workspace_session:00000318c210a4c82fbd2e', 'workspace_session:00000418c210a4cac5de63', 'workspace_session:00000518c210a4cd3ff824', 'workspace_session:00000618c210a4cfb7d988', 'workspace_session:00000718c210a4d23bccc5', 'workspace_session:00000818c210a4d55e5774', 'workspace_session:00000918c210a4d7cc0849', 'workspace_session:00000a18c210a4da50b2a1', 'workspace_session:00000b18c210a4dcb61ccf', 'workspace_session:00000c18c210a4df2961b3']",
+    "id": "p2-full-20260714g",
+    "sandbox_id": null,
+    "status": "failed",
+    "title": "FlashCart: ten agents, one workspace"
+  },
+  "schema_version": "multiagent-demo/v1",
+  "workspaces": {
+    "A01.primary.workspace": "00000318c210a4c82fbd2e",
+    "A02.primary.workspace": "00000418c210a4cac5de63",
+    "A03.primary.workspace": "00000518c210a4cd3ff824",
+    "A04.primary.workspace": "00000618c210a4cfb7d988",
+    "A05.primary.workspace": "00000718c210a4d23bccc5",
+    "A06.conflict.workspace": "00001118c210ae7519dc98",
+    "A06.primary.workspace": "00000818c210a4d55e5774",
+    "A07.primary.workspace": "00000918c210a4d7cc0849",
+    "A08.conflict.workspace": "00000f18c210ae71eb565e",
+    "A08.primary.workspace": "00000a18c210a4da50b2a1",
+    "A08.retry.workspace": "00001718c210af4aff884f",
+    "A09.primary.workspace": "00000b18c210a4dcb61ccf",
+    "A10.final.workspace": "00001918c210af7a564f36",
+    "A10.primary.workspace": "00000c18c210a4df2961b3"
+  }
+}

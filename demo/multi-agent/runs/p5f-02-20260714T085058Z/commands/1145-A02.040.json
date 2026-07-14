@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-9e7a512a-4aa0-4693-94f2-c01838407df4",
+    "--request-id",
+    "p5f-02-20260714T085058Z:A02.040:runtime",
+    "file_read",
+    "--path",
+    "tests/A02-quality.test.mjs",
+    "--workspace-session-id",
+    "00000418c21be2f75e6c08"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.463,
+  "kind": "public_cli_process",
+  "label": "A02.040",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 251,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A02-design-system.js');\ntest('A02 implementation is marked deterministic', () => assert.equal(globalThis.FlashCart.features.A02.deterministic, true));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A02-quality.test.mjs",
+    "start_line": 1,
+    "total_bytes": 252,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 45161,
+  "provenance": "agent",
+  "request_id": "p5f-02-20260714T085058Z:A02.040:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1145,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A02-quality.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A02-design-system.js');\\ntest('A02 implementation is marked deterministic', () => assert.equal(globalThis.FlashCart.features.A02.deterministic, true));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":251,\"total_bytes\":252,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

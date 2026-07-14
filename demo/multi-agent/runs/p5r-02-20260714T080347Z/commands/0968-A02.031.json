@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-a0301757-e6eb-4ac8-880c-29a8ef345d7a",
+    "--request-id",
+    "p5r-02-20260714T080347Z:A02.031:runtime",
+    "file_read",
+    "--path",
+    "src/features/A02-design-system.js",
+    "--workspace-session-id",
+    "00000418c2194f0b69bf16"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.826,
+  "kind": "public_cli_process",
+  "label": "A02.031",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 357,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A02 = {\n    id: 'A02',\n    label: 'Design system',\n    deterministic: true,\n    verify() { return true; },\n    tokens() { return { accent: '#175b50', surface: '#fffdf8', focus: '#124ea0' }; }\n  };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 11,
+    "path": "src/features/A02-design-system.js",
+    "start_line": 1,
+    "total_bytes": 358,
+    "total_lines": 11,
+    "truncated": false
+  },
+  "pid": 46318,
+  "provenance": "agent",
+  "request_id": "p5r-02-20260714T080347Z:A02.031:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 968,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A02-design-system.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A02 = {\\n    id: 'A02',\\n    label: 'Design system',\\n    deterministic: true,\\n    verify() { return true; },\\n    tokens() { return { accent: '#175b50', surface: '#fffdf8', focus: '#124ea0' }; }\\n  };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":11,\"total_lines\":11,\"bytes_read\":357,\"total_bytes\":358,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

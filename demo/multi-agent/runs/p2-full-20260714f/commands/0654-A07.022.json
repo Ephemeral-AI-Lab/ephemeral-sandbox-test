@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-c764b9cf-3e43-42cf-9ab9-a15aea7a4819",
+    "--request-id",
+    "p2-full-20260714f:A07.022:runtime",
+    "file_write",
+    "--path",
+    "tests/A07-style.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A07 style keeps focus visible', async () => assert.match(await readFile(new URL('../src/features/A07-wishlist.css', import.meta.url), 'utf8'), /focus-visible/));\n",
+    "--workspace-session-id",
+    "00000918c2107abff58a63"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.701,
+  "kind": "public_cli_process",
+  "label": "A07.022",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 284,
+    "path": "tests/A07-style.test.mjs",
+    "type": "create"
+  },
+  "pid": 28982,
+  "provenance": "agent",
+  "request_id": "p2-full-20260714f:A07.022:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 654,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A07-style.test.mjs\",\"bytes_written\":284}\n",
+  "timed_out": false
+}

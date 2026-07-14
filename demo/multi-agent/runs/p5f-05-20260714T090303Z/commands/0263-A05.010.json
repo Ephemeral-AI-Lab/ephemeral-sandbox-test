@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-3bd6d6ec-7188-490d-8451-f3b099e19c9f",
+    "--request-id",
+    "p5f-05-20260714T090303Z:A05.010:runtime",
+    "file_edit",
+    "--path",
+    "src/features/A05-search.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A05 = {\\n    id: 'A05',\\n    label: 'Search and facets',\\n    deterministic: true,\\n    verify() { return true; },\\n    search(items, query) { const needle = String(query).toLowerCase(); return items.filter((item) => item.name.toLowerCase().includes(needle)); }\\n  };\\n})(globalThis);\\n\",\n    \"old_string\": \"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A05 = { id: 'A05', verify() { return false; }, implementation: 'broken A05' };\\n})(globalThis);\\n\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000718c21c8b15705d76"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.285,
+  "kind": "public_cli_process",
+  "label": "A05.010",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 423,
+    "edits_applied": 1,
+    "path": "src/features/A05-search.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 25015,
+  "provenance": "agent",
+  "request_id": "p5f-05-20260714T090303Z:A05.010:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 263,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/features/A05-search.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":423}\n",
+  "timed_out": false
+}

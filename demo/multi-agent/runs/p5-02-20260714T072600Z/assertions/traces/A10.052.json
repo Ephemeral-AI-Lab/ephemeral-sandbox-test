@@ -1,0 +1,26 @@
+{
+  "request_id": "p5-02-20260714T072600Z:A10.052:runtime",
+  "row": "A10.052",
+  "trace": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "write_command_stdin"
+          },
+          "dur_ms": 6.0,
+          "name": "daemon.dispatch",
+          "span": "d-2242",
+          "status": "completed",
+          "trace": "p5-02-20260714T072600Z:A10.052:runtime",
+          "ts": 1784013987576
+        }
+      }
+    ],
+    "trace": "p5-02-20260714T072600Z:A10.052:runtime",
+    "view": "trace"
+  }
+}

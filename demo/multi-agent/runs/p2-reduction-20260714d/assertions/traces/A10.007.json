@@ -1,0 +1,42 @@
+{
+  "request_id": "p2-reduction-20260714d:A10.007:runtime",
+  "row": "A10.007",
+  "trace": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 2.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 6.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-296",
+              "span": "d-297",
+              "status": "completed",
+              "trace": "p2-reduction-20260714d:A10.007:runtime",
+              "ts": 1784005604591
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 8.0,
+          "name": "daemon.dispatch",
+          "span": "d-296",
+          "status": "completed",
+          "trace": "p2-reduction-20260714d:A10.007:runtime",
+          "ts": 1784005604591
+        }
+      }
+    ],
+    "trace": "p2-reduction-20260714d:A10.007:runtime",
+    "view": "trace"
+  }
+}

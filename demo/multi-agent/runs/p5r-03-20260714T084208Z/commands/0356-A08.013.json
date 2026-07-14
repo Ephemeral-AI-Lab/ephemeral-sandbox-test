@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-71235f98-7a81-439c-8bc4-8f1458449999",
+    "--request-id",
+    "p5r-03-20260714T084208Z:A08.013:runtime",
+    "file_write",
+    "--path",
+    "src/features/A08-checkout-data.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\n  root.FlashCart.fixtures.A08 = Object.freeze({ owner: 'A08', label: 'Checkout', revision: 1 });\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000a18c21b6862b4a3a2"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.079,
+  "kind": "public_cli_process",
+  "label": "A08.013",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 232,
+    "path": "src/features/A08-checkout-data.js",
+    "type": "create"
+  },
+  "pid": 66748,
+  "provenance": "agent",
+  "request_id": "p5r-03-20260714T084208Z:A08.013:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 356,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A08-checkout-data.js\",\"bytes_written\":232}\n",
+  "timed_out": false
+}

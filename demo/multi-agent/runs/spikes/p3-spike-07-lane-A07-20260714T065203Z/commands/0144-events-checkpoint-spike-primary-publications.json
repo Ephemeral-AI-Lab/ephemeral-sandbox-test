@@ -1,0 +1,76 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-6c4e698b-72c5-46bd-8e2a-34908550da5a",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784011923809"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.384,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-spike-primary-publications",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.released",
+        "parent": "d-9",
+        "trace": "p3-spike-07-lane-A07-20260714T065203Z:ENGINE.bootstrap:runtime",
+        "ts": 1784011923809
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-16",
+        "trace": "p3-spike-07-lane-A07-20260714T065203Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784011924101
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-21",
+        "trace": "p3-spike-07-lane-A07-20260714T065203Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784011924155
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-24",
+        "trace": "p3-spike-07-lane-A07-20260714T065203Z:A07.001:runtime",
+        "ts": 1784011924206
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-220",
+        "trace": "p3-spike-07-lane-A07-20260714T065203Z:A07.001:runtime",
+        "ts": 1784011930947
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 22343,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 144,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784011923809,\"trace\":\"p3-spike-07-lane-A07-20260714T065203Z:ENGINE.bootstrap:runtime\",\"parent\":\"d-9\",\"name\":\"lease.released\",\"attrs\":{\"revision\":1}},{\"ts\":1784011924101,\"trace\":\"p3-spike-07-lane-A07-20260714T065203Z:ENGINE.shared.checkpoint.bootstrap:runtime\",\"parent\":\"d-16\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784011924155,\"trace\":\"p3-spike-07-lane-A07-20260714T065203Z:ENGINE.shared.checkpoint.bootstrap:runtime\",\"parent\":\"d-21\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}},{\"ts\":1784011924206,\"trace\":\"p3-spike-07-lane-A07-20260714T065203Z:A07.001:runtime\",\"parent\":\"d-24\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}},{\"ts\":1784011930947,\"trace\":\"p3-spike-07-lane-A07-20260714T065203Z:A07.001:runtime\",\"parent\":\"d-220\",\"name\":\"lease.released\",\"attrs\":{\"revision\":2}}]}\n",
+  "timed_out": false
+}

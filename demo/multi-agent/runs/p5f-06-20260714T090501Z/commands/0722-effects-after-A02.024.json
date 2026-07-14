@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-138c81b8-2911-43e8-b0d4-ad5a886f243e",
+    "--request-id",
+    "p5f-06-20260714T090501Z:ENGINE.effects.after.A02.024:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000418c21ca66a94371e",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { createHash } from 'node:crypto'; import { readdir, readFile } from 'node:fs/promises'; const walk=async(d='.')=>{const out=[];for(const e of await readdir(d,{withFileTypes:true})){const p=(d==='.'?'':d+'/')+e.name;if(p==='.git'||p.startsWith('.git/')||p==='node_modules'||p.startsWith('node_modules/'))continue;if(e.isDirectory())out.push(...await walk(p));else if(e.isFile())out.push([p,createHash('sha256').update(await readFile(p)).digest('hex')]);}return out};console.log(JSON.stringify(Object.fromEntries((await walk()).sort((a,b)=>a[0].localeCompare(b[0])))));\""
+  ],
+  "cancelled": false,
+  "duration_ms": 84.009,
+  "kind": "public_cli_process",
+  "label": "effects-after-A02.024",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.042844334,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "{\"package.json\":\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\",\"src/config.js\":\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\",\"src/features/A02-design-system-a11y.js\":\"21fb5a116afb721cd3e9af22498d3bbe245616676b6dfee88c8b893c5276fae8\",\"src/features/A02-design-system-data.js\":\"5d1be79ab2357d9bae22d9ed5abaea7b31228e9d15810bde0b739b111763791b\",\"src/features/A02-design-system-view.js\":\"dad83c826d33f97a2337c3beb032c1bddb9a4d8325b6eb8b04c7b1cd12ce8fda\",\"src/features/A02-design-system.css\":\"3db8c6f235e2660b77cc54a50fa79611d4f1c270d041440db70ed1a3e840fd28\",\"src/features/A02-design-system.js\":\"727d5d7c2b168a63be4e32db899a44a3e15a6ef1377bddfc60ee61b3b43654d4\",\"src/registry.js\":\"edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08\",\"tests/A02-data.test.mjs\":\"2efb1c241afaa78a0e1a0205c9f41f39bf6a0edbdd4355c15d4448b05a9295f2\",\"tests/A02-red.test.mjs\":\"690ef809c92e6c6f7ccaa7b43792e01bcb790141f863db9906d71ee3d6d36d9a\",\"tests/A02-style.test.mjs\":\"e59edb8493701b580f250474c5811f44bf06b48df2b70449a5189628aff7bfee\",\"tests/A02-view.test.mjs\":\"83f48cb138f08fa9b8c939c4fe90ad5925cfd4bef08551fe3c598b415b060ed7\"}",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.042901875,
+    "workspace_session_id": "00000418c21ca66a94371e"
+  },
+  "pid": 64000,
+  "provenance": "engine",
+  "request_id": "p5f-06-20260714T090501Z:ENGINE.effects.after.A02.024:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 722,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.042901875,\"command_total_time_seconds\":0.042844334,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":289,\"output\":\"{\\\"package.json\\\":\\\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\\\",\\\"src/config.js\\\":\\\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\\\",\\\"src/features/A02-design-system-a11y.js\\\":\\\"21fb5a116afb721cd3e9af22498d3bbe245616676b6dfee88c8b893c5276fae8\\\",\\\"src/features/A02-design-system-data.js\\\":\\\"5d1be79ab2357d9bae22d9ed5abaea7b31228e9d15810bde0b739b111763791b\\\",\\\"src/features/A02-design-system-view.js\\\":\\\"dad83c826d33f97a2337c3beb032c1bddb9a4d8325b6eb8b04c7b1cd12ce8fda\\\",\\\"src/features/A02-design-system.css\\\":\\\"3db8c6f235e2660b77cc54a50fa79611d4f1c270d041440db70ed1a3e840fd28\\\",\\\"src/features/A02-design-system.js\\\":\\\"727d5d7c2b168a63be4e32db899a44a3e15a6ef1377bddfc60ee61b3b43654d4\\\",\\\"src/registry.js\\\":\\\"edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08\\\",\\\"tests/A02-data.test.mjs\\\":\\\"2efb1c241afaa78a0e1a0205c9f41f39bf6a0edbdd4355c15d4448b05a9295f2\\\",\\\"tests/A02-red.test.mjs\\\":\\\"690ef809c92e6c6f7ccaa7b43792e01bcb790141f863db9906d71ee3d6d36d9a\\\",\\\"tests/A02-style.test.mjs\\\":\\\"e59edb8493701b580f250474c5811f44bf06b48df2b70449a5189628aff7bfee\\\",\\\"tests/A02-view.test.mjs\\\":\\\"83f48cb138f08fa9b8c939c4fe90ad5925cfd4bef08551fe3c598b415b060ed7\\\"}\",\"workspace_session_id\":\"00000418c21ca66a94371e\"}\n",
+  "timed_out": false
+}

@@ -1,0 +1,92 @@
+{
+  "request_id": "p3-spike-03-lane-A03-20260714T065128Z:A03.001:runtime",
+  "row": "A03.001",
+  "trace": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "events": [],
+                    "offset_ms": 1.0,
+                    "span": {
+                      "attrs": {},
+                      "dur_ms": 1.0,
+                      "name": "namespace.exec.mount_overlay",
+                      "parent": "d-24",
+                      "span": "d-25",
+                      "status": "completed",
+                      "trace": "p3-spike-03-lane-A03-20260714T065128Z:A03.001:runtime",
+                      "ts": 1784011889675
+                    }
+                  }
+                ],
+                "events": [
+                  {
+                    "event": {
+                      "attrs": {
+                        "revision": 2
+                      },
+                      "name": "lease.acquired",
+                      "parent": "d-24",
+                      "trace": "p3-spike-03-lane-A03-20260714T065128Z:A03.001:runtime",
+                      "ts": 1784011889677
+                    },
+                    "offset_ms": 4.0
+                  }
+                ],
+                "offset_ms": 0.0,
+                "span": {
+                  "attrs": {
+                    "finalize_policy": "publish_then_destroy"
+                  },
+                  "dur_ms": 4.0,
+                  "name": "workspace_session.create",
+                  "parent": "d-23",
+                  "span": "d-24",
+                  "status": "completed",
+                  "trace": "p3-spike-03-lane-A03-20260714T065128Z:A03.001:runtime",
+                  "ts": 1784011889677
+                }
+              }
+            ],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "publish_then_destroy",
+                "session_created": true
+              },
+              "dur_ms": 5.0,
+              "name": "command.exec",
+              "parent": "d-22",
+              "span": "d-23",
+              "status": "completed",
+              "trace": "p3-spike-03-lane-A03-20260714T065128Z:A03.001:runtime",
+              "ts": 1784011889678
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 5.0,
+          "name": "daemon.dispatch",
+          "span": "d-22",
+          "status": "completed",
+          "trace": "p3-spike-03-lane-A03-20260714T065128Z:A03.001:runtime",
+          "ts": 1784011889678
+        }
+      }
+    ],
+    "trace": "p3-spike-03-lane-A03-20260714T065128Z:A03.001:runtime",
+    "view": "trace"
+  }
+}

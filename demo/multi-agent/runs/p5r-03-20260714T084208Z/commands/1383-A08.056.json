@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-71235f98-7a81-439c-8bc4-8f1458449999",
+    "--request-id",
+    "p5r-03-20260714T084208Z:A08.056:runtime",
+    "file_read",
+    "--path",
+    "src/features/A08-checkout-retry.json",
+    "--workspace-session-id",
+    "00001718c21b72f93fb1dd"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.219,
+  "kind": "public_cli_process",
+  "label": "A08.056",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 123,
+    "content": "{\n  \"kind\": \"fresh-head-retry\",\n  \"owner\": \"A08\",\n  \"receipt\": \"checkout conflict retried from A06's published threshold\"\n}",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A08-checkout-retry.json",
+    "start_line": 1,
+    "total_bytes": 124,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 85354,
+  "provenance": "agent",
+  "request_id": "p5r-03-20260714T084208Z:A08.056:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1383,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A08-checkout-retry.json\",\"content\":\"{\\n  \\\"kind\\\": \\\"fresh-head-retry\\\",\\n  \\\"owner\\\": \\\"A08\\\",\\n  \\\"receipt\\\": \\\"checkout conflict retried from A06's published threshold\\\"\\n}\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":123,\"total_bytes\":124,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

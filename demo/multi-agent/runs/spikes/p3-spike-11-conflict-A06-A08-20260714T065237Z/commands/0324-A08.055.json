@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b00a8c3e-45c0-4e7d-8ba1-e6cd1cafc3ac",
+    "--request-id",
+    "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.055:runtime",
+    "file_write",
+    "--path",
+    "src/features/A08-checkout-retry.json",
+    "--content",
+    "{\n  \"kind\": \"fresh-head-retry\",\n  \"owner\": \"A08\",\n  \"receipt\": \"checkout conflict retried from A06's published threshold\"\n}\n",
+    "--workspace-session-id",
+    "00000a18c2156f4b2261c9"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.723,
+  "kind": "public_cli_process",
+  "label": "A08.055",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 124,
+    "path": "src/features/A08-checkout-retry.json",
+    "type": "create"
+  },
+  "pid": 36686,
+  "provenance": "agent",
+  "request_id": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.055:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 324,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A08-checkout-retry.json\",\"bytes_written\":124}\n",
+  "timed_out": false
+}

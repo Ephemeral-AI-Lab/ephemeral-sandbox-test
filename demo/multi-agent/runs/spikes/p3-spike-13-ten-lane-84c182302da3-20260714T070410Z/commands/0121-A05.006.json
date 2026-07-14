@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--request-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A05.006:runtime",
+    "file_write",
+    "--path",
+    "src/features/A05-search.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A05 = { id: 'A05', verify() { return false; }, implementation: 'broken A05' };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000718c2160e1d5470b3"
+  ],
+  "cancelled": false,
+  "duration_ms": 48.582,
+  "kind": "public_cli_process",
+  "label": "A05.006",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 240,
+    "path": "src/features/A05-search.js",
+    "type": "create"
+  },
+  "pid": 41646,
+  "provenance": "agent",
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A05.006:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 121,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A05-search.js\",\"bytes_written\":240}\n",
+  "timed_out": false
+}

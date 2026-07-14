@@ -1,0 +1,72 @@
+{
+  "after": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A09-accessibility-a11y.js": "067ddb1e0b3c2633278539a6e296cb860fa3d438ed0607de20028b15fdd293bc",
+    "src/features/A09-accessibility-data.js": "10ad4889d5e4c765203772aed2da82e5d3872b7cd9b09f840a49bbba33858e72",
+    "src/features/A09-accessibility-view.js": "bdf076146e3427afeadaad5079bc3cfed80e1bff9934ed26e79942bfba4d9c60",
+    "src/features/A09-accessibility.css": "5535b1af8b4468482b420eb50e3ac5e9fbdbd0c8f53c96d49792087d7be7d92a",
+    "src/features/A09-accessibility.js": "3ace9941a4530d974b0c069cea0fa4fa4c7d7d4fc142161be97577996d528aa7",
+    "src/features/A09-accessibility.json": "b3d3bb9113e4e221fa3aaad37304827c9ed8ab1368251053307805eda5ef66e5",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A09-a11y.test.mjs": "fb24edb6ff92888543961810811c9e8f2726e3a9d76d452397d6e661e2e7850f",
+    "tests/A09-data.test.mjs": "4d4b9d5701db0ac85889bb4b7b744ed743002053ad6b66abb094f58ffc1e858a",
+    "tests/A09-manifest.test.mjs": "446b50a497ac109b9c5ebe7866fcaee86d8fb7eceb8631de7ecee0f4a19da96a",
+    "tests/A09-red.test.mjs": "90bbbfd2568fa3ec28886a5ee32065ac21ab23858f6cb1ea9f5983a1c79eac40",
+    "tests/A09-style.test.mjs": "8d75506d2d632c8704f840ab74c4eab72a873144fb41e96dfa0666479f66e9c0",
+    "tests/A09-view.test.mjs": "e91662d451516705fe0f60192c850040f69933635e58d07bbf3f84023e90b29c"
+  },
+  "attempt_ref": "A09.primary",
+  "before": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A09-accessibility-a11y.js": "067ddb1e0b3c2633278539a6e296cb860fa3d438ed0607de20028b15fdd293bc",
+    "src/features/A09-accessibility-data.js": "10ad4889d5e4c765203772aed2da82e5d3872b7cd9b09f840a49bbba33858e72",
+    "src/features/A09-accessibility-view.js": "bdf076146e3427afeadaad5079bc3cfed80e1bff9934ed26e79942bfba4d9c60",
+    "src/features/A09-accessibility.css": "5535b1af8b4468482b420eb50e3ac5e9fbdbd0c8f53c96d49792087d7be7d92a",
+    "src/features/A09-accessibility.js": "3ace9941a4530d974b0c069cea0fa4fa4c7d7d4fc142161be97577996d528aa7",
+    "src/features/A09-accessibility.json": "b3d3bb9113e4e221fa3aaad37304827c9ed8ab1368251053307805eda5ef66e5",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A09-a11y.test.mjs": "fb24edb6ff92888543961810811c9e8f2726e3a9d76d452397d6e661e2e7850f",
+    "tests/A09-data.test.mjs": "4d4b9d5701db0ac85889bb4b7b744ed743002053ad6b66abb094f58ffc1e858a",
+    "tests/A09-red.test.mjs": "90bbbfd2568fa3ec28886a5ee32065ac21ab23858f6cb1ea9f5983a1c79eac40",
+    "tests/A09-style.test.mjs": "8d75506d2d632c8704f840ab74c4eab72a873144fb41e96dfa0666479f66e9c0",
+    "tests/A09-view.test.mjs": "e91662d451516705fe0f60192c850040f69933635e58d07bbf3f84023e90b29c"
+  },
+  "changed_paths": [
+    "tests/A09-manifest.test.mjs"
+  ],
+  "cumulative_changed_paths": [
+    "src/features/A09-accessibility-a11y.js",
+    "src/features/A09-accessibility-data.js",
+    "src/features/A09-accessibility-view.js",
+    "src/features/A09-accessibility.css",
+    "src/features/A09-accessibility.js",
+    "src/features/A09-accessibility.json",
+    "tests/A09-a11y.test.mjs",
+    "tests/A09-data.test.mjs",
+    "tests/A09-manifest.test.mjs",
+    "tests/A09-red.test.mjs",
+    "tests/A09-style.test.mjs",
+    "tests/A09-view.test.mjs"
+  ],
+  "cumulative_declared_paths": [
+    "src/features/A09-accessibility-a11y.js",
+    "src/features/A09-accessibility-data.js",
+    "src/features/A09-accessibility-view.js",
+    "src/features/A09-accessibility.css",
+    "src/features/A09-accessibility.js",
+    "src/features/A09-accessibility.json",
+    "tests/A09-a11y.test.mjs",
+    "tests/A09-data.test.mjs",
+    "tests/A09-manifest.test.mjs",
+    "tests/A09-red.test.mjs",
+    "tests/A09-style.test.mjs",
+    "tests/A09-view.test.mjs"
+  ],
+  "declared_paths": [
+    "tests/A09-manifest.test.mjs"
+  ],
+  "response_sha256": "e47afd33737cf7127bc65e7acf537cba7888c1bf6746e18b3ad77e5e4c1b3188",
+  "row": "A09.029"
+}

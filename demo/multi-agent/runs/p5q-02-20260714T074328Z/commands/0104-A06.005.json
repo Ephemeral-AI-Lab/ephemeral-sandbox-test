@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-6d85707f-f89b-44b7-a68d-98b1f9fae7a7",
+    "--request-id",
+    "p5q-02-20260714T074328Z:A06.005:runtime",
+    "file_read",
+    "--path",
+    "src/features/A06-cart.js",
+    "--workspace-session-id",
+    "00000818c2183347a6eab2"
+  ],
+  "cancelled": false,
+  "duration_ms": 68.523,
+  "kind": "public_cli_process",
+  "label": "A06.005",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/features/A06-cart.js"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/features/A06-cart.js"
+    }
+  },
+  "pid": 31396,
+  "provenance": "agent",
+  "request_id": "p5q-02-20260714T074328Z:A06.005:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 104,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/features/A06-cart.js\",\"details\":{\"path\":\"src/features/A06-cart.js\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

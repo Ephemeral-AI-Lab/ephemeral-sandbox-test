@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-7c622b5f-ddbc-49f4-a447-509f97acee5e",
+    "--request-id",
+    "p5f-04-20260714T090107Z:A03.041:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000518c21c6fd07e231a",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A03-quality.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 118.284,
+  "kind": "public_cli_process",
+  "label": "A03.041",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.077118292,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A03 implementation is marked deterministic (0.493ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 41.442416",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.077193083,
+    "workspace_session_id": "00000518c21c6fd07e231a"
+  },
+  "pid": 9759,
+  "provenance": "agent",
+  "request_id": "p5f-04-20260714T090107Z:A03.041:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1121,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.077193083,\"command_total_time_seconds\":0.077118292,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":43,\"output\":\"✔ A03 implementation is marked deterministic (0.493ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 41.442416\",\"workspace_session_id\":\"00000518c21c6fd07e231a\"}\n",
+  "timed_out": false
+}

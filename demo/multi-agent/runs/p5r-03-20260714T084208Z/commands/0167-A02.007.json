@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-71235f98-7a81-439c-8bc4-8f1458449999",
+    "--request-id",
+    "p5r-03-20260714T084208Z:A02.007:runtime",
+    "file_write",
+    "--path",
+    "tests/A02-red.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A02-design-system.js');\ntest('A02 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A02.verify(), true, 'A02 implementation should report verified'));\n",
+    "--workspace-session-id",
+    "00000418c21b6852084ab1"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.389,
+  "kind": "public_cli_process",
+  "label": "A02.007",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 281,
+    "path": "tests/A02-red.test.mjs",
+    "type": "create"
+  },
+  "pid": 63335,
+  "provenance": "agent",
+  "request_id": "p5r-03-20260714T084208Z:A02.007:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 167,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A02-red.test.mjs\",\"bytes_written\":281}\n",
+  "timed_out": false
+}

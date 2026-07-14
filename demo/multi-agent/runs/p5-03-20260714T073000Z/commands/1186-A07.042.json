@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-48c1370b-f1a0-4ba9-bf8a-523326acef0a",
+    "--request-id",
+    "p5-03-20260714T073000Z:A07.042:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A07: { role: 'Wishlist', entry: 'src/features/A07-wishlist.js' },\",\n    \"old_string\": \"  A07: null,\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000918c217591f1f364a"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.434,
+  "kind": "public_cli_process",
+  "label": "A07.042",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 261,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 82057,
+  "provenance": "agent",
+  "request_id": "p5-03-20260714T073000Z:A07.042:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1186,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":261}\n",
+  "timed_out": false
+}

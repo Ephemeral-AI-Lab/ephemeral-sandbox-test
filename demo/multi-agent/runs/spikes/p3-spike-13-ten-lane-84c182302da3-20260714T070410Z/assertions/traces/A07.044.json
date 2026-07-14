@@ -1,0 +1,26 @@
+{
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A07.044:runtime",
+  "row": "A07.044",
+  "trace": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "write_command_stdin"
+          },
+          "dur_ms": 39.0,
+          "name": "daemon.dispatch",
+          "span": "d-1998",
+          "status": "completed",
+          "trace": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A07.044:runtime",
+          "ts": 1784012692427
+        }
+      }
+    ],
+    "trace": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A07.044:runtime",
+    "view": "trace"
+  }
+}

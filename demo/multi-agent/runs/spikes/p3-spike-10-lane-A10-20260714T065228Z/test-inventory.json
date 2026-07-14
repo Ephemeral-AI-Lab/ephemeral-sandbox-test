@@ -1,0 +1,926 @@
+{
+  "schema_version": 1,
+  "tests": {
+    "A01.a11y": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A01-a11y.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A01 honors reduced motion"
+      ]
+    },
+    "A01.data": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A01-data.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A01 fixture is deterministic"
+      ]
+    },
+    "A01.manifest": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A01-manifest.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A01 manifest names its owner"
+      ]
+    },
+    "A01.quality": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A01-quality.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A01 implementation is marked deterministic"
+      ]
+    },
+    "A01.repair": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A01-red.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A01 target settles after repair"
+      ]
+    },
+    "A01.style": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A01-style.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A01 style keeps focus visible"
+      ]
+    },
+    "A01.view": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A01-view.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A01 view has a semantic section"
+      ]
+    },
+    "A02.a11y": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A02-a11y.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A02 honors reduced motion"
+      ]
+    },
+    "A02.data": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A02-data.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A02 fixture is deterministic"
+      ]
+    },
+    "A02.manifest": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A02-manifest.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A02 manifest names its owner"
+      ]
+    },
+    "A02.quality": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A02-quality.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A02 implementation is marked deterministic"
+      ]
+    },
+    "A02.repair": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A02-red.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A02 target settles after repair"
+      ]
+    },
+    "A02.style": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A02-style.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A02 style keeps focus visible"
+      ]
+    },
+    "A02.view": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A02-view.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A02 view has a semantic section"
+      ]
+    },
+    "A03.a11y": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A03-a11y.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A03 honors reduced motion"
+      ]
+    },
+    "A03.data": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A03-data.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A03 fixture is deterministic"
+      ]
+    },
+    "A03.manifest": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A03-manifest.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A03 manifest names its owner"
+      ]
+    },
+    "A03.quality": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A03-quality.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A03 implementation is marked deterministic"
+      ]
+    },
+    "A03.repair": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A03-red.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A03 target settles after repair"
+      ]
+    },
+    "A03.style": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A03-style.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A03 style keeps focus visible"
+      ]
+    },
+    "A03.view": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A03-view.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A03 view has a semantic section"
+      ]
+    },
+    "A04.a11y": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A04-a11y.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A04 honors reduced motion"
+      ]
+    },
+    "A04.data": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A04-data.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A04 fixture is deterministic"
+      ]
+    },
+    "A04.manifest": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A04-manifest.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A04 manifest names its owner"
+      ]
+    },
+    "A04.quality": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A04-quality.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A04 implementation is marked deterministic"
+      ]
+    },
+    "A04.repair": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A04-red.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A04 target settles after repair"
+      ]
+    },
+    "A04.style": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A04-style.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A04 style keeps focus visible"
+      ]
+    },
+    "A04.view": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A04-view.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A04 view has a semantic section"
+      ]
+    },
+    "A05.a11y": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A05-a11y.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A05 honors reduced motion"
+      ]
+    },
+    "A05.data": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A05-data.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A05 fixture is deterministic"
+      ]
+    },
+    "A05.manifest": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A05-manifest.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A05 manifest names its owner"
+      ]
+    },
+    "A05.quality": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A05-quality.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A05 implementation is marked deterministic"
+      ]
+    },
+    "A05.repair": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A05-red.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A05 target settles after repair"
+      ]
+    },
+    "A05.style": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A05-style.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A05 style keeps focus visible"
+      ]
+    },
+    "A05.view": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A05-view.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A05 view has a semantic section"
+      ]
+    },
+    "A06.a11y": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A06-a11y.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A06 honors reduced motion"
+      ]
+    },
+    "A06.data": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A06-data.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A06 fixture is deterministic"
+      ]
+    },
+    "A06.manifest": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A06-manifest.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A06 manifest names its owner"
+      ]
+    },
+    "A06.quality": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A06-quality.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A06 implementation is marked deterministic"
+      ]
+    },
+    "A06.repair": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A06-red.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A06 target settles after repair"
+      ]
+    },
+    "A06.style": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A06-style.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A06 style keeps focus visible"
+      ]
+    },
+    "A06.view": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A06-view.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A06 view has a semantic section"
+      ]
+    },
+    "A07.a11y": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A07-a11y.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A07 honors reduced motion"
+      ]
+    },
+    "A07.data": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A07-data.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A07 fixture is deterministic"
+      ]
+    },
+    "A07.manifest": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A07-manifest.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A07 manifest names its owner"
+      ]
+    },
+    "A07.quality": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A07-quality.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A07 implementation is marked deterministic"
+      ]
+    },
+    "A07.repair": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A07-red.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A07 target settles after repair"
+      ]
+    },
+    "A07.style": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A07-style.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A07 style keeps focus visible"
+      ]
+    },
+    "A07.view": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A07-view.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A07 view has a semantic section"
+      ]
+    },
+    "A08.a11y": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A08-a11y.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A08 honors reduced motion"
+      ]
+    },
+    "A08.data": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A08-data.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A08 fixture is deterministic"
+      ]
+    },
+    "A08.manifest": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A08-manifest.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A08 manifest names its owner"
+      ]
+    },
+    "A08.quality": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A08-quality.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A08 implementation is marked deterministic"
+      ]
+    },
+    "A08.repair": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A08-red.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A08 target settles after repair"
+      ]
+    },
+    "A08.style": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A08-style.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A08 style keeps focus visible"
+      ]
+    },
+    "A08.view": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A08-view.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A08 view has a semantic section"
+      ]
+    },
+    "A09.a11y": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A09-a11y.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A09 honors reduced motion"
+      ]
+    },
+    "A09.data": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A09-data.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A09 fixture is deterministic"
+      ]
+    },
+    "A09.manifest": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A09-manifest.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A09 manifest names its owner"
+      ]
+    },
+    "A09.quality": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A09-quality.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A09 implementation is marked deterministic"
+      ]
+    },
+    "A09.repair": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A09-red.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A09 target settles after repair"
+      ]
+    },
+    "A09.style": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A09-style.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A09 style keeps focus visible"
+      ]
+    },
+    "A09.view": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A09-view.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A09 view has a semantic section"
+      ]
+    },
+    "A10.a11y": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A10-a11y.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A10 honors reduced motion"
+      ]
+    },
+    "A10.data": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A10-data.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A10 fixture is deterministic"
+      ]
+    },
+    "A10.final-regression": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/*.test.mjs",
+      "subtest_count": 70,
+      "subtests": [
+        "A01 target settles after repair",
+        "A01 fixture is deterministic",
+        "A01 view has a semantic section",
+        "A01 style keeps focus visible",
+        "A01 honors reduced motion",
+        "A01 manifest names its owner",
+        "A01 implementation is marked deterministic",
+        "A02 target settles after repair",
+        "A02 fixture is deterministic",
+        "A02 view has a semantic section",
+        "A02 style keeps focus visible",
+        "A02 honors reduced motion",
+        "A02 manifest names its owner",
+        "A02 implementation is marked deterministic",
+        "A03 target settles after repair",
+        "A03 fixture is deterministic",
+        "A03 view has a semantic section",
+        "A03 style keeps focus visible",
+        "A03 honors reduced motion",
+        "A03 manifest names its owner",
+        "A03 implementation is marked deterministic",
+        "A04 target settles after repair",
+        "A04 fixture is deterministic",
+        "A04 view has a semantic section",
+        "A04 style keeps focus visible",
+        "A04 honors reduced motion",
+        "A04 manifest names its owner",
+        "A04 implementation is marked deterministic",
+        "A05 target settles after repair",
+        "A05 fixture is deterministic",
+        "A05 view has a semantic section",
+        "A05 style keeps focus visible",
+        "A05 honors reduced motion",
+        "A05 manifest names its owner",
+        "A05 implementation is marked deterministic",
+        "A06 target settles after repair",
+        "A06 fixture is deterministic",
+        "A06 view has a semantic section",
+        "A06 style keeps focus visible",
+        "A06 honors reduced motion",
+        "A06 manifest names its owner",
+        "A06 implementation is marked deterministic",
+        "A07 target settles after repair",
+        "A07 fixture is deterministic",
+        "A07 view has a semantic section",
+        "A07 style keeps focus visible",
+        "A07 honors reduced motion",
+        "A07 manifest names its owner",
+        "A07 implementation is marked deterministic",
+        "A08 target settles after repair",
+        "A08 fixture is deterministic",
+        "A08 view has a semantic section",
+        "A08 style keeps focus visible",
+        "A08 honors reduced motion",
+        "A08 manifest names its owner",
+        "A08 implementation is marked deterministic",
+        "A09 target settles after repair",
+        "A09 fixture is deterministic",
+        "A09 view has a semantic section",
+        "A09 style keeps focus visible",
+        "A09 honors reduced motion",
+        "A09 manifest names its owner",
+        "A09 implementation is marked deterministic",
+        "A10 target settles after repair",
+        "A10 fixture is deterministic",
+        "A10 view has a semantic section",
+        "A10 style keeps focus visible",
+        "A10 honors reduced motion",
+        "A10 manifest names its owner",
+        "A10 implementation is marked deterministic"
+      ]
+    },
+    "A10.manifest": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A10-manifest.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A10 manifest names its owner"
+      ]
+    },
+    "A10.quality": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A10-quality.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A10 implementation is marked deterministic"
+      ]
+    },
+    "A10.repair": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A10-red.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A10 target settles after repair"
+      ]
+    },
+    "A10.style": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A10-style.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A10 style keeps focus visible"
+      ]
+    },
+    "A10.view": {
+      "allowed": {
+        "cancelled": [],
+        "skip": [],
+        "todo": []
+      },
+      "command": "node --test tests/A10-view.test.mjs",
+      "subtest_count": 1,
+      "subtests": [
+        "A10 view has a semantic section"
+      ]
+    }
+  }
+}

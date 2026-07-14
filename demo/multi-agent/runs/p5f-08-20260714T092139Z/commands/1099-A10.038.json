@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-bc06d80c-d1c1-4be3-951c-5db49e779062",
+    "--request-id",
+    "p5f-08-20260714T092139Z:A10.038:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000c18c21d8eda49231f",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --check src/features/A10-qa.js && node --check src/features/A10-qa-data.js && node --check src/features/A10-qa-view.js && node --check src/features/A10-qa-a11y.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 115.988,
+  "kind": "public_cli_process",
+  "label": "A10.038",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.077606667,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.077687292,
+    "workspace_session_id": "00000c18c21d8eda49231f"
+  },
+  "pid": 36808,
+  "provenance": "agent",
+  "request_id": "p5f-08-20260714T092139Z:A10.038:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1099,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.077687292,\"command_total_time_seconds\":0.077606667,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00000c18c21d8eda49231f\"}\n",
+  "timed_out": false
+}

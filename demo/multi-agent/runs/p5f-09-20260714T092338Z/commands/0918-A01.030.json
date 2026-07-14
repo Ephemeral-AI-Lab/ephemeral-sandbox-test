@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-94fb6e38-dd74-4a9f-b016-6d2e055375ed",
+    "--request-id",
+    "p5f-09-20260714T092338Z:A01.030:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000318c21daa80f56d82",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A01-manifest.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 112.627,
+  "kind": "public_cli_process",
+  "label": "A01.030",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.074392875,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A01 manifest names its owner (3.243208ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 40.180667",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.074449833,
+    "workspace_session_id": "00000318c21daa80f56d82"
+  },
+  "pid": 64221,
+  "provenance": "agent",
+  "request_id": "p5f-09-20260714T092338Z:A01.030:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 918,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.074449833,\"command_total_time_seconds\":0.074392875,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":40,\"output\":\"✔ A01 manifest names its owner (3.243208ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 40.180667\",\"workspace_session_id\":\"00000318c21daa80f56d82\"}\n",
+  "timed_out": false
+}

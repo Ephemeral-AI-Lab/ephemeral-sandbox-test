@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-2bb2a977-906c-4bb9-b90f-ff7e6e2cfa7e",
+    "--request-id",
+    "p5f-01-20260714T084850Z:A01.040:runtime",
+    "file_read",
+    "--path",
+    "tests/A01-quality.test.mjs",
+    "--workspace-session-id",
+    "00000318c21bc66b61856e"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.843,
+  "kind": "public_cli_process",
+  "label": "A01.040",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 248,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A01-foundation.js');\ntest('A01 implementation is marked deterministic', () => assert.equal(globalThis.FlashCart.features.A01.deterministic, true));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A01-quality.test.mjs",
+    "start_line": 1,
+    "total_bytes": 249,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 13668,
+  "provenance": "agent",
+  "request_id": "p5f-01-20260714T084850Z:A01.040:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1113,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A01-quality.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A01-foundation.js');\\ntest('A01 implementation is marked deterministic', () => assert.equal(globalThis.FlashCart.features.A01.deterministic, true));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":248,\"total_bytes\":249,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

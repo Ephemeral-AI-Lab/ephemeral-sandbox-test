@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-9e7a512a-4aa0-4693-94f2-c01838407df4",
+    "--request-id",
+    "p5f-02-20260714T085058Z:A08.006:runtime",
+    "file_write",
+    "--path",
+    "src/features/A08-checkout.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A08 = { id: 'A08', verify() { return false; }, implementation: 'broken A08' };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000a18c21be30913c69b"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.657,
+  "kind": "public_cli_process",
+  "label": "A08.006",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 240,
+    "path": "src/features/A08-checkout.js",
+    "type": "create"
+  },
+  "pid": 26899,
+  "provenance": "agent",
+  "request_id": "p5f-02-20260714T085058Z:A08.006:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 135,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A08-checkout.js\",\"bytes_written\":240}\n",
+  "timed_out": false
+}

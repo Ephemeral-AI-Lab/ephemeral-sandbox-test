@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-138c81b8-2911-43e8-b0d4-ad5a886f243e",
+    "--request-id",
+    "p5f-06-20260714T090501Z:ENGINE.final.src-features-A05-search.css:runtime",
+    "file_read",
+    "--path",
+    "src/features/A05-search.css"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.466,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A05-search.css",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 116,
+    "content": ".feature-a05 { border-inline-start: 4px solid #175b50; } .feature-a05 :focus-visible { outline: 3px solid #124ea0; }",
+    "next_offset": null,
+    "num_lines": 1,
+    "path": "src/features/A05-search.css",
+    "start_line": 1,
+    "total_bytes": 117,
+    "total_lines": 1,
+    "truncated": false
+  },
+  "pid": 78949,
+  "provenance": "engine",
+  "request_id": "p5f-06-20260714T090501Z:ENGINE.final.src-features-A05-search.css:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1543,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A05-search.css\",\"content\":\".feature-a05 { border-inline-start: 4px solid #175b50; } .feature-a05 :focus-visible { outline: 3px solid #124ea0; }\",\"start_line\":1,\"num_lines\":1,\"total_lines\":1,\"bytes_read\":116,\"total_bytes\":117,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

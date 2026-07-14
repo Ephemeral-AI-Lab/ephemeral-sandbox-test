@@ -24,11 +24,14 @@ stream.
 import json
 import logging
 import os
+import re
+import signal
 import socket
 import subprocess
 import threading
 import time
 import uuid
+from dataclasses import dataclass
 from pathlib import Path
 
 from .config import (
@@ -48,6 +51,222 @@ _timing_records = []
 
 class CliError(Exception):
     """The CLI produced output that was not a JSON line."""
+
+
+_SENSITIVE_FLAG = re.compile(r"(?:token|secret|password|credential|authorization|auth)", re.IGNORECASE)
+_SENSITIVE_TEXT = re.compile(r"(?i)((?:token|secret|password|credential|authorization|auth)[_-]?(?:token)?\s*[=:]\s*)([^\s,}\]\"']+)")
+_SENSITIVE_JSON = re.compile(r"(?i)([\"']?(?:token|secret|password|credential|authorization|auth)(?:[_-]?token)?[\"']?\s*:\s*[\"']?)([^,\s}\]\"']+)")
+_URL_CREDENTIAL = re.compile(r"(?i)([a-z][a-z0-9+.-]*://)([^/@\s]+)@")
+
+
+def redact_text(value):
+    """Return one bounded printable value without transport credentials."""
+    redacted = _SENSITIVE_TEXT.sub(r"\1[REDACTED]", str(value))
+    redacted = _SENSITIVE_JSON.sub(r"\1[REDACTED]", redacted)
+    return _URL_CREDENTIAL.sub(r"\1[REDACTED]@", redacted)
+
+
+def redact_value(value):
+    """Recursively sanitize parsed response objects before evidence persistence."""
+    if isinstance(value, dict):
+        return {
+            str(key): "[REDACTED]" if _SENSITIVE_FLAG.search(str(key)) else redact_value(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [redact_value(item) for item in value]
+    if isinstance(value, str):
+        return redact_text(value)
+    return value
+
+
+def redact_environment(environment):
+    """Sanitize an environment mapping before it can reach logs or evidence."""
+    return {
+        str(key): "[REDACTED]" if _SENSITIVE_FLAG.search(str(key)) else redact_text(value)
+        for key, value in dict(environment).items()
+    }
+
+
+def redact_argv(argv):
+    """Redact split and equals-form credentials before an argv is persisted."""
+    result = []
+    redact_next = False
+    for value in map(str, argv):
+        if redact_next:
+            result.append("[REDACTED]")
+            redact_next = False
+        elif value.startswith("--") and "=" in value and _SENSITIVE_FLAG.search(value.split("=", 1)[0]):
+            result.append(value.split("=", 1)[0] + "=[REDACTED]")
+        else:
+            result.append(value)
+            redact_next = value.startswith("--") and _SENSITIVE_FLAG.search(value) is not None
+    return result
+
+
+@dataclass(frozen=True)
+class CliRecord:
+    """Sanitized outcome of exactly one public CLI child process."""
+
+    argv: list[str]
+    returncode: int | None
+    stdout: str
+    stderr: str
+    duration_ms: float
+    parsed_json: dict | None
+    parse_error: str | None
+    timed_out: bool
+    cancelled: bool
+    pid: int | None
+
+
+class ProcessRegistry:
+    """Run-owned process handles; cancellation always reaps a real child."""
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._processes = {}
+
+    def add(self, process):
+        with self._lock:
+            self._processes[process.pid] = process
+
+    def discard(self, process):
+        with self._lock:
+            self._processes.pop(process.pid, None)
+
+    def pids(self):
+        with self._lock:
+            return sorted(self._processes)
+
+    def reap_all(self, grace_seconds=2):
+        for process in list(self._snapshot()):
+            _terminate_process(process, grace_seconds)
+            self.discard(process)
+
+    def _snapshot(self):
+        with self._lock:
+            return list(self._processes.values())
+
+
+def _terminate_process(process, grace_seconds):
+    if process.poll() is not None:
+        return
+    try:
+        if os.name == "posix":
+            os.killpg(process.pid, signal.SIGTERM)
+        else:
+            process.terminate()
+    except ProcessLookupError:
+        return
+    except PermissionError:
+        # A child can lose its process-group ownership between poll() and
+        # killpg().  Fall back to the direct child so cancellation remains
+        # deterministic without turning an already-failing run into a cleanup
+        # leak.
+        try:
+            process.terminate()
+        except ProcessLookupError:
+            return
+    try:
+        process.wait(timeout=grace_seconds)
+    except subprocess.TimeoutExpired:
+        try:
+            if os.name == "posix":
+                os.killpg(process.pid, signal.SIGKILL)
+            else:
+                process.kill()
+        except ProcessLookupError:
+            pass
+        except PermissionError:
+            try:
+                process.kill()
+            except ProcessLookupError:
+                pass
+
+
+def _parse_record(stdout, stderr, returncode):
+    """Require exactly one response object while permitting manager progress."""
+    candidates = []
+    for stream_name, content in (("stdout", stdout), ("stderr", stderr)):
+        for line in content.splitlines():
+            value = line.strip()
+            if not value:
+                continue
+            try:
+                parsed = json.loads(value)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(parsed, dict):
+                candidates.append((stream_name, parsed))
+    if returncode == 0:
+        nonblank_stdout = [line for line in stdout.splitlines() if line.strip()]
+        if len(nonblank_stdout) != 1 or len(candidates) != 1 or candidates[0][0] != "stdout":
+            return None, "successful CLI response was not exactly one stdout JSON object"
+    elif len(candidates) != 1:
+        return None, "CLI response did not contain exactly one JSON object"
+    return redact_value(candidates[0][1]), None
+
+
+def cli_record(*args, timeout=180, cancellation=None, registry=None, grace_seconds=2):
+    """Run one routed public CLI process and return fully redacted evidence.
+
+    The compatibility :func:`cli` below delegates to this function, while the
+    demo runner uses the record directly to persist process-level evidence.
+    """
+    binary, routed, supports_progress = route_cli(args)
+    argv = [str(binary), *( ["--progress"] if PROGRESS and supports_progress else []), *map(str, routed)]
+    active = registry or ProcessRegistry()
+    started = time.monotonic()
+    process = subprocess.Popen(
+        argv,
+        cwd=str(REPO_ROOT),
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
+    )
+    active.add(process)
+    stdout = stderr = ""
+    timed_out = cancelled = False
+    try:
+        deadline = started + timeout
+        while True:
+            if cancellation is not None and cancellation.is_set():
+                cancelled = True
+                _terminate_process(process, grace_seconds)
+                stdout, stderr = process.communicate(timeout=grace_seconds)
+                break
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                timed_out = True
+                _terminate_process(process, grace_seconds)
+                stdout, stderr = process.communicate(timeout=grace_seconds)
+                break
+            try:
+                stdout, stderr = process.communicate(timeout=min(0.1, remaining))
+                break
+            except subprocess.TimeoutExpired:
+                continue
+    finally:
+        if process.poll() is None:
+            _terminate_process(process, grace_seconds)
+            stdout, stderr = process.communicate(timeout=grace_seconds)
+        active.discard(process)
+    parsed, parse_error = _parse_record(stdout, stderr, process.returncode)
+    return CliRecord(
+        argv=redact_argv(argv),
+        returncode=process.returncode,
+        stdout=redact_text(stdout),
+        stderr=redact_text(stderr),
+        duration_ms=round((time.monotonic() - started) * 1000.0, 3),
+        parsed_json=parsed,
+        parse_error=parse_error,
+        timed_out=timed_out,
+        cancelled=cancelled,
+        pid=process.pid,
+    )
 
 
 def route_cli(args):
@@ -72,31 +291,18 @@ def route_cli(args):
 
 def cli(*args, timeout=180):
     """Run a space-addressed operation and return the parsed JSON response."""
-    binary, argv, supports_progress = route_cli(args)
     scope, operation_name = _classify_operation(args)
     sandbox_id, workspace_id = _resource_context(args)
     operation_key = f"{scope}.{operation_name}"
     resources.operation(
         "cli", operation_key, edge="start", sandbox_id=sandbox_id, workspace_id=workspace_id
     )
-    printable = " ".join([binary.name, *argv])
-    _log.info("→ %s", printable)
     started = time.monotonic()
     try:
-        if PROGRESS and supports_progress:
-            stdout, stderr_lines, returncode = _run_streaming(binary, argv, timeout)
-            raw = _select_json(stdout, stderr_lines)
-        else:
-            proc = subprocess.run(
-                [str(binary), *argv],
-                cwd=str(REPO_ROOT),
-                capture_output=True,
-                text=True,
-                timeout=timeout,
-            )
-            returncode = proc.returncode
-            raw = proc.stdout.strip() or proc.stderr.strip()
-    except subprocess.TimeoutExpired:
+        record = cli_record(*args, timeout=timeout)
+    except (OSError, KeyboardInterrupt):
+        raise
+    if record.timed_out:
         resources.operation(
             "cli",
             operation_key,
@@ -105,23 +311,25 @@ def cli(*args, timeout=180):
             sandbox_id=sandbox_id,
             workspace_id=workspace_id,
         )
-        raise
-    elapsed = time.monotonic() - started
-    _record_timing(args, returncode, elapsed)
-    _log.info("← %s  (exit=%s, %.2fs)", printable, returncode, elapsed)
+        raise subprocess.TimeoutExpired(record.argv, timeout)
+    elapsed = record.duration_ms / 1000.0
+    _record_timing(args, record.returncode, elapsed)
+    _log.info("← %s  (exit=%s, %.2fs)", " ".join(record.argv), record.returncode, elapsed)
     resources.operation(
         "cli",
         operation_key,
         duration_ms=elapsed * 1000.0,
-        returncode=returncode,
+        returncode=record.returncode,
         sandbox_id=sandbox_id,
         workspace_id=workspace_id,
     )
     try:
-        result = json.loads(raw)
-    except json.JSONDecodeError as exc:
+        result = record.parsed_json
+        if result is None:
+            raise ValueError(record.parse_error)
+    except ValueError as exc:
         raise CliError(
-            f"non-JSON CLI output (exit {returncode}): {raw!r}"
+            f"non-JSON CLI output (exit {record.returncode}): {record.stdout!r} {record.stderr!r}"
         ) from exc
     _remember_trusted_ids(result, sandbox_id)
     record_surface(
@@ -129,7 +337,7 @@ def cli(*args, timeout=180):
         duration_ms=elapsed * 1000.0,
         evidence={
             "operation": _classify_operation(args)[1],
-            "returncode": returncode,
+            "returncode": record.returncode,
         },
     )
     return result
@@ -232,7 +440,22 @@ def _classify_operation(args):
     if not args:
         return "unknown", "unknown"
     if args[0] == "runtime":
-        return "runtime", args[3] if len(args) > 3 else "unknown"
+        # Runtime accepts global flags before the operation.  In particular the
+        # demo's exact trace join adds ``--request-id VALUE`` after
+        # ``--sandbox-id VALUE``; classifying a positional index would label
+        # that request id as the operation in timing evidence.
+        index = 1
+        value_flags = {"--sandbox-id", "--request-id", "--gateway-socket", "--gateway-auth-token"}
+        while index < len(args):
+            value = args[index]
+            if value in value_flags:
+                index += 2
+                continue
+            if value.startswith("--"):
+                index += 1
+                continue
+            return "runtime", value
+        return "runtime", "unknown"
     if args[0] in {"manager", "observability"}:
         return args[0], args[1] if len(args) > 1 else "unknown"
     return args[0], args[1] if len(args) > 1 else "unknown"

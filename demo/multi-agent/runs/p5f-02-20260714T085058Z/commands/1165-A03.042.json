@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-9e7a512a-4aa0-4693-94f2-c01838407df4",
+    "--request-id",
+    "p5f-02-20260714T085058Z:A03.042:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A03: { role: 'Product data', entry: 'src/features/A03-products.js' },\",\n    \"old_string\": \"  A03: null,\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000518c21be2fa0d3540"
+  ],
+  "cancelled": false,
+  "duration_ms": 49.345,
+  "kind": "public_cli_process",
+  "label": "A03.042",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 265,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 45523,
+  "provenance": "agent",
+  "request_id": "p5f-02-20260714T085058Z:A03.042:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1165,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":265}\n",
+  "timed_out": false
+}

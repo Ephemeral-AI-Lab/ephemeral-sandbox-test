@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--request-id",
+    "p4-full-20260714j:ENGINE.network-sentinel:runtime",
+    "file_read",
+    "--path",
+    ".flashcart-network/shared-one.txt"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.069,
+  "kind": "public_cli_process",
+  "label": "network-sentinel-absent",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": ".flashcart-network/shared-one.txt"
+      },
+      "kind": "not_found",
+      "message": "file not found: .flashcart-network/shared-one.txt"
+    }
+  },
+  "pid": 64902,
+  "provenance": "engine",
+  "request_id": "p4-full-20260714j:ENGINE.network-sentinel:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 1378,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: .flashcart-network/shared-one.txt\",\"details\":{\"path\":\".flashcart-network/shared-one.txt\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

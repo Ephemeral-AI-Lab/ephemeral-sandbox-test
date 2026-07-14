@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-879870ba-1958-46ed-8a63-deea1c9fed15",
+    "--request-id",
+    "p3-full-20260714i:ENGINE.final.src-features-A04-catalog.js:runtime",
+    "file_read",
+    "--path",
+    "src/features/A04-catalog.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.104,
+  "kind": "public_cli_process",
+  "label": "final-read-src_features_A04-catalog.js",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 376,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A04 = {\n    id: 'A04',\n    label: 'Catalog and PDP',\n    deterministic: true,\n    verify() { return true; },\n    selectVariant(product, variant) { return { ...product, variant, selectable: Boolean(variant) }; }\n  };\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 11,
+    "path": "src/features/A04-catalog.js",
+    "start_line": 1,
+    "total_bytes": 377,
+    "total_lines": 11,
+    "truncated": false
+  },
+  "pid": 34934,
+  "provenance": "engine",
+  "request_id": "p3-full-20260714i:ENGINE.final.src-features-A04-catalog.js:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1447,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A04-catalog.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.features = root.FlashCart.features || {};\\n  root.FlashCart.features.A04 = {\\n    id: 'A04',\\n    label: 'Catalog and PDP',\\n    deterministic: true,\\n    verify() { return true; },\\n    selectVariant(product, variant) { return { ...product, variant, selectable: Boolean(variant) }; }\\n  };\\n})(globalThis);\",\"start_line\":1,\"num_lines\":11,\"total_lines\":11,\"bytes_read\":376,\"total_bytes\":377,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

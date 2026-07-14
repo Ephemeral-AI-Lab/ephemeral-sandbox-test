@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-94fb6e38-dd74-4a9f-b016-6d2e055375ed",
+    "--request-id",
+    "p5f-09-20260714T092338Z:A06.007:runtime",
+    "file_write",
+    "--path",
+    "tests/A06-red.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A06-cart.js');\ntest('A06 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A06.verify(), true, 'A06 implementation should report verified'));\n",
+    "--workspace-session-id",
+    "00000818c21daa8f60d847"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.213,
+  "kind": "public_cli_process",
+  "label": "A06.007",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 272,
+    "path": "tests/A06-red.test.mjs",
+    "type": "create"
+  },
+  "pid": 50631,
+  "provenance": "agent",
+  "request_id": "p5f-09-20260714T092338Z:A06.007:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 163,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A06-red.test.mjs\",\"bytes_written\":272}\n",
+  "timed_out": false
+}

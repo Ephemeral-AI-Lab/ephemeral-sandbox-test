@@ -1,0 +1,186 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "snapshot",
+    "--sandbox-id",
+    "eos-7c622b5f-ddbc-49f4-a447-509f97acee5e"
+  ],
+  "cancelled": false,
+  "duration_ms": 247.04,
+  "kind": "public_cli_process",
+  "label": "checkpoint-conflict-rejected-snapshot",
+  "parse_error": null,
+  "parsed_json": {
+    "availability": "available",
+    "daemon": {
+      "daemon_pid": 7,
+      "runtime_dir": "/eos/runtime/daemon"
+    },
+    "errors": [],
+    "lifecycle_state": "ready",
+    "resources": {
+      "history": [],
+      "latest": {
+        "deltas": {},
+        "metrics": {
+          "cgroup_available": false,
+          "cgroup_error": "cgroup root unavailable"
+        },
+        "sample_delta_ms": 88,
+        "ts": 1784019713242
+      }
+    },
+    "sampled_at_unix_ms": 1784019713242,
+    "sandbox_id": "eos-7c622b5f-ddbc-49f4-a447-509f97acee5e",
+    "stack": {
+      "active_leases": 4,
+      "layer_count": 13,
+      "layers_allocated_bytes": null,
+      "layers_bytes": null,
+      "staging_entry_count": 0,
+      "storage_allocated_bytes": 917504
+    },
+    "workspaces": [
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_451",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "no_op",
+        "layers": {
+          "base_root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+          "layer_count": 12
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 12288,
+              "disk_bytes": 29,
+              "files": 1
+            },
+            "sample_delta_ms": 32,
+            "ts": 1784019713274
+          }
+        },
+        "workspace_id": "00001018c21c797d1096d5"
+      },
+      {
+        "active_namespace_executions": [],
+        "finalize_policy": "no_op",
+        "layers": {
+          "base_root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+          "layer_count": 12
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 12288,
+              "disk_bytes": 29,
+              "files": 1
+            },
+            "sample_delta_ms": 32,
+            "ts": 1784019713274
+          }
+        },
+        "workspace_id": "00001218c21c798124955e"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_460",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "no_op",
+        "layers": {
+          "base_root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+          "layer_count": 12
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 4,
+        "network_profile": "isolated",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 12288,
+              "disk_bytes": 29,
+              "files": 1
+            },
+            "sample_delta_ms": 32,
+            "ts": 1784019713274
+          }
+        },
+        "workspace_id": "00001318c21c798548c41b"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_464",
+            "operation": "exec_command"
+          },
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_465",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "no_op",
+        "layers": {
+          "base_root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+          "layer_count": 12
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 4,
+        "network_profile": "isolated",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 12288,
+              "disk_bytes": 29,
+              "files": 1
+            },
+            "sample_delta_ms": 32,
+            "ts": 1784019713274
+          }
+        },
+        "workspace_id": "00001418c21c798b59bfbe"
+      }
+    ]
+  },
+  "pid": 13666,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1338,
+  "stderr": "",
+  "stdout": "{\"sandbox_id\":\"eos-7c622b5f-ddbc-49f4-a447-509f97acee5e\",\"lifecycle_state\":\"ready\",\"availability\":\"available\",\"sampled_at_unix_ms\":1784019713242,\"errors\":[],\"daemon\":{\"daemon_pid\":7,\"runtime_dir\":\"/eos/runtime/daemon\"},\"resources\":{\"latest\":{\"ts\":1784019713242,\"sample_delta_ms\":88,\"metrics\":{\"cgroup_available\":false,\"cgroup_error\":\"cgroup root unavailable\"},\"deltas\":{}},\"history\":[]},\"workspaces\":[{\"workspace_id\":\"00001018c21c797d1096d5\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"no_op\",\"layers\":{\"base_root_hash\":\"085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75\",\"layer_count\":12},\"namespace_fd_count\":3,\"resources\":{\"latest\":{\"ts\":1784019713274,\"sample_delta_ms\":32,\"metrics\":{\"cgroup_available\":false,\"cgroup_error\":\"workspace cgroup unavailable\",\"disk_bytes\":29,\"disk_allocated_bytes\":12288,\"files\":1},\"deltas\":{}},\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_451\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\"}]},{\"workspace_id\":\"00001218c21c798124955e\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"no_op\",\"layers\":{\"base_root_hash\":\"085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75\",\"layer_count\":12},\"namespace_fd_count\":3,\"resources\":{\"latest\":{\"ts\":1784019713274,\"sample_delta_ms\":32,\"metrics\":{\"cgroup_available\":false,\"cgroup_error\":\"workspace cgroup unavailable\",\"disk_bytes\":29,\"disk_allocated_bytes\":12288,\"files\":1},\"deltas\":{}},\"history\":[]},\"active_namespace_executions\":[]},{\"workspace_id\":\"00001318c21c798548c41b\",\"lifecycle_state\":\"active\",\"network_profile\":\"isolated\",\"finalize_policy\":\"no_op\",\"layers\":{\"base_root_hash\":\"085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75\",\"layer_count\":12},\"namespace_fd_count\":4,\"resources\":{\"latest\":{\"ts\":1784019713274,\"sample_delta_ms\":32,\"metrics\":{\"cgroup_available\":false,\"cgroup_error\":\"workspace cgroup unavailable\",\"disk_bytes\":29,\"disk_allocated_bytes\":12288,\"files\":1},\"deltas\":{}},\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_460\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\"}]},{\"workspace_id\":\"00001418c21c798b59bfbe\",\"lifecycle_state\":\"active\",\"network_profile\":\"isolated\",\"finalize_policy\":\"no_op\",\"layers\":{\"base_root_hash\":\"085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75\",\"layer_count\":12},\"namespace_fd_count\":4,\"resources\":{\"latest\":{\"ts\":1784019713274,\"sample_delta_ms\":32,\"metrics\":{\"cgroup_available\":false,\"cgroup_error\":\"workspace cgroup unavailable\",\"disk_bytes\":29,\"disk_allocated_bytes\":12288,\"files\":1},\"deltas\":{}},\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_464\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\"},{\"namespace_execution_id\":\"namespace_execution_465\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\"}]}],\"stack\":{\"layer_count\":13,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_allocated_bytes\":917504,\"staging_entry_count\":0,\"active_leases\":4}}\n",
+  "timed_out": false
+}

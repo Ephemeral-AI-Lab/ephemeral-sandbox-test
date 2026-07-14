@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-bc06d80c-d1c1-4be3-951c-5db49e779062",
+    "--request-id",
+    "p5f-08-20260714T092139Z:A10.048:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00001918c21d99a062b12d",
+    "--timeout-ms",
+    "120000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/*.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 924.465,
+  "kind": "public_cli_process",
+  "label": "A10.048",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.879464209,
+    "end_offset": 78,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A01 honors reduced motion (3.375792ms)\n✔ A01 fixture is deterministic (4.811083ms)\n✔ A01 manifest names its owner (4.495ms)\n✔ A01 implementation is marked deterministic (0.471791ms)\n✔ A01 target settles after repair (0.82925ms)\n✔ A01 style keeps focus visible (3.300792ms)\n✔ A01 view has a semantic section (3.382375ms)\n✔ A02 honors reduced motion (0.451209ms)\n✔ A02 fixture is deterministic (0.480375ms)\n✔ A02 manifest names its owner (4.856125ms)\n✔ A02 implementation is marked deterministic (0.763167ms)\n✔ A02 target settles after repair (0.447459ms)\n✔ A02 style keeps focus visible (3.304042ms)\n✔ A02 view has a semantic section (0.461375ms)\n✔ A03 honors reduced motion (0.464708ms)\n✔ A03 fixture is deterministic (0.448625ms)\n✔ A03 manifest names its owner (3.241834ms)\n✔ A03 implementation is marked deterministic (0.533625ms)\n✔ A03 target settles after repair (0.485042ms)\n✔ A03 style keeps focus visible (3.734917ms)\n✔ A03 view has a semantic section (0.480917ms)\n✔ A04 honors reduced motion (0.462834ms)\n✔ A04 fixture is deterministic (0.489875ms)\n✔ A04 manifest names its owner (6.451041ms)\n✔ A04 implementation is marked deterministic (0.461292ms)\n✔ A04 target settles after repair (0.477625ms)\n✔ A04 style keeps focus visible (3.959666ms)\n✔ A04 view has a semantic section (0.46875ms)\n✔ A05 honors reduced motion (0.4575ms)\n✔ A05 fixture is deterministic (0.463333ms)\n✔ A05 manifest names its owner (3.114083ms)\n✔ A05 implementation is marked deterministic (0.453292ms)\n✔ A05 target settles after repair (0.512375ms)\n✔ A05 style keeps focus visible (3.214833ms)\n✔ A05 view has a semantic section (0.452583ms)\n✔ A06 honors reduced motion (0.424166ms)\n✔ A06 fixture is deterministic (0.467125ms)\n✔ A06 manifest names its owner (4.21225ms)\n✔ A06 implementation is marked deterministic (0.667542ms)\n✔ A06 target settles after repair (0.422542ms)\n✔ A06 style keeps focus visible (3.868333ms)\n✔ A06 view has a semantic section (0.481834ms)\n✔ A07 honors reduced motion (0.489125ms)\n✔ A07 fixture is deterministic (0.4595ms)\n✔ A07 manifest names its owner (3.012625ms)\n✔ A07 implementation is marked deterministic (0.465958ms)\n✔ A07 target settles after repair (0.481084ms)\n✔ A07 style keeps focus visible (4.75675ms)\n✔ A07 view has a semantic section (0.566625ms)\n✔ A08 honors reduced motion (0.447292ms)\n✔ A08 fixture is deterministic (0.43525ms)\n✔ A08 manifest names its owner (2.6745ms)\n✔ A08 implementation is marked deterministic (0.655125ms)\n✔ A08 target settles after repair (0.469333ms)\n✔ A08 style keeps focus visible (4.477417ms)\n✔ A08 view has a semantic section (0.494709ms)\n✔ A09 honors reduced motion (0.436ms)\n✔ A09 fixture is deterministic (0.409917ms)\n✔ A09 manifest names its owner (2.895417ms)\n✔ A09 implementation is marked deterministic (0.446875ms)\n✔ A09 target settles after repair (0.67075ms)\n✔ A09 style keeps focus visible (3.147833ms)\n✔ A09 view has a semantic section (0.467ms)\n✔ A10 honors reduced motion (0.463125ms)\n✔ A10 fixture is deterministic (0.4525ms)\n✔ A10 manifest names its owner (3.973334ms)\n✔ A10 implementation is marked deterministic (0.462875ms)\n✔ A10 target settles after repair (0.512ms)\n✔ A10 style keeps focus visible (2.793375ms)\n✔ A10 view has a semantic section (0.694625ms)\nℹ tests 70\nℹ suites 0\nℹ pass 70\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 836.194251",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 78,
+    "wall_time_seconds": 0.879562584,
+    "workspace_session_id": "00001918c21d99a062b12d"
+  },
+  "pid": 42367,
+  "provenance": "agent",
+  "request_id": "p5f-08-20260714T092139Z:A10.048:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1407,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.879562584,\"command_total_time_seconds\":0.879464209,\"start_offset\":0,\"end_offset\":78,\"total_lines\":78,\"original_token_count\":873,\"output\":\"✔ A01 honors reduced motion (3.375792ms)\\n✔ A01 fixture is deterministic (4.811083ms)\\n✔ A01 manifest names its owner (4.495ms)\\n✔ A01 implementation is marked deterministic (0.471791ms)\\n✔ A01 target settles after repair (0.82925ms)\\n✔ A01 style keeps focus visible (3.300792ms)\\n✔ A01 view has a semantic section (3.382375ms)\\n✔ A02 honors reduced motion (0.451209ms)\\n✔ A02 fixture is deterministic (0.480375ms)\\n✔ A02 manifest names its owner (4.856125ms)\\n✔ A02 implementation is marked deterministic (0.763167ms)\\n✔ A02 target settles after repair (0.447459ms)\\n✔ A02 style keeps focus visible (3.304042ms)\\n✔ A02 view has a semantic section (0.461375ms)\\n✔ A03 honors reduced motion (0.464708ms)\\n✔ A03 fixture is deterministic (0.448625ms)\\n✔ A03 manifest names its owner (3.241834ms)\\n✔ A03 implementation is marked deterministic (0.533625ms)\\n✔ A03 target settles after repair (0.485042ms)\\n✔ A03 style keeps focus visible (3.734917ms)\\n✔ A03 view has a semantic section (0.480917ms)\\n✔ A04 honors reduced motion (0.462834ms)\\n✔ A04 fixture is deterministic (0.489875ms)\\n✔ A04 manifest names its owner (6.451041ms)\\n✔ A04 implementation is marked deterministic (0.461292ms)\\n✔ A04 target settles after repair (0.477625ms)\\n✔ A04 style keeps focus visible (3.959666ms)\\n✔ A04 view has a semantic section (0.46875ms)\\n✔ A05 honors reduced motion (0.4575ms)\\n✔ A05 fixture is deterministic (0.463333ms)\\n✔ A05 manifest names its owner (3.114083ms)\\n✔ A05 implementation is marked deterministic (0.453292ms)\\n✔ A05 target settles after repair (0.512375ms)\\n✔ A05 style keeps focus visible (3.214833ms)\\n✔ A05 view has a semantic section (0.452583ms)\\n✔ A06 honors reduced motion (0.424166ms)\\n✔ A06 fixture is deterministic (0.467125ms)\\n✔ A06 manifest names its owner (4.21225ms)\\n✔ A06 implementation is marked deterministic (0.667542ms)\\n✔ A06 target settles after repair (0.422542ms)\\n✔ A06 style keeps focus visible (3.868333ms)\\n✔ A06 view has a semantic section (0.481834ms)\\n✔ A07 honors reduced motion (0.489125ms)\\n✔ A07 fixture is deterministic (0.4595ms)\\n✔ A07 manifest names its owner (3.012625ms)\\n✔ A07 implementation is marked deterministic (0.465958ms)\\n✔ A07 target settles after repair (0.481084ms)\\n✔ A07 style keeps focus visible (4.75675ms)\\n✔ A07 view has a semantic section (0.566625ms)\\n✔ A08 honors reduced motion (0.447292ms)\\n✔ A08 fixture is deterministic (0.43525ms)\\n✔ A08 manifest names its owner (2.6745ms)\\n✔ A08 implementation is marked deterministic (0.655125ms)\\n✔ A08 target settles after repair (0.469333ms)\\n✔ A08 style keeps focus visible (4.477417ms)\\n✔ A08 view has a semantic section (0.494709ms)\\n✔ A09 honors reduced motion (0.436ms)\\n✔ A09 fixture is deterministic (0.409917ms)\\n✔ A09 manifest names its owner (2.895417ms)\\n✔ A09 implementation is marked deterministic (0.446875ms)\\n✔ A09 target settles after repair (0.67075ms)\\n✔ A09 style keeps focus visible (3.147833ms)\\n✔ A09 view has a semantic section (0.467ms)\\n✔ A10 honors reduced motion (0.463125ms)\\n✔ A10 fixture is deterministic (0.4525ms)\\n✔ A10 manifest names its owner (3.973334ms)\\n✔ A10 implementation is marked deterministic (0.462875ms)\\n✔ A10 target settles after repair (0.512ms)\\n✔ A10 style keeps focus visible (2.793375ms)\\n✔ A10 view has a semantic section (0.694625ms)\\nℹ tests 70\\nℹ suites 0\\nℹ pass 70\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 836.194251\",\"workspace_session_id\":\"00001918c21d99a062b12d\"}\n",
+  "timed_out": false
+}

@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-48c1370b-f1a0-4ba9-bf8a-523326acef0a",
+    "--request-id",
+    "p5-03-20260714T073000Z:ENGINE.final.tests-A05-red.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A05-red.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 35.594,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A05-red.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 273,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A05-search.js');\ntest('A05 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A05.verify(), true, 'A05 implementation should report verified'));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A05-red.test.mjs",
+    "start_line": 1,
+    "total_bytes": 274,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 90052,
+  "provenance": "engine",
+  "request_id": "p5-03-20260714T073000Z:ENGINE.final.tests-A05-red.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1615,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A05-red.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A05-search.js');\\ntest('A05 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A05.verify(), true, 'A05 implementation should report verified'));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":273,\"total_bytes\":274,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

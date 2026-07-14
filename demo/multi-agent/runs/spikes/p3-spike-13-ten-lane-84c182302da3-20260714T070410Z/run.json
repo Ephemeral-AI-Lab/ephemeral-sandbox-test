@@ -1,0 +1,143 @@
+{
+  "agents": [
+    {
+      "completed": 44,
+      "id": "A01",
+      "planned": 44,
+      "role": "Foundation"
+    },
+    {
+      "completed": 44,
+      "id": "A02",
+      "planned": 44,
+      "role": "Design system"
+    },
+    {
+      "completed": 44,
+      "id": "A03",
+      "planned": 44,
+      "role": "Product data"
+    },
+    {
+      "completed": 44,
+      "id": "A04",
+      "planned": 44,
+      "role": "Catalog and PDP"
+    },
+    {
+      "completed": 44,
+      "id": "A05",
+      "planned": 44,
+      "role": "Search and facets"
+    },
+    {
+      "completed": 44,
+      "id": "A06",
+      "planned": 52,
+      "role": "Cart and pricing"
+    },
+    {
+      "completed": 44,
+      "id": "A07",
+      "planned": 44,
+      "role": "Wishlist"
+    },
+    {
+      "completed": 44,
+      "id": "A08",
+      "planned": 59,
+      "role": "Checkout"
+    },
+    {
+      "completed": 44,
+      "id": "A09",
+      "planned": 54,
+      "role": "Accessibility and performance"
+    },
+    {
+      "completed": 44,
+      "id": "A10",
+      "planned": 53,
+      "role": "Integration QA"
+    }
+  ],
+  "commands": {
+    "A01.primary.anchor": "namespace_execution_3",
+    "A02.primary.anchor": "namespace_execution_4",
+    "A03.primary.anchor": "namespace_execution_5",
+    "A04.primary.anchor": "namespace_execution_6",
+    "A05.primary.anchor": "namespace_execution_7",
+    "A06.primary.anchor": "namespace_execution_8",
+    "A07.primary.anchor": "namespace_execution_9",
+    "A08.primary.anchor": "namespace_execution_10",
+    "A09.primary.anchor": "namespace_execution_11",
+    "A10.primary.anchor": "namespace_execution_12"
+  },
+  "evidence": {
+    "network_probes": {},
+    "preview": null,
+    "raw_owner_mapping": {
+      "A01": "workspace_session:00000318c2160e121106f2",
+      "A02": "workspace_session:00000418c2160e14ca226b",
+      "A03": "workspace_session:00000518c2160e17da4793",
+      "A04": "workspace_session:00000618c2160e1aa37307",
+      "A05": "workspace_session:00000718c2160e1d5470b3",
+      "A06": "workspace_session:00000818c2160e2123975f",
+      "A07": "workspace_session:00000918c2160e239f71db",
+      "A08": "workspace_session:00000a18c2160e26445ac1",
+      "A09": "workspace_session:00000b18c2160e29014212",
+      "A10": "workspace_session:00000c18c2160e2ba6b939"
+    }
+  },
+  "presentation": {
+    "active_scene": "merge",
+    "checkpoints": {
+      "bootstrap": {
+        "path": "assertions/checkpoints/bootstrap.json",
+        "revision": 2,
+        "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+        "sha256": "9a4775961568c1118892100b2c61549ff5dde57c8f31f3a31ed7251c0bf7e3a8"
+      },
+      "spike-primary-publications": {
+        "path": "assertions/checkpoints/spike-primary-publications.json",
+        "revision": 12,
+        "root_hash": "31e0a7074005a4f87ef4737b2eefeee34a100457b38e6fd534c1a57dbaccb7c5",
+        "sha256": "7ca14a34d1735906602f4b66a94ce4f5e3ca42ecb2049eb4ea887145f04b2dde"
+      }
+    }
+  },
+  "projection_seq": 448,
+  "run": {
+    "calls": {
+      "agent": 440,
+      "completed": 440,
+      "engine": 843,
+      "engine_runtime_cli": 318,
+      "manager_control_cli": 4,
+      "planned": 482,
+      "telemetry_cli": 521,
+      "trusted_session_control": 0
+    },
+    "cleanup_verdict": "clean",
+    "elapsed_ms": 43202.973,
+    "execution_verdict": "passed",
+    "failed": null,
+    "id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z",
+    "sandbox_id": null,
+    "status": "spike-passed",
+    "title": "FlashCart: ten agents, one workspace"
+  },
+  "schema_version": "multiagent-demo/v1",
+  "workspaces": {
+    "A01.primary.workspace": "00000318c2160e121106f2",
+    "A02.primary.workspace": "00000418c2160e14ca226b",
+    "A03.primary.workspace": "00000518c2160e17da4793",
+    "A04.primary.workspace": "00000618c2160e1aa37307",
+    "A05.primary.workspace": "00000718c2160e1d5470b3",
+    "A06.primary.workspace": "00000818c2160e2123975f",
+    "A07.primary.workspace": "00000918c2160e239f71db",
+    "A08.primary.workspace": "00000a18c2160e26445ac1",
+    "A09.primary.workspace": "00000b18c2160e29014212",
+    "A10.primary.workspace": "00000c18c2160e2ba6b939"
+  }
+}

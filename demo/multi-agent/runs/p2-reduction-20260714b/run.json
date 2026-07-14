@@ -1,0 +1,93 @@
+{
+  "agents": [
+    {
+      "completed": 0,
+      "id": "A01",
+      "planned": 44,
+      "role": "Foundation"
+    },
+    {
+      "completed": 0,
+      "id": "A02",
+      "planned": 44,
+      "role": "Design system"
+    },
+    {
+      "completed": 0,
+      "id": "A03",
+      "planned": 44,
+      "role": "Product data"
+    },
+    {
+      "completed": 0,
+      "id": "A04",
+      "planned": 44,
+      "role": "Catalog and PDP"
+    },
+    {
+      "completed": 0,
+      "id": "A05",
+      "planned": 44,
+      "role": "Search and facets"
+    },
+    {
+      "completed": 0,
+      "id": "A06",
+      "planned": 52,
+      "role": "Cart and pricing"
+    },
+    {
+      "completed": 0,
+      "id": "A07",
+      "planned": 44,
+      "role": "Wishlist"
+    },
+    {
+      "completed": 0,
+      "id": "A08",
+      "planned": 59,
+      "role": "Checkout"
+    },
+    {
+      "completed": 0,
+      "id": "A09",
+      "planned": 54,
+      "role": "Accessibility and performance"
+    },
+    {
+      "completed": 0,
+      "id": "A10",
+      "planned": 53,
+      "role": "Integration QA"
+    }
+  ],
+  "commands": {},
+  "evidence": {
+    "network_probes": {},
+    "preview": null,
+    "raw_owner_mapping": {}
+  },
+  "presentation": {
+    "active_scene": "preflight",
+    "checkpoints": {}
+  },
+  "projection_seq": 2,
+  "run": {
+    "calls": {
+      "agent": 0,
+      "completed": 0,
+      "engine": 5,
+      "planned": 482
+    },
+    "cleanup_verdict": "pending",
+    "elapsed_ms": 674.877,
+    "execution_verdict": "running",
+    "failed": "DemoFailure: file_read lacks text/byte metadata: {'error': {'kind': 'invalid_request', 'message': '--request-id must be 1-128 ASCII letters, digits, period, underscore, colon, or dash', 'details': {}}}",
+    "id": "p2-reduction-20260714b",
+    "sandbox_id": "eos-42da9236-f8af-4947-8088-e865d9fed8e7",
+    "status": "failed",
+    "title": "FlashCart: ten agents, one workspace"
+  },
+  "schema_version": "multiagent-demo/v1",
+  "workspaces": {}
+}

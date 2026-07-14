@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-74424d22-6c30-475f-a506-ddf239b37463",
+    "--request-id",
+    "p3-spike-05-lane-A05-20260714T070249Z:A05.024:runtime",
+    "file_write",
+    "--path",
+    "src/features/A05-search-a11y.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.a11y = root.FlashCart.a11y || {};\n  root.FlashCart.a11y.A05 = { label: 'Search and facets', keyboard: true, reducedMotion: true };\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000318c215fb33e4eb32"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.851,
+  "kind": "public_cli_process",
+  "label": "A05.024",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 224,
+    "path": "src/features/A05-search-a11y.js",
+    "type": "create"
+  },
+  "pid": 12620,
+  "provenance": "agent",
+  "request_id": "p3-spike-05-lane-A05-20260714T070249Z:A05.024:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 84,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A05-search-a11y.js\",\"bytes_written\":224}\n",
+  "timed_out": false
+}

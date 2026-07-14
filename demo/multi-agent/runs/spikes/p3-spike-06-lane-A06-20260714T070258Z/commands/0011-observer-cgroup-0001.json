@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "cgroup",
+    "--sandbox-id",
+    "eos-98d16098-283b-41e0-b3fb-dc07d9d7ed8c",
+    "--scope",
+    "sandbox",
+    "--window-ms",
+    "600000"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.921,
+  "kind": "public_cli_process",
+  "label": "observer-cgroup-0001",
+  "parse_error": null,
+  "parsed_json": {
+    "scope": "sandbox",
+    "series": [
+      {
+        "deltas": {},
+        "metrics": {
+          "cpu_usec": 104803,
+          "io_rbytes": 0,
+          "io_wbytes": 98304,
+          "mem_cur": 3915776,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": null,
+        "ts": 1784012579824
+      }
+    ],
+    "view": "cgroup"
+  },
+  "pid": 14028,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 11,
+  "stderr": "",
+  "stdout": "{\"view\":\"cgroup\",\"scope\":\"sandbox\",\"series\":[{\"ts\":1784012579824,\"sample_delta_ms\":null,\"metrics\":{\"metrics_source\":\"docker_engine\",\"cpu_usec\":104803,\"io_rbytes\":0,\"io_wbytes\":98304,\"mem_cur\":3915776,\"mem_max\":4109398016},\"deltas\":{}}]}\n",
+  "timed_out": false
+}

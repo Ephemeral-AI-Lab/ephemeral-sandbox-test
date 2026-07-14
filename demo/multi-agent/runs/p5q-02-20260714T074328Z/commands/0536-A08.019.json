@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-6d85707f-f89b-44b7-a68d-98b1f9fae7a7",
+    "--request-id",
+    "p5q-02-20260714T074328Z:A08.019:runtime",
+    "file_write",
+    "--path",
+    "tests/A08-view.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A08-checkout-view.js');\ntest('A08 view has a semantic section', () => assert.match(globalThis.FlashCart.views.A08(), /<section/));\n",
+    "--workspace-session-id",
+    "00000a18c218334cca142c"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.089,
+  "kind": "public_cli_process",
+  "label": "A08.019",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 232,
+    "path": "tests/A08-view.test.mjs",
+    "type": "create"
+  },
+  "pid": 39251,
+  "provenance": "agent",
+  "request_id": "p5q-02-20260714T074328Z:A08.019:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 536,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A08-view.test.mjs\",\"bytes_written\":232}\n",
+  "timed_out": false
+}

@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-52de8bdd-040c-406d-80ed-2e44db339ded",
+    "--request-id",
+    "p5f-07-20260714T091851Z:A10.042:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A10: { role: 'Integration QA', entry: 'src/features/A10-qa.js' },\",\n    \"old_string\": \"  A10: null,\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000c18c21d68661c798c"
+  ],
+  "cancelled": false,
+  "duration_ms": 51.741,
+  "kind": "public_cli_process",
+  "label": "A10.042",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 261,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 8048,
+  "provenance": "agent",
+  "request_id": "p5f-07-20260714T091851Z:A10.042:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1233,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":261}\n",
+  "timed_out": false
+}

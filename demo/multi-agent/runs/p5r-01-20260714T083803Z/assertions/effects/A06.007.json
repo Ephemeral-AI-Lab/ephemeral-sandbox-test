@@ -1,0 +1,32 @@
+{
+  "after": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A06-cart.js": "de9a977f6d5bf4b2eb8b49f9e89a89522ee7fa817acf61255b561cbb9c510957",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A06-red.test.mjs": "e3d571ceb7bfe88a9a6cd35a438e2632f91887f8b98d29fbabc18d7a969a930f"
+  },
+  "attempt_ref": "A06.primary",
+  "before": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A06-cart.js": "de9a977f6d5bf4b2eb8b49f9e89a89522ee7fa817acf61255b561cbb9c510957",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08"
+  },
+  "changed_paths": [
+    "tests/A06-red.test.mjs"
+  ],
+  "cumulative_changed_paths": [
+    "src/features/A06-cart.js",
+    "tests/A06-red.test.mjs"
+  ],
+  "cumulative_declared_paths": [
+    "src/features/A06-cart.js",
+    "tests/A06-red.test.mjs"
+  ],
+  "declared_paths": [
+    "tests/A06-red.test.mjs"
+  ],
+  "response_sha256": "d83b9d313ff234270a17d914ad8b221111cf657e89a23176604f6d6171587df1",
+  "row": "A06.007"
+}

@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-6d85707f-f89b-44b7-a68d-98b1f9fae7a7",
+    "--request-id",
+    "p5q-02-20260714T074328Z:A01.014:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000318c2183339a3060b",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { readFile } from 'node:fs/promises'; const html = await readFile('index.html', 'utf8'); if (!html.includes('<main')) process.exit(1);\""
+  ],
+  "cancelled": false,
+  "duration_ms": 69.006,
+  "kind": "public_cli_process",
+  "label": "A01.014",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.031125,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.031193375,
+    "workspace_session_id": "00000318c2183339a3060b"
+  },
+  "pid": 36160,
+  "provenance": "agent",
+  "request_id": "p5q-02-20260714T074328Z:A01.014:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 366,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.031193375,\"command_total_time_seconds\":0.031125,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00000318c2183339a3060b\"}\n",
+  "timed_out": false
+}

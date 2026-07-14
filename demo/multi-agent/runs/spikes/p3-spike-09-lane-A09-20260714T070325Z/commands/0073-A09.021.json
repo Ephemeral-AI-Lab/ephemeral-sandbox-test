@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-f7b45c59-dbca-499e-a88c-578405986088",
+    "--request-id",
+    "p3-spike-09-lane-A09-20260714T070325Z:A09.021:runtime",
+    "file_write",
+    "--path",
+    "src/features/A09-accessibility.css",
+    "--content",
+    ".feature-a09 { border-inline-start: 4px solid #175b50; } .feature-a09 :focus-visible { outline: 3px solid #124ea0; }\n",
+    "--workspace-session-id",
+    "00000318c2160377038b2f"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.101,
+  "kind": "public_cli_process",
+  "label": "A09.021",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 117,
+    "path": "src/features/A09-accessibility.css",
+    "type": "create"
+  },
+  "pid": 23288,
+  "provenance": "agent",
+  "request_id": "p3-spike-09-lane-A09-20260714T070325Z:A09.021:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 73,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A09-accessibility.css\",\"bytes_written\":117}\n",
+  "timed_out": false
+}

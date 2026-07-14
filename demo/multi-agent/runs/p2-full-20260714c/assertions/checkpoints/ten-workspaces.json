@@ -1,0 +1,790 @@
+{
+  "events": {
+    "label": "checkpoint-ten-workspaces",
+    "new_events": [
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-16",
+        "trace": "p2-full-20260714c:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784006301983
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-21",
+        "trace": "p2-full-20260714c:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784006302038
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-24",
+        "trace": "p2-full-20260714c:A03.001:runtime",
+        "ts": 1784006302099
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-27",
+        "trace": "p2-full-20260714c:A01.001:runtime",
+        "ts": 1784006302105
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-31",
+        "trace": "p2-full-20260714c:A05.001:runtime",
+        "ts": 1784006302111
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-34",
+        "trace": "p2-full-20260714c:A04.001:runtime",
+        "ts": 1784006302126
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-37",
+        "trace": "p2-full-20260714c:A02.001:runtime",
+        "ts": 1784006302131
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-42",
+        "trace": "p2-full-20260714c:A06.001:runtime",
+        "ts": 1784006302136
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-46",
+        "trace": "p2-full-20260714c:A07.001:runtime",
+        "ts": 1784006302141
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-50",
+        "trace": "p2-full-20260714c:A08.001:runtime",
+        "ts": 1784006302146
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-53",
+        "trace": "p2-full-20260714c:A09.001:runtime",
+        "ts": 1784006302152
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-56",
+        "trace": "p2-full-20260714c:A10.001:runtime",
+        "ts": 1784006302158
+      }
+    ],
+    "response": {
+      "events": [
+        {
+          "attrs": {
+            "revision": 1
+          },
+          "name": "lease.released",
+          "parent": "d-9",
+          "trace": "p2-full-20260714c:ENGINE.bootstrap:runtime",
+          "ts": 1784006301704
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.acquired",
+          "parent": "d-16",
+          "trace": "p2-full-20260714c:ENGINE.shared.checkpoint.bootstrap:runtime",
+          "ts": 1784006301983
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.released",
+          "parent": "d-21",
+          "trace": "p2-full-20260714c:ENGINE.shared.checkpoint.bootstrap:runtime",
+          "ts": 1784006302038
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.acquired",
+          "parent": "d-24",
+          "trace": "p2-full-20260714c:A03.001:runtime",
+          "ts": 1784006302099
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.acquired",
+          "parent": "d-27",
+          "trace": "p2-full-20260714c:A01.001:runtime",
+          "ts": 1784006302105
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.acquired",
+          "parent": "d-31",
+          "trace": "p2-full-20260714c:A05.001:runtime",
+          "ts": 1784006302111
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.acquired",
+          "parent": "d-34",
+          "trace": "p2-full-20260714c:A04.001:runtime",
+          "ts": 1784006302126
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.acquired",
+          "parent": "d-37",
+          "trace": "p2-full-20260714c:A02.001:runtime",
+          "ts": 1784006302131
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.acquired",
+          "parent": "d-42",
+          "trace": "p2-full-20260714c:A06.001:runtime",
+          "ts": 1784006302136
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.acquired",
+          "parent": "d-46",
+          "trace": "p2-full-20260714c:A07.001:runtime",
+          "ts": 1784006302141
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.acquired",
+          "parent": "d-50",
+          "trace": "p2-full-20260714c:A08.001:runtime",
+          "ts": 1784006302146
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.acquired",
+          "parent": "d-53",
+          "trace": "p2-full-20260714c:A09.001:runtime",
+          "ts": 1784006302152
+        },
+        {
+          "attrs": {
+            "revision": 2
+          },
+          "name": "lease.acquired",
+          "parent": "d-56",
+          "trace": "p2-full-20260714c:A10.001:runtime",
+          "ts": 1784006302158
+        }
+      ],
+      "view": "events"
+    },
+    "watermark_ms": 1784006302158
+  },
+  "layerstack": {
+    "active_lease_count": 10,
+    "layers": [
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 527,
+        "layer_id": "L000002-00000001",
+        "leased_by_workspaces": 10
+      },
+      {
+        "allocated_bytes": null,
+        "booked_by": [
+          "L000002-00000001"
+        ],
+        "bytes": null,
+        "layer_id": "B000001-base",
+        "leased_by_workspaces": 0
+      }
+    ],
+    "manifest_version": 2,
+    "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+    "staging_entry_count": 0,
+    "storage_allocated_bytes": 65536,
+    "storage_logical_bytes": 1055,
+    "total_allocated_bytes": null,
+    "total_bytes": null,
+    "trend": [
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006301704
+      },
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006301745
+      },
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006301788
+      },
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006301829
+      },
+      {
+        "active_leases": 0,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006302038
+      },
+      {
+        "active_leases": 2,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006302101
+      },
+      {
+        "active_leases": 3,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006302106
+      },
+      {
+        "active_leases": 4,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006302112
+      },
+      {
+        "active_leases": 5,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006302127
+      },
+      {
+        "active_leases": 6,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006302133
+      },
+      {
+        "active_leases": 7,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006302138
+      },
+      {
+        "active_leases": 8,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006302144
+      },
+      {
+        "active_leases": 9,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006302148
+      },
+      {
+        "active_leases": 10,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006302154
+      },
+      {
+        "active_leases": 10,
+        "layer_count": 2,
+        "layers_allocated_bytes": null,
+        "layers_bytes": null,
+        "staging_entry_count": 0,
+        "storage_allocated_bytes": 65536,
+        "storage_logical_bytes": 1055,
+        "ts": 1784006302160
+      }
+    ],
+    "view": "layerstack"
+  },
+  "name": "ten-workspaces",
+  "sandbox_id": "eos-b5b441d3-de98-49a1-81d9-ead243c868b9",
+  "scene": "fanout",
+  "shared_manifest": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08"
+  },
+  "snapshot": {
+    "availability": "available",
+    "daemon": {
+      "daemon_pid": 7,
+      "runtime_dir": "/eos/runtime/daemon"
+    },
+    "errors": [],
+    "lifecycle_state": "ready",
+    "resources": {
+      "history": [],
+      "latest": {
+        "deltas": {},
+        "metrics": {
+          "cgroup_available": false,
+          "cgroup_error": "cgroup root unavailable"
+        },
+        "sample_delta_ms": 45,
+        "ts": 1784006302277
+      }
+    },
+    "sampled_at_unix_ms": 1784006302277,
+    "sandbox_id": "eos-b5b441d3-de98-49a1-81d9-ead243c868b9",
+    "stack": {
+      "active_leases": 10,
+      "layer_count": 2,
+      "layers_allocated_bytes": null,
+      "layers_bytes": null,
+      "staging_entry_count": 0,
+      "storage_allocated_bytes": 65536
+    },
+    "workspaces": [
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_3",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 45,
+            "ts": 1784006302277
+          }
+        },
+        "workspace_id": "00000318c210479951fe41"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_4",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 45,
+            "ts": 1784006302277
+          }
+        },
+        "workspace_id": "00000418c2104799b41883"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_5",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 45,
+            "ts": 1784006302277
+          }
+        },
+        "workspace_id": "00000518c210479a090e83"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_6",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 45,
+            "ts": 1784006302277
+          }
+        },
+        "workspace_id": "00000618c210479a662226"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_7",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 45,
+            "ts": 1784006302277
+          }
+        },
+        "workspace_id": "00000718c210479b4ea0b4"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_8",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 45,
+            "ts": 1784006302277
+          }
+        },
+        "workspace_id": "00000818c210479ba3e4aa"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_9",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 45,
+            "ts": 1784006302277
+          }
+        },
+        "workspace_id": "00000918c210479beb1af9"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_10",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 45,
+            "ts": 1784006302277
+          }
+        },
+        "workspace_id": "00000a18c210479c37e721"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_11",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 45,
+            "ts": 1784006302277
+          }
+        },
+        "workspace_id": "00000b18c210479c87994f"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_12",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": {
+            "deltas": {},
+            "metrics": {
+              "cgroup_available": false,
+              "cgroup_error": "workspace cgroup unavailable",
+              "disk_allocated_bytes": 4096,
+              "disk_bytes": 0,
+              "files": 0
+            },
+            "sample_delta_ms": 45,
+            "ts": 1784006302277
+          }
+        },
+        "workspace_id": "00000c18c210479cdc5be0"
+      }
+    ]
+  }
+}

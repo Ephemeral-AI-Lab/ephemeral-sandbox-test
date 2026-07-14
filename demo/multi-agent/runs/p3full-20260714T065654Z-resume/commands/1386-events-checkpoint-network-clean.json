@@ -1,0 +1,103 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-05aa11ab-f22c-4929-87b4-9080e735c2dc",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784012263463"
+  ],
+  "cancelled": false,
+  "duration_ms": 119.158,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-network-clean",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2147",
+        "trace": "p3full-20260714T065654Z-resume:A08.045:runtime",
+        "ts": 1784012263463
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2158",
+        "trace": "p3full-20260714T065654Z-resume:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784012264114
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.released",
+        "parent": "d-2163",
+        "trace": "p3full-20260714T065654Z-resume:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784012264215
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2170",
+        "trace": "e2e-direct-daemon-e844ecbb-ab12-49e9-8d66-e3575398debf",
+        "ts": 1784012264431
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2172",
+        "trace": "e2e-direct-daemon-4c74c0d9-5b07-4a56-b173-0902bb30dcf8",
+        "ts": 1784012264506
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2175",
+        "trace": "e2e-direct-daemon-6e6ff459-878d-4171-8e6f-79036a051916",
+        "ts": 1784012264603
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "name": "lease.released",
+        "parent": "d-2178",
+        "trace": "e2e-direct-daemon-b0ee4231-3ca0-40b2-b496-98394f32058c",
+        "ts": 1784012264712
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "name": "lease.acquired",
+        "parent": "d-2181",
+        "trace": "p3full-20260714T065654Z-resume:A08.053:runtime",
+        "ts": 1784012264752
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 92569,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1386,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"ts\":1784012263463,\"trace\":\"p3full-20260714T065654Z-resume:A08.045:runtime\",\"parent\":\"d-2147\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784012264114,\"trace\":\"p3full-20260714T065654Z-resume:ENGINE.shared.checkpoint.conflict-rejected:runtime\",\"parent\":\"d-2158\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"ts\":1784012264215,\"trace\":\"p3full-20260714T065654Z-resume:ENGINE.shared.checkpoint.conflict-rejected:runtime\",\"parent\":\"d-2163\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}},{\"ts\":1784012264431,\"trace\":\"e2e-direct-daemon-e844ecbb-ab12-49e9-8d66-e3575398debf\",\"parent\":\"d-2170\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784012264506,\"trace\":\"e2e-direct-daemon-4c74c0d9-5b07-4a56-b173-0902bb30dcf8\",\"parent\":\"d-2172\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784012264603,\"trace\":\"e2e-direct-daemon-6e6ff459-878d-4171-8e6f-79036a051916\",\"parent\":\"d-2175\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784012264712,\"trace\":\"e2e-direct-daemon-b0ee4231-3ca0-40b2-b496-98394f32058c\",\"parent\":\"d-2178\",\"name\":\"lease.released\",\"attrs\":{\"revision\":12}},{\"ts\":1784012264752,\"trace\":\"p3full-20260714T065654Z-resume:A08.053:runtime\",\"parent\":\"d-2181\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}}]}\n",
+  "timed_out": false
+}

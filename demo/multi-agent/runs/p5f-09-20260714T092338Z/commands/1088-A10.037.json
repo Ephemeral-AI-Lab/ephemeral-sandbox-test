@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-94fb6e38-dd74-4a9f-b016-6d2e055375ed",
+    "--request-id",
+    "p5f-09-20260714T092338Z:A10.037:runtime",
+    "file_read",
+    "--path",
+    "tests/A10-red.test.mjs",
+    "--workspace-session-id",
+    "00000c18c21daa99bb567b"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.315,
+  "kind": "public_cli_process",
+  "label": "A10.037",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 269,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A10-qa.js');\ntest('A10 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A10.verify(), true, 'A10 implementation should report verified'));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A10-red.test.mjs",
+    "start_line": 1,
+    "total_bytes": 270,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 67338,
+  "provenance": "agent",
+  "request_id": "p5f-09-20260714T092338Z:A10.037:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1088,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A10-red.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A10-qa.js');\\ntest('A10 target settles after repair', () => assert.equal(globalThis.FlashCart.features.A10.verify(), true, 'A10 implementation should report verified'));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":269,\"total_bytes\":270,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

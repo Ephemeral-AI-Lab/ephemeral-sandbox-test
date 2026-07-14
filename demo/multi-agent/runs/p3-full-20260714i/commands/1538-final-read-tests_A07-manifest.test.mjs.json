@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-879870ba-1958-46ed-8a63-deea1c9fed15",
+    "--request-id",
+    "p3-full-20260714i:ENGINE.final.tests-A07-manifest.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A07-manifest.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.191,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A07-manifest.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 291,
+    "content": "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A07 manifest names its owner', async () => assert.equal(JSON.parse(await readFile(new URL('../src/features/A07-wishlist.json', import.meta.url), 'utf8')).owner, 'A07'));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A07-manifest.test.mjs",
+    "start_line": 1,
+    "total_bytes": 292,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 36577,
+  "provenance": "engine",
+  "request_id": "p3-full-20260714i:ENGINE.final.tests-A07-manifest.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1538,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A07-manifest.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport { readFile } from 'node:fs/promises';\\nimport test from 'node:test';\\ntest('A07 manifest names its owner', async () => assert.equal(JSON.parse(await readFile(new URL('../src/features/A07-wishlist.json', import.meta.url), 'utf8')).owner, 'A07'));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":291,\"total_bytes\":292,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

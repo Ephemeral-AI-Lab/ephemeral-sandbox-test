@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-7659e24e-1f97-41d1-a34d-7721f1f0178f",
+    "--request-id",
+    "p5-02-20260714T072600Z:A04.005:runtime",
+    "file_read",
+    "--path",
+    "src/features/A04-catalog.js",
+    "--workspace-session-id",
+    "00000618c21739d6a2b38f"
+  ],
+  "cancelled": false,
+  "duration_ms": 71.434,
+  "kind": "public_cli_process",
+  "label": "A04.005",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/features/A04-catalog.js"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/features/A04-catalog.js"
+    }
+  },
+  "pid": 31485,
+  "provenance": "agent",
+  "request_id": "p5-02-20260714T072600Z:A04.005:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 98,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/features/A04-catalog.js\",\"details\":{\"path\":\"src/features/A04-catalog.js\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

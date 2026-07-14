@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-1ca06416-1e0b-4340-81fe-4b467e48c55a",
+    "--request-id",
+    "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A04.013:runtime",
+    "file_write",
+    "--path",
+    "src/features/A04-catalog-data.js",
+    "--content",
+    "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\n  root.FlashCart.fixtures.A04 = Object.freeze({ owner: 'A04', label: 'Catalog and PDP', revision: 1 });\n})(globalThis);\n",
+    "--workspace-session-id",
+    "00000618c2160e1aa37307"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.352,
+  "kind": "public_cli_process",
+  "label": "A04.013",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 239,
+    "path": "src/features/A04-catalog-data.js",
+    "type": "create"
+  },
+  "pid": 45444,
+  "provenance": "agent",
+  "request_id": "p3-spike-13-ten-lane-84c182302da3-20260714T070410Z:A04.013:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 331,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A04-catalog-data.js\",\"bytes_written\":239}\n",
+  "timed_out": false
+}

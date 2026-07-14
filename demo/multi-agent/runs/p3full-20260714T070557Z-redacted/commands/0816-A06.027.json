@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-adf9180b-82e7-4128-90a2-b7342748f86b",
+    "--request-id",
+    "p3full-20260714T070557Z-redacted:A06.027:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000818c216270e2ff349",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A06-a11y.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 114.981,
+  "kind": "public_cli_process",
+  "label": "A06.027",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.074526666,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A06 honors reduced motion (0.484125ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 38.209292",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.074597166,
+    "workspace_session_id": "00000818c216270e2ff349"
+  },
+  "pid": 77944,
+  "provenance": "agent",
+  "request_id": "p3full-20260714T070557Z-redacted:A06.027:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 816,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.074597166,\"command_total_time_seconds\":0.074526666,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":39,\"output\":\"✔ A06 honors reduced motion (0.484125ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 38.209292\",\"workspace_session_id\":\"00000818c216270e2ff349\"}\n",
+  "timed_out": false
+}

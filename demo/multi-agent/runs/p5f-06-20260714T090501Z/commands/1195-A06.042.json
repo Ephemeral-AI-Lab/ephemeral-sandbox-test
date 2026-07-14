@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-138c81b8-2911-43e8-b0d4-ad5a886f243e",
+    "--request-id",
+    "p5f-06-20260714T090501Z:A06.042:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A06: { role: 'Cart and pricing', entry: 'src/features/A06-cart.js' },\",\n    \"old_string\": \"  A06: null,\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000818c21ca6757dac1e"
+  ],
+  "cancelled": false,
+  "duration_ms": 53.81,
+  "kind": "public_cli_process",
+  "label": "A06.042",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 265,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 72587,
+  "provenance": "agent",
+  "request_id": "p5f-06-20260714T090501Z:A06.042:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1195,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":265}\n",
+  "timed_out": false
+}

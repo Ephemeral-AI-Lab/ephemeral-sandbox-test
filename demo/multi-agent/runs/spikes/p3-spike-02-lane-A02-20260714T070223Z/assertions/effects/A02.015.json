@@ -1,0 +1,40 @@
+{
+  "after": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A02-design-system-data.js": "5d1be79ab2357d9bae22d9ed5abaea7b31228e9d15810bde0b739b111763791b",
+    "src/features/A02-design-system.js": "727d5d7c2b168a63be4e32db899a44a3e15a6ef1377bddfc60ee61b3b43654d4",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A02-data.test.mjs": "2efb1c241afaa78a0e1a0205c9f41f39bf6a0edbdd4355c15d4448b05a9295f2",
+    "tests/A02-red.test.mjs": "690ef809c92e6c6f7ccaa7b43792e01bcb790141f863db9906d71ee3d6d36d9a"
+  },
+  "attempt_ref": "A02.primary",
+  "before": {
+    "package.json": "84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b",
+    "src/config.js": "8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab",
+    "src/features/A02-design-system-data.js": "5d1be79ab2357d9bae22d9ed5abaea7b31228e9d15810bde0b739b111763791b",
+    "src/features/A02-design-system.js": "727d5d7c2b168a63be4e32db899a44a3e15a6ef1377bddfc60ee61b3b43654d4",
+    "src/registry.js": "edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08",
+    "tests/A02-red.test.mjs": "690ef809c92e6c6f7ccaa7b43792e01bcb790141f863db9906d71ee3d6d36d9a"
+  },
+  "changed_paths": [
+    "tests/A02-data.test.mjs"
+  ],
+  "cumulative_changed_paths": [
+    "src/features/A02-design-system-data.js",
+    "src/features/A02-design-system.js",
+    "tests/A02-data.test.mjs",
+    "tests/A02-red.test.mjs"
+  ],
+  "cumulative_declared_paths": [
+    "src/features/A02-design-system-data.js",
+    "src/features/A02-design-system.js",
+    "tests/A02-data.test.mjs",
+    "tests/A02-red.test.mjs"
+  ],
+  "declared_paths": [
+    "tests/A02-data.test.mjs"
+  ],
+  "response_sha256": "341b8254c8613f732d27bc73ba8ec47f34443b8820e2eee98f42991bfcbac4a5",
+  "row": "A02.015"
+}

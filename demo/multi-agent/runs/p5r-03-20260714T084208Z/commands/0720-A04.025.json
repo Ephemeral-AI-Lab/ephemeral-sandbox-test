@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-71235f98-7a81-439c-8bc4-8f1458449999",
+    "--request-id",
+    "p5r-03-20260714T084208Z:A04.025:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000618c21b68572c67a9",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --check src/features/A04-catalog-a11y.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 66.802,
+  "kind": "public_cli_process",
+  "label": "A04.025",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.020466375,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.020517916,
+    "workspace_session_id": "00000618c21b68572c67a9"
+  },
+  "pid": 73316,
+  "provenance": "agent",
+  "request_id": "p5r-03-20260714T084208Z:A04.025:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 720,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.020517916,\"command_total_time_seconds\":0.020466375,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00000618c21b68572c67a9\"}\n",
+  "timed_out": false
+}

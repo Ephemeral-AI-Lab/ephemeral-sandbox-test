@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-d11117e7-fbf9-4e44-950c-c1d5615dd59e",
+    "--request-id",
+    "p3-spike-04-lane-A04-20260714T070241Z:A04.015:runtime",
+    "file_write",
+    "--path",
+    "tests/A04-data.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A04-catalog-data.js');\ntest('A04 fixture is deterministic', () => assert.equal(globalThis.FlashCart.fixtures.A04.owner, 'A04'));\n",
+    "--workspace-session-id",
+    "00000318c215f9259c00a4"
+  ],
+  "cancelled": false,
+  "duration_ms": 42.929,
+  "kind": "public_cli_process",
+  "label": "A04.015",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 230,
+    "path": "tests/A04-data.test.mjs",
+    "type": "create"
+  },
+  "pid": 9264,
+  "provenance": "agent",
+  "request_id": "p3-spike-04-lane-A04-20260714T070241Z:A04.015:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 52,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A04-data.test.mjs\",\"bytes_written\":230}\n",
+  "timed_out": false
+}

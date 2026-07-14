@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-702b08ad-b0b3-480f-825a-1c57e17b0b14",
+    "--trace-id",
+    "p4-full-20260714j:A06.051:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 97.405,
+  "kind": "public_cli_process",
+  "label": "trace-A06.051",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_read"
+          },
+          "dur_ms": 0.0,
+          "name": "daemon.dispatch",
+          "span": "d-2132",
+          "status": "completed",
+          "trace": "p4-full-20260714j:A06.051:runtime",
+          "ts": 1784008033818
+        }
+      }
+    ],
+    "trace": "p4-full-20260714j:A06.051:runtime",
+    "view": "trace"
+  },
+  "pid": 64011,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1329,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p4-full-20260714j:A06.051:runtime\",\"spans\":[{\"span\":{\"ts\":1784008033818,\"trace\":\"p4-full-20260714j:A06.051:runtime\",\"span\":\"d-2132\",\"name\":\"daemon.dispatch\",\"dur_ms\":0.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_read\"}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}]}\n",
+  "timed_out": false
+}

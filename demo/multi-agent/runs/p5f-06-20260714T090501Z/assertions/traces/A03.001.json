@@ -1,0 +1,92 @@
+{
+  "request_id": "p5f-06-20260714T090501Z:A03.001:runtime",
+  "row": "A03.001",
+  "trace": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "events": [],
+                    "offset_ms": 1.0,
+                    "span": {
+                      "attrs": {},
+                      "dur_ms": 2.0,
+                      "name": "namespace.exec.mount_overlay",
+                      "parent": "d-34",
+                      "span": "d-35",
+                      "status": "completed",
+                      "trace": "p5f-06-20260714T090501Z:A03.001:runtime",
+                      "ts": 1784019903516
+                    }
+                  }
+                ],
+                "events": [
+                  {
+                    "event": {
+                      "attrs": {
+                        "revision": 2
+                      },
+                      "name": "lease.acquired",
+                      "parent": "d-34",
+                      "trace": "p5f-06-20260714T090501Z:A03.001:runtime",
+                      "ts": 1784019903517
+                    },
+                    "offset_ms": 4.0
+                  }
+                ],
+                "offset_ms": 0.0,
+                "span": {
+                  "attrs": {
+                    "finalize_policy": "publish_then_destroy"
+                  },
+                  "dur_ms": 4.0,
+                  "name": "workspace_session.create",
+                  "parent": "d-33",
+                  "span": "d-34",
+                  "status": "completed",
+                  "trace": "p5f-06-20260714T090501Z:A03.001:runtime",
+                  "ts": 1784019903517
+                }
+              }
+            ],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "publish_then_destroy",
+                "session_created": true
+              },
+              "dur_ms": 5.0,
+              "name": "command.exec",
+              "parent": "d-32",
+              "span": "d-33",
+              "status": "completed",
+              "trace": "p5f-06-20260714T090501Z:A03.001:runtime",
+              "ts": 1784019903518
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 5.0,
+          "name": "daemon.dispatch",
+          "span": "d-32",
+          "status": "completed",
+          "trace": "p5f-06-20260714T090501Z:A03.001:runtime",
+          "ts": 1784019903518
+        }
+      }
+    ],
+    "trace": "p5f-06-20260714T090501Z:A03.001:runtime",
+    "view": "trace"
+  }
+}

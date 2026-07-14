@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-2bb2a977-906c-4bb9-b90f-ff7e6e2cfa7e",
+    "--request-id",
+    "p5f-01-20260714T084850Z:A01.039:runtime",
+    "file_write",
+    "--path",
+    "tests/A01-quality.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A01-foundation.js');\ntest('A01 implementation is marked deterministic', () => assert.equal(globalThis.FlashCart.features.A01.deterministic, true));\n",
+    "--workspace-session-id",
+    "00000318c21bc66b61856e"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.601,
+  "kind": "public_cli_process",
+  "label": "A01.039",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 249,
+    "path": "tests/A01-quality.test.mjs",
+    "type": "create"
+  },
+  "pid": 12760,
+  "provenance": "agent",
+  "request_id": "p5f-01-20260714T084850Z:A01.039:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1064,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A01-quality.test.mjs\",\"bytes_written\":249}\n",
+  "timed_out": false
+}

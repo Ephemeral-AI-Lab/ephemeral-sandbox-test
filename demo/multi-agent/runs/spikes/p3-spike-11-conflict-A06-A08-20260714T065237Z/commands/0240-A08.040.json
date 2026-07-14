@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b00a8c3e-45c0-4e7d-8ba1-e6cd1cafc3ac",
+    "--request-id",
+    "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.040:runtime",
+    "file_read",
+    "--path",
+    "tests/A08-quality.test.mjs",
+    "--workspace-session-id",
+    "00000418c2156cb69f8226"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.881,
+  "kind": "public_cli_process",
+  "label": "A08.040",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 246,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A08-checkout.js');\ntest('A08 implementation is marked deterministic', () => assert.equal(globalThis.FlashCart.features.A08.deterministic, true));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A08-quality.test.mjs",
+    "start_line": 1,
+    "total_bytes": 247,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 35171,
+  "provenance": "agent",
+  "request_id": "p3-spike-11-conflict-A06-A08-20260714T065237Z:A08.040:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 240,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A08-quality.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A08-checkout.js');\\ntest('A08 implementation is marked deterministic', () => assert.equal(globalThis.FlashCart.features.A08.deterministic, true));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":246,\"total_bytes\":247,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

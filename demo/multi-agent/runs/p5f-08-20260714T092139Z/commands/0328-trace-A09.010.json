@@ -1,0 +1,77 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-bc06d80c-d1c1-4be3-951c-5db49e779062",
+    "--trace-id",
+    "p5f-08-20260714T092139Z:A09.010:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 48.988,
+  "kind": "public_cli_process",
+  "label": "trace-A09.010",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 1.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 2.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-439",
+              "span": "d-443",
+              "status": "completed",
+              "trace": "p5f-08-20260714T092139Z:A09.010:runtime",
+              "ts": 1784020908262
+            }
+          },
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 4.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 5.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-439",
+              "span": "d-444",
+              "status": "completed",
+              "trace": "p5f-08-20260714T092139Z:A09.010:runtime",
+              "ts": 1784020908268
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_edit"
+          },
+          "dur_ms": 9.0,
+          "name": "daemon.dispatch",
+          "span": "d-439",
+          "status": "completed",
+          "trace": "p5f-08-20260714T092139Z:A09.010:runtime",
+          "ts": 1784020908268
+        }
+      }
+    ],
+    "trace": "p5f-08-20260714T092139Z:A09.010:runtime",
+    "view": "trace"
+  },
+  "pid": 22896,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 328,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p5f-08-20260714T092139Z:A09.010:runtime\",\"spans\":[{\"span\":{\"ts\":1784020908268,\"trace\":\"p5f-08-20260714T092139Z:A09.010:runtime\",\"span\":\"d-439\",\"name\":\"daemon.dispatch\",\"dur_ms\":9.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_edit\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784020908262,\"trace\":\"p5f-08-20260714T092139Z:A09.010:runtime\",\"span\":\"d-443\",\"parent\":\"d-439\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":1.0,\"children\":[],\"events\":[]},{\"span\":{\"ts\":1784020908268,\"trace\":\"p5f-08-20260714T092139Z:A09.010:runtime\",\"span\":\"d-444\",\"parent\":\"d-439\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":5.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":4.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

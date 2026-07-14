@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-e7cbd2de-6ed2-4eca-aa79-86fd00c915d4",
+    "--trace-id",
+    "p3-spike-03-lane-A03-20260714T070232Z:A03.021:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.666,
+  "kind": "public_cli_process",
+  "label": "trace-A03.021",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 2.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-118",
+              "span": "d-119",
+              "status": "completed",
+              "trace": "p3-spike-03-lane-A03-20260714T070232Z:A03.021:runtime",
+              "ts": 1784012556598
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 2.0,
+          "name": "daemon.dispatch",
+          "span": "d-118",
+          "status": "completed",
+          "trace": "p3-spike-03-lane-A03-20260714T070232Z:A03.021:runtime",
+          "ts": 1784012556598
+        }
+      }
+    ],
+    "trace": "p3-spike-03-lane-A03-20260714T070232Z:A03.021:runtime",
+    "view": "trace"
+  },
+  "pid": 6965,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 75,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3-spike-03-lane-A03-20260714T070232Z:A03.021:runtime\",\"spans\":[{\"span\":{\"ts\":1784012556598,\"trace\":\"p3-spike-03-lane-A03-20260714T070232Z:A03.021:runtime\",\"span\":\"d-118\",\"name\":\"daemon.dispatch\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_write\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784012556598,\"trace\":\"p3-spike-03-lane-A03-20260714T070232Z:A03.021:runtime\",\"span\":\"d-119\",\"parent\":\"d-118\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

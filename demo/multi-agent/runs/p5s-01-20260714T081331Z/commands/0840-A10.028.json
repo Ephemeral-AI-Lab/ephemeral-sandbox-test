@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fbe9e67e-eb75-4c15-97b8-68ef24761269",
+    "--request-id",
+    "p5s-01-20260714T081331Z:A10.028:runtime",
+    "file_write",
+    "--path",
+    "src/features/A10-qa.json",
+    "--content",
+    "{\n  \"owner\": \"A10\",\n  \"paths\": {\n    \"a11y\": \"src/features/A10-qa-a11y.js\",\n    \"core\": \"src/features/A10-qa.js\",\n    \"data\": \"src/features/A10-qa-data.js\",\n    \"manifest\": \"src/features/A10-qa.json\",\n    \"style\": \"src/features/A10-qa.css\",\n    \"view\": \"src/features/A10-qa-view.js\"\n  },\n  \"role\": \"Integration QA\",\n  \"schema_version\": 1\n}\n",
+    "--workspace-session-id",
+    "00000c18c219d7d4775767"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.773,
+  "kind": "public_cli_process",
+  "label": "A10.028",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 340,
+    "path": "src/features/A10-qa.json",
+    "type": "create"
+  },
+  "pid": 10062,
+  "provenance": "agent",
+  "request_id": "p5s-01-20260714T081331Z:A10.028:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 840,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"src/features/A10-qa.json\",\"bytes_written\":340}\n",
+  "timed_out": false
+}

@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-manager-cli",
+    "inspect_sandbox",
+    "--sandbox-id",
+    "eos-85444414-3f8b-4661-afe0-0572fc39391d"
+  ],
+  "cancelled": false,
+  "duration_ms": 34.834,
+  "kind": "public_cli_process",
+  "label": "daemon-http-A09.049",
+  "parse_error": null,
+  "parsed_json": {
+    "daemon": {
+      "host": "127.0.0.1",
+      "port": 56560
+    },
+    "daemon_http": {
+      "host": "127.0.0.1",
+      "port": 56561
+    },
+    "id": "eos-85444414-3f8b-4661-afe0-0572fc39391d",
+    "shared_base": {
+      "readonly": true,
+      "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "<e2e-state-root>/flashcart/workspaces/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base",
+      "target": "/eos/layer-stack/base"
+    },
+    "state": "ready",
+    "workspace_root": "<e2e-state-root>/flashcart/workspaces/p5r-01-20260714T083803Z"
+  },
+  "pid": 22690,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1340,
+  "stderr": "",
+  "stdout": "{\"id\":\"eos-85444414-3f8b-4661-afe0-0572fc39391d\",\"workspace_root\":\"<e2e-state-root>/flashcart/workspaces/p5r-01-20260714T083803Z\",\"state\":\"ready\",\"daemon\":{\"host\":\"127.0.0.1\",\"port\":56560},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":56561},\"shared_base\":{\"source\":\"<e2e-state-root>/flashcart/workspaces/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}}\n",
+  "timed_out": false
+}

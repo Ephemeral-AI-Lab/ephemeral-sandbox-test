@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-bc06d80c-d1c1-4be3-951c-5db49e779062",
+    "--request-id",
+    "p5f-08-20260714T092139Z:A02.032:runtime",
+    "file_read",
+    "--path",
+    "src/features/A02-design-system-data.js",
+    "--workspace-session-id",
+    "00000418c21d8ec4d2d66f"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.967,
+  "kind": "public_cli_process",
+  "label": "A02.032",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 236,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\n  root.FlashCart.fixtures.A02 = Object.freeze({ owner: 'A02', label: 'Design system', revision: 1 });\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A02-design-system-data.js",
+    "start_line": 1,
+    "total_bytes": 237,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 33238,
+  "provenance": "agent",
+  "request_id": "p5f-08-20260714T092139Z:A02.032:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 899,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A02-design-system-data.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\\n  root.FlashCart.fixtures.A02 = Object.freeze({ owner: 'A02', label: 'Design system', revision: 1 });\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":236,\"total_bytes\":237,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

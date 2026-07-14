@@ -1,0 +1,236 @@
+{
+  "label": "checkpoint-ten-workspaces",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-16",
+      "trace": "p5r-02-20260714T080347Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+      "ts": 1784016229496
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.released",
+      "parent": "d-21",
+      "trace": "p5r-02-20260714T080347Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+      "ts": 1784016229564
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-24",
+      "trace": "p5r-02-20260714T080347Z:A01.001:runtime",
+      "ts": 1784016229628
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-29",
+      "trace": "p5r-02-20260714T080347Z:A02.001:runtime",
+      "ts": 1784016229681
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-34",
+      "trace": "p5r-02-20260714T080347Z:A03.001:runtime",
+      "ts": 1784016229727
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-39",
+      "trace": "p5r-02-20260714T080347Z:A04.001:runtime",
+      "ts": 1784016229775
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-44",
+      "trace": "p5r-02-20260714T080347Z:A05.001:runtime",
+      "ts": 1784016229834
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-49",
+      "trace": "p5r-02-20260714T080347Z:A06.001:runtime",
+      "ts": 1784016229875
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-54",
+      "trace": "p5r-02-20260714T080347Z:A07.001:runtime",
+      "ts": 1784016229919
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-59",
+      "trace": "p5r-02-20260714T080347Z:A08.001:runtime",
+      "ts": 1784016229962
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-64",
+      "trace": "p5r-02-20260714T080347Z:A09.001:runtime",
+      "ts": 1784016230004
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "name": "lease.acquired",
+      "parent": "d-69",
+      "trace": "p5r-02-20260714T080347Z:A10.001:runtime",
+      "ts": 1784016230049
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 1
+        },
+        "name": "lease.released",
+        "parent": "d-9",
+        "trace": "p5r-02-20260714T080347Z:ENGINE.bootstrap:runtime",
+        "ts": 1784016229195
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-16",
+        "trace": "p5r-02-20260714T080347Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784016229496
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.released",
+        "parent": "d-21",
+        "trace": "p5r-02-20260714T080347Z:ENGINE.shared.checkpoint.bootstrap:runtime",
+        "ts": 1784016229564
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-24",
+        "trace": "p5r-02-20260714T080347Z:A01.001:runtime",
+        "ts": 1784016229628
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-29",
+        "trace": "p5r-02-20260714T080347Z:A02.001:runtime",
+        "ts": 1784016229681
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-34",
+        "trace": "p5r-02-20260714T080347Z:A03.001:runtime",
+        "ts": 1784016229727
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-39",
+        "trace": "p5r-02-20260714T080347Z:A04.001:runtime",
+        "ts": 1784016229775
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-44",
+        "trace": "p5r-02-20260714T080347Z:A05.001:runtime",
+        "ts": 1784016229834
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-49",
+        "trace": "p5r-02-20260714T080347Z:A06.001:runtime",
+        "ts": 1784016229875
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-54",
+        "trace": "p5r-02-20260714T080347Z:A07.001:runtime",
+        "ts": 1784016229919
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-59",
+        "trace": "p5r-02-20260714T080347Z:A08.001:runtime",
+        "ts": 1784016229962
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-64",
+        "trace": "p5r-02-20260714T080347Z:A09.001:runtime",
+        "ts": 1784016230004
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "name": "lease.acquired",
+        "parent": "d-69",
+        "trace": "p5r-02-20260714T080347Z:A10.001:runtime",
+        "ts": 1784016230049
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784016230049
+}

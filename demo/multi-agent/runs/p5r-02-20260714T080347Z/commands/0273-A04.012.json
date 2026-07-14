@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-a0301757-e6eb-4ac8-880c-29a8ef345d7a",
+    "--request-id",
+    "p5r-02-20260714T080347Z:A04.012:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000618c2194f10b1803e",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --test tests/A04-red.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 108.806,
+  "kind": "public_cli_process",
+  "label": "A04.012",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.071022417,
+    "end_offset": 9,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "✔ A04 target settles after repair (0.458166ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 40.150792",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 9,
+    "wall_time_seconds": 0.071080375,
+    "workspace_session_id": "00000618c2194f10b1803e"
+  },
+  "pid": 33742,
+  "provenance": "agent",
+  "request_id": "p5r-02-20260714T080347Z:A04.012:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 273,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.071080375,\"command_total_time_seconds\":0.071022417,\"start_offset\":0,\"end_offset\":9,\"total_lines\":9,\"original_token_count\":41,\"output\":\"✔ A04 target settles after repair (0.458166ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 40.150792\",\"workspace_session_id\":\"00000618c2194f10b1803e\"}\n",
+  "timed_out": false
+}

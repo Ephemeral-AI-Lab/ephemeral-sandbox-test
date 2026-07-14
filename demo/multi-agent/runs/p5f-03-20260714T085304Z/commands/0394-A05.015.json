@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-87d96492-efb1-4bf1-ae1a-d5efea27eb0d",
+    "--request-id",
+    "p5f-03-20260714T085304Z:A05.015:runtime",
+    "file_write",
+    "--path",
+    "tests/A05-data.test.mjs",
+    "--content",
+    "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A05-search-data.js');\ntest('A05 fixture is deterministic', () => assert.equal(globalThis.FlashCart.fixtures.A05.owner, 'A05'));\n",
+    "--workspace-session-id",
+    "00000718c21c006a589f27"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.126,
+  "kind": "public_cli_process",
+  "label": "A05.015",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 229,
+    "path": "tests/A05-data.test.mjs",
+    "type": "create"
+  },
+  "pid": 62473,
+  "provenance": "agent",
+  "request_id": "p5f-03-20260714T085304Z:A05.015:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 394,
+  "stderr": "",
+  "stdout": "{\"type\":\"create\",\"path\":\"tests/A05-data.test.mjs\",\"bytes_written\":229}\n",
+  "timed_out": false
+}

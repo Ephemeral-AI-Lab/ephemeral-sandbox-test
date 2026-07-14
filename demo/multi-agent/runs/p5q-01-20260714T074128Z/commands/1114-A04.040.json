@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-fe615db6-638c-45fa-99eb-22330d119b1b",
+    "--request-id",
+    "p5q-01-20260714T074128Z:A04.040:runtime",
+    "file_read",
+    "--path",
+    "tests/A04-quality.test.mjs",
+    "--workspace-session-id",
+    "00000618c21817650b9d45"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.093,
+  "kind": "public_cli_process",
+  "label": "A04.040",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 245,
+    "content": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nawait import('../src/features/A04-catalog.js');\ntest('A04 implementation is marked deterministic', () => assert.equal(globalThis.FlashCart.features.A04.deterministic, true));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A04-quality.test.mjs",
+    "start_line": 1,
+    "total_bytes": 246,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 18379,
+  "provenance": "agent",
+  "request_id": "p5q-01-20260714T074128Z:A04.040:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1114,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A04-quality.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport test from 'node:test';\\nawait import('../src/features/A04-catalog.js');\\ntest('A04 implementation is marked deterministic', () => assert.equal(globalThis.FlashCart.features.A04.deterministic, true));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":245,\"total_bytes\":246,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

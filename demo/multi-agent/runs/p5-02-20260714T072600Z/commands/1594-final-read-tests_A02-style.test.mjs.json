@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-7659e24e-1f97-41d1-a34d-7721f1f0178f",
+    "--request-id",
+    "p5-02-20260714T072600Z:ENGINE.final.tests-A02-style.test.mjs:runtime",
+    "file_read",
+    "--path",
+    "tests/A02-style.test.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 38.317,
+  "kind": "public_cli_process",
+  "label": "final-read-tests_A02-style.test.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 288,
+    "content": "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A02 style keeps focus visible', async () => assert.match(await readFile(new URL('../src/features/A02-design-system.css', import.meta.url), 'utf8'), /focus-visible/));",
+    "next_offset": null,
+    "num_lines": 4,
+    "path": "tests/A02-style.test.mjs",
+    "start_line": 1,
+    "total_bytes": 289,
+    "total_lines": 4,
+    "truncated": false
+  },
+  "pid": 58766,
+  "provenance": "engine",
+  "request_id": "p5-02-20260714T072600Z:ENGINE.final.tests-A02-style.test.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1594,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/A02-style.test.mjs\",\"content\":\"import assert from 'node:assert/strict';\\nimport { readFile } from 'node:fs/promises';\\nimport test from 'node:test';\\ntest('A02 style keeps focus visible', async () => assert.match(await readFile(new URL('../src/features/A02-design-system.css', import.meta.url), 'utf8'), /focus-visible/));\",\"start_line\":1,\"num_lines\":4,\"total_lines\":4,\"bytes_read\":288,\"total_bytes\":289,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

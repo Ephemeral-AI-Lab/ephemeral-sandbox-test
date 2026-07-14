@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-b5b441d3-de98-49a1-81d9-ead243c868b9",
+    "--request-id",
+    "p2-full-20260714c:ENGINE.effects.after.A01.017:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000418c2104799b41883",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { createHash } from 'node:crypto'; import { readdir, readFile } from 'node:fs/promises'; const walk=async(d='.')=>{const out=[];for(const e of await readdir(d,{withFileTypes:true})){const p=(d==='.'?'':d+'/')+e.name;if(p==='.git'||p.startsWith('.git/')||p==='node_modules'||p.startsWith('node_modules/'))continue;if(e.isDirectory())out.push(...await walk(p));else if(e.isFile())out.push([p,createHash('sha256').update(await readFile(p)).digest('hex')]);}return out};console.log(JSON.stringify(Object.fromEntries((await walk()).sort((a,b)=>a[0].localeCompare(b[0])))));\""
+  ],
+  "cancelled": false,
+  "duration_ms": 82.337,
+  "kind": "public_cli_process",
+  "label": "effects-after-A01.017",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.046287458,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "{\"index.html\":\"fea23211d7caa057bf4bbe044d27e19817c9e8a72c16856c989192538aa29ada\",\"package.json\":\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\",\"src/app.js\":\"8d75f8019e903f85db7d1a85d5c1d3a52f46973d61c24e412879f0dff76bac8a\",\"src/config.js\":\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\",\"src/features/A01-foundation.js\":\"4236673341799c665a505b3190c86e105bec07f8b42b01c40107627658c521b9\",\"src/registry.js\":\"edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08\",\"tests/A01-data.test.mjs\":\"e17a9141efca489c98a5ebbf614c87cb46d35fdc84d46ba373e0f33a0a555b04\",\"tests/A01-red.test.mjs\":\"9402dd23e4210ff1a37c76cd0f331f12154d52c7282672286fa081b8daaf1ae1\"}",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.046356583,
+    "workspace_session_id": "00000418c2104799b41883"
+  },
+  "pid": 73729,
+  "provenance": "engine",
+  "request_id": "p2-full-20260714c:ENGINE.effects.after.A01.017:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 490,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.046356583,\"command_total_time_seconds\":0.046287458,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":174,\"output\":\"{\\\"index.html\\\":\\\"fea23211d7caa057bf4bbe044d27e19817c9e8a72c16856c989192538aa29ada\\\",\\\"package.json\\\":\\\"84e38653f2047c37e08e1d0c1269ca515f14b033cc040483ebee91fa10ac9e8b\\\",\\\"src/app.js\\\":\\\"8d75f8019e903f85db7d1a85d5c1d3a52f46973d61c24e412879f0dff76bac8a\\\",\\\"src/config.js\\\":\\\"8dd9278452e7d82c4acec494bca540846493eb015e80f4561878e30d604356ab\\\",\\\"src/features/A01-foundation.js\\\":\\\"4236673341799c665a505b3190c86e105bec07f8b42b01c40107627658c521b9\\\",\\\"src/registry.js\\\":\\\"edd463f36f9a53c00d79303ba715a60f82c252f48e0132c9bf18cad24ca95f08\\\",\\\"tests/A01-data.test.mjs\\\":\\\"e17a9141efca489c98a5ebbf614c87cb46d35fdc84d46ba373e0f33a0a555b04\\\",\\\"tests/A01-red.test.mjs\\\":\\\"9402dd23e4210ff1a37c76cd0f331f12154d52c7282672286fa081b8daaf1ae1\\\"}\",\"workspace_session_id\":\"00000418c2104799b41883\"}\n",
+  "timed_out": false
+}

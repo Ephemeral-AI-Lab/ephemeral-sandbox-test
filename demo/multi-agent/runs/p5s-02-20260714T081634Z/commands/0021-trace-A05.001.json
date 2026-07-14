@@ -1,0 +1,112 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-45e3aa70-253c-44bf-8081-cab50a6590db",
+    "--trace-id",
+    "p5s-02-20260714T081634Z:A05.001:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 35.533,
+  "kind": "public_cli_process",
+  "label": "trace-A05.001",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [],
+                    "events": [],
+                    "offset_ms": 10.0,
+                    "span": {
+                      "attrs": {},
+                      "dur_ms": 2.0,
+                      "name": "namespace.exec.mount_overlay",
+                      "parent": "d-44",
+                      "span": "d-45",
+                      "status": "completed",
+                      "trace": "p5s-02-20260714T081634Z:A05.001:runtime",
+                      "ts": 1784017000926
+                    }
+                  }
+                ],
+                "events": [
+                  {
+                    "event": {
+                      "attrs": {
+                        "revision": 2
+                      },
+                      "name": "lease.acquired",
+                      "parent": "d-44",
+                      "trace": "p5s-02-20260714T081634Z:A05.001:runtime",
+                      "ts": 1784017000927
+                    },
+                    "offset_ms": 13.0
+                  }
+                ],
+                "offset_ms": 0.0,
+                "span": {
+                  "attrs": {
+                    "finalize_policy": "publish_then_destroy"
+                  },
+                  "dur_ms": 13.0,
+                  "name": "workspace_session.create",
+                  "parent": "d-43",
+                  "span": "d-44",
+                  "status": "completed",
+                  "trace": "p5s-02-20260714T081634Z:A05.001:runtime",
+                  "ts": 1784017000927
+                }
+              }
+            ],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "publish_then_destroy",
+                "session_created": true
+              },
+              "dur_ms": 14.0,
+              "name": "command.exec",
+              "parent": "d-42",
+              "span": "d-43",
+              "status": "completed",
+              "trace": "p5s-02-20260714T081634Z:A05.001:runtime",
+              "ts": 1784017000928
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 14.0,
+          "name": "daemon.dispatch",
+          "span": "d-42",
+          "status": "completed",
+          "trace": "p5s-02-20260714T081634Z:A05.001:runtime",
+          "ts": 1784017000928
+        }
+      }
+    ],
+    "trace": "p5s-02-20260714T081634Z:A05.001:runtime",
+    "view": "trace"
+  },
+  "pid": 27065,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 21,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p5s-02-20260714T081634Z:A05.001:runtime\",\"spans\":[{\"span\":{\"ts\":1784017000928,\"trace\":\"p5s-02-20260714T081634Z:A05.001:runtime\",\"span\":\"d-42\",\"name\":\"daemon.dispatch\",\"dur_ms\":14.0,\"status\":\"completed\",\"attrs\":{\"op\":\"exec_command\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784017000928,\"trace\":\"p5s-02-20260714T081634Z:A05.001:runtime\",\"span\":\"d-43\",\"parent\":\"d-42\",\"name\":\"command.exec\",\"dur_ms\":14.0,\"status\":\"completed\",\"attrs\":{\"session_created\":true,\"finalize_policy\":\"publish_then_destroy\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784017000927,\"trace\":\"p5s-02-20260714T081634Z:A05.001:runtime\",\"span\":\"d-44\",\"parent\":\"d-43\",\"name\":\"workspace_session.create\",\"dur_ms\":13.0,\"status\":\"completed\",\"attrs\":{\"finalize_policy\":\"publish_then_destroy\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784017000926,\"trace\":\"p5s-02-20260714T081634Z:A05.001:runtime\",\"span\":\"d-45\",\"parent\":\"d-44\",\"name\":\"namespace.exec.mount_overlay\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":10.0,\"children\":[],\"events\":[]}],\"events\":[{\"offset_ms\":13.0,\"event\":{\"ts\":1784017000927,\"trace\":\"p5s-02-20260714T081634Z:A05.001:runtime\",\"parent\":\"d-44\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":2}}}]}],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

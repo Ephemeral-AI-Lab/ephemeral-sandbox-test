@@ -1,0 +1,62 @@
+{
+  "argv": [
+    "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-db6df645-840a-4b24-b232-dfd84bb54511",
+    "--trace-id",
+    "p3-spike-04-lane-A04-20260714T065137Z:A04.028:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.035,
+  "kind": "public_cli_process",
+  "label": "trace-A04.028",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 1.0,
+            "span": {
+              "attrs": {},
+              "dur_ms": 1.0,
+              "name": "namespace.exec.file_op",
+              "parent": "d-159",
+              "span": "d-160",
+              "status": "completed",
+              "trace": "p3-spike-04-lane-A04-20260714T065137Z:A04.028:runtime",
+              "ts": 1784011902830
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_write"
+          },
+          "dur_ms": 3.0,
+          "name": "daemon.dispatch",
+          "span": "d-159",
+          "status": "completed",
+          "trace": "p3-spike-04-lane-A04-20260714T065137Z:A04.028:runtime",
+          "ts": 1784011902831
+        }
+      }
+    ],
+    "trace": "p3-spike-04-lane-A04-20260714T065137Z:A04.028:runtime",
+    "view": "trace"
+  },
+  "pid": 13427,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 99,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3-spike-04-lane-A04-20260714T065137Z:A04.028:runtime\",\"spans\":[{\"span\":{\"ts\":1784011902831,\"trace\":\"p3-spike-04-lane-A04-20260714T065137Z:A04.028:runtime\",\"span\":\"d-159\",\"name\":\"daemon.dispatch\",\"dur_ms\":3.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_write\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784011902830,\"trace\":\"p3-spike-04-lane-A04-20260714T065137Z:A04.028:runtime\",\"span\":\"d-160\",\"parent\":\"d-159\",\"name\":\"namespace.exec.file_op\",\"dur_ms\":1.0,\"status\":\"completed\",\"attrs\":{}},\"offset_ms\":1.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

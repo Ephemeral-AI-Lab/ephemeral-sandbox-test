@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-ea3a9159-3a64-42ff-9d40-03a96c44e876",
+    "--request-id",
+    "p3-spike-11-conflict-A06-A08-20260714T070343Z:A06.047:runtime",
+    "file_edit",
+    "--path",
+    "src/config.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"window.FlashCart = window.FlashCart || {};\\nwindow.FlashCart.config = { freeShippingCents: 6000, standardShippingCents: 700, taxRate: 0.08 };\\n\",\n    \"old_string\": \"window.FlashCart = window.FlashCart || {};\\nwindow.FlashCart.config = { freeShippingCents: 5000, standardShippingCents: 700, taxRate: 0.08 };\\n\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000618c21609bd5fad09"
+  ],
+  "cancelled": false,
+  "duration_ms": 49.622,
+  "kind": "public_cli_process",
+  "label": "A06.047",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 141,
+    "edits_applied": 1,
+    "path": "src/config.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 32407,
+  "provenance": "agent",
+  "request_id": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A06.047:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 278,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/config.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":141}\n",
+  "timed_out": false
+}

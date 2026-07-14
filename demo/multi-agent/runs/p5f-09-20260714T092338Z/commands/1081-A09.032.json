@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-94fb6e38-dd74-4a9f-b016-6d2e055375ed",
+    "--request-id",
+    "p5f-09-20260714T092338Z:A09.032:runtime",
+    "file_read",
+    "--path",
+    "src/features/A09-accessibility-data.js",
+    "--workspace-session-id",
+    "00000b18c21daa971f3795"
+  ],
+  "cancelled": false,
+  "duration_ms": 44.294,
+  "kind": "public_cli_process",
+  "label": "A09.032",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 252,
+    "content": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\n  root.FlashCart.fixtures.A09 = Object.freeze({ owner: 'A09', label: 'Accessibility and performance', revision: 1 });\n})(globalThis);",
+    "next_offset": null,
+    "num_lines": 5,
+    "path": "src/features/A09-accessibility-data.js",
+    "start_line": 1,
+    "total_bytes": 253,
+    "total_lines": 5,
+    "truncated": false
+  },
+  "pid": 67217,
+  "provenance": "agent",
+  "request_id": "p5f-09-20260714T092338Z:A09.032:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1081,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/features/A09-accessibility-data.js\",\"content\":\"(function (root) {\\n  root.FlashCart = root.FlashCart || {};\\n  root.FlashCart.fixtures = root.FlashCart.fixtures || {};\\n  root.FlashCart.fixtures.A09 = Object.freeze({ owner: 'A09', label: 'Accessibility and performance', revision: 1 });\\n})(globalThis);\",\"start_line\":1,\"num_lines\":5,\"total_lines\":5,\"bytes_read\":252,\"total_bytes\":253,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

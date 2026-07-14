@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-3bd6d6ec-7188-490d-8451-f3b099e19c9f",
+    "--request-id",
+    "p5f-05-20260714T090303Z:ENGINE.final.scripts-serve.mjs:runtime",
+    "file_read",
+    "--path",
+    "scripts/serve.mjs"
+  ],
+  "cancelled": false,
+  "duration_ms": 37.901,
+  "kind": "public_cli_process",
+  "label": "final-read-scripts_serve.mjs",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 1392,
+    "content": "import { createReadStream, statSync } from 'node:fs';\nimport { createServer } from 'node:http';\nimport { extname, resolve, sep } from 'node:path';\n\nconst root = resolve(process.cwd());\nconst port = Number(process.env.PORT || 4173);\nconst host = process.env.HOST || '0.0.0.0';\nconst types = { '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml' };\nconst server = createServer((request, response) => {\n  const pathname = decodeURIComponent(new URL(request.url, 'http://flashcart.local').pathname);\n  const file = resolve(root, pathname === '/' ? 'index.html' : '.' + pathname);\n  if (!file.startsWith(root + sep) && file !== root) return response.writeHead(403).end('forbidden');\n  try {\n    if (!statSync(file).isFile()) throw new Error('not file');\n    response.writeHead(200, { 'Content-Type': types[extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });\n    createReadStream(file).pipe(response);\n  } catch { response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('not found'); }\n});\nprocess.stdin.setEncoding('utf8');\nprocess.stdin.on('data', (value) => {\n  if (value.trim() === 'stop') server.close(() => process.exit(0));\n});\nserver.listen(port, host, () => console.log(`FLASHCART_READY ${host}:${port}`));",
+    "next_offset": null,
+    "num_lines": 23,
+    "path": "scripts/serve.mjs",
+    "start_line": 1,
+    "total_bytes": 1393,
+    "total_lines": 23,
+    "truncated": false
+  },
+  "pid": 47723,
+  "provenance": "engine",
+  "request_id": "p5f-05-20260714T090303Z:ENGINE.final.scripts-serve.mjs:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1515,
+  "stderr": "",
+  "stdout": "{\"path\":\"scripts/serve.mjs\",\"content\":\"import { createReadStream, statSync } from 'node:fs';\\nimport { createServer } from 'node:http';\\nimport { extname, resolve, sep } from 'node:path';\\n\\nconst root = resolve(process.cwd());\\nconst port = Number(process.env.PORT || 4173);\\nconst host = process.env.HOST || '0.0.0.0';\\nconst types = { '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml' };\\nconst server = createServer((request, response) => {\\n  const pathname = decodeURIComponent(new URL(request.url, 'http://flashcart.local').pathname);\\n  const file = resolve(root, pathname === '/' ? 'index.html' : '.' + pathname);\\n  if (!file.startsWith(root + sep) && file !== root) return response.writeHead(403).end('forbidden');\\n  try {\\n    if (!statSync(file).isFile()) throw new Error('not file');\\n    response.writeHead(200, { 'Content-Type': types[extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });\\n    createReadStream(file).pipe(response);\\n  } catch { response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('not found'); }\\n});\\nprocess.stdin.setEncoding('utf8');\\nprocess.stdin.on('data', (value) => {\\n  if (value.trim() === 'stop') server.close(() => process.exit(0));\\n});\\nserver.listen(port, host, () => console.log(`FLASHCART_READY ${host}:${port}`));\",\"start_line\":1,\"num_lines\":23,\"total_lines\":23,\"bytes_read\":1392,\"total_bytes\":1393,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

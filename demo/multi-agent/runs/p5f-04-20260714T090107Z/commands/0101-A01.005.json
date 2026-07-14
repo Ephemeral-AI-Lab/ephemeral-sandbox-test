@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-7c622b5f-ddbc-49f4-a447-509f97acee5e",
+    "--request-id",
+    "p5f-04-20260714T090107Z:A01.005:runtime",
+    "file_read",
+    "--path",
+    "src/features/A01-foundation.js",
+    "--workspace-session-id",
+    "00000318c21c6fcb4e7585"
+  ],
+  "cancelled": false,
+  "duration_ms": 71.888,
+  "kind": "public_cli_process",
+  "label": "A01.005",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": "src/features/A01-foundation.js"
+      },
+      "kind": "not_found",
+      "message": "file not found: src/features/A01-foundation.js"
+    }
+  },
+  "pid": 90738,
+  "provenance": "agent",
+  "request_id": "p5f-04-20260714T090107Z:A01.005:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 101,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: src/features/A01-foundation.js\",\"details\":{\"path\":\"src/features/A01-foundation.js\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

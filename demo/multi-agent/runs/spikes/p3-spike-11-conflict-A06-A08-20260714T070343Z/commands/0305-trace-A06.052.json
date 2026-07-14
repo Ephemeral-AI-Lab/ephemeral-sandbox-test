@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-ea3a9159-3a64-42ff-9d40-03a96c44e876",
+    "--trace-id",
+    "p3-spike-11-conflict-A06-A08-20260714T070343Z:A06.052:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 39.766,
+  "kind": "public_cli_process",
+  "label": "trace-A06.052",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_blame"
+          },
+          "dur_ms": 0.0,
+          "name": "daemon.dispatch",
+          "span": "d-489",
+          "status": "completed",
+          "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A06.052:runtime",
+          "ts": 1784012634786
+        }
+      }
+    ],
+    "trace": "p3-spike-11-conflict-A06-A08-20260714T070343Z:A06.052:runtime",
+    "view": "trace"
+  },
+  "pid": 32891,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 305,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T070343Z:A06.052:runtime\",\"spans\":[{\"span\":{\"ts\":1784012634786,\"trace\":\"p3-spike-11-conflict-A06-A08-20260714T070343Z:A06.052:runtime\",\"span\":\"d-489\",\"name\":\"daemon.dispatch\",\"dur_ms\":0.0,\"status\":\"completed\",\"attrs\":{\"op\":\"file_blame\"}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}]}\n",
+  "timed_out": false
+}
