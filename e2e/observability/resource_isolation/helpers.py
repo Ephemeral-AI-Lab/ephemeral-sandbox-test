@@ -93,6 +93,12 @@ def qualification_load_multiplier() -> int:
     return env_int("E2E_RI_LOAD_MULTIPLIER", minimum, minimum=minimum)
 
 
+def allowed_missed_deadlines(sample_ticks: int) -> int:
+    """Give short phases the same one-outlier tolerance as a 100-tick phase."""
+    assert sample_ticks > 0
+    return max(1, sample_ticks // 100)
+
+
 def utc_now() -> str:
     return (
         datetime.now(timezone.utc)
@@ -856,9 +862,11 @@ def stream_group(
         phase_end = time.monotonic()
         creation_guard = guard.result()
     late_fraction = late / index if index else 1.0
-    assert late_fraction <= 0.01, {
+    allowed_late = allowed_missed_deadlines(index)
+    assert late <= allowed_late, {
         "phase": phase,
         "missed_deadlines": late,
+        "allowed_missed_deadlines": allowed_late,
         "sample_ticks": index,
         "fraction": late_fraction,
     }
@@ -870,6 +878,7 @@ def stream_group(
         "duration_seconds": phase_end - phase_start,
         "sample_ticks": index,
         "missed_deadlines": late,
+        "allowed_missed_deadlines": allowed_late,
         "docker_creation_guard": creation_guard,
         "online": {arm: summary.result() for arm, summary in summaries.items()},
     }

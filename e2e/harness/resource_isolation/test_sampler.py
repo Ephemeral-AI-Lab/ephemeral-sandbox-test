@@ -13,6 +13,7 @@ from harness.catalog.declarations import e2e_test
 from observability.resource_isolation.helpers import (
     _bootstrap_slope_ci,
     _integer_map,
+    allowed_missed_deadlines,
     analyze_phase,
     ArtifactDirectory,
     compact_json_bytes,
@@ -324,6 +325,14 @@ def test_unknown_qualification_profile_is_rejected(monkeypatch):
     monkeypatch.setenv("E2E_RI_QUALIFICATION_PROFILE", "fast")
     with pytest.raises(ValueError, match="soak.*compressed-10x"):
         qualification_profile()
+
+
+def test_short_compressed_phases_allow_only_one_scheduler_outlier():
+    assert allowed_missed_deadlines(1) == 1
+    assert allowed_missed_deadlines(13) == 1
+    assert allowed_missed_deadlines(100) == 1
+    assert allowed_missed_deadlines(199) == 1
+    assert allowed_missed_deadlines(200) == 2
 
 
 @e2e_test(
