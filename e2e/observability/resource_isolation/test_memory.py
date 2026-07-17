@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 
 import pytest
@@ -404,29 +405,32 @@ def test_public_polling_is_memory_neutral(
             control: fingerprint_store(control),
         }
         views = _polling_views(target)
+        multiplier = qualification_load_multiplier()
 
         poll_requests = 0
 
         def poll(index: int) -> None:
             nonlocal poll_requests
-            multiplier = qualification_load_multiplier()
-            for offset in range(multiplier):
-                response = _assert_ok(
-                    views[(index * multiplier + offset) % len(views)]()
-                )
+            selected = [
+                views[(index * multiplier + offset) % len(views)]
+                for offset in range(multiplier)
+            ]
+            for response in executor.map(lambda view: view(), selected):
+                response = _assert_ok(response)
                 assert_response_bounded(response)
                 poll_requests += 1
 
-        polling = stream_group(
-            case_artifacts,
-            [(target, "target", target_ring), (control, "control", control_ring)],
-            phase="polling",
-            repetition=repetition,
-            duration_seconds=qualification_duration(
-                "E2E_RI_POLL_SECONDS", 1_800, minimum=1_800
-            ),
-            action=poll,
-        )
+        with ThreadPoolExecutor(max_workers=multiplier) as executor:
+            polling = stream_group(
+                case_artifacts,
+                [(target, "target", target_ring), (control, "control", control_ring)],
+                phase="polling",
+                repetition=repetition,
+                duration_seconds=qualification_duration(
+                    "E2E_RI_POLL_SECONDS", 1_800, minimum=1_800
+                ),
+                action=poll,
+            )
         stores_after = {
             target: fingerprint_store(target),
             control: fingerprint_store(control),
