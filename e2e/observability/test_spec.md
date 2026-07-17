@@ -161,7 +161,7 @@ that applies the per-repetition gates.
 | --- | --- | --- | ---: | --- |
 | RI-SMOKE | `observability.resource-isolation.smoke` | `smoke` | 8 min | `idle-store-pure`, `polling-memory-coarse`, `artifact-bounded` |
 | RI-01 | `observability.resource-isolation.idle-memory` | `nightly` | 2 h | `idle-anonymous-trend`, `idle-daemon-quiescent`, `no-anon-thp` |
-| RI-02 | `observability.resource-isolation.polling` | `nightly` | 2 h | `polling-read-pure`, `polling-memory-neutral`, `resource-ring-fixed` |
+| RI-02 | `observability.resource-isolation.polling` | `nightly` | 3 h | `polling-read-pure`, `polling-memory-neutral`, `resource-ring-fixed` |
 | RI-03 | `observability.resource-isolation.history-query` | `nightly` | 45 min | `query-response-bounded`, `query-memory-input-independent`, `query-store-pure` |
 | RI-04 | `observability.resource-isolation.enabled-disabled` | `release observability_config` | 3.5 h | `fixed-overhead-bounded`, `disabled-store-absent`, `config-restored` |
 | DS-01 | `observability.resource-isolation.disk-cap` | `nightly observability_config` | 45 min | `total-cap-strict`, `segments-parseable`, `allocated-bytes-bounded` |

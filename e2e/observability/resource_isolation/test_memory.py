@@ -299,7 +299,7 @@ def test_idle_daemon_memory_neutral(
 
 
 @e2e_test(
-    timeout_ms=7_200_000,
+    timeout_ms=10_800_000,
     id="observability.resource-isolation.polling",
     title="Public observability polling is read-only and memory neutral",
     description=(
@@ -378,6 +378,10 @@ def test_public_polling_is_memory_neutral(
             repetition=repetition,
             duration_seconds=env_int("E2E_RI_COOLDOWN_SECONDS", 600, minimum=600),
         )
+        stores_after_cooldown = {
+            target: fingerprint_store(target),
+            control: fingerprint_store(control),
+        }
         target_result = analyze_phase(
             case_artifacts.samples_path,
             phase="polling",
@@ -400,29 +404,44 @@ def test_public_polling_is_memory_neutral(
                 "cpu_ticks_per_minute"
             ],
         )
-        cooldown_result = analyze_phase(
-            case_artifacts.samples_path,
-            phase="cooldown",
-            arm="target",
-            repetition=repetition,
-            started_monotonic=cooldown["started_monotonic"],
-            ended_monotonic=cooldown["ended_monotonic"],
-        )
+        cooldown_results = {
+            arm: analyze_phase(
+                case_artifacts.samples_path,
+                phase="cooldown",
+                arm=arm,
+                repetition=repetition,
+                started_monotonic=cooldown["started_monotonic"],
+                ended_monotonic=cooldown["ended_monotonic"],
+            )
+            for arm in ("target", "control")
+        }
         target_growth = target_result["final_minus_first_median_bytes"]
         control_growth = control_result["final_minus_first_median_bytes"]
-        cooldown_delta = (
-            cooldown_result["final_window_median_bytes"]
-            - target_result["first_window_median_bytes"]
-        )
+        cooldown_from_pre_poll = {
+            "target": (
+                cooldown_results["target"]["final_window_median_bytes"]
+                - target_result["first_window_median_bytes"]
+            ),
+            "control": (
+                cooldown_results["control"]["final_window_median_bytes"]
+                - control_result["first_window_median_bytes"]
+            ),
+        }
         results.append(
             {
                 "repetition": repetition,
                 "target": target_result,
                 "control": control_result,
+                "cooldown": cooldown_results,
                 "target_minus_control_growth_bytes": target_growth - control_growth,
-                "cooldown_delta_bytes": cooldown_delta,
+                "target_minus_control_cooldown_bytes": (
+                    cooldown_results["target"]["final_window_median_bytes"]
+                    - cooldown_results["control"]["final_window_median_bytes"]
+                ),
+                "cooldown_from_pre_poll_bytes": cooldown_from_pre_poll,
                 "stores_before": stores_before,
                 "stores_after": stores_after,
+                "stores_after_cooldown": stores_after_cooldown,
                 "rings": {
                     "target": target_result["resource_ring_peak_bytes"],
                     "control": control_result["resource_ring_peak_bytes"],
@@ -437,25 +456,37 @@ def test_public_polling_is_memory_neutral(
     case_artifacts.write_json(
         "store-after.json", [item["stores_after"] for item in results]
     )
+    case_artifacts.write_json(
+        "store-after-cooldown.json",
+        [item["stores_after_cooldown"] for item in results],
+    )
     case_artifacts.write_json("summary.json", {"repetitions": results}, reserved=True)
 
     with validation(
         "polling-read-pure",
         expected="target and control stores byte-identical before/after polling",
         actual=results,
-        evidence=("store-before.json", "store-after.json"),
+        evidence=(
+            "store-before.json",
+            "store-after.json",
+            "store-after-cooldown.json",
+        ),
     ):
         assert len(results) >= 3
         for item in results:
             for sandbox_id, before in item["stores_before"].items():
                 assert_store_unchanged(before, item["stores_after"][sandbox_id])
+                assert_store_unchanged(
+                    before, item["stores_after_cooldown"][sandbox_id]
+                )
             assert item["target"]["storage_io_delta_bytes"] == 0, item
             assert item["control"]["storage_io_delta_bytes"] == 0, item
     with validation(
         "polling-memory-neutral",
         expected={
-            "target_minus_control_bytes": ENABLED_DISABLED_LIMIT_BYTES,
-            "cooldown_bytes": COOLDOWN_LIMIT_BYTES,
+            "target_minus_control_polling_bytes": ENABLED_DISABLED_LIMIT_BYTES,
+            "target_minus_control_cooldown_bytes": COOLDOWN_LIMIT_BYTES,
+            "cooldown_from_pre_poll_bytes": COOLDOWN_LIMIT_BYTES,
         },
         actual=results,
         evidence=("samples.jsonl", "summary.json"),
@@ -463,11 +494,21 @@ def test_public_polling_is_memory_neutral(
         for item in results:
             assert_memory_gates(item["target"])
             assert_memory_gates(item["control"])
+            assert_memory_gates(item["cooldown"]["target"])
+            assert_memory_gates(item["cooldown"]["control"])
             assert (
                 item["target_minus_control_growth_bytes"]
                 <= ENABLED_DISABLED_LIMIT_BYTES
             )
-            assert item["cooldown_delta_bytes"] <= COOLDOWN_LIMIT_BYTES
+            assert (
+                item["target_minus_control_cooldown_bytes"]
+                <= COOLDOWN_LIMIT_BYTES
+            )
+            for arm in ("target", "control"):
+                assert (
+                    item["cooldown_from_pre_poll_bytes"][arm]
+                    <= COOLDOWN_LIMIT_BYTES
+                ), item
     with validation(
         "resource-ring-fixed",
         expected={"max_ring_bytes": MAX_RING_BYTES},
@@ -558,6 +599,32 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
             repetition=1,
             duration_seconds=env_int("E2E_RI_QUERY_COOLDOWN_SECONDS", 300, minimum=300),
         )
+        phase_analysis = {
+            "baseline": analyze_phase(
+                case_artifacts.samples_path,
+                phase=f"query-baseline-{index}",
+                arm=f"size-{index}",
+                repetition=1,
+                started_monotonic=baseline["started_monotonic"],
+                ended_monotonic=baseline["ended_monotonic"],
+            ),
+            "query": analyze_phase(
+                case_artifacts.samples_path,
+                phase=f"query-{index}",
+                arm=f"size-{index}",
+                repetition=1,
+                started_monotonic=query_phase["started_monotonic"],
+                ended_monotonic=query_phase["ended_monotonic"],
+            ),
+            "cooldown": analyze_phase(
+                case_artifacts.samples_path,
+                phase=f"query-cooldown-{index}",
+                arm=f"size-{index}",
+                repetition=1,
+                started_monotonic=cooldown["started_monotonic"],
+                ended_monotonic=cooldown["ended_monotonic"],
+            ),
+        }
         baseline_median = baseline["online"][f"size-{index}"]["sample_median"]
         query_peak = query_phase["online"][f"size-{index}"]["maximum"]
         cooldown_median = cooldown["online"][f"size-{index}"]["sample_median"]
@@ -572,6 +639,7 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
                 "baseline_median_bytes": baseline_median,
                 "query_peak_delta_bytes": query_peak - baseline_median,
                 "cooldown_delta_bytes": cooldown_median - baseline_median,
+                "phase_analysis": phase_analysis,
                 "before": before,
                 "after": after,
             }
@@ -608,6 +676,12 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
         for item in results:
             assert item["query_peak_delta_bytes"] <= 512 * 1024, item
             assert item["cooldown_delta_bytes"] <= COOLDOWN_LIMIT_BYTES, item
+            for phase in item["phase_analysis"].values():
+                assert not phase["required_unavailable"], item
+                assert phase["anon_huge_pages_peak_bytes"] == 0, item
+                assert phase["cgroup_anon_thp_peak_bytes"] == 0, item
+                assert phase["resource_ring_peak_bytes"] <= MAX_RING_BYTES, item
+                assert phase["event_store_peak_bytes"] <= 4 * 1024 * 1024, item
         assert max(peaks) - min(peaks) <= ANONYMOUS_DELTA_LIMIT_BYTES, results
     with validation(
         "query-store-pure",
@@ -739,6 +813,7 @@ def test_enabled_disabled_fixed_overhead(
             assert item["cpu_ticks_per_minute_difference"] < 1.0, item
             for arm in ("enabled", "disabled"):
                 result = item[arm]
+                assert_memory_gates(result)
                 assert not result["required_unavailable"], item
                 assert result["anon_huge_pages_peak_bytes"] == 0, item
                 assert result["cgroup_anon_thp_peak_bytes"] == 0, item

@@ -11,6 +11,7 @@ import pytest
 
 from harness.catalog.declarations import e2e_test
 from observability.resource_isolation.helpers import (
+    _bootstrap_slope_ci,
     _integer_map,
     analyze_phase,
     ArtifactDirectory,
@@ -28,6 +29,31 @@ from observability.resource_isolation.helpers import (
 )
 
 
+@e2e_test(
+    timeout_ms=5_000,
+    id="harness.resource-isolation.slope-bootstrap",
+    title="Slope bootstrap is deterministic and bounded",
+    description="A large linear series yields an exact interval through bounded deterministic resampling.",
+    validations={"slope-bootstrap": "The 95% slope interval is exact and repeatable."},
+)
+def test_slope_bootstrap_is_deterministic_and_bounded():
+    points = [
+        (float(index * 60), float(index * 60) * (4096 / 3600))
+        for index in range(10_000)
+    ]
+
+    interval = _bootstrap_slope_ci(points)
+
+    assert interval == pytest.approx([4096.0, 4096.0])
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.proc-io-parser",
+    title="Proc IO parser accepts Linux counters",
+    description="Colon-delimited procfs IO counters are parsed without marking fields unavailable.",
+    validations={"proc-io": "Required Linux IO counters retain their integer values."},
+)
 def test_proc_io_parser_accepts_colon_delimited_linux_fields():
     values, missing = _integer_map(
         ["rchar: 11", "read_bytes: 22", "write_bytes: 33"],
@@ -37,6 +63,13 @@ def test_proc_io_parser_accepts_colon_delimited_linux_fields():
     assert missing == []
 
 
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.docker-event-label",
+    title="Docker event ownership uses the sandbox label",
+    description="The creation monitor accepts only an explicit EphemeralOS sandbox label as identity.",
+    validations={"docker-label": "Owned and unlabeled create events are distinguished."},
+)
 def test_docker_creation_event_extracts_only_eos_sandbox_labels():
     assert (
         sandbox_id_from_docker_create_event(
@@ -54,6 +87,13 @@ def test_docker_creation_event_extracts_only_eos_sandbox_labels():
     assert sandbox_id_from_docker_create_event({"Actor": {"Attributes": {}}}) is None
 
 
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.artifact-summary-seal",
+    title="Artifact summaries seal atomically",
+    description="The final summary reports the exact directory byte count without leaving a temporary file.",
+    validations={"summary-seal": "The atomic summary size converges to the exact artifact size."},
+)
 def test_artifact_summary_is_atomically_sealed_with_its_exact_final_size(tmp_path):
     artifacts = ArtifactDirectory(tmp_path / "artifacts")
     artifacts.append_sample({"sample": 1})
@@ -70,6 +110,13 @@ def test_artifact_summary_is_atomically_sealed_with_its_exact_final_size(tmp_pat
     assert not (artifacts.root / "summary.json.tmp").exists()
 
 
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.packaged-daemon-identity",
+    title="Packaged daemon identity accepts Docker init",
+    description="The Linux process topology validator recognizes the packaged daemon below Docker init.",
+    validations={"daemon-identity": "The packaged daemon PID and executable topology are accepted."},
+)
 def test_packaged_daemon_identity_accepts_the_normal_docker_init_topology():
     identity = validate_packaged_daemon_identity(
         {
@@ -85,6 +132,13 @@ def test_packaged_daemon_identity_accepts_the_normal_docker_init_topology():
     assert identity["daemon_pid"] == "7"
 
 
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.packaged-daemon-rejection",
+    title="Packaged daemon identity rejects substitutes",
+    description="An unrelated child process cannot satisfy the packaged daemon measurement contract.",
+    validations={"daemon-rejection": "A non-daemon executable fails identity validation."},
+)
 def test_packaged_daemon_identity_rejects_an_unverified_child():
     with pytest.raises(AssertionError):
         validate_packaged_daemon_identity(
@@ -98,6 +152,13 @@ def test_packaged_daemon_identity_rejects_an_unverified_child():
         )
 
 
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.container-stat-parser",
+    title="Container stat parser requires tab delimiters",
+    description="GNU stat output is parsed with exact logical, allocated, inode, and nanosecond fields.",
+    validations={"container-stat": "The exact Linux stat fields are retained."},
+)
 def test_container_stat_parser_requires_real_tab_delimiters():
     parsed = parse_container_stat_lines(
         ["3254\t8\t341738\t1784279408", "1784279408.6303070110"]
@@ -112,6 +173,13 @@ def test_container_stat_parser_requires_real_tab_delimiters():
     }
 
 
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.rotation-inode",
+    title="Rotation detection follows renamed inode",
+    description="A multi-line request is recognized as pre-append rotation by active-segment inode identity.",
+    validations={"rotation-inode": "The renamed active inode proves rotation despite later appends."},
+)
 def test_rotation_detection_uses_rename_inode_when_one_request_emits_many_lines():
     before = {
         "segments": {
@@ -137,6 +205,13 @@ def test_rotation_detection_uses_rename_inode_when_one_request_emits_many_lines(
     assert rotation_renamed_active(before, after)
 
 
+@e2e_test(
+    timeout_ms=5_000,
+    id="harness.resource-isolation.capped-line-memory",
+    title="Capped line reader rejects oversized input",
+    description="A ten-megabyte unterminated payload is rejected without a duration-sized Python allocation.",
+    validations={"line-cap": "Peak traced memory remains below 256 KiB while rejecting the line."},
+)
 def test_capped_line_reader_rejects_a_ten_megabyte_line_with_bounded_memory():
     source = io.BytesIO(b"x" * 10_000_000 + b"\n")
     gc.collect()
@@ -148,6 +223,13 @@ def test_capped_line_reader_rejects_a_ten_megabyte_line_with_bounded_memory():
     assert peak <= 256 * 1024, peak
 
 
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.unavailable-propagation",
+    title="Streaming analysis propagates unavailable fields",
+    description="Missing required Linux measurements remain visible in the phase result instead of being averaged away.",
+    validations={"unavailable": "Every unavailable field is retained in deterministic order."},
+)
 def test_streaming_analysis_propagates_every_unavailable_linux_field(tmp_path):
     samples = tmp_path / "samples.jsonl"
     sample = {
@@ -181,12 +263,26 @@ def test_streaming_analysis_propagates_every_unavailable_linux_field(tmp_path):
     ]
 
 
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.qualification-minima",
+    title="Qualification durations cannot be shortened",
+    description="Environment overrides below a required minimum fail instead of weakening release evidence.",
+    validations={"duration-minimum": "A 1,799-second idle override is rejected."},
+)
 def test_qualification_environment_cannot_reduce_a_required_minimum(monkeypatch):
     monkeypatch.setenv("E2E_RI_IDLE_SECONDS", "1799")
     with pytest.raises(ValueError, match="must be at least 1800"):
         env_int("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800)
 
 
+@e2e_test(
+    timeout_ms=5_000,
+    id="harness.resource-isolation.disk-boundary-fixture",
+    title="Disk boundary fixtures are exact and parseable",
+    description="Each record-boundary remainder produces an exact-size JSONL fixture with capped valid lines.",
+    validations={"disk-boundary": "The generated fixture reaches the target byte exactly and remains parseable."},
+)
 @pytest.mark.parametrize(
     "remaining", (1, 4095, 4096, MAX_LINE_BYTES - 1, MAX_LINE_BYTES)
 )

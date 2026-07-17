@@ -943,6 +943,39 @@ def _bootstrap_median_ci(
     return [estimates[int(rounds * 0.025)], estimates[int(rounds * 0.975) - 1]]
 
 
+def _bootstrap_slope_ci(
+    points: Sequence[tuple[float, float]],
+    *,
+    rounds: int = 400,
+    max_points: int = 128,
+) -> list[float] | None:
+    """Return a deterministic bounded bootstrap interval for Theil-Sen slope."""
+    if len(points) < 2:
+        return None
+    ordered = sorted(points)
+    if len(ordered) > max_points:
+        step = (len(ordered) - 1) / (max_points - 1)
+        ordered = [ordered[round(index * step)] for index in range(max_points)]
+    state = 0x51_0F_EC7
+    estimates = []
+    count = len(ordered)
+    for _ in range(rounds):
+        sample = []
+        for _ in range(count):
+            state = (state * 1_103_515_245 + 12_345) & 0x7FFFFFFF
+            sample.append(ordered[state % count])
+        estimate = _sampled_theil_sen(sample)
+        if estimate is not None:
+            estimates.append(estimate)
+    if not estimates:
+        return None
+    estimates.sort()
+    return [
+        estimates[int(len(estimates) * 0.025)],
+        estimates[max(0, int(len(estimates) * 0.975) - 1)],
+    ]
+
+
 def analyze_phase(
     samples_path: Path,
     *,
@@ -1056,10 +1089,15 @@ def analyze_phase(
         cpu_ticks_per_minute = (
             raw_cpu_ticks_per_minute - sampler_free_cpu_baseline_ticks_per_minute
         )
+    slope_points = [
+        (float(observed_at), float(anonymous))
+        for observed_at, anonymous in all_points.values
+    ]
     return {
         "sample_count": sample_count,
         "steady_duration_seconds": steady_duration,
-        "anonymous_slope_bytes_per_hour": _sampled_theil_sen(all_points.values),
+        "anonymous_slope_bytes_per_hour": _sampled_theil_sen(slope_points),
+        "anonymous_slope_bootstrap_95": _bootstrap_slope_ci(slope_points),
         "first_window_median_bytes": first_median,
         "final_window_median_bytes": final_median,
         "final_minus_first_median_bytes": (
