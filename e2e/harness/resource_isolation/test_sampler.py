@@ -321,12 +321,26 @@ def test_compressed_qualification_is_explicit_and_tenfold(monkeypatch):
         qualification_duration("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800)
 
 
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.unknown-qualification-profile",
+    title="Unknown qualification profiles are rejected",
+    description="Only the full soak and explicit compressed profile may select qualification timing.",
+    validations={"profile-rejection": "An unlabelled fast profile fails closed."},
+)
 def test_unknown_qualification_profile_is_rejected(monkeypatch):
     monkeypatch.setenv("E2E_RI_QUALIFICATION_PROFILE", "fast")
     with pytest.raises(ValueError, match="soak.*compressed-10x"):
         qualification_profile()
 
 
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.compressed-cadence-gate",
+    title="Compressed phases retain a strict cadence gate",
+    description="Short compressed phases permit one scheduler outlier rather than a percentage escape hatch.",
+    validations={"cadence-gate": "Only one missed deadline is allowed below 200 samples."},
+)
 def test_short_compressed_phases_allow_only_one_scheduler_outlier():
     assert allowed_missed_deadlines(1) == 1
     assert allowed_missed_deadlines(13) == 1
