@@ -589,6 +589,15 @@ def test_public_polling_is_memory_neutral(
 def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validation):
     verify_packaged_daemon(sandbox)
     case_artifacts.write_json("environment.json", environment_evidence(sandbox))
+    # Settle one-time decoder/client allocations before comparing history sizes.
+    # The measured phases must differ only by installed history, not by which size
+    # happened to exercise a public route for the first time.
+    preflight_before = fingerprint_store(sandbox)
+    preflight_responses = []
+    for view in _views(sandbox):
+        response = _assert_ok(view())
+        preflight_responses.append(assert_response_bounded(response))
+    preflight_after = fingerprint_store(sandbox)
     sizes = (256, 2 * 1024 * 1024, 4 * 1024 * 1024 - 32 * 1024)
     results = []
     for index, target_bytes in enumerate(sizes, 1):
@@ -701,7 +710,15 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
     case_artifacts.write_json("store-after.json", [item["after"] for item in results])
     case_artifacts.write_json(
         "summary.json",
-        {"qualification_profile": qualification_profile(), "sizes": results},
+        {
+            "qualification_profile": qualification_profile(),
+            "preflight_responses": preflight_responses,
+            "preflight_store": {
+                "before": preflight_before,
+                "after": preflight_after,
+            },
+            "sizes": results,
+        },
         reserved=True,
     )
 
@@ -743,9 +760,13 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
     with validation(
         "query-store-pure",
         expected="all store fingerprints unchanged",
-        actual=results,
-        evidence=("store-before.json", "store-after.json"),
+        actual={
+            "preflight": {"before": preflight_before, "after": preflight_after},
+            "sizes": results,
+        },
+        evidence=("store-before.json", "store-after.json", "summary.json"),
     ):
+        assert_store_unchanged(preflight_before, preflight_after)
         for item in results:
             assert_store_unchanged(item["before"], item["after"])
 

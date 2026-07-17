@@ -165,6 +165,11 @@ The default remains `soak`; nightly and release scheduling must not set the
 compressed profile. Compressed evidence is a fast merge qualification and is
 not represented as long-horizon soak evidence.
 
+History-size comparisons perform one fixed, fingerprint-checked pass across
+the public query routes before installing measured fixtures. This settles
+route cold-start allocations so the unchanged 64 KiB comparison measures
+stored-history dependence rather than whichever fixture ran first.
+
 ## 5. Live case catalog
 
 These are the required stable catalog declarations. Timeout is for the entire
