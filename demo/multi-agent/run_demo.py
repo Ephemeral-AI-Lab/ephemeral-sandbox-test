@@ -304,7 +304,13 @@ def write_terminal_manifest(evidence: "ImmutableEvidence", runner: "Runner") -> 
         },
         "execution_verdict": runner.execution_verdict,
         "cleanup_verdict": runner.cleanup_verdict,
-        "overall_verdict": "PASS" if runner.execution_verdict == "passed" and runner.cleanup_verdict == "clean" else "FAIL",
+        "overall_verdict": (
+            "OPERATIONS_COMPLETE"
+            if runner.presentation_fast and runner.execution_verdict == "passed"
+            else "PASS"
+            if runner.execution_verdict == "passed" and runner.cleanup_verdict == "clean"
+            else "FAIL"
+        ),
     }
     return evidence.write_once("manifest.json", value)
 
@@ -442,6 +448,7 @@ class Runner:
         keep_sandbox: bool = False,
         target_sandbox_id: str | None = None,
         target_workspace_root: Path | None = None,
+        presentation_fast: bool = False,
     ):
         if (target_sandbox_id is None) != (target_workspace_root is None):
             raise ValueError(
@@ -449,8 +456,11 @@ class Runner:
             )
         if keep_sandbox and target_sandbox_id is not None:
             raise ValueError("an attached target sandbox is retained automatically")
+        if presentation_fast and target_sandbox_id is None:
+            raise ValueError("presentation_fast requires an attached target sandbox")
         self.evidence = evidence
         self.keep_sandbox = keep_sandbox
+        self.presentation_fast = presentation_fast
         self.target_sandbox_id = target_sandbox_id
         self.owns_sandbox = target_sandbox_id is None
         self.plans = load_plans()
@@ -472,6 +482,7 @@ class Runner:
         # audience interval begins only after static preflight has passed and
         # immediately before this run owns a sandbox.
         self.started: float | None = None
+        self.operations_completed_at: float | None = None
         self.execution_terminal_at: float | None = None
         self._engine_count = 0
         self._agent_count = 0
@@ -525,7 +536,16 @@ class Runner:
     def elapsed_ms(self) -> float:
         if self.started is None:
             return 0.0
-        end = self.execution_terminal_at if self.execution_terminal_at is not None else time.monotonic()
+        if self.presentation_fast and self.operations_completed_at is not None:
+            end = self.operations_completed_at
+        else:
+            end = self.execution_terminal_at if self.execution_terminal_at is not None else time.monotonic()
+        return round((end - self.started) * 1000, 3)
+
+    def operations_elapsed_ms(self) -> float:
+        if self.started is None:
+            return 0.0
+        end = self.operations_completed_at if self.operations_completed_at is not None else time.monotonic()
         return round((end - self.started) * 1000, 3)
 
     def mark_execution_start(self) -> None:
@@ -533,6 +553,20 @@ class Runner:
             raise DemoFailure("execution-start was emitted twice")
         self.started = time.monotonic()
         self.evidence.event({"at": utc_stamp(), "event": "execution-start"})
+
+    def mark_operations_complete(self) -> None:
+        if self.started is None:
+            raise DemoFailure("operations completed before execution-start")
+        if self.operations_completed_at is not None:
+            raise DemoFailure("operations-complete was emitted twice")
+        self.operations_completed_at = time.monotonic()
+        value = {
+            "operations_elapsed_ms": self.operations_elapsed_ms(),
+            "completed": len(self.completed),
+            "planned": sum(len(rows) for rows in self.plans.values()),
+        }
+        self.evidence.write_once("control/operations-timing.json", value)
+        self.evidence.event({"at": utc_stamp(), "event": "operations-complete", **value})
 
     def mark_execution_terminal(self) -> None:
         if self.started is None or self.execution_terminal_at is not None:
@@ -559,6 +593,7 @@ class Runner:
                 "status": state,
                 "title": "FlashCart: ten agents, one workspace",
                 "elapsed_ms": self.elapsed_ms(),
+                "operations_elapsed_ms": self.operations_elapsed_ms(),
                 "sandbox_id": self.sandbox_id,
                 "sandbox_mode": "owned" if self.owns_sandbox else "attached_target",
                 "calls": {
@@ -651,7 +686,7 @@ class Runner:
         request_id = self.request_id(row_id)
         command = ["runtime", "--sandbox-id", self.sandbox_id, "--request-id", request_id, operation, *args]
         # Command-output windows are maintained by the runtime daemon, not by
-        # an individual workspace session. Keep all command lifecycle calls
+        # an individual workspace session. Keep command lifecycle calls
         # ordered while preserving genuinely parallel file operations in the
         # ten lanes. This prevents an unrelated command from consuming a
         # manifest's one-line result.
@@ -775,6 +810,7 @@ class Runner:
         command = (
             "node --input-type=module --eval \"import { mkdir, writeFile } from 'node:fs/promises'; "
             f"const files=JSON.parse(Buffer.from('{body}','base64')); "
+            "await Promise.all(['src/features','tests'].map(path=>mkdir(path,{recursive:true}))); "
             "for (const [path, content] of Object.entries(files)) { await mkdir(path.includes('/') ? path.slice(0,path.lastIndexOf('/')) : '.', {recursive:true}); await writeFile(path,content); }\""
         )
         response = await self.runtime("bootstrap-publish", "ENGINE.bootstrap", "exec_command", "--timeout-ms", "120000", "--yield-time-ms", "120000", command, provenance="engine", timeout=150)
@@ -1467,7 +1503,8 @@ class Runner:
         network: asyncio.Task[None] | None = None
         try:
             await self.prepare()
-            self._observer_task = asyncio.create_task(self.observer(), name="observer")
+            if not self.presentation_fast:
+                self._observer_task = asyncio.create_task(self.observer(), name="observer")
             lanes = [asyncio.create_task(self.run_lane(agent.id), name=agent.id) for agent in recipes.AGENTS]
             for lane in lanes:
                 lane.add_done_callback(self.supervise_lane)
@@ -1495,10 +1532,15 @@ class Runner:
             await self.capture_checkpoint("network-clean", scene="network")
             self.event_for("network-experiment-clean").set()
             await asyncio.gather(*lanes)
-            await self.require_observability_window()
+            self.mark_operations_complete()
             self.verify_call_budget()
-            await self.verify_final()
+            if not self.presentation_fast:
+                await self.require_observability_window()
+                await self.verify_final()
             self.execution_verdict = "passed"
+            if self.presentation_fast:
+                self.cleanup_verdict = "not_run_presentation"
+                self.mark_execution_terminal()
             self.checkpoint("passed")
             return self._projection("passed")
         except BaseException as exc:
@@ -1523,7 +1565,8 @@ class Runner:
             # live commands and remove the sandbox, so it must not inherit the
             # cancellation token used to interrupt the execution graph.
             self.cancel.clear()
-            await self.cleanup()
+            if not (self.presentation_fast and self.execution_verdict == "passed"):
+                await self.cleanup()
 
     async def cleanup_network(self) -> None:
         for ref in ["A09.network.shared1.workspace", "A09.network.shared2.workspace", "A09.network.isolated1.workspace", "A09.network.isolated2.workspace"]:
@@ -1773,6 +1816,7 @@ async def run_command(args: argparse.Namespace) -> int:
         keep_sandbox=args.keep_sandbox,
         target_sandbox_id=args.target_sandbox_id,
         target_workspace_root=args.target_workspace_root,
+        presentation_fast=args.presentation_fast,
     )
     try:
         freeze_run_inputs(evidence)
@@ -1785,10 +1829,11 @@ async def run_command(args: argparse.Namespace) -> int:
         write_terminal_manifest(evidence, runner)
         evidence.checksums()
         raise
-    evidence.write_once("verdict.json", {"status": "PASS", "run_id": evidence.run_id, "result": result})
+    status = "OPERATIONS_COMPLETE" if runner.presentation_fast else "PASS"
+    evidence.write_once("verdict.json", {"status": status, "run_id": evidence.run_id, "result": result})
     write_terminal_manifest(evidence, runner)
     evidence.checksums()
-    print(json.dumps({"run_id": evidence.run_id, "status": "PASS", "path": str(evidence.root)}, sort_keys=True))
+    print(json.dumps({"run_id": evidence.run_id, "status": status, "path": str(evidence.root)}, sort_keys=True))
     return 0
 
 
@@ -1884,6 +1929,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     run.add_argument("--run-id")
     run.add_argument("--keep-sandbox", action="store_true", help="debug-only: retain the owned sandbox")
     run.add_argument(
+        "--presentation-fast",
+        action="store_true",
+        help="end at operation 482 without the resource window, final verification, or cleanup",
+    )
+    run.add_argument(
         "--target-sandbox-id",
         help="attach the 482 authored operations to an existing sandbox and retain it",
     )
@@ -1909,6 +1959,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
             )
         if attached and args.keep_sandbox:
             parser.error("--keep-sandbox cannot be combined with an attached target")
+        if args.presentation_fast and not attached:
+            parser.error("--presentation-fast requires an attached target")
     return args
 
 

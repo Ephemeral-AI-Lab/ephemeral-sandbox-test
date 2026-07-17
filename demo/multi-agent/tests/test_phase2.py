@@ -369,7 +369,7 @@ class Phase2CliTests(unittest.TestCase):
             asyncio.run(exercise())
             self.assertEqual(peak, 1)
 
-    def test_command_output_calls_serialize_while_file_calls_still_overlap(self) -> None:
+    def test_command_lifecycle_calls_serialize_while_file_calls_overlap(self) -> None:
         with tempfile.TemporaryDirectory() as temp_name:
             original_runs = run_demo.RUNS
             run_demo.RUNS = Path(temp_name) / "runs"
@@ -389,7 +389,7 @@ class Phase2CliTests(unittest.TestCase):
 
             runner._record_cli = fake_record  # type: ignore[method-assign]
 
-            async def exercise() -> tuple[int, int]:
+            async def exercise() -> tuple[int, int, int]:
                 nonlocal peak
                 await asyncio.gather(
                     runner.runtime("first", "ENGINE.first", "exec_command", "node", provenance="engine"),
@@ -398,14 +398,45 @@ class Phase2CliTests(unittest.TestCase):
                 command_peak = peak
                 peak = 0
                 await asyncio.gather(
+                    runner.runtime("publish-one", "A01.044", "write_command_stdin", "--command-session-id", "one", "publish\n"),
+                    runner.runtime("publish-two", "A02.044", "write_command_stdin", "--command-session-id", "two", "publish\n"),
+                )
+                publish_peak = peak
+                peak = 0
+                await asyncio.gather(
                     runner.runtime("read-one", "A01.001", "file_read", "--path", "one"),
                     runner.runtime("read-two", "A02.001", "file_read", "--path", "two"),
                 )
-                return command_peak, peak
+                return command_peak, publish_peak, peak
 
-            command_peak, file_peak = asyncio.run(exercise())
+            command_peak, publish_peak, file_peak = asyncio.run(exercise())
             self.assertEqual(command_peak, 1)
+            self.assertEqual(publish_peak, 1)
             self.assertGreaterEqual(file_peak, 2)
+
+    def test_bootstrap_precreates_shared_agent_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_name:
+            original_runs = run_demo.RUNS
+            run_demo.RUNS = Path(temp_name) / "runs"
+            self.addCleanup(setattr, run_demo, "RUNS", original_runs)
+            runner = run_demo.Runner(run_demo.ImmutableEvidence("bootstrap-directories", create=True))
+            runner.sandbox_id = "sandbox"
+            captured: list[tuple[str, ...]] = []
+
+            async def fake_runtime(_label, _row_id, operation, *args, **_kwargs):
+                captured.append((operation, *args))
+                if operation == "exec_command":
+                    return {"status": "ok", "exit_code": 0}
+                path = args[args.index("--path") + 1]
+                content = run_demo.recipes.bootstrap_files()[path]
+                return {"content": content.rstrip("\n"), "total_bytes": len(content.encode("utf-8"))}
+
+            runner.runtime = fake_runtime  # type: ignore[method-assign]
+            asyncio.run(runner.bootstrap())
+
+            bootstrap_command = captured[0][-1]
+            self.assertIn("['src/features','tests']", bootstrap_command)
+            self.assertIn("mkdir(path,{recursive:true})", bootstrap_command)
 
     def test_call_budget_requires_one_parsed_agent_process_per_authored_row(self) -> None:
         with tempfile.TemporaryDirectory() as temp_name:

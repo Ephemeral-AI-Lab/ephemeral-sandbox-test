@@ -128,6 +128,7 @@ def target_runner_command(run_id: str, sandbox_id: str, workspace_root: Path) ->
         sys.executable,
         str(RUN_DEMO),
         "run",
+        "--presentation-fast",
         "--run-id",
         run_id,
         "--target-sandbox-id",
@@ -293,7 +294,7 @@ def live(args: argparse.Namespace) -> int:
     if args.json:
         print(json.dumps(finished, sort_keys=True), flush=True)
     else:
-        print("\n482-operation run passed; target sandbox retained.", flush=True)
+        print("\n482 operations complete; target sandbox retained.", flush=True)
         print("Run in the Terminal tab to keep the storefront live:", flush=True)
         print("  node scripts/serve.mjs", flush=True)
     return 0

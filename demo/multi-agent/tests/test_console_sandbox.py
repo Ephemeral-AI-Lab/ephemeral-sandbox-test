@@ -93,6 +93,7 @@ class ConsoleSandboxTests(unittest.TestCase):
                 "/tmp/empty-target",
             ],
         )
+        self.assertIn("--presentation-fast", command)
 
     def test_target_workspace_marker_is_outside_the_empty_bind_root(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
