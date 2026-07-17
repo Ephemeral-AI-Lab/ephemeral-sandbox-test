@@ -1,0 +1,105 @@
+{
+  "cleanup": {
+    "sandbox": {
+      "activity_revision": 6,
+      "daemon": {
+        "host": "127.0.0.1",
+        "port": 56636
+      },
+      "daemon_http": {
+        "host": "127.0.0.1",
+        "port": 56637
+      },
+      "id": "eos-8a8fe215-928e-47b8-8077-6913d8b68510",
+      "shared_base": {
+        "readonly": true,
+        "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source": "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base",
+        "target": "/eos/layer-stack/base"
+      },
+      "state": "stopped",
+      "workspace_root": "/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed"
+    },
+    "workspaces": [
+      {
+        "result": {
+          "destroyed": true,
+          "evicted_upperdir_bytes": 0,
+          "workspace_session_id": "00000218c306e3ab9effcd"
+        },
+        "workspace_id": "00000218c306e3ab9effcd"
+      }
+    ]
+  },
+  "verification": {
+    "available": true,
+    "cgroup_mount_mode": "read-only",
+    "command_ids": [
+      "namespace_execution_1",
+      "namespace_execution_2"
+    ],
+    "daemon_cgroup_membership": [
+      "0::/"
+    ],
+    "destroyed_workspace_absent": true,
+    "disjoint_process_pids": [
+      [
+        58
+      ],
+      [
+        62
+      ]
+    ],
+    "idle_states_after_exit": {
+      "00000118c306e3a8b27968": "idle",
+      "00000218c306e3ab9effcd": "idle"
+    },
+    "namespace_device_inode": [
+      {
+        "holder_mount": [
+          4,
+          4026533397
+        ],
+        "holder_pid": [
+          4,
+          4026533398
+        ],
+        "process_mount": [
+          4,
+          4026533397
+        ],
+        "process_pid": [
+          4,
+          4026533398
+        ]
+      },
+      {
+        "holder_mount": [
+          4,
+          4026533400
+        ],
+        "holder_pid": [
+          4,
+          4026533401
+        ],
+        "process_mount": [
+          4,
+          4026533400
+        ],
+        "process_pid": [
+          4,
+          4026533401
+        ]
+      }
+    ],
+    "peer_workspace_present": true,
+    "resource_series_present": true,
+    "sandbox_id": "eos-8a8fe215-928e-47b8-8077-6913d8b68510",
+    "schema_version": 2,
+    "source": "proc_namespaces",
+    "workspace_ids": [
+      "00000118c306e3a8b27968",
+      "00000218c306e3ab9effcd"
+    ]
+  }
+}

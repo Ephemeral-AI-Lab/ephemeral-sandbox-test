@@ -82,7 +82,7 @@ def _gateway_env(config_path):
     return env
 
 
-def run_start_script(config_path):
+def run_start_script(config_path, *gateway_args):
     """Run the gateway start script against ``config_path``.
 
     The script stops any running gateway first, so every call is a full
@@ -91,7 +91,7 @@ def run_start_script(config_path):
     """
     started = time.monotonic()
     completed = subprocess.run(
-        [str(START_GATEWAY)],
+        [str(START_GATEWAY), *map(str, gateway_args)],
         cwd=str(REPO_ROOT),
         env=_gateway_env(config_path),
         capture_output=True,
@@ -101,7 +101,10 @@ def run_start_script(config_path):
     record_surface(
         "cli",
         duration_ms=(time.monotonic() - started) * 1000,
-        evidence={"operation": "start-sandbox-docker-gateway", "returncode": completed.returncode},
+        evidence={
+            "operation": "start-sandbox-docker-gateway",
+            "returncode": completed.returncode,
+        },
     )
     return completed
 
@@ -122,10 +125,10 @@ def wait_gateway_ready(timeout=GATEWAY_READY_TIMEOUT_S):
     raise RuntimeError("gateway did not become ready")
 
 
-def start_gateway(config_path):
+def start_gateway(config_path, *gateway_args):
     """Start (replacing any running gateway) on ``config_path`` and wait ready."""
     _log.info("starting family gateway on %s", config_path)
-    completed = run_start_script(config_path)
+    completed = run_start_script(config_path, *gateway_args)
     assert completed.returncode == 0, (
         f"gateway start script failed (rc={completed.returncode}):\n"
         f"{completed.stdout}\n{completed.stderr}"
@@ -211,7 +214,9 @@ def exec_output(sandbox_id, command, timeout=180):
 
 def observability_events(sandbox_id, last_n=10):
     """Per-sandbox observability events view (daemon-backed)."""
-    return climod.observability("events", "--sandbox-id", sandbox_id, "--last-n", last_n)
+    return climod.observability(
+        "events", "--sandbox-id", sandbox_id, "--last-n", last_n
+    )
 
 
 def error_text(result):

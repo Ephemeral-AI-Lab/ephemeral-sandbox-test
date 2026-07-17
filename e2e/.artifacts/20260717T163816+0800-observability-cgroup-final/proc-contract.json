@@ -1,0 +1,26 @@
+{
+  "cgroup_environment": {
+    "daemon_membership": [
+      "0::/"
+    ],
+    "mount_mode": "read-only"
+  },
+  "response": {
+    "availability": "partial",
+    "errors": [
+      "resource ring is not available yet"
+    ],
+    "scope": "sandbox",
+    "series": [],
+    "topology": {
+      "available": true,
+      "error": null,
+      "schema_version": 2,
+      "source": "proc_namespaces",
+      "truncated": false,
+      "warnings": [],
+      "workspaces": []
+    },
+    "view": "cgroup"
+  }
+}

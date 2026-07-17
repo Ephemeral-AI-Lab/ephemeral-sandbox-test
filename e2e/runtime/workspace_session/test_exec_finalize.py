@@ -1,5 +1,8 @@
 """exec_command finalize-policy live coverage."""
 
+# Pytest discovers the imported fixture; test parameters intentionally shadow it.
+# ruff: noqa: F401, F811
+
 from __future__ import annotations
 
 import time
@@ -65,18 +68,35 @@ def test_EX_01_implicit_exec_response_contract(sandbox, workspace_tracker):
 @pytest.mark.smoke
 def test_EX_02_implicit_exec_publishes_then_destroys(sandbox, workspace_tracker):
     with record_case("EX-02") as rec:
-        first = assert_ok(exec_bare(sandbox, "echo v1 > /workspace/e2e-implicit.txt"))
+        first = assert_ok(
+            exec_bare(
+                sandbox,
+                "mkdir -p /workspace/e2e-empty-dir && echo v1 > /workspace/e2e-implicit.txt",
+            )
+        )
         first_session = workspace_tracker.track_workspace(first["workspace_session_id"])
         workspace_tracker.wait_finalized(first_session)
 
-        second = assert_output(exec_bare(sandbox, "cat /workspace/e2e-implicit.txt"), "v1")
+        second = assert_output(
+            exec_bare(
+                sandbox,
+                'test -d /workspace/e2e-empty-dir '
+                '&& test -z "$(find /workspace/e2e-empty-dir -mindepth 1 -print -quit)" '
+                "&& cat /workspace/e2e-implicit.txt",
+            ),
+            "v1",
+        )
         second_session = workspace_tracker.track_workspace(second["workspace_session_id"])
         workspace_tracker.wait_finalized(second_session)
 
         snap = snapshot(sandbox)
         rec.add_artifact("post-publish-snapshot.json", snap)
         assert workspace_entry(snap, first_session) is None, snap
-        rec.axis("correctness", True, "implicit exec published the file and destroyed its session")
+        rec.axis(
+            "correctness",
+            True,
+            "implicit exec published its file and empty directory, then destroyed its session",
+        )
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 

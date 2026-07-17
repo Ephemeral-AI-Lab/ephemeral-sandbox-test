@@ -31,3 +31,6 @@ harness_families:
   - id: ui
     title: UI
     summary: Control Room interface diagnostics.
+  - id: resource_isolation
+    title: Resource Isolation Harness
+    summary: Constant-memory sampling and bounded evidence diagnostics.

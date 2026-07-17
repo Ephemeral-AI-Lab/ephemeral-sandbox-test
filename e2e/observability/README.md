@@ -19,9 +19,14 @@ memory regression installs a large rotated-log fixture before polling the
 public snapshot route, then measures container memory through `docker stats`
 because cgroup memory metrics are unavailable inside Docker Desktop sandboxes.
 
+The planned memory-neutrality and disk-budget conformance matrix is specified
+in [`test_spec.md`](test_spec.md). Those cases are backend live E2E: they create
+real Docker sandboxes and exercise public CLI routes. Browser tests are not a
+substitute for this family.
+
 Run this family after building or rebuilding the gateway binaries:
 
 ```sh
 cd e2e
-E2E_REBUILD_BINARY=0 python3 -m pytest -q observability/test_observability.py
+E2E_REBUILD_BINARY=0 python3 -m pytest -q observability/snapshot/test_snapshot.py
 ```

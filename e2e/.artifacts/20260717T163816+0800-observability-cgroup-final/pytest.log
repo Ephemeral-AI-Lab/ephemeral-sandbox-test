@@ -1,0 +1,280 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/e2e
+configfile: pytest.ini
+plugins: timeout-2.4.0
+collecting ... collected 9 items
+
+e2e/observability/cgroup/test_contract.py::test_proc_topology_contract 
+-------------------------------- live log setup --------------------------------
+16:38:33.888 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli list_sandboxes  (exit=0, 0.04s)
+16:38:33.889 INFO e2e.gateway: gateway already running — reusing
+16:38:34.318 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.43s)
+-------------------------------- live log call ---------------------------------
+16:38:34.364 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-399f8723-52d2-4944-9e7e-89993dad5176 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+PASSED                                                                   [ 11%]
+------------------------------ live log teardown -------------------------------
+16:38:34.821 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-399f8723-52d2-4944-9e7e-89993dad5176  (exit=0, 0.33s)
+------------------------------ live log logreport ------------------------------
+16:38:34.822 INFO e2e.timing: ⏱  observability/cgroup/test_contract.py::test_proc_topology_contract — 0.975s total
+
+e2e/observability/cgroup/test_contract.py::test_process_topology_is_cgroup_independent 
+-------------------------------- live log setup --------------------------------
+16:38:35.217 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.39s)
+-------------------------------- live log call ---------------------------------
+16:38:35.265 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-6a5eadfd-45b1-4155-8d4c-b7636d3df0f4 create_workspace_session  (exit=0, 0.05s)
+16:38:35.311 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-6a5eadfd-45b1-4155-8d4c-b7636d3df0f4 exec_command --workspace-session-id 00000118c306f25593957d --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.05s)
+16:38:35.349 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-6a5eadfd-45b1-4155-8d4c-b7636d3df0f4 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:35.387 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-6a5eadfd-45b1-4155-8d4c-b7636d3df0f4 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+PASSED                                                                   [ 22%]
+------------------------------ live log teardown -------------------------------
+16:38:35.786 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-6a5eadfd-45b1-4155-8d4c-b7636d3df0f4 write_command_stdin --command-session-id namespace_execution_1 --yield-time-ms 30000   (exit=0, 0.14s)
+16:38:35.834 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli inspect_sandbox --sandbox-id eos-6a5eadfd-45b1-4155-8d4c-b7636d3df0f4  (exit=0, 0.05s)
+16:38:36.206 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-6a5eadfd-45b1-4155-8d4c-b7636d3df0f4  (exit=0, 0.32s)
+------------------------------ live log logreport ------------------------------
+16:38:36.208 INFO e2e.timing: ⏱  observability/cgroup/test_contract.py::test_process_topology_is_cgroup_independent — 1.385s total
+
+e2e/observability/cgroup/test_lifecycle.py::test_exited_processes_disappear 
+-------------------------------- live log setup --------------------------------
+16:38:36.613 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.40s)
+-------------------------------- live log call ---------------------------------
+16:38:36.664 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 create_workspace_session  (exit=0, 0.05s)
+16:38:36.709 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 exec_command --workspace-session-id 00000118c306f2a8e3c694 --timeout-ms 10000 --yield-time-ms 0 sleep 2  (exit=0, 0.04s)
+16:38:36.748 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:36.785 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:36.926 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:37.069 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:37.209 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:37.352 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:37.492 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:37.636 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:37.781 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:37.929 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:38.082 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:38.228 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:38.380 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:38.531 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:38.681 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:38.830 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:38.877 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+16:38:38.945 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4 destroy_workspace_session --workspace-session-id 00000118c306f2a8e3c694 --grace-s 1  (exit=0, 0.07s)
+PASSED                                                                   [ 33%]
+------------------------------ live log teardown -------------------------------
+16:38:39.257 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-5c0f62bd-3d13-410d-b2ba-fe1a967c72c4  (exit=0, 0.31s)
+------------------------------ live log logreport ------------------------------
+16:38:39.259 INFO e2e.timing: ⏱  observability/cgroup/test_lifecycle.py::test_exited_processes_disappear — 3.049s total
+
+e2e/observability/cgroup/test_lifecycle.py::test_destroyed_workspace_disappears_without_reassignment 
+-------------------------------- live log setup --------------------------------
+16:38:39.677 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.42s)
+-------------------------------- live log call ---------------------------------
+16:38:39.727 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 create_workspace_session  (exit=0, 0.05s)
+16:38:39.772 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 create_workspace_session  (exit=0, 0.04s)
+16:38:39.810 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:39.850 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 exec_command --workspace-session-id 00000118c306f35f823185 --timeout-ms 10000 --yield-time-ms 0 sleep 2  (exit=0, 0.04s)
+16:38:39.890 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:39.929 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:40.069 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:40.213 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:40.371 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:40.513 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:40.658 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:40.804 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:40.946 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:41.090 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:41.233 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:41.384 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:41.531 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:41.675 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:41.823 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:41.972 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:42.018 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+16:38:42.070 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 destroy_workspace_session --workspace-session-id 00000118c306f35f823185 --grace-s 1  (exit=0, 0.05s)
+16:38:42.113 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:42.164 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895 destroy_workspace_session --workspace-session-id 00000218c306f3624b6de6 --grace-s 1  (exit=0, 0.05s)
+PASSED                                                                   [ 44%]
+------------------------------ live log teardown -------------------------------
+16:38:42.532 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-cc8d618a-ac03-4567-9061-abba00953895  (exit=0, 0.37s)
+------------------------------ live log logreport ------------------------------
+16:38:42.533 INFO e2e.timing: ⏱  observability/cgroup/test_lifecycle.py::test_destroyed_workspace_disappears_without_reassignment — 3.273s total
+
+e2e/observability/cgroup/test_lifecycle.py::test_natural_process_churn_preserves_topology 
+-------------------------------- live log setup --------------------------------
+16:38:42.985 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.45s)
+-------------------------------- live log call ---------------------------------
+16:38:43.039 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea create_workspace_session  (exit=0, 0.05s)
+16:38:43.083 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea create_workspace_session  (exit=0, 0.04s)
+16:38:43.122 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea exec_command --workspace-session-id 00000118c306f4250a2b8b --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.04s)
+16:38:43.161 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea exec_command --workspace-session-id 00000218c306f427ab1eef --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.04s)
+16:38:43.201 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:43.245 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:43.287 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:43.325 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:43.468 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:43.623 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:43.766 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:43.910 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:44.055 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:44.201 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:44.239 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_2 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:44.275 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:44.314 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea exec_command --workspace-session-id 00000118c306f4250a2b8b --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.04s)
+16:38:44.353 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea exec_command --workspace-session-id 00000218c306f427ab1eef --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.04s)
+16:38:44.391 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:44.430 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:44.472 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:44.510 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:44.658 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:44.809 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:44.958 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:45.107 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:45.252 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:45.402 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:45.447 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_4 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:45.492 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:45.541 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea exec_command --workspace-session-id 00000118c306f4250a2b8b --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.05s)
+16:38:45.591 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea exec_command --workspace-session-id 00000218c306f427ab1eef --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.05s)
+16:38:45.635 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:45.683 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+16:38:45.731 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+16:38:45.779 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:45.930 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:46.081 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:46.238 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:46.385 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:46.538 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:46.688 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+16:38:46.732 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea read_command_lines --command-session-id namespace_execution_6 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+16:38:46.782 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+16:38:46.825 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea exec_command --workspace-session-id 00000118c306f4250a2b8b --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+16:38:46.869 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea exec_command --workspace-session-id 00000218c306f427ab1eef --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+16:38:46.914 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:46.959 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:47.072 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:47.272 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea write_command_stdin --command-session-id namespace_execution_7 --yield-time-ms 30000   (exit=0, 0.15s)
+16:38:47.426 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea write_command_stdin --command-session-id namespace_execution_8 --yield-time-ms 30000   (exit=0, 0.15s)
+16:38:47.488 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea destroy_workspace_session --workspace-session-id 00000118c306f4250a2b8b --grace-s 1  (exit=0, 0.06s)
+16:38:47.549 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea destroy_workspace_session --workspace-session-id 00000218c306f427ab1eef --grace-s 1  (exit=0, 0.06s)
+16:38:47.587 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+PASSED                                                                   [ 55%]
+------------------------------ live log teardown -------------------------------
+16:38:47.938 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-b0c95b3a-b386-45ea-90bf-5910564509ea  (exit=0, 0.35s)
+------------------------------ live log logreport ------------------------------
+16:38:47.939 INFO e2e.timing: ⏱  observability/cgroup/test_lifecycle.py::test_natural_process_churn_preserves_topology — 5.404s total
+
+e2e/observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible 
+-------------------------------- live log setup --------------------------------
+16:38:48.397 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.46s)
+-------------------------------- live log call ---------------------------------
+16:38:48.445 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-55906303-9700-4f54-8e37-df37781e00ef create_workspace_session  (exit=0, 0.05s)
+16:38:48.493 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-55906303-9700-4f54-8e37-df37781e00ef create_workspace_session  (exit=0, 0.05s)
+16:38:48.531 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-55906303-9700-4f54-8e37-df37781e00ef --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:48.715 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-55906303-9700-4f54-8e37-df37781e00ef destroy_workspace_session --workspace-session-id 00000118c306f56742a671 --grace-s 1  (exit=0, 0.05s)
+16:38:48.770 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-55906303-9700-4f54-8e37-df37781e00ef destroy_workspace_session --workspace-session-id 00000218c306f56a07f208 --grace-s 1  (exit=0, 0.05s)
+PASSED                                                                   [ 66%]
+------------------------------ live log teardown -------------------------------
+16:38:49.096 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-55906303-9700-4f54-8e37-df37781e00ef  (exit=0, 0.32s)
+------------------------------ live log logreport ------------------------------
+16:38:49.097 INFO e2e.timing: ⏱  observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible — 1.156s total
+
+e2e/observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity 
+-------------------------------- live log setup --------------------------------
+16:38:49.490 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.39s)
+-------------------------------- live log call ---------------------------------
+16:38:49.539 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3 create_workspace_session  (exit=0, 0.05s)
+16:38:49.587 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3 create_workspace_session  (exit=0, 0.05s)
+16:38:49.625 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3 exec_command --workspace-session-id 00000118c306f5a85cb723 --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+16:38:49.665 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3 exec_command --workspace-session-id 00000218c306f5ab52b439 --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+16:38:49.706 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:49.747 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:49.844 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:50.051 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3 write_command_stdin --command-session-id namespace_execution_1 --yield-time-ms 30000   (exit=0, 0.14s)
+16:38:50.197 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3 write_command_stdin --command-session-id namespace_execution_2 --yield-time-ms 30000   (exit=0, 0.15s)
+16:38:50.249 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3 destroy_workspace_session --workspace-session-id 00000118c306f5a85cb723 --grace-s 1  (exit=0, 0.05s)
+16:38:50.302 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3 destroy_workspace_session --workspace-session-id 00000218c306f5ab52b439 --grace-s 1  (exit=0, 0.05s)
+PASSED                                                                   [ 77%]
+------------------------------ live log teardown -------------------------------
+16:38:50.573 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-d5d9cd43-25bc-4768-9674-262d3bf492c3  (exit=0, 0.27s)
+------------------------------ live log logreport ------------------------------
+16:38:50.574 INFO e2e.timing: ⏱  observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity — 1.476s total
+
+e2e/observability/cgroup/test_workspace_placement.py::test_backend_originated_command_appears 
+-------------------------------- live log setup --------------------------------
+16:38:51.002 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.43s)
+-------------------------------- live log call ---------------------------------
+16:38:51.047 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-a47f7d0a-677b-4c9a-bd63-76ea10211151 create_workspace_session  (exit=0, 0.04s)
+16:38:51.092 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-a47f7d0a-677b-4c9a-bd63-76ea10211151 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:51.132 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-a47f7d0a-677b-4c9a-bd63-76ea10211151 exec_command --workspace-session-id 00000118c306f6026187f6 --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+16:38:51.170 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-a47f7d0a-677b-4c9a-bd63-76ea10211151 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:51.208 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-a47f7d0a-677b-4c9a-bd63-76ea10211151 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:51.315 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-a47f7d0a-677b-4c9a-bd63-76ea10211151 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+16:38:51.357 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-a47f7d0a-677b-4c9a-bd63-76ea10211151 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:51.499 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-a47f7d0a-677b-4c9a-bd63-76ea10211151 write_command_stdin --command-session-id namespace_execution_1 --yield-time-ms 30000   (exit=0, 0.14s)
+16:38:51.555 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-a47f7d0a-677b-4c9a-bd63-76ea10211151 destroy_workspace_session --workspace-session-id 00000118c306f6026187f6 --grace-s 1  (exit=0, 0.05s)
+PASSED                                                                   [ 88%]
+------------------------------ live log teardown -------------------------------
+16:38:51.898 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-a47f7d0a-677b-4c9a-bd63-76ea10211151  (exit=0, 0.34s)
+------------------------------ live log logreport ------------------------------
+16:38:51.899 INFO e2e.timing: ⏱  observability/cgroup/test_workspace_placement.py::test_backend_originated_command_appears — 1.323s total
+
+e2e/observability/cgroup/test_workspace_placement.py::test_forked_descendants_stay_with_workspace 
+-------------------------------- live log setup --------------------------------
+16:38:52.303 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.40s)
+-------------------------------- live log call ---------------------------------
+16:38:52.352 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-12a5a036-5cb0-422d-8599-dc2117c4a0f0 create_workspace_session  (exit=0, 0.05s)
+16:38:52.398 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-12a5a036-5cb0-422d-8599-dc2117c4a0f0 create_workspace_session  (exit=0, 0.05s)
+16:38:52.437 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-12a5a036-5cb0-422d-8599-dc2117c4a0f0 exec_command --workspace-session-id 00000118c306f64feea34f --timeout-ms 45000 --yield-time-ms 0 sh -c 'sleep 30 & wait'  (exit=0, 0.04s)
+16:38:52.476 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-12a5a036-5cb0-422d-8599-dc2117c4a0f0 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:38:52.727 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-12a5a036-5cb0-422d-8599-dc2117c4a0f0 write_command_stdin --command-session-id namespace_execution_1 --yield-time-ms 30000   (exit=0, 0.15s)
+16:38:52.783 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-12a5a036-5cb0-422d-8599-dc2117c4a0f0 destroy_workspace_session --workspace-session-id 00000118c306f64feea34f --grace-s 1  (exit=0, 0.06s)
+16:38:52.839 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-12a5a036-5cb0-422d-8599-dc2117c4a0f0 destroy_workspace_session --workspace-session-id 00000218c306f652e52f4c --grace-s 1  (exit=0, 0.06s)
+PASSED                                                                   [100%]
+------------------------------ live log teardown -------------------------------
+16:38:53.107 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-12a5a036-5cb0-422d-8599-dc2117c4a0f0  (exit=0, 0.27s)
+------------------------------ live log logreport ------------------------------
+16:38:53.108 INFO e2e.timing: ⏱  observability/cgroup/test_workspace_placement.py::test_forked_descendants_stay_with_workspace — 1.208s total
+
+
+--------------------- sandbox-cli operation timing metrics ---------------------
+durations are client-side sandbox-cli wall time; no timing SLO is enforced
+manager.create_sandbox: n=9 p50=416.9ms p95=454.9ms max=457.3ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.destroy_sandbox: n=9 p50=324.9ms p95=359.7ms max=366.8ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.inspect_sandbox: n=1 p50=47.4ms p95=47.4ms max=47.4ms sub50=100.0% sub100=100.0% sub200=100.0%
+manager.list_sandboxes: n=1 p50=41.3ms p95=41.3ms max=41.3ms sub50=100.0% sub100=100.0% sub200=100.0%
+observability.cgroup: n=35 p50=40.8ms p95=47.1ms max=48.5ms sub50=100.0% sub100=100.0% sub200=100.0%
+runtime.create_workspace_session: n=13 p50=47.0ms p95=51.2ms max=52.3ms sub50=84.6% sub100=100.0% sub200=100.0%
+runtime.destroy_workspace_session: n=12 p50=54.2ms p95=64.1ms max=67.0ms sub50=0.0% sub100=100.0% sub200=100.0%
+runtime.exec_command: n=15 p50=39.5ms p95=48.4ms max=49.3ms sub50=100.0% sub100=100.0% sub200=100.0%
+runtime.read_command_lines: n=54 p50=41.9ms p95=48.7ms max=51.9ms sub50=96.3% sub100=100.0% sub200=100.0%
+runtime.write_command_stdin: n=7 p50=145.6ms p95=150.9ms max=153.1ms sub50=0.0% sub100=0.0% sub200=100.0%
+operation timing metrics: /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/metrics/operation-timing/latest.md
+============================== slowest durations ===============================
+4.60s call     observability/cgroup/test_lifecycle.py::test_natural_process_churn_preserves_topology
+2.49s call     observability/cgroup/test_lifecycle.py::test_destroyed_workspace_disappears_without_reassignment
+2.33s call     observability/cgroup/test_lifecycle.py::test_exited_processes_disappear
+0.81s call     observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity
+0.56s teardown observability/cgroup/test_contract.py::test_process_topology_is_cgroup_independent
+0.55s call     observability/cgroup/test_workspace_placement.py::test_backend_originated_command_appears
+0.54s call     observability/cgroup/test_workspace_placement.py::test_forked_descendants_stay_with_workspace
+0.47s setup    observability/cgroup/test_contract.py::test_proc_topology_contract
+0.46s setup    observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible
+0.45s setup    observability/cgroup/test_lifecycle.py::test_natural_process_churn_preserves_topology
+0.43s setup    observability/cgroup/test_workspace_placement.py::test_backend_originated_command_appears
+0.43s call     observability/cgroup/test_contract.py::test_process_topology_is_cgroup_independent
+0.42s setup    observability/cgroup/test_lifecycle.py::test_destroyed_workspace_disappears_without_reassignment
+0.40s setup    observability/cgroup/test_lifecycle.py::test_exited_processes_disappear
+0.40s setup    observability/cgroup/test_workspace_placement.py::test_forked_descendants_stay_with_workspace
+0.40s setup    observability/cgroup/test_contract.py::test_process_topology_is_cgroup_independent
+0.39s setup    observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity
+0.37s call     observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible
+0.37s teardown observability/cgroup/test_lifecycle.py::test_destroyed_workspace_disappears_without_reassignment
+0.35s teardown observability/cgroup/test_lifecycle.py::test_natural_process_churn_preserves_topology
+0.34s teardown observability/cgroup/test_workspace_placement.py::test_backend_originated_command_appears
+0.33s teardown observability/cgroup/test_contract.py::test_proc_topology_contract
+0.33s teardown observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible
+0.31s teardown observability/cgroup/test_lifecycle.py::test_exited_processes_disappear
+0.27s teardown observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity
+0.27s teardown observability/cgroup/test_workspace_placement.py::test_forked_descendants_stay_with_workspace
+0.17s call     observability/cgroup/test_contract.py::test_proc_topology_contract
+============================== 9 passed in 19.28s ==============================

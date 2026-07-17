@@ -1,8 +1,12 @@
 """Live aggregate and sandbox-scoped observability through the public CLI."""
 
+# Pytest discovers the imported fixture; test parameters intentionally shadow it.
+# ruff: noqa: F401, F811
+
 import json
 import logging
 import subprocess
+import time
 
 import pytest
 

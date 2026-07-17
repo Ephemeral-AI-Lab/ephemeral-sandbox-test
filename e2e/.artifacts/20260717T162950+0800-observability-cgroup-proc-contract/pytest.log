@@ -1,0 +1,78 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/e2e
+configfile: pytest.ini
+plugins: timeout-2.4.0
+collecting ... collected 1 item
+
+e2e/observability/cgroup/test_contract.py::test_proc_topology_contract 
+-------------------------------- live log setup --------------------------------
+16:30:29.028 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli list_sandboxes  (exit=0, 0.62s)
+16:30:29.029 INFO e2e.gateway: gateway already running — reusing
+16:30:29.794 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.76s)
+-------------------------------- live log call ---------------------------------
+16:30:30.689 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-e9c48378-570c-48f9-bd9b-c41b80215058 --scope sandbox --window-ms 60000  (exit=0, 0.89s)
+FAILED                                                                   [100%]
+------------------------------ live log teardown -------------------------------
+16:30:31.035 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-e9c48378-570c-48f9-bd9b-c41b80215058  (exit=0, 0.33s)
+------------------------------ live log logreport ------------------------------
+16:30:31.036 INFO e2e.timing: ⏱  observability/cgroup/test_contract.py::test_proc_topology_contract — 2.613s total
+
+
+=================================== FAILURES ===================================
+_________________________ test_proc_topology_contract __________________________
+
+sandbox = 'eos-e9c48378-570c-48f9-bd9b-c41b80215058'
+
+    @e2e_test(
+        timeout_ms=30_000,
+        id="observability.cgroup.proc-contract",
+        title="Proc Namespace Topology Contract",
+        description="The public cgroup operation returns available schema-v2 proc namespace topology.",
+        features=("observability.cgroup",),
+        validations={
+            "proc-topology-contract": "Schema v2 remains available without delegated child cgroups.",
+        },
+        execution_surface="cli",
+    )
+    @pytest.mark.smoke
+    def test_proc_topology_contract(sandbox):
+        response = read_cgroup_response(sandbox)
+        topology = response["topology"]
+>       assert_proc_topology_available(topology)
+
+e2e/observability/cgroup/test_contract.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+topology = {'schema_version': 2, 'available': False, 'source': None, 'error': 'process topology is daemon-owned and is not polled by the manager resource route', ...}
+
+    def assert_proc_topology_available(topology: dict) -> None:
+        assert topology.get("schema_version") == 2, topology
+>       assert topology.get("available") is True, topology
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: {'schema_version': 2, 'available': False, 'source': None, 'error': 'process topology is daemon-owned and is not polled by the manager resource route', 'truncated': False, 'warnings': [], 'workspaces': []}
+
+e2e/observability/cgroup/helpers.py:53: AssertionError
+------------------------------ Captured log setup ------------------------------
+INFO     e2e.cli:cli.py:317 ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli list_sandboxes  (exit=0, 0.62s)
+INFO     e2e.gateway:gateway.py:28 gateway already running — reusing
+INFO     e2e.cli:cli.py:317 ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.76s)
+------------------------------ Captured log call -------------------------------
+INFO     e2e.cli:cli.py:317 ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-e9c48378-570c-48f9-bd9b-c41b80215058 --scope sandbox --window-ms 60000  (exit=0, 0.89s)
+---------------------------- Captured log teardown -----------------------------
+INFO     e2e.cli:cli.py:317 ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-e9c48378-570c-48f9-bd9b-c41b80215058  (exit=0, 0.33s)
+--------------------- sandbox-cli operation timing metrics ---------------------
+durations are client-side sandbox-cli wall time; no timing SLO is enforced
+manager.create_sandbox: n=1 p50=764.7ms p95=764.7ms max=764.7ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.destroy_sandbox: n=1 p50=326.7ms p95=326.7ms max=326.7ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.list_sandboxes: n=1 p50=621.7ms p95=621.7ms max=621.7ms sub50=0.0% sub100=0.0% sub200=0.0%
+observability.cgroup: n=1 p50=893.9ms p95=893.9ms max=893.9ms sub50=0.0% sub100=0.0% sub200=0.0%
+operation timing metrics: /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/metrics/operation-timing/latest.md
+============================== slowest durations ===============================
+1.39s setup    observability/cgroup/test_contract.py::test_proc_topology_contract
+0.90s call     observability/cgroup/test_contract.py::test_proc_topology_contract
+0.33s teardown observability/cgroup/test_contract.py::test_proc_topology_contract
+=========================== short test summary info ============================
+FAILED e2e/observability/cgroup/test_contract.py::test_proc_topology_contract - AssertionError: {'schema_version': 2, 'available': False, 'source': None, 'error': 'process topology is daemon-owned and is not polled by the manager resource route', 'truncated': False, 'warnings': [], 'workspaces': []}
+============================== 1 failed in 2.65s ===============================
