@@ -12,12 +12,18 @@ import pytest
 from harness.catalog.declarations import e2e_test
 from observability.resource_isolation.helpers import (
     _integer_map,
+    analyze_phase,
     ArtifactDirectory,
+    compact_json_bytes,
+    env_int,
     FixedMetricSummary,
+    MAX_LINE_BYTES,
     RESERVOIR_SIZE,
     iter_capped_binary_lines,
     parse_container_stat_lines,
+    rotation_renamed_active,
     sandbox_id_from_docker_create_event,
+    stream_history_fixture,
     validate_packaged_daemon_identity,
 )
 
@@ -106,6 +112,31 @@ def test_container_stat_parser_requires_real_tab_delimiters():
     }
 
 
+def test_rotation_detection_uses_rename_inode_when_one_request_emits_many_lines():
+    before = {
+        "segments": {
+            "observability.ndjson": {
+                "exists": True,
+                "inode": 41,
+                "sha256": "before-request",
+            },
+            "observability.ndjson.1": {"exists": True, "inode": 12},
+        }
+    }
+    after = {
+        "segments": {
+            "observability.ndjson": {"exists": True, "inode": 42},
+            "observability.ndjson.1": {
+                "exists": True,
+                "inode": 41,
+                "sha256": "changed-by-mid-request-appends",
+            },
+        }
+    }
+
+    assert rotation_renamed_active(before, after)
+
+
 def test_capped_line_reader_rejects_a_ten_megabyte_line_with_bounded_memory():
     source = io.BytesIO(b"x" * 10_000_000 + b"\n")
     gc.collect()
@@ -115,6 +146,63 @@ def test_capped_line_reader_rejects_a_ten_megabyte_line_with_bounded_memory():
     _current, peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
     assert peak <= 256 * 1024, peak
+
+
+def test_streaming_analysis_propagates_every_unavailable_linux_field(tmp_path):
+    samples = tmp_path / "samples.jsonl"
+    sample = {
+        "phase": "idle",
+        "arm": "enabled",
+        "repetition": 1,
+        "monotonic_seconds": 1.0,
+        "smaps": {"Anonymous": 4096, "AnonHugePages": 0},
+        "cpu": {"user_ticks": 1, "system_ticks": 1},
+        "io": {"read_bytes": 0, "write_bytes": 0},
+        "cgroup": {"memory_stat": {"anon_thp": 0}},
+        "event_store": {},
+        "resource_ring": {"exists": False},
+        "unavailable": ["smaps.Pss", "cgroup.memory_current", "io.syscr"],
+    }
+    samples.write_bytes(compact_json_bytes(sample) + b"\n")
+
+    result = analyze_phase(
+        samples,
+        phase="idle",
+        arm="enabled",
+        repetition=1,
+        started_monotonic=0.0,
+        ended_monotonic=2.0,
+    )
+
+    assert result["required_unavailable"] == [
+        "cgroup.memory_current",
+        "io.syscr",
+        "smaps.Pss",
+    ]
+
+
+def test_qualification_environment_cannot_reduce_a_required_minimum(monkeypatch):
+    monkeypatch.setenv("E2E_RI_IDLE_SECONDS", "1799")
+    with pytest.raises(ValueError, match="must be at least 1800"):
+        env_int("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800)
+
+
+@pytest.mark.parametrize(
+    "remaining", (1, 4095, 4096, MAX_LINE_BYTES - 1, MAX_LINE_BYTES)
+)
+def test_disk_boundary_fixture_is_exact_bounded_and_parseable(tmp_path, remaining):
+    target = 512 * 1024 - remaining
+    fixture = tmp_path / f"boundary-{remaining}.ndjson"
+
+    assert stream_history_fixture(fixture, target) == target
+    assert fixture.stat().st_size == target
+    with fixture.open("rb") as handle:
+        records = 0
+        for raw in iter_capped_binary_lines(handle, max_bytes=MAX_LINE_BYTES):
+            assert raw.endswith(b"\n")
+            assert isinstance(json.loads(raw), dict)
+            records += 1
+    assert records > 0
 
 
 def _peak_for(count: int) -> tuple[int, FixedMetricSummary]:

@@ -112,8 +112,8 @@ def test_isolated_enospc_is_fail_open(
     case_artifacts,
     validation,
 ):
-    cooldown_seconds = env_int("E2E_DS_ENOSPC_COOLDOWN_SECONDS", 300)
-    command_count = env_int("E2E_DS_ENOSPC_COMMANDS", 8)
+    cooldown_seconds = env_int("E2E_DS_ENOSPC_COOLDOWN_SECONDS", 300, minimum=300)
+    command_count = env_int("E2E_DS_ENOSPC_COMMANDS", 8, minimum=8)
     with generated_gateway():
         sandbox_id = registered_sandbox_factory()
         verify_packaged_daemon(sandbox_id)
@@ -158,15 +158,25 @@ def test_isolated_enospc_is_fail_open(
             )
             full_before = fingerprint_store(sandbox_id)
             counters_before = _drop_stats(_snapshot(sandbox_id))
-            latencies = []
-            command_results = []
+            completed_commands = 0
+            failed_commands = 0
+            bounded_failures = []
+            maximum_latency = 0.0
+            total_latency = 0.0
             for index in range(command_count):
                 started = time.monotonic()
                 result = _assert_ok(exec_command(sandbox_id, f"printf ds03-{index}"))
-                latencies.append(time.monotonic() - started)
-                command_results.append(
-                    {"index": index, "exit_code": result.get("exit_code")}
-                )
+                latency = time.monotonic() - started
+                completed_commands += 1
+                maximum_latency = max(maximum_latency, latency)
+                total_latency += latency
+                exit_code = result.get("exit_code")
+                if exit_code != 0:
+                    failed_commands += 1
+                    if len(bounded_failures) < 64:
+                        bounded_failures.append(
+                            {"index": index, "exit_code": exit_code}
+                        )
             counters_after = _drop_stats(_snapshot(sandbox_id))
             full_after_commands = fingerprint_store(sandbox_id)
             cooldown = stream_group(
@@ -196,10 +206,12 @@ def test_isolated_enospc_is_fail_open(
                 "actual_storage_drop_delta": actual_drop_delta,
                 "counters_before": counters_before,
                 "counters_after": counters_after,
-                "command_results": command_results,
+                "completed_commands": completed_commands,
+                "failed_commands": failed_commands,
+                "bounded_failures": bounded_failures,
                 "latency_seconds": {
-                    "maximum": max(latencies),
-                    "total": sum(latencies),
+                    "maximum": maximum_latency,
+                    "total": total_latency,
                 },
                 "cooldown": cooldown_result,
                 "store_before": full_before,
@@ -214,13 +226,16 @@ def test_isolated_enospc_is_fail_open(
                 "runtime-fail-open",
                 expected={"exit_code": 0, "max_latency_seconds": 30},
                 actual={
-                    "commands": command_results,
-                    "max_latency_seconds": max(latencies),
+                    "completed_commands": completed_commands,
+                    "failed_commands": failed_commands,
+                    "bounded_failures": bounded_failures,
+                    "max_latency_seconds": maximum_latency,
                 },
                 evidence=("summary.json",),
             ):
-                assert all(item["exit_code"] == 0 for item in command_results)
-                assert max(latencies) < 30, summary
+                assert completed_commands == command_count, summary
+                assert failed_commands == 0, summary
+                assert maximum_latency < 30, summary
             with validation(
                 "retry-loop-absent",
                 expected="no cooldown CPU/IO trend and no event-segment mutation",

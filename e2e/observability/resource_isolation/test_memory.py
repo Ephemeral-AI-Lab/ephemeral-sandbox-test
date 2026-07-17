@@ -28,6 +28,7 @@ from .helpers import (
     environment_evidence,
     fingerprint_store,
     measure_sampler_free_cpu_baseline,
+    response_digest,
     stream_group,
     stream_history_fixture,
     verify_packaged_daemon,
@@ -96,7 +97,7 @@ def test_resource_isolation_smoke(sandbox, case_artifacts, validation):
         [(sandbox, "target", ring)],
         phase="warmup",
         repetition=1,
-        duration_seconds=env_int("E2E_RI_SMOKE_WARM_SECONDS", 60),
+        duration_seconds=env_int("E2E_RI_SMOKE_WARM_SECONDS", 60, minimum=60),
     )
     before = fingerprint_store(sandbox)
     case_artifacts.write_json("store-before.json", before)
@@ -105,7 +106,7 @@ def test_resource_isolation_smoke(sandbox, case_artifacts, validation):
         [(sandbox, "target", ring)],
         phase="idle",
         repetition=1,
-        duration_seconds=env_int("E2E_RI_SMOKE_IDLE_SECONDS", 120),
+        duration_seconds=env_int("E2E_RI_SMOKE_IDLE_SECONDS", 120, minimum=120),
     )
     after_idle = fingerprint_store(sandbox)
 
@@ -118,7 +119,7 @@ def test_resource_isolation_smoke(sandbox, case_artifacts, validation):
         [(sandbox, "target", ring)],
         phase="polling",
         repetition=1,
-        duration_seconds=env_int("E2E_RI_SMOKE_POLL_SECONDS", 120),
+        duration_seconds=env_int("E2E_RI_SMOKE_POLL_SECONDS", 120, minimum=120),
         action=poll,
     )
     after = fingerprint_store(sandbox)
@@ -207,7 +208,7 @@ def test_resource_isolation_smoke(sandbox, case_artifacts, validation):
 def test_idle_daemon_memory_neutral(
     registered_sandbox_factory, case_artifacts, validation
 ):
-    repetitions = env_int("E2E_RI_NIGHTLY_REPETITIONS", 3)
+    repetitions = env_int("E2E_RI_NIGHTLY_REPETITIONS", 3, minimum=3)
     results = []
     stores = []
     for repetition in range(1, repetitions + 1):
@@ -223,14 +224,14 @@ def test_idle_daemon_memory_neutral(
             [(sandbox_id, "enabled", ring)],
             phase="warmup",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_WARM_SECONDS", 300),
+            duration_seconds=env_int("E2E_RI_WARM_SECONDS", 300, minimum=300),
         )
         baseline = measure_sampler_free_cpu_baseline(
             case_artifacts,
             [(sandbox_id, "enabled", ring)],
             phase="sampler-free-baseline",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_BASELINE_NOISE_SECONDS", 60),
+            duration_seconds=env_int("E2E_RI_BASELINE_NOISE_SECONDS", 60, minimum=60),
         )
         before = fingerprint_store(sandbox_id)
         idle = stream_group(
@@ -238,7 +239,7 @@ def test_idle_daemon_memory_neutral(
             [(sandbox_id, "enabled", ring)],
             phase="idle",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_IDLE_SECONDS", 1_800),
+            duration_seconds=env_int("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800),
         )
         after = fingerprint_store(sandbox_id)
         result = analyze_phase(
@@ -262,12 +263,14 @@ def test_idle_daemon_memory_neutral(
     with validation(
         "idle-anonymous-trend",
         expected={
+            "minimum_repetitions": 3,
             "max_slope_bytes_per_hour": ANONYMOUS_SLOPE_LIMIT_BYTES_PER_HOUR,
             "max_final_minus_first_bytes": ANONYMOUS_DELTA_LIMIT_BYTES,
         },
         actual=results,
         evidence=("samples.jsonl", "summary.json"),
     ):
+        assert len(results) >= 3
         for result in results:
             assert (
                 result["anonymous_slope_bytes_per_hour"]
@@ -321,7 +324,7 @@ def test_idle_daemon_memory_neutral(
 def test_public_polling_is_memory_neutral(
     registered_sandbox_factory, case_artifacts, validation
 ):
-    repetitions = env_int("E2E_RI_NIGHTLY_REPETITIONS", 3)
+    repetitions = env_int("E2E_RI_NIGHTLY_REPETITIONS", 3, minimum=3)
     results = []
     for repetition in range(1, repetitions + 1):
         target = registered_sandbox_factory()
@@ -337,14 +340,14 @@ def test_public_polling_is_memory_neutral(
             [(target, "target", target_ring), (control, "control", control_ring)],
             phase="warmup",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_WARM_SECONDS", 300),
+            duration_seconds=env_int("E2E_RI_WARM_SECONDS", 300, minimum=300),
         )
         baselines = measure_sampler_free_cpu_baseline(
             case_artifacts,
             [(target, "target", target_ring), (control, "control", control_ring)],
             phase="polling-sampler-free-baseline",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_BASELINE_NOISE_SECONDS", 60),
+            duration_seconds=env_int("E2E_RI_BASELINE_NOISE_SECONDS", 60, minimum=60),
         )
         stores_before = {
             target: fingerprint_store(target),
@@ -361,7 +364,7 @@ def test_public_polling_is_memory_neutral(
             [(target, "target", target_ring), (control, "control", control_ring)],
             phase="polling",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_POLL_SECONDS", 1_800),
+            duration_seconds=env_int("E2E_RI_POLL_SECONDS", 1_800, minimum=1_800),
             action=poll,
         )
         stores_after = {
@@ -373,7 +376,7 @@ def test_public_polling_is_memory_neutral(
             [(target, "target", target_ring), (control, "control", control_ring)],
             phase="cooldown",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_COOLDOWN_SECONDS", 600),
+            duration_seconds=env_int("E2E_RI_COOLDOWN_SECONDS", 600, minimum=600),
         )
         target_result = analyze_phase(
             case_artifacts.samples_path,
@@ -442,6 +445,7 @@ def test_public_polling_is_memory_neutral(
         actual=results,
         evidence=("store-before.json", "store-after.json"),
     ):
+        assert len(results) >= 3
         for item in results:
             for sandbox_id, before in item["stores_before"].items():
                 assert_store_unchanged(before, item["stores_after"][sandbox_id])
@@ -511,16 +515,18 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
             [(sandbox, f"size-{index}", default_resource_ring_path(sandbox))],
             phase=f"query-baseline-{index}",
             repetition=1,
-            duration_seconds=env_int("E2E_RI_QUERY_BASELINE_SECONDS", 10),
+            duration_seconds=env_int("E2E_RI_QUERY_BASELINE_SECONDS", 10, minimum=10),
         )
         before = fingerprint_store(sandbox)
         response_summary = {
             "count": 0,
+            "view_count": 0,
             "max_encoded_bytes": 0,
             "max_list_records": 0,
         }
         response_hash = hashlib.sha256()
         views = _views(sandbox)
+        response_summary["view_count"] = len(views)
 
         def query(query_index: int) -> None:
             response = _assert_ok(views[query_index % len(views)]())
@@ -532,14 +538,16 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
             response_summary["max_list_records"] = max(
                 response_summary["max_list_records"], bounds["max_list_records"]
             )
-            response_hash.update(repr(response).encode())
+            response_digest(response, response_hash)
 
         query_phase = stream_group(
             case_artifacts,
             [(sandbox, f"size-{index}", default_resource_ring_path(sandbox))],
             phase=f"query-{index}",
             repetition=1,
-            duration_seconds=max(len(views), env_int("E2E_RI_QUERY_SECONDS", 10)),
+            duration_seconds=max(
+                len(views), env_int("E2E_RI_QUERY_SECONDS", 10, minimum=10)
+            ),
             action=query,
         )
         after = fingerprint_store(sandbox)
@@ -548,7 +556,7 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
             [(sandbox, f"size-{index}", default_resource_ring_path(sandbox))],
             phase=f"query-cooldown-{index}",
             repetition=1,
-            duration_seconds=env_int("E2E_RI_QUERY_COOLDOWN_SECONDS", 300),
+            duration_seconds=env_int("E2E_RI_QUERY_COOLDOWN_SECONDS", 300, minimum=300),
         )
         baseline_median = baseline["online"][f"size-{index}"]["sample_median"]
         query_peak = query_phase["online"][f"size-{index}"]["maximum"]
@@ -580,7 +588,10 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
     ):
         for item in results:
             assert item["written_bytes"] == item["target_bytes"], item
-            assert item["response_summary"]["count"] >= len(_views("bounded")), item
+            assert (
+                item["response_summary"]["count"]
+                >= item["response_summary"]["view_count"]
+            ), item
             assert item["response_summary"]["max_encoded_bytes"] <= 256 * 1024
             assert item["response_summary"]["max_list_records"] <= 500
     with validation(
@@ -633,7 +644,7 @@ def test_enabled_disabled_fixed_overhead(
     case_artifacts,
     validation,
 ):
-    repetitions = env_int("E2E_RI_RELEASE_REPETITIONS", 5)
+    repetitions = env_int("E2E_RI_RELEASE_REPETITIONS", 5, minimum=5)
     results = []
     with generated_gateway(
         daemon_overrides={"observability": {"enabled": True}},
@@ -665,7 +676,7 @@ def test_enabled_disabled_fixed_overhead(
                 targets,
                 phase="ab-warmup",
                 repetition=repetition,
-                duration_seconds=env_int("E2E_RI_WARM_SECONDS", 300),
+                duration_seconds=env_int("E2E_RI_WARM_SECONDS", 300, minimum=300),
             )
             enabled_before = fingerprint_store(sandboxes["enabled"])
             idle = stream_group(
@@ -673,7 +684,7 @@ def test_enabled_disabled_fixed_overhead(
                 targets,
                 phase="ab-idle",
                 repetition=repetition,
-                duration_seconds=env_int("E2E_RI_IDLE_SECONDS", 1_800),
+                duration_seconds=env_int("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800),
             )
             enabled_after = fingerprint_store(sandboxes["enabled"])
             disabled_store = fingerprint_store(sandboxes["disabled"])
@@ -722,6 +733,7 @@ def test_enabled_disabled_fixed_overhead(
         actual=results,
         evidence=("samples.jsonl", "summary.json"),
     ):
+        assert len(results) >= 5
         for item in results:
             assert item["enabled_minus_disabled_bytes"] <= ENABLED_DISABLED_LIMIT_BYTES
             assert item["cpu_ticks_per_minute_difference"] < 1.0, item

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import time
 
 import pytest
@@ -25,6 +26,7 @@ from .helpers import (
     registry_resource_ring_path,
     resource_ring_header,
     response_digest,
+    rotation_renamed_active,
     stream_history_fixture,
     utc_now,
     verify_packaged_daemon,
@@ -84,7 +86,7 @@ def _views(sandbox_id: str):
     description=(
         "A one-MiB configured store remains bounded and parseable through ten "
         "boundary-sensitive pre-append rotations and an escaped multibyte "
-        "oversized record driven by public runtime operations."
+        "oversized recovery record accounted by a public runtime append."
     ),
     features=(
         "runtime.command",
@@ -110,6 +112,40 @@ def test_two_segment_total_cap(
 ):
     total_cap = 1024 * 1024
     segment_cap = total_cap // 2
+    oversized_fixture = tmp_path / "oversized-escaped-multibyte.ndjson"
+    escaped_multibyte = '🦀\\"\n' * 60_000
+    encoded_oversized = (
+        json.dumps(
+            {
+                "kind": "event",
+                "ts": 1,
+                "trace": "ds01-oversized-fixture",
+                "name": "fixture.escaped_multibyte",
+                "attrs": {"payload": escaped_multibyte},
+            },
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+        + b"\n"
+    )
+    encoded_oversized_bytes = len(encoded_oversized)
+    input_utf8_bytes = len(escaped_multibyte.encode())
+    if not segment_cap < encoded_oversized_bytes <= total_cap:
+        raise AssertionError(
+            {
+                "encoded_record_bytes": encoded_oversized_bytes,
+                "segment_cap_bytes": segment_cap,
+                "total_cap_bytes": total_cap,
+            }
+        )
+    if "🦀".encode("utf-8") not in encoded_oversized:
+        raise AssertionError("fixture lost its multi-byte UTF-8 payload")
+    if b'\\\\\\"' not in encoded_oversized:
+        raise AssertionError("fixture lost its JSON-escaped payload")
+    oversized_fixture.write_bytes(encoded_oversized)
+    del escaped_multibyte, encoded_oversized
+
     observations = []
     rotation_evidence = []
     rotations = 0
@@ -144,13 +180,7 @@ def test_two_segment_total_cap(
                         "bounded": bounded,
                     }
                 )
-                rotated = after["segments"]["observability.ndjson.1"]
-                active_before = before["segments"]["observability.ndjson"]
-                if (
-                    rotated.get("exists") is True
-                    and active_before.get("exists") is True
-                    and rotated.get("sha256") == active_before.get("sha256")
-                ):
+                if rotation_renamed_active(before, after):
                     rotations += 1
                     rotation_evidence.append(observations[-1])
                     break
@@ -160,14 +190,9 @@ def test_two_segment_total_cap(
                     {"rotation_target": index + 1, "remaining_bytes": remaining}
                 )
 
+        docker_copy_to(sandbox_id, oversized_fixture, EVENT_SEGMENTS[0])
         counters_before = _event_store_stats(sandbox_id)
-        escaped_multibyte = '🦀\\"' * 6_000
-        oversized_result = _assert_ok(
-            exec_command(
-                sandbox_id,
-                f"printf '%s' '{escaped_multibyte}' >/dev/null",
-            )
-        )
+        oversized_result = _assert_ok(exec_command(sandbox_id, "printf ds01-recover"))
         assert oversized_result.get("exit_code") == 0, oversized_result
         counters_after = _event_store_stats(sandbox_id)
         oversized_store = fingerprint_store(sandbox_id)
@@ -186,7 +211,8 @@ def test_two_segment_total_cap(
             "observations": observations,
             "rotation_evidence": rotation_evidence,
             "oversized_escaped_multibyte": {
-                "input_utf8_bytes": len(escaped_multibyte.encode()),
+                "input_utf8_bytes": input_utf8_bytes,
+                "encoded_record_bytes": encoded_oversized_bytes,
                 "counters_before": counters_before,
                 "counters_after": counters_after,
                 "accounted_delta": oversized_accounted_delta,
@@ -212,7 +238,7 @@ def test_two_segment_total_cap(
             item["after"]["total_logical_bytes"] <= total_cap for item in observations
         )
         assert oversized_store["total_logical_bytes"] <= total_cap
-        assert oversized_accounted_delta >= 1
+        assert oversized_accounted_delta == 1
     with validation(
         "segments-parseable",
         expected="all complete lines parse and every final line is complete",
@@ -267,7 +293,7 @@ def test_ten_thousand_reads_are_pure(sandbox, tmp_path, case_artifacts, validati
     case_artifacts.write_json("store-before.json", before)
     digest = hashlib.sha256()
     views = _views(sandbox)
-    reads = env_int("E2E_DS_READ_COUNT", 10_000)
+    reads = env_int("E2E_DS_READ_COUNT", 10_000, minimum=10_000)
     max_response_bytes = 0
     max_response_records = 0
     started = time.monotonic()
@@ -297,7 +323,7 @@ def test_ten_thousand_reads_are_pure(sandbox, tmp_path, case_artifacts, validati
         actual={"reads": reads, "before": before, "after": after},
         evidence=("store-before.json", "store-after.json"),
     ):
-        assert reads == 10_000
+        assert reads >= 10_000
         assert_store_unchanged(before, after)
     artifact_bytes = case_artifacts.assert_bounded()
     with validation(
@@ -346,8 +372,8 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
 ):
     registry = (tmp_path / "manager" / "registry.json").resolve()
     registry.parent.mkdir(parents=True)
-    count = env_int("E2E_DS_RING_SANDBOXES", 100)
-    required_wraps = env_int("E2E_DS_RING_WRAPS", 2)
+    count = env_int("E2E_DS_RING_SANDBOXES", 100, minimum=100)
+    required_wraps = env_int("E2E_DS_RING_WRAPS", 2, minimum=2)
     sandbox_ids = []
     ring_paths = []
     with generated_gateway(manager_overrides={"registry_path": str(registry)}):
@@ -426,7 +452,7 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
         actual={"ring_count": count, "ring_bytes": before_destroy["ring_bytes"]},
         evidence=("summary.json",),
     ):
-        assert count == 100
+        assert count >= 100
         assert len(ring_paths) == count
         assert all(0 < size <= MAX_RING_BYTES for size in before_destroy["ring_bytes"])
     with validation(

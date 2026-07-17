@@ -72,9 +72,7 @@ def compact_json_bytes(value: Any) -> bytes:
     ).encode("utf-8")
 
 
-def iter_capped_binary_lines(
-    handle: BinaryIO, *, max_bytes: int
-) -> Iterator[bytes]:
+def iter_capped_binary_lines(handle: BinaryIO, *, max_bytes: int) -> Iterator[bytes]:
     """Yield lines without ever asking the stream for an unbounded line."""
     assert max_bytes > 0
     while True:
@@ -973,9 +971,7 @@ def analyze_phase(
     sample_count = 0
 
     with samples_path.open("rb") as handle:
-        for raw in iter_capped_binary_lines(
-            handle, max_bytes=MAX_LINE_BYTES * 8
-        ):
+        for raw in iter_capped_binary_lines(handle, max_bytes=MAX_LINE_BYTES * 8):
             try:
                 record = json.loads(raw)
             except (UnicodeDecodeError, json.JSONDecodeError):
@@ -986,6 +982,13 @@ def analyze_phase(
                 or record.get("repetition") != repetition
             ):
                 continue
+            unavailable = record.get("unavailable", ())
+            if isinstance(unavailable, list):
+                required_missing.update(
+                    name for name in unavailable if isinstance(name, str)
+                )
+            else:
+                required_missing.add("sample.unavailable")
             observed_at = record.get("monotonic_seconds")
             anonymous = record.get("smaps", {}).get("Anonymous")
             if not isinstance(observed_at, (int, float)) or observed_at < steady_start:
@@ -1206,6 +1209,21 @@ def fingerprint_store(sandbox_id: str) -> dict[str, Any]:
             if value.get("exists") is True
         ),
     }
+
+
+def rotation_renamed_active(
+    before: Mapping[str, Any], after: Mapping[str, Any]
+) -> bool:
+    """Recognize the active-to-rotated rename even if one request emits many lines."""
+    active_before = before["segments"]["observability.ndjson"]
+    rotated_after = after["segments"]["observability.ndjson.1"]
+    active_inode = active_before.get("inode")
+    return (
+        active_before.get("exists") is True
+        and isinstance(active_inode, int)
+        and rotated_after.get("exists") is True
+        and rotated_after.get("inode") == active_inode
+    )
 
 
 def assert_store_unchanged(before: Mapping[str, Any], after: Mapping[str, Any]) -> None:

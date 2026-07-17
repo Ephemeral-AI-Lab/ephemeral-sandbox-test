@@ -169,10 +169,10 @@ def test_colocated_node_gc_isolation(
     case_artifacts,
     validation,
 ):
-    repetitions = env_int("E2E_GC_REPETITIONS", 5)
-    warmup_seconds = env_int("E2E_GC_WARM_SECONDS", 300)
-    workload_seconds = env_int("E2E_GC_WORKLOAD_SECONDS", 600)
-    cooldown_seconds = env_int("E2E_GC_COOLDOWN_SECONDS", 600)
+    repetitions = env_int("E2E_GC_REPETITIONS", 5, minimum=5)
+    warmup_seconds = env_int("E2E_GC_WARM_SECONDS", 300, minimum=300)
+    workload_seconds = env_int("E2E_GC_WORKLOAD_SECONDS", 600, minimum=600)
+    cooldown_seconds = env_int("E2E_GC_COOLDOWN_SECONDS", 600, minimum=600)
     workload_source = Path(__file__).with_name("node_gc_workload.mjs")
     results = []
     with generated_gateway(
@@ -355,7 +355,7 @@ def test_colocated_node_gc_isolation(
         actual=results,
         evidence=("gc.jsonl", "summary.json"),
     ):
-        assert repetitions == 5
+        assert repetitions >= 5
         for item in results:
             for arm in ("enabled", "disabled"):
                 assert item["commands"][arm]["exit_code"] == 0, item
