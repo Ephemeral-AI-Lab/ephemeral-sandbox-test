@@ -699,6 +699,7 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
                     "sha256": response_hash.hexdigest(),
                 },
                 "baseline_median_bytes": baseline_median,
+                "query_peak_bytes": query_peak,
                 "query_peak_delta_bytes": query_peak - baseline_median,
                 "cooldown_delta_bytes": cooldown_median - baseline_median,
                 "phase_analysis": phase_analysis,
@@ -746,7 +747,7 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
         actual=results,
         evidence=("samples.jsonl", "summary.json"),
     ):
-        peaks = [item["query_peak_delta_bytes"] for item in results]
+        absolute_peaks = [item["query_peak_bytes"] for item in results]
         for item in results:
             assert item["query_peak_delta_bytes"] <= 512 * 1024, item
             assert item["cooldown_delta_bytes"] <= COOLDOWN_LIMIT_BYTES, item
@@ -756,7 +757,10 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
                 assert phase["cgroup_anon_thp_peak_bytes"] == 0, item
                 assert phase["resource_ring_peak_bytes"] <= MAX_RING_BYTES, item
                 assert phase["event_store_peak_bytes"] <= 4 * 1024 * 1024, item
-        assert max(peaks) - min(peaks) <= ANONYMOUS_DELTA_LIMIT_BYTES, results
+        assert (
+            max(absolute_peaks) - min(absolute_peaks)
+            <= ANONYMOUS_DELTA_LIMIT_BYTES
+        ), results
     with validation(
         "query-store-pure",
         expected="all store fingerprints unchanged",

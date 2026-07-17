@@ -169,6 +169,10 @@ History-size comparisons perform one fixed, fingerprint-checked pass across
 the public query routes before installing measured fixtures. This settles
 route cold-start allocations so the unchanged 64 KiB comparison measures
 stored-history dependence rather than whichever fixture ran first.
+Each size still has a 512 KiB peak-above-baseline cap. The cross-size 64 KiB
+gate compares absolute query peaks on the same daemon, because subtracting a
+new baseline for every size would hide allocator high-water memory retained by
+an earlier query and would not measure total memory scaling with history.
 
 ## 5. Live case catalog
 
