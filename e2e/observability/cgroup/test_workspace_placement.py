@@ -18,7 +18,6 @@ from observability.cgroup.helpers import (
     workload_processes,
     workspace_by_id,
 )
-from runtime.workspace_session.helpers import workspace_tracker
 
 
 def assert_process_contract(process: dict) -> None:
@@ -95,7 +94,7 @@ def test_idle_workspaces_remain_visible(sandbox, workspace_tracker):
     id="observability.cgroup.workspace-process-placement",
     title="Processes Are Placed By Dual Namespace Identity",
     description="Two live workspace workloads are disjoint and independently match both namespace handles.",
-    features=("observability.cgroup", "runtime.workspace_session", "runtime.exec_command"),
+    features=("observability.cgroup", "runtime.workspace_session", "runtime.command"),
     validations={
         "dual-namespace-placement": "Each process matches its holder PID and mount namespace only.",
     },
@@ -145,7 +144,7 @@ def test_processes_are_placed_by_dual_namespace_identity(sandbox, workspace_trac
     id="observability.cgroup.backend-originated-command",
     title="Backend Originated Commands Appear",
     description="A command started solely through the runtime CLI appears on repeated topology refreshes.",
-    features=("observability.cgroup", "runtime.exec_command"),
+    features=("observability.cgroup", "runtime.command"),
     validations={
         "backend-command-placement": "A runtime-CLI command activates its workspace without browser state.",
     },
@@ -193,7 +192,7 @@ def test_backend_originated_command_appears(sandbox, workspace_tracker):
     id="observability.cgroup.forked-descendants",
     title="Forked Descendants Stay With Their Workspace",
     description="A live POSIX shell parent and sleeping child share the reported workspace placement.",
-    features=("observability.cgroup", "runtime.exec_command"),
+    features=("observability.cgroup", "runtime.command"),
     validations={
         "descendant-placement": "Parent and child rows share both namespace identities and workspace ownership.",
     },
@@ -236,7 +235,7 @@ def test_forked_descendants_stay_with_workspace(sandbox, workspace_tracker):
     id="observability.cgroup.workspace-resource-estimates",
     title="Workspace Resource Estimate Inputs Are Live",
     description="Per-process RSS and CPU counters support a PID-reuse-safe workspace estimate.",
-    features=("observability.cgroup", "runtime.exec_command"),
+    features=("observability.cgroup", "runtime.command"),
     validations={
         "proc-resource-estimates": "RSS is present and cumulative CPU grows for a stable workload.",
     },

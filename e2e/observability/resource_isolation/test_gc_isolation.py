@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+import math
 from pathlib import Path
 
 import pytest
 
 from harness.catalog.declarations import e2e_test
 from harness.runner.cli import is_error
-from runtime.file.helpers import exec_command
+from runtime.file.helpers import exec_command, read_command_lines, write_command_stdin
 
 from .helpers import (
     ANONYMOUS_DELTA_LIMIT_BYTES,
@@ -44,17 +45,115 @@ NODE_NANO_CPUS = 1_000_000_000
 WORKLOAD_PATH = "/tmp/e2e-node-gc-workload.mjs"
 OUTPUT_PATH = "/tmp/e2e-node-gc.jsonl"
 WORKLOAD_RSS_STEP_LIMIT_BYTES = 4 * 1024 * 1024
+COMMAND_CONTINUATION_YIELD_MS = 20_000
+COMMAND_CONTINUATION_STDIN = "\n"
+PREWARM_COMMAND = "read _"
 
 
-def _run_public_command(sandbox_id: str, command: str, timeout: float) -> dict:
-    """Return bounded evidence even when the public wrapper raises."""
+def _start_public_command(sandbox_id: str, command: str, timeout: float) -> dict:
+    """Start through the public wrapper and retain bounded failure evidence."""
     try:
-        return {"response": exec_command(sandbox_id, command, timeout=timeout)}
+        operation_timeout_ms = max(1, int((timeout - 15) * 1_000))
+        return {
+            "response": exec_command(
+                sandbox_id,
+                command,
+                timeout_ms=operation_timeout_ms,
+                yield_time_ms=0,
+                timeout=min(30, timeout),
+            )
+        }
     except Exception as error:
         return {
             "exception": type(error).__name__,
             "message": str(error)[-2_000:],
         }
+
+
+def _read_public_terminal(sandbox_id: str, started: dict) -> dict:
+    """Read once after the measured window, when the command must be terminal."""
+    if "exception" in started:
+        return started
+    response = started.get("response")
+    if not isinstance(response, dict) or response.get("status") != "running":
+        return started
+    command_session_id = response.get("command_session_id")
+    if not isinstance(command_session_id, str) or not command_session_id:
+        return started
+    try:
+        return {
+            "response": read_command_lines(
+                sandbox_id,
+                command_session_id,
+                start_offset=0,
+                limit=1,
+                timeout=30,
+            )
+        }
+    except Exception as error:
+        return {
+            "exception": type(error).__name__,
+            "message": str(error)[-2_000:],
+        }
+
+
+def _continue_public_command(
+    sandbox_id: str, started: dict, expected_seconds: float
+) -> dict:
+    """Keep one public session request in flight and return terminal evidence."""
+    if "exception" in started:
+        return started
+    response = started.get("response")
+    if not isinstance(response, dict) or response.get("status") != "running":
+        return started
+    command_session_id = response.get("command_session_id")
+    if not isinstance(command_session_id, str) or not command_session_id:
+        return started
+
+    continuations = max(
+        1,
+        math.ceil(expected_seconds * 1_000 / COMMAND_CONTINUATION_YIELD_MS),
+    )
+    try:
+        for _ in range(continuations):
+            response = write_command_stdin(
+                sandbox_id,
+                command_session_id,
+                COMMAND_CONTINUATION_STDIN,
+                yield_time_ms=COMMAND_CONTINUATION_YIELD_MS,
+                timeout=30,
+            )
+            if not isinstance(response, dict):
+                return {"response": response}
+            if response.get("status") != "running":
+                if not is_error(response):
+                    return {"response": response}
+                terminal = _read_public_terminal(sandbox_id, started)
+                terminal_response = terminal.get("response")
+                if (
+                    isinstance(terminal_response, dict)
+                    and terminal_response.get("status") != "running"
+                    and terminal_response.get("exit_code") is not None
+                ):
+                    return terminal
+                return {"response": response}
+    except Exception as error:
+        # A command can become terminal between the liveness check and the
+        # write target lookup. Prefer a terminal read only when it proves that
+        # race; otherwise preserve the continuation failure as evidence.
+        terminal = _read_public_terminal(sandbox_id, started)
+        terminal_response = terminal.get("response")
+        if (
+            isinstance(terminal_response, dict)
+            and terminal_response.get("status") != "running"
+            and terminal_response.get("exit_code") is not None
+        ):
+            return terminal
+        return {
+            "exception": type(error).__name__,
+            "message": str(error)[-2_000:],
+        }
+    return _read_public_terminal(sandbox_id, started)
 
 
 def _bounded_result(result) -> dict:
@@ -65,9 +164,71 @@ def _bounded_result(result) -> dict:
         return {"type": type(result).__name__}
     return {
         "is_error": is_error(result),
+        "status": result.get("status"),
         "exit_code": result.get("exit_code"),
+        "wall_time_seconds": result.get("wall_time_seconds"),
+        "command_total_time_seconds": result.get("command_total_time_seconds"),
         "error": result.get("error"),
     }
+
+
+def _assert_workload_started(commands: dict) -> None:
+    """Require both public start barriers before beginning measurement."""
+    for arm in ("enabled", "disabled"):
+        command = commands[arm]
+        assert "exception" not in command, {"arm": arm, "command": command}
+        response = command.get("response")
+        assert isinstance(response, dict), {"arm": arm, "command": command}
+        assert is_error(response) is False, {"arm": arm, "command": response}
+        assert response.get("status") == "running", {
+            "arm": arm,
+            "command": response,
+        }
+        assert isinstance(response.get("command_session_id"), str), {
+            "arm": arm,
+            "command": response,
+        }
+
+
+def _assert_workload_completed(
+    commands: dict, gc: dict, *, load_multiplier: int
+) -> None:
+    """Stop after the first broken pair instead of burning later soak windows."""
+    for arm in ("enabled", "disabled"):
+        command = commands[arm]
+        assert command.get("is_error") is False, {"arm": arm, "command": command}
+        assert command.get("exit_code") == 0, {"arm": arm, "command": command}
+        summary = gc[arm]
+        assert summary.get("terminal") is not None, {"arm": arm, "gc": summary}
+        terminal = summary["terminal"]
+        assert terminal.get("oom") is False, {"arm": arm, "gc": summary}
+        assert terminal.get("load_multiplier") == load_multiplier, summary
+        assert terminal.get("allocation_interval_ms") == 10, summary
+        assert terminal.get("allocation_batches_per_tick") == load_multiplier, summary
+        assert terminal.get("allocations_per_batch") == 8, summary
+        assert terminal.get("gc_every_allocation_ticks") == 50, summary
+        allocation_ticks = terminal.get("allocation_ticks")
+        assert isinstance(allocation_ticks, int) and allocation_ticks > 0, summary
+        assert terminal.get("allocated_arrays") == allocation_ticks * 8, summary
+        assert terminal.get("forced_gc_count") == allocation_ticks // 50, summary
+
+
+def _prewarm_public_command(sandbox_id: str) -> dict:
+    """Exercise public start/write/finalize allocations before measurement."""
+    started = _start_public_command(sandbox_id, PREWARM_COMMAND, timeout=30)
+    response = started.get("response")
+    assert "exception" not in started, started
+    assert isinstance(response, dict), started
+    assert is_error(response) is False, started
+    assert response.get("status") == "running", started
+    assert isinstance(response.get("command_session_id"), str), started
+
+    completed = _bounded_result(
+        _continue_public_command(sandbox_id, started, expected_seconds=1)
+    )
+    assert completed.get("is_error") is False, completed
+    assert completed.get("exit_code") == 0, completed
+    return completed
 
 
 def _gc_summary(case_artifacts, sandbox_id: str, arm: str, repetition: int) -> dict:
@@ -141,6 +302,9 @@ def _assert_workload_daemon_gates(result: dict) -> None:
     assert result["cgroup_anon_thp_peak_bytes"] == 0, result
     assert result["resource_ring_peak_bytes"] <= MAX_RING_BYTES, result
     assert result["event_store_peak_bytes"] <= 4 * 1024 * 1024, result
+    assert result["cgroup_memory_event_deltas"]["oom"] == 0, result
+    assert result["cgroup_memory_event_deltas"]["oom_kill"] == 0, result
+    assert result["cgroup_memory_event_deltas"]["oom_group_kill"] == 0, result
 
 
 @e2e_test(
@@ -173,9 +337,7 @@ def test_colocated_node_gc_isolation(
     validation,
 ):
     repetitions = env_int("E2E_GC_REPETITIONS", 5, minimum=5)
-    warmup_seconds = qualification_duration(
-        "E2E_GC_WARM_SECONDS", 300, minimum=300
-    )
+    warmup_seconds = qualification_duration("E2E_GC_WARM_SECONDS", 300, minimum=300)
     workload_seconds = qualification_duration(
         "E2E_GC_WORKLOAD_SECONDS", 600, minimum=600
     )
@@ -205,6 +367,18 @@ def test_colocated_node_gc_isolation(
                 sandboxes[arm] = sandbox_id
                 verify_packaged_daemon(sandbox_id)
                 docker_copy_to(sandbox_id, workload_source, WORKLOAD_PATH)
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                prewarm_futures = {
+                    arm: executor.submit(_prewarm_public_command, sandboxes[arm])
+                    for arm in ("enabled", "disabled")
+                }
+                prewarm = {
+                    arm: future.result() for arm, future in prewarm_futures.items()
+                }
+            case_artifacts.append_jsonl(
+                "prewarm-results.jsonl",
+                {"repetition": repetition, "commands": prewarm},
+            )
             if repetition == 1:
                 case_artifacts.write_json(
                     "environment.json", environment_evidence(sandboxes["enabled"])
@@ -244,12 +418,26 @@ def test_colocated_node_gc_isolation(
                 for arm in ("enabled", "disabled")
             }
             with ThreadPoolExecutor(max_workers=2) as executor:
-                futures = {
+                start_futures = {
                     arm: executor.submit(
-                        _run_public_command,
+                        _start_public_command,
                         sandboxes[arm],
                         command[arm],
-                        workload_seconds + 180,
+                        workload_seconds + 45,
+                    )
+                    for arm in ("enabled", "disabled")
+                }
+                started_commands = {
+                    arm: future.result() for arm, future in start_futures.items()
+                }
+            _assert_workload_started(started_commands)
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                continuation_futures = {
+                    arm: executor.submit(
+                        _continue_public_command,
+                        sandboxes[arm],
+                        started_commands[arm],
+                        workload_seconds + 5,
                     )
                     for arm in ("enabled", "disabled")
                 }
@@ -261,7 +449,7 @@ def test_colocated_node_gc_isolation(
                     duration_seconds=workload_seconds + 5,
                 )
                 command_results = {
-                    arm: future.result() for arm, future in futures.items()
+                    arm: future.result() for arm, future in continuation_futures.items()
                 }
 
             workload_analysis = {
@@ -279,6 +467,21 @@ def test_colocated_node_gc_isolation(
                 arm: _gc_summary(case_artifacts, sandboxes[arm], arm, repetition)
                 for arm in ("enabled", "disabled")
             }
+            bounded_commands = {
+                arm: _bounded_result(command_results[arm])
+                for arm in ("enabled", "disabled")
+            }
+            case_artifacts.append_jsonl(
+                "workload-results.jsonl",
+                {
+                    "repetition": repetition,
+                    "commands": bounded_commands,
+                    "gc": gc,
+                },
+            )
+            _assert_workload_completed(
+                bounded_commands, gc, load_multiplier=load_multiplier
+            )
             stores_before_cooldown = {
                 arm: fingerprint_store(sandboxes[arm])
                 for arm in ("enabled", "disabled")
@@ -308,10 +511,8 @@ def test_colocated_node_gc_isolation(
             pair = {
                 "repetition": repetition,
                 "creation_order": creation_order,
-                "commands": {
-                    arm: _bounded_result(command_results[arm])
-                    for arm in ("enabled", "disabled")
-                },
+                "prewarm": prewarm,
+                "commands": bounded_commands,
                 "gc": gc,
                 "warmup": warmup_analysis,
                 "workload": workload_analysis,
@@ -364,7 +565,7 @@ def test_colocated_node_gc_isolation(
         "workload-no-oom",
         expected={"repetitions": 5, "all_exit_codes": 0, "oom": False},
         actual=results,
-        evidence=("gc.jsonl", "summary.json"),
+        evidence=("workload-results.jsonl", "gc.jsonl", "summary.json"),
     ):
         assert repetitions >= 5
         for item in results:

@@ -16,7 +16,6 @@ from observability.cgroup.helpers import (
     workload_processes,
     workspace_by_id,
 )
-from runtime.workspace_session.helpers import workspace_tracker
 
 
 def assert_known_disjoint_snapshot(topology: dict, workspace_ids: set[str]) -> None:
@@ -36,7 +35,7 @@ def assert_known_disjoint_snapshot(topology: dict, workspace_ids: set[str]) -> N
     id="observability.cgroup.process-exit",
     title="Exited Processes Disappear",
     description="A bounded command vanishes without making its retained workspace unavailable.",
-    features=("observability.cgroup", "runtime.exec_command"),
+    features=("observability.cgroup", "runtime.command"),
     validations={
         "process-exit-lifecycle": "Exited PIDs are not cached and the workspace returns to idle.",
     },
@@ -155,7 +154,7 @@ def test_destroyed_workspace_disappears_without_reassignment(sandbox, workspace_
     id="observability.cgroup.concurrent-churn",
     title="Natural Process Churn Preserves Topology",
     description="Bounded short commands race proc enumeration before two stable workloads settle.",
-    features=("observability.cgroup", "runtime.exec_command"),
+    features=("observability.cgroup", "runtime.command"),
     validations={
         "churn-availability": "PID races preserve schema, ordering, ownership, and availability.",
     },

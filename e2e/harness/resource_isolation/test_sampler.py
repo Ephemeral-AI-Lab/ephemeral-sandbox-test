@@ -11,6 +11,7 @@ import pytest
 
 from harness.catalog.declarations import e2e_test
 from observability.resource_isolation.helpers import (
+    _balanced_sample_order,
     _bootstrap_slope_ci,
     _integer_map,
     allowed_missed_deadlines,
@@ -31,6 +32,28 @@ from observability.resource_isolation.helpers import (
     stream_history_fixture,
     validate_packaged_daemon_identity,
 )
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.balanced-sample-order",
+    title="Paired sampling alternates its first arm",
+    description="Serial Linux measurement cannot consistently favor one A/B arm.",
+    validations={"balanced-order": "Each arm is sampled first on alternating ticks."},
+)
+def test_paired_sample_order_alternates_first_arm_without_growing_state():
+    targets = (
+        ("eos-enabled", "enabled", None),
+        ("eos-disabled", "disabled", None),
+    )
+
+    assert [_balanced_sample_order(targets, index)[0][1] for index in range(4)] == [
+        "enabled",
+        "disabled",
+        "enabled",
+        "disabled",
+    ]
+    assert len(_balanced_sample_order(targets, 10_000_000)) == 2
 
 
 @e2e_test(
@@ -72,7 +95,9 @@ def test_proc_io_parser_accepts_colon_delimited_linux_fields():
     id="harness.resource-isolation.docker-event-label",
     title="Docker event ownership uses the sandbox label",
     description="The creation monitor accepts only an explicit EphemeralOS sandbox label as identity.",
-    validations={"docker-label": "Owned and unlabeled create events are distinguished."},
+    validations={
+        "docker-label": "Owned and unlabeled create events are distinguished."
+    },
 )
 def test_docker_creation_event_extracts_only_eos_sandbox_labels():
     assert (
@@ -96,7 +121,9 @@ def test_docker_creation_event_extracts_only_eos_sandbox_labels():
     id="harness.resource-isolation.artifact-summary-seal",
     title="Artifact summaries seal atomically",
     description="The final summary reports the exact directory byte count without leaving a temporary file.",
-    validations={"summary-seal": "The atomic summary size converges to the exact artifact size."},
+    validations={
+        "summary-seal": "The atomic summary size converges to the exact artifact size."
+    },
 )
 def test_artifact_summary_is_atomically_sealed_with_its_exact_final_size(tmp_path):
     artifacts = ArtifactDirectory(tmp_path / "artifacts")
@@ -119,7 +146,9 @@ def test_artifact_summary_is_atomically_sealed_with_its_exact_final_size(tmp_pat
     id="harness.resource-isolation.packaged-daemon-identity",
     title="Packaged daemon identity accepts Docker init",
     description="The Linux process topology validator recognizes the packaged daemon below Docker init.",
-    validations={"daemon-identity": "The packaged daemon PID and executable topology are accepted."},
+    validations={
+        "daemon-identity": "The packaged daemon PID and executable topology are accepted."
+    },
 )
 def test_packaged_daemon_identity_accepts_the_normal_docker_init_topology():
     identity = validate_packaged_daemon_identity(
@@ -141,7 +170,9 @@ def test_packaged_daemon_identity_accepts_the_normal_docker_init_topology():
     id="harness.resource-isolation.packaged-daemon-rejection",
     title="Packaged daemon identity rejects substitutes",
     description="An unrelated child process cannot satisfy the packaged daemon measurement contract.",
-    validations={"daemon-rejection": "A non-daemon executable fails identity validation."},
+    validations={
+        "daemon-rejection": "A non-daemon executable fails identity validation."
+    },
 )
 def test_packaged_daemon_identity_rejects_an_unverified_child():
     with pytest.raises(AssertionError):
@@ -182,7 +213,9 @@ def test_container_stat_parser_requires_real_tab_delimiters():
     id="harness.resource-isolation.rotation-inode",
     title="Rotation detection follows renamed inode",
     description="A multi-line request is recognized as pre-append rotation by active-segment inode identity.",
-    validations={"rotation-inode": "The renamed active inode proves rotation despite later appends."},
+    validations={
+        "rotation-inode": "The renamed active inode proves rotation despite later appends."
+    },
 )
 def test_rotation_detection_uses_rename_inode_when_one_request_emits_many_lines():
     before = {
@@ -214,7 +247,9 @@ def test_rotation_detection_uses_rename_inode_when_one_request_emits_many_lines(
     id="harness.resource-isolation.capped-line-memory",
     title="Capped line reader rejects oversized input",
     description="A ten-megabyte unterminated payload is rejected without a duration-sized Python allocation.",
-    validations={"line-cap": "Peak traced memory remains below 256 KiB while rejecting the line."},
+    validations={
+        "line-cap": "Peak traced memory remains below 256 KiB while rejecting the line."
+    },
 )
 def test_capped_line_reader_rejects_a_ten_megabyte_line_with_bounded_memory():
     source = io.BytesIO(b"x" * 10_000_000 + b"\n")
@@ -232,7 +267,9 @@ def test_capped_line_reader_rejects_a_ten_megabyte_line_with_bounded_memory():
     id="harness.resource-isolation.unavailable-propagation",
     title="Streaming analysis propagates unavailable fields",
     description="Missing required Linux measurements remain visible in the phase result instead of being averaged away.",
-    validations={"unavailable": "Every unavailable field is retained in deterministic order."},
+    validations={
+        "unavailable": "Every unavailable field is retained in deterministic order."
+    },
 )
 def test_streaming_analysis_propagates_every_unavailable_linux_field(tmp_path):
     samples = tmp_path / "samples.jsonl"
@@ -244,7 +281,18 @@ def test_streaming_analysis_propagates_every_unavailable_linux_field(tmp_path):
         "smaps": {"Anonymous": 4096, "AnonHugePages": 0},
         "cpu": {"user_ticks": 1, "system_ticks": 1},
         "io": {"read_bytes": 0, "write_bytes": 0},
-        "cgroup": {"memory_stat": {"anon_thp": 0}},
+        "cgroup": {
+            "memory_stat": {"anon_thp": 0},
+            "sandbox_memory_peak": 8192,
+            "memory_events": {
+                "low": 0,
+                "high": 0,
+                "max": 0,
+                "oom": 0,
+                "oom_kill": 0,
+                "oom_group_kill": 0,
+            },
+        },
         "event_store": {},
         "resource_ring": {"exists": False},
         "unavailable": ["smaps.Pss", "cgroup.memory_current", "io.syscr"],
@@ -265,6 +313,69 @@ def test_streaming_analysis_propagates_every_unavailable_linux_field(tmp_path):
         "io.syscr",
         "smaps.Pss",
     ]
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.cgroup-memory-events",
+    title="Streaming analysis retains cgroup OOM deltas",
+    description="Cgroup memory peaks and event deltas survive the bounded second pass.",
+    validations={
+        "cgroup-events": "OOM counters are differenced without loading samples."
+    },
+)
+def test_streaming_analysis_retains_cgroup_memory_events(tmp_path):
+    samples = tmp_path / "samples.jsonl"
+    records = []
+    for observed_at, peak, oom in ((1.0, 100, 2), (2.0, 200, 3)):
+        records.append(
+            {
+                "phase": "workload",
+                "arm": "enabled",
+                "repetition": 1,
+                "monotonic_seconds": observed_at,
+                "smaps": {"Anonymous": 4096, "AnonHugePages": 0},
+                "cpu": {"user_ticks": 1, "system_ticks": 1},
+                "io": {"read_bytes": 0, "write_bytes": 0},
+                "cgroup": {
+                    "memory_stat": {"anon_thp": 0},
+                    "sandbox_memory_peak": peak,
+                    "memory_events": {
+                        "low": 0,
+                        "high": 0,
+                        "max": oom,
+                        "oom": oom,
+                        "oom_kill": oom,
+                        "oom_group_kill": 0,
+                    },
+                },
+                "event_store": {},
+                "resource_ring": {"exists": False},
+                "unavailable": [],
+            }
+        )
+    samples.write_bytes(
+        b"".join(compact_json_bytes(record) + b"\n" for record in records)
+    )
+
+    result = analyze_phase(
+        samples,
+        phase="workload",
+        arm="enabled",
+        repetition=1,
+        started_monotonic=0.0,
+        ended_monotonic=3.0,
+    )
+
+    assert result["cgroup_memory_peak_bytes"] == 200
+    assert result["cgroup_memory_event_deltas"] == {
+        "low": 0,
+        "high": 0,
+        "max": 1,
+        "oom": 1,
+        "oom_kill": 1,
+        "oom_group_kill": 0,
+    }
 
 
 @e2e_test(
@@ -298,10 +409,7 @@ def test_compressed_qualification_is_explicit_and_tenfold(monkeypatch):
         "duration_divisor": 1,
         "load_multiplier": 1,
     }
-    assert (
-        qualification_duration("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800)
-        == 1_800
-    )
+    assert qualification_duration("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800) == 1_800
     assert qualification_load_multiplier() == 1
 
     monkeypatch.setenv("E2E_RI_QUALIFICATION_PROFILE", "compressed-10x")
@@ -310,10 +418,7 @@ def test_compressed_qualification_is_explicit_and_tenfold(monkeypatch):
         "duration_divisor": 10,
         "load_multiplier": 10,
     }
-    assert (
-        qualification_duration("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800)
-        == 180
-    )
+    assert qualification_duration("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800) == 180
     assert qualification_load_multiplier() == 10
 
     monkeypatch.setenv("E2E_RI_IDLE_SECONDS", "179")
@@ -339,7 +444,9 @@ def test_unknown_qualification_profile_is_rejected(monkeypatch):
     id="harness.resource-isolation.compressed-cadence-gate",
     title="Compressed phases retain a strict cadence gate",
     description="Short compressed phases permit one scheduler outlier rather than a percentage escape hatch.",
-    validations={"cadence-gate": "Only one missed deadline is allowed below 200 samples."},
+    validations={
+        "cadence-gate": "Only one missed deadline is allowed below 200 samples."
+    },
 )
 def test_short_compressed_phases_allow_only_one_scheduler_outlier():
     assert allowed_missed_deadlines(1) == 1
@@ -354,7 +461,9 @@ def test_short_compressed_phases_allow_only_one_scheduler_outlier():
     id="harness.resource-isolation.disk-boundary-fixture",
     title="Disk boundary fixtures are exact and parseable",
     description="Each record-boundary remainder produces an exact-size JSONL fixture with capped valid lines.",
-    validations={"disk-boundary": "The generated fixture reaches the target byte exactly and remains parseable."},
+    validations={
+        "disk-boundary": "The generated fixture reaches the target byte exactly and remains parseable."
+    },
 )
 @pytest.mark.parametrize(
     "remaining", (1, 4095, 4096, MAX_LINE_BYTES - 1, MAX_LINE_BYTES)

@@ -73,9 +73,7 @@ def qualification_profile() -> dict[str, int | str]:
             "duration_divisor": COMPRESSED_DURATION_DIVISOR,
             "load_multiplier": COMPRESSED_LOAD_MULTIPLIER,
         }
-    raise ValueError(
-        "E2E_RI_QUALIFICATION_PROFILE must be 'soak' or 'compressed-10x'"
-    )
+    raise ValueError("E2E_RI_QUALIFICATION_PROFILE must be 'soak' or 'compressed-10x'")
 
 
 def qualification_duration(name: str, default: int, *, minimum: int) -> int:
@@ -335,8 +333,12 @@ printf '@IO\n'; cat "/proc/$daemon_pid/io"
 printf '@CGROUP\n'; cat "/proc/$daemon_pid/cgroup"
 cg=$(sed -n 's/^0:://p' "/proc/$daemon_pid/cgroup" | sed -n '1p')
 case "$cg" in /) cg="" ;; esac
+case "$cg" in */_daemon) sandbox_cg=${cg%/_daemon} ;; *) sandbox_cg=$cg ;; esac
 printf '@MEMORY_CURRENT\n'; cat "/sys/fs/cgroup${cg}/memory.current"
 printf '@MEMORY_STAT\n'; cat "/sys/fs/cgroup${cg}/memory.stat"
+printf '@SANDBOX_MEMORY_CURRENT\n'; cat "/sys/fs/cgroup${sandbox_cg}/memory.current"
+printf '@SANDBOX_MEMORY_PEAK\n'; cat "/sys/fs/cgroup${sandbox_cg}/memory.peak"
+printf '@SANDBOX_MEMORY_EVENTS\n'; cat "/sys/fs/cgroup${sandbox_cg}/memory.events"
 printf '@FILES\n'
 for f in /eos/runtime/daemon/observability/observability.ndjson /eos/runtime/daemon/observability/observability.ndjson.1; do
   if [ -e "$f" ]; then
@@ -557,14 +559,37 @@ def collect_sample(
         memory_current = int("".join(sections.get("MEMORY_CURRENT", [])).strip())
     except ValueError:
         pass
+    sandbox_memory_current = None
+    sandbox_memory_peak = None
+    try:
+        sandbox_memory_current = int(
+            "".join(sections.get("SANDBOX_MEMORY_CURRENT", [])).strip()
+        )
+    except ValueError:
+        pass
+    try:
+        sandbox_memory_peak = int(
+            "".join(sections.get("SANDBOX_MEMORY_PEAK", [])).strip()
+        )
+    except ValueError:
+        pass
+    event_keys = ("low", "high", "max", "oom", "oom_kill", "oom_group_kill")
+    memory_events, event_missing = _integer_map(
+        sections.get("SANDBOX_MEMORY_EVENTS", []), event_keys
+    )
     cgroup_membership = "".join(sections.get("CGROUP", []))
     unavailable = []
     unavailable.extend(f"smaps.{name}" for name in smaps_missing)
     unavailable.extend(f"cpu.{name}" for name in cpu_missing)
     unavailable.extend(f"io.{name}" for name in io_missing)
     unavailable.extend(f"cgroup.{name}" for name in memory_missing)
+    unavailable.extend(f"cgroup.memory_events.{name}" for name in event_missing)
     if memory_current is None:
         unavailable.append("cgroup.memory_current")
+    if sandbox_memory_current is None:
+        unavailable.append("cgroup.sandbox_memory_current")
+    if sandbox_memory_peak is None:
+        unavailable.append("cgroup.sandbox_memory_peak")
     if not cgroup_membership.startswith("0::"):
         unavailable.append("cgroup.membership")
 
@@ -585,6 +610,9 @@ def collect_sample(
             "membership": cgroup_membership,
             "memory_current": memory_current,
             "memory_stat": memory_stat,
+            "sandbox_memory_current": sandbox_memory_current,
+            "sandbox_memory_peak": sandbox_memory_peak,
+            "memory_events": memory_events,
         },
         "event_store": _parse_file_stats(sections.get("FILES", [])),
         "resource_ring": host_file_stat(ring_path),
@@ -813,6 +841,14 @@ def environment_evidence(sandbox_id: str | None = None) -> dict[str, Any]:
     return value
 
 
+def _balanced_sample_order(
+    targets: Sequence[tuple[str, str, Path | None]], index: int
+) -> tuple[tuple[str, str, Path | None], ...]:
+    """Alternate the first sampled arm so serial collection has no fixed bias."""
+    ordered = tuple(targets)
+    return ordered if index % 2 == 0 else tuple(reversed(ordered))
+
+
 def stream_group(
     artifacts: ArtifactDirectory,
     targets: Sequence[tuple[str, str, Path | None]],
@@ -845,7 +881,7 @@ def stream_group(
                 late += 1
             if action is not None:
                 action(index)
-            for sandbox_id, arm, ring_path in targets:
+            for sandbox_id, arm, ring_path in _balanced_sample_order(targets, index):
                 sample = collect_sample(
                     sandbox_id,
                     phase=phase,
@@ -1042,6 +1078,9 @@ def analyze_phase(
     io_first = io_last = None
     huge_page_peak = 0
     cgroup_thp_peak = 0
+    cgroup_memory_peak = 0
+    memory_events_first = None
+    memory_events_last = None
     ring_peak = 0
     event_peak = 0
     required_missing: set[str] = set()
@@ -1108,6 +1147,33 @@ def analyze_phase(
                 cgroup_thp_peak = max(cgroup_thp_peak, cgroup_thp)
             else:
                 required_missing.add("cgroup.anon_thp")
+            cgroup = record.get("cgroup", {})
+            memory_peak = cgroup.get("sandbox_memory_peak")
+            if isinstance(memory_peak, int):
+                cgroup_memory_peak = max(cgroup_memory_peak, memory_peak)
+            else:
+                required_missing.add("cgroup.sandbox_memory_peak")
+            memory_events = cgroup.get("memory_events")
+            if isinstance(memory_events, dict) and all(
+                isinstance(memory_events.get(name), int)
+                for name in ("low", "high", "max", "oom", "oom_kill", "oom_group_kill")
+            ):
+                normalized_events = {
+                    name: int(memory_events[name])
+                    for name in (
+                        "low",
+                        "high",
+                        "max",
+                        "oom",
+                        "oom_kill",
+                        "oom_group_kill",
+                    )
+                }
+                if memory_events_first is None:
+                    memory_events_first = normalized_events
+                memory_events_last = normalized_events
+            else:
+                required_missing.add("cgroup.memory_events")
             ring = record.get("resource_ring", {})
             if ring.get("exists") is True:
                 ring_peak = max(ring_peak, int(ring.get("logical_bytes", 0)))
@@ -1161,6 +1227,15 @@ def analyze_phase(
         ),
         "anon_huge_pages_peak_bytes": huge_page_peak,
         "cgroup_anon_thp_peak_bytes": cgroup_thp_peak,
+        "cgroup_memory_peak_bytes": cgroup_memory_peak,
+        "cgroup_memory_event_deltas": (
+            {
+                name: memory_events_last[name] - memory_events_first[name]
+                for name in memory_events_first
+            }
+            if memory_events_first is not None and memory_events_last is not None
+            else None
+        ),
         "resource_ring_peak_bytes": ring_peak,
         "event_store_peak_bytes": event_peak,
         "required_unavailable": sorted(required_missing),

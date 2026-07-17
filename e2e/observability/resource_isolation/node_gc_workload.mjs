@@ -26,6 +26,7 @@ let sequence = 0;
 let peakRss = 0;
 let allocationTicks = 0;
 let allocatedArrays = 0;
+let forcedGcCount = 0;
 
 function emit(record) {
   const line = JSON.stringify({
@@ -58,21 +59,29 @@ const delay = monitorEventLoopDelay({ resolution: 10 });
 delay.enable();
 const live = [];
 
+// Keep one deterministic 10-ms cadence and scale logical sub-batches. Trimming
+// after each sub-batch bounds the live set while a 10x profile performs exactly
+// ten times the configured allocation and explicit-GC work per timer callback.
+const allocationIntervalMs = 10;
+const allocationBatchesPerTick = loadMultiplier;
+const allocationsPerBatch = 8;
+const gcEveryAllocationTicks = 50;
 const allocator = setInterval(() => {
-  const allocationsPerTick = 8 * loadMultiplier;
-  for (let index = 0; index < allocationsPerTick; index += 1) {
-    live.push(new Array(8192).fill(allocationTicks + index));
+  for (let batch = 0; batch < allocationBatchesPerTick; batch += 1) {
+    for (let index = 0; index < allocationsPerBatch; index += 1) {
+      live.push(new Array(8192).fill(allocationTicks + index));
+    }
+    allocatedArrays += allocationsPerBatch;
+    while (live.length > 96) {
+      live.splice(0, Math.min(live.length - 96, 32));
+    }
+    allocationTicks += 1;
+    if (allocationTicks % gcEveryAllocationTicks === 0 && global.gc) {
+      global.gc();
+      forcedGcCount += 1;
+    }
   }
-  allocatedArrays += allocationsPerTick;
-  while (live.length > 96) {
-    live.splice(0, Math.min(live.length - 96, 32 * loadMultiplier));
-  }
-  allocationTicks += 1;
-  const gcEveryTicks = Math.max(1, Math.floor(50 / loadMultiplier));
-  if (allocationTicks % gcEveryTicks === 0 && global.gc) {
-    global.gc();
-  }
-}, 10);
+}, allocationIntervalMs);
 
 const sampler = setInterval(() => {
   const memory = process.memoryUsage();
@@ -103,7 +112,12 @@ emit({
   type: "summary",
   allocation_ticks: allocationTicks,
   allocated_arrays: allocatedArrays,
+  forced_gc_count: forcedGcCount,
   load_multiplier: loadMultiplier,
+  allocation_interval_ms: allocationIntervalMs,
+  allocation_batches_per_tick: allocationBatchesPerTick,
+  allocations_per_batch: allocationsPerBatch,
+  gc_every_allocation_ticks: gcEveryAllocationTicks,
   peak_rss_bytes: peakRss,
   final_rss_bytes: finalMemory.rss,
   oom: false,

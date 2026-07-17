@@ -15,7 +15,7 @@ import pytest
 
 from harness.catalog.declarations import e2e_test
 from harness.catalog.mode import source_tree_digest as catalog_source_tree_digest
-from harness.reducer.events import digest, read_events
+from harness.reducer.events import read_events
 from harness.runner.controller import ControllerError, PreviewController
 from harness.runner import cli as cli_module
 from harness.runner import runner as runner_module
@@ -596,8 +596,19 @@ def test_serial_runner_uses_real_case_results_and_surface_observations(tmp_path,
 )
 def test_cli_helper_records_surface_after_decoding_response(monkeypatch, validation):
     observations = []
-    process = type("Process", (), {"returncode": 0, "stdout": '{"ok":true}\n', "stderr": ""})()
-    monkeypatch.setattr(cli_module.subprocess, "run", lambda *_args, **_kwargs: process)
+    record = cli_module.CliRecord(
+        argv=["sandbox-manager-cli", "inspect_sandbox"],
+        returncode=0,
+        stdout='{"ok":true}\n',
+        stderr="",
+        duration_ms=12.5,
+        parsed_json={"ok": True},
+        parse_error=None,
+        timed_out=False,
+        cancelled=False,
+        pid=123,
+    )
+    monkeypatch.setattr(cli_module, "cli_record", lambda *_args, **_kwargs: record)
     monkeypatch.setattr(
         cli_module,
         "record_surface",
