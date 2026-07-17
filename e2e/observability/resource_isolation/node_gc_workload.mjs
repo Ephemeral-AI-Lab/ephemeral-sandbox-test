@@ -5,9 +5,19 @@ const destination = process.argv[2];
 const durationMs = Number(process.argv[3]);
 const arm = process.argv[4];
 const repetition = Number(process.argv[5]);
+const loadMultiplier = Number(process.argv[6] ?? 1);
 
-if (!destination || !Number.isFinite(durationMs) || durationMs < 1 || !arm) {
-  throw new Error("usage: node_gc_workload.mjs OUTPUT DURATION_MS ARM REPETITION");
+if (
+  !destination ||
+  !Number.isFinite(durationMs) ||
+  durationMs < 1 ||
+  !arm ||
+  !Number.isInteger(loadMultiplier) ||
+  loadMultiplier < 1
+) {
+  throw new Error(
+    "usage: node_gc_workload.mjs OUTPUT DURATION_MS ARM REPETITION LOAD_MULTIPLIER",
+  );
 }
 
 const descriptor = openSync(destination, "w");
@@ -15,6 +25,7 @@ const started = performance.now();
 let sequence = 0;
 let peakRss = 0;
 let allocationTicks = 0;
+let allocatedArrays = 0;
 
 function emit(record) {
   const line = JSON.stringify({
@@ -48,14 +59,17 @@ delay.enable();
 const live = [];
 
 const allocator = setInterval(() => {
-  for (let index = 0; index < 8; index += 1) {
+  const allocationsPerTick = 8 * loadMultiplier;
+  for (let index = 0; index < allocationsPerTick; index += 1) {
     live.push(new Array(8192).fill(allocationTicks + index));
   }
-  if (live.length > 96) {
-    live.splice(0, 32);
+  allocatedArrays += allocationsPerTick;
+  while (live.length > 96) {
+    live.splice(0, Math.min(live.length - 96, 32 * loadMultiplier));
   }
   allocationTicks += 1;
-  if (allocationTicks % 50 === 0 && global.gc) {
+  const gcEveryTicks = Math.max(1, Math.floor(50 / loadMultiplier));
+  if (allocationTicks % gcEveryTicks === 0 && global.gc) {
     global.gc();
   }
 }, 10);
@@ -88,6 +102,8 @@ gcObserver.disconnect();
 emit({
   type: "summary",
   allocation_ticks: allocationTicks,
+  allocated_arrays: allocatedArrays,
+  load_multiplier: loadMultiplier,
   peak_rss_bytes: peakRss,
   final_rss_bytes: finalMemory.rss,
   oom: false,

@@ -22,6 +22,9 @@ from observability.resource_isolation.helpers import (
     RESERVOIR_SIZE,
     iter_capped_binary_lines,
     parse_container_stat_lines,
+    qualification_duration,
+    qualification_load_multiplier,
+    qualification_profile,
     rotation_renamed_active,
     sandbox_id_from_docker_create_event,
     stream_history_fixture,
@@ -274,6 +277,53 @@ def test_qualification_environment_cannot_reduce_a_required_minimum(monkeypatch)
     monkeypatch.setenv("E2E_RI_IDLE_SECONDS", "1799")
     with pytest.raises(ValueError, match="must be at least 1800"):
         env_int("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800)
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.compressed-qualification",
+    title="Compressed qualification is explicit and tenfold",
+    description=(
+        "The labelled compressed profile divides duration minima by ten and "
+        "requires at least tenfold active load without changing soak defaults."
+    ),
+    validations={
+        "compressed-profile": "A 30-minute phase becomes three minutes at 10x load."
+    },
+)
+def test_compressed_qualification_is_explicit_and_tenfold(monkeypatch):
+    assert qualification_profile() == {
+        "name": "soak",
+        "duration_divisor": 1,
+        "load_multiplier": 1,
+    }
+    assert (
+        qualification_duration("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800)
+        == 1_800
+    )
+    assert qualification_load_multiplier() == 1
+
+    monkeypatch.setenv("E2E_RI_QUALIFICATION_PROFILE", "compressed-10x")
+    assert qualification_profile() == {
+        "name": "compressed-10x",
+        "duration_divisor": 10,
+        "load_multiplier": 10,
+    }
+    assert (
+        qualification_duration("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800)
+        == 180
+    )
+    assert qualification_load_multiplier() == 10
+
+    monkeypatch.setenv("E2E_RI_IDLE_SECONDS", "179")
+    with pytest.raises(ValueError, match="must be at least 180"):
+        qualification_duration("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800)
+
+
+def test_unknown_qualification_profile_is_rejected(monkeypatch):
+    monkeypatch.setenv("E2E_RI_QUALIFICATION_PROFILE", "fast")
+    with pytest.raises(ValueError, match="soak.*compressed-10x"):
+        qualification_profile()
 
 
 @e2e_test(

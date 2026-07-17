@@ -150,6 +150,21 @@ it passes. The artifact records host architecture, kernel, Docker version,
 daemon build identity, cgroup mode, clock ticks per second, sandbox limits, and
 test configuration so environmental changes are visible.
 
+### 4.5 Explicit 10x compressed qualification
+
+Local integration may set
+`E2E_RI_QUALIFICATION_PROFILE=compressed-10x`. This divides every timed live
+phase and its enforced minimum by exactly ten while preserving the declared
+repetition count and every hard gate. Active polling and GC allocation run at
+ten times their soak rate, so the integrated request/allocation volume remains
+at least the soak volume for those phases. DS-03 likewise performs ten times
+as many fail-open commands. Every environment and summary artifact records the
+profile, duration divisor, and load multiplier.
+
+The default remains `soak`; nightly and release scheduling must not set the
+compressed profile. Compressed evidence is a fast merge qualification and is
+not represented as long-horizon soak evidence.
+
 ## 5. Live case catalog
 
 These are the required stable catalog declarations. Timeout is for the entire

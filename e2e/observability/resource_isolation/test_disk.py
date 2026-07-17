@@ -386,7 +386,6 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
         )
         for ring in ring_paths:
             wait_for_path(ring, exists=True)
-        unrelated = registry_resource_ring_path(registry, "not-run-owned")
         deadline = time.monotonic() + env_int("E2E_DS_RING_WRAP_TIMEOUT_SECONDS", 7_200)
         while True:
             headers = [resource_ring_header(path) for path in ring_paths]
@@ -410,6 +409,14 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
         ring_directory_entries = sorted(ring_paths[0].parent.glob("*.ring"))
         expected_ring_paths = {path.resolve() for path in ring_paths}
         actual_ring_paths = {path.resolve() for path in ring_directory_entries}
+        unrelated_ring_paths = actual_ring_paths - expected_ring_paths
+        unrelated_before = {
+            str(path): {
+                "inode": path.stat().st_ino,
+                "logical_bytes": path.stat().st_size,
+            }
+            for path in unrelated_ring_paths
+        }
         response = _assert_ok(cli("observability", "snapshot"))
         response_bounds = assert_response_bounded(response)
         before_destroy = {
@@ -418,10 +425,7 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
             "headers": headers,
             "ring_bytes": [stat.st_size for stat in stats],
             "total_logical_bytes": sum(stat.st_size for stat in stats),
-            "unrelated_exists": unrelated.exists(),
-            "unexpected_ring_paths": sorted(
-                str(path) for path in actual_ring_paths - expected_ring_paths
-            ),
+            "unrelated_rings": unrelated_before,
             "missing_ring_paths": sorted(
                 str(path) for path in expected_ring_paths - actual_ring_paths
             ),
@@ -431,13 +435,27 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
             registered_sandbox_factory.destroy(sandbox_id)
         for ring in ring_paths:
             wait_for_path(ring, exists=False)
+        remaining_ring_paths = {
+            path.resolve() for path in ring_paths[0].parent.glob("*.ring")
+        }
+        unrelated_after = {
+            str(path): {
+                "inode": path.stat().st_ino,
+                "logical_bytes": path.stat().st_size,
+            }
+            for path in remaining_ring_paths
+            if path in unrelated_ring_paths
+        }
         after_destroy = {
             "remaining_run_owned_rings": [
                 str(path) for path in ring_paths if path.exists()
             ],
-            "unrelated_exists": unrelated.exists(),
-            "remaining_ring_paths": sorted(
-                str(path) for path in ring_paths[0].parent.glob("*.ring")
+            "unrelated_rings": unrelated_after,
+            "missing_unrelated_ring_paths": sorted(
+                str(path) for path in unrelated_ring_paths - remaining_ring_paths
+            ),
+            "new_ring_paths": sorted(
+                str(path) for path in remaining_ring_paths - unrelated_ring_paths
             ),
         }
     case_artifacts.write_json(
@@ -462,15 +480,26 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
         evidence=("summary.json",),
     ):
         assert before_destroy["total_logical_bytes"] <= count * MAX_RING_BYTES
-        assert not before_destroy["unrelated_exists"]
-        assert not before_destroy["unexpected_ring_paths"]
         assert not before_destroy["missing_ring_paths"]
+        assert all(
+            state["logical_bytes"] <= MAX_RING_BYTES
+            for state in before_destroy["unrelated_rings"].values()
+        )
     with validation(
         "destroy-removes-rings",
-        expected={"remaining_run_owned_rings": [], "unrelated_exists": False},
+        expected={
+            "remaining_run_owned_rings": [],
+            "missing_unrelated_ring_paths": [],
+            "new_ring_paths": [],
+        },
         actual=after_destroy,
         evidence=("summary.json",),
     ):
         assert not after_destroy["remaining_run_owned_rings"]
-        assert not after_destroy["remaining_ring_paths"]
-        assert not after_destroy["unrelated_exists"]
+        assert not after_destroy["missing_unrelated_ring_paths"]
+        assert not after_destroy["new_ring_paths"]
+        assert after_destroy["unrelated_rings"].keys() == unrelated_before.keys()
+        for path, before in unrelated_before.items():
+            after = after_destroy["unrelated_rings"][path]
+            assert after["inode"] == before["inode"]
+            assert 0 < after["logical_bytes"] <= MAX_RING_BYTES

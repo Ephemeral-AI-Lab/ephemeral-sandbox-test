@@ -30,6 +30,9 @@ from .helpers import (
     fingerprint_store,
     isolated_event_store,
     isolated_tmpfs_capability,
+    qualification_duration,
+    qualification_load_multiplier,
+    qualification_profile,
     registry_resource_ring_path,
     resource_ring_header,
     stream_group,
@@ -112,8 +115,13 @@ def test_isolated_enospc_is_fail_open(
     case_artifacts,
     validation,
 ):
-    cooldown_seconds = env_int("E2E_DS_ENOSPC_COOLDOWN_SECONDS", 300, minimum=300)
-    command_count = env_int("E2E_DS_ENOSPC_COMMANDS", 8, minimum=8)
+    cooldown_seconds = qualification_duration(
+        "E2E_DS_ENOSPC_COOLDOWN_SECONDS", 300, minimum=300
+    )
+    load_multiplier = qualification_load_multiplier()
+    command_count = env_int(
+        "E2E_DS_ENOSPC_COMMANDS", 8 * load_multiplier, minimum=8 * load_multiplier
+    )
     with generated_gateway():
         sandbox_id = registered_sandbox_factory()
         verify_packaged_daemon(sandbox_id)
@@ -200,6 +208,7 @@ def test_isolated_enospc_is_fail_open(
                 counters_after["dropped_storage"] - counters_before["dropped_storage"]
             )
             summary = {
+                "qualification_profile": qualification_profile(),
                 "calibration_records_per_command": calibration_records,
                 "command_count": command_count,
                 "expected_storage_drop_delta": expected_drop_delta,

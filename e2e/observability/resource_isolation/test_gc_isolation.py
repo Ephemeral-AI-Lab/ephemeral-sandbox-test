@@ -29,6 +29,9 @@ from .helpers import (
     environment_evidence,
     fingerprint_store,
     percentile,
+    qualification_duration,
+    qualification_load_multiplier,
+    qualification_profile,
     stream_container_jsonl,
     stream_group,
     verify_packaged_daemon,
@@ -170,9 +173,16 @@ def test_colocated_node_gc_isolation(
     validation,
 ):
     repetitions = env_int("E2E_GC_REPETITIONS", 5, minimum=5)
-    warmup_seconds = env_int("E2E_GC_WARM_SECONDS", 300, minimum=300)
-    workload_seconds = env_int("E2E_GC_WORKLOAD_SECONDS", 600, minimum=600)
-    cooldown_seconds = env_int("E2E_GC_COOLDOWN_SECONDS", 600, minimum=600)
+    warmup_seconds = qualification_duration(
+        "E2E_GC_WARM_SECONDS", 300, minimum=300
+    )
+    workload_seconds = qualification_duration(
+        "E2E_GC_WORKLOAD_SECONDS", 600, minimum=600
+    )
+    cooldown_seconds = qualification_duration(
+        "E2E_GC_COOLDOWN_SECONDS", 600, minimum=600
+    )
+    load_multiplier = qualification_load_multiplier()
     workload_source = Path(__file__).with_name("node_gc_workload.mjs")
     results = []
     with generated_gateway(
@@ -229,7 +239,7 @@ def test_colocated_node_gc_isolation(
             command = {
                 arm: (
                     f"node --expose-gc {WORKLOAD_PATH} {OUTPUT_PATH} "
-                    f"{workload_seconds * 1000} {arm} {repetition}"
+                    f"{workload_seconds * 1000} {arm} {repetition} {load_multiplier}"
                 )
                 for arm in ("enabled", "disabled")
             }
@@ -325,6 +335,7 @@ def test_colocated_node_gc_isolation(
                 registered_sandbox_factory.destroy(sandboxes[arm])
 
     summary = {
+        "qualification_profile": qualification_profile(),
         "node_image": NODE_IMAGE,
         "cgroup": {
             "memory_bytes": NODE_MEMORY_BYTES,

@@ -46,6 +46,10 @@ ANONYMOUS_DELTA_LIMIT_BYTES = 64 * 1024
 ENABLED_DISABLED_LIMIT_BYTES = 64 * 1024
 COOLDOWN_LIMIT_BYTES = 128 * 1024
 SMOKE_ANONYMOUS_LIMIT_BYTES = 1024 * 1024
+SOAK_PROFILE = "soak"
+COMPRESSED_PROFILE = "compressed-10x"
+COMPRESSED_DURATION_DIVISOR = 10
+COMPRESSED_LOAD_MULTIPLIER = 10
 
 
 def env_int(name: str, default: int, *, minimum: int = 1) -> int:
@@ -56,6 +60,37 @@ def env_int(name: str, default: int, *, minimum: int = 1) -> int:
     if value < minimum:
         raise ValueError(f"{name} must be at least {minimum}")
     return value
+
+
+def qualification_profile() -> dict[str, int | str]:
+    """Return the explicit soak or time-compressed live-test profile."""
+    name = os.environ.get("E2E_RI_QUALIFICATION_PROFILE", SOAK_PROFILE)
+    if name == SOAK_PROFILE:
+        return {"name": name, "duration_divisor": 1, "load_multiplier": 1}
+    if name == COMPRESSED_PROFILE:
+        return {
+            "name": name,
+            "duration_divisor": COMPRESSED_DURATION_DIVISOR,
+            "load_multiplier": COMPRESSED_LOAD_MULTIPLIER,
+        }
+    raise ValueError(
+        "E2E_RI_QUALIFICATION_PROFILE must be 'soak' or 'compressed-10x'"
+    )
+
+
+def qualification_duration(name: str, default: int, *, minimum: int) -> int:
+    """Preserve soak minima unless an evidence-labelled compressed run is explicit."""
+    divisor = int(qualification_profile()["duration_divisor"])
+    return env_int(
+        name,
+        max(1, math.ceil(default / divisor)),
+        minimum=max(1, math.ceil(minimum / divisor)),
+    )
+
+
+def qualification_load_multiplier() -> int:
+    minimum = int(qualification_profile()["load_multiplier"])
+    return env_int("E2E_RI_LOAD_MULTIPLIER", minimum, minimum=minimum)
 
 
 def utc_now() -> str:

@@ -28,6 +28,9 @@ from .helpers import (
     environment_evidence,
     fingerprint_store,
     measure_sampler_free_cpu_baseline,
+    qualification_duration,
+    qualification_load_multiplier,
+    qualification_profile,
     response_digest,
     stream_group,
     stream_history_fixture,
@@ -97,7 +100,9 @@ def test_resource_isolation_smoke(sandbox, case_artifacts, validation):
         [(sandbox, "target", ring)],
         phase="warmup",
         repetition=1,
-        duration_seconds=env_int("E2E_RI_SMOKE_WARM_SECONDS", 60, minimum=60),
+        duration_seconds=qualification_duration(
+            "E2E_RI_SMOKE_WARM_SECONDS", 60, minimum=60
+        ),
     )
     before = fingerprint_store(sandbox)
     case_artifacts.write_json("store-before.json", before)
@@ -106,20 +111,27 @@ def test_resource_isolation_smoke(sandbox, case_artifacts, validation):
         [(sandbox, "target", ring)],
         phase="idle",
         repetition=1,
-        duration_seconds=env_int("E2E_RI_SMOKE_IDLE_SECONDS", 120, minimum=120),
+        duration_seconds=qualification_duration(
+            "E2E_RI_SMOKE_IDLE_SECONDS", 120, minimum=120
+        ),
     )
     after_idle = fingerprint_store(sandbox)
 
     def poll(_index: int) -> None:
-        response = _assert_ok(cli("observability", "snapshot", "--sandbox-id", sandbox))
-        assert_response_bounded(response)
+        for _ in range(qualification_load_multiplier()):
+            response = _assert_ok(
+                cli("observability", "snapshot", "--sandbox-id", sandbox)
+            )
+            assert_response_bounded(response)
 
     polling = stream_group(
         case_artifacts,
         [(sandbox, "target", ring)],
         phase="polling",
         repetition=1,
-        duration_seconds=env_int("E2E_RI_SMOKE_POLL_SECONDS", 120, minimum=120),
+        duration_seconds=qualification_duration(
+            "E2E_RI_SMOKE_POLL_SECONDS", 120, minimum=120
+        ),
         action=poll,
     )
     after = fingerprint_store(sandbox)
@@ -147,6 +159,7 @@ def test_resource_isolation_smoke(sandbox, case_artifacts, validation):
     )
     growth = observed_peak - baseline
     summary = {
+        "qualification_profile": qualification_profile(),
         "warmup": warm,
         "idle": idle_result,
         "polling": polling_result,
@@ -224,14 +237,18 @@ def test_idle_daemon_memory_neutral(
             [(sandbox_id, "enabled", ring)],
             phase="warmup",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_WARM_SECONDS", 300, minimum=300),
+            duration_seconds=qualification_duration(
+                "E2E_RI_WARM_SECONDS", 300, minimum=300
+            ),
         )
         baseline = measure_sampler_free_cpu_baseline(
             case_artifacts,
             [(sandbox_id, "enabled", ring)],
             phase="sampler-free-baseline",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_BASELINE_NOISE_SECONDS", 60, minimum=60),
+            duration_seconds=qualification_duration(
+                "E2E_RI_BASELINE_NOISE_SECONDS", 60, minimum=60
+            ),
         )
         before = fingerprint_store(sandbox_id)
         idle = stream_group(
@@ -239,7 +256,9 @@ def test_idle_daemon_memory_neutral(
             [(sandbox_id, "enabled", ring)],
             phase="idle",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800),
+            duration_seconds=qualification_duration(
+                "E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800
+            ),
         )
         after = fingerprint_store(sandbox_id)
         result = analyze_phase(
@@ -258,7 +277,11 @@ def test_idle_daemon_memory_neutral(
         registered_sandbox_factory.destroy(sandbox_id)
     case_artifacts.write_json("store-before.json", [item["before"] for item in stores])
     case_artifacts.write_json("store-after.json", [item["after"] for item in stores])
-    case_artifacts.write_json("summary.json", {"repetitions": results}, reserved=True)
+    case_artifacts.write_json(
+        "summary.json",
+        {"qualification_profile": qualification_profile(), "repetitions": results},
+        reserved=True,
+    )
 
     with validation(
         "idle-anonymous-trend",
@@ -340,14 +363,18 @@ def test_public_polling_is_memory_neutral(
             [(target, "target", target_ring), (control, "control", control_ring)],
             phase="warmup",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_WARM_SECONDS", 300, minimum=300),
+            duration_seconds=qualification_duration(
+                "E2E_RI_WARM_SECONDS", 300, minimum=300
+            ),
         )
         baselines = measure_sampler_free_cpu_baseline(
             case_artifacts,
             [(target, "target", target_ring), (control, "control", control_ring)],
             phase="polling-sampler-free-baseline",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_BASELINE_NOISE_SECONDS", 60, minimum=60),
+            duration_seconds=qualification_duration(
+                "E2E_RI_BASELINE_NOISE_SECONDS", 60, minimum=60
+            ),
         )
         stores_before = {
             target: fingerprint_store(target),
@@ -355,16 +382,26 @@ def test_public_polling_is_memory_neutral(
         }
         views = _views(target)
 
+        poll_requests = 0
+
         def poll(index: int) -> None:
-            response = _assert_ok(views[index % len(views)]())
-            assert_response_bounded(response)
+            nonlocal poll_requests
+            multiplier = qualification_load_multiplier()
+            for offset in range(multiplier):
+                response = _assert_ok(
+                    views[(index * multiplier + offset) % len(views)]()
+                )
+                assert_response_bounded(response)
+                poll_requests += 1
 
         polling = stream_group(
             case_artifacts,
             [(target, "target", target_ring), (control, "control", control_ring)],
             phase="polling",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_POLL_SECONDS", 1_800, minimum=1_800),
+            duration_seconds=qualification_duration(
+                "E2E_RI_POLL_SECONDS", 1_800, minimum=1_800
+            ),
             action=poll,
         )
         stores_after = {
@@ -376,7 +413,9 @@ def test_public_polling_is_memory_neutral(
             [(target, "target", target_ring), (control, "control", control_ring)],
             phase="cooldown",
             repetition=repetition,
-            duration_seconds=env_int("E2E_RI_COOLDOWN_SECONDS", 600, minimum=600),
+            duration_seconds=qualification_duration(
+                "E2E_RI_COOLDOWN_SECONDS", 600, minimum=600
+            ),
         )
         stores_after_cooldown = {
             target: fingerprint_store(target),
@@ -430,6 +469,7 @@ def test_public_polling_is_memory_neutral(
         results.append(
             {
                 "repetition": repetition,
+                "poll_requests": poll_requests,
                 "target": target_result,
                 "control": control_result,
                 "cooldown": cooldown_results,
@@ -460,7 +500,11 @@ def test_public_polling_is_memory_neutral(
         "store-after-cooldown.json",
         [item["stores_after_cooldown"] for item in results],
     )
-    case_artifacts.write_json("summary.json", {"repetitions": results}, reserved=True)
+    case_artifacts.write_json(
+        "summary.json",
+        {"qualification_profile": qualification_profile(), "repetitions": results},
+        reserved=True,
+    )
 
     with validation(
         "polling-read-pure",
@@ -556,7 +600,9 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
             [(sandbox, f"size-{index}", default_resource_ring_path(sandbox))],
             phase=f"query-baseline-{index}",
             repetition=1,
-            duration_seconds=env_int("E2E_RI_QUERY_BASELINE_SECONDS", 10, minimum=10),
+            duration_seconds=qualification_duration(
+                "E2E_RI_QUERY_BASELINE_SECONDS", 10, minimum=10
+            ),
         )
         before = fingerprint_store(sandbox)
         response_summary = {
@@ -570,16 +616,20 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
         response_summary["view_count"] = len(views)
 
         def query(query_index: int) -> None:
-            response = _assert_ok(views[query_index % len(views)]())
-            bounds = assert_response_bounded(response)
-            response_summary["count"] += 1
-            response_summary["max_encoded_bytes"] = max(
-                response_summary["max_encoded_bytes"], bounds["encoded_bytes"]
-            )
-            response_summary["max_list_records"] = max(
-                response_summary["max_list_records"], bounds["max_list_records"]
-            )
-            response_digest(response, response_hash)
+            multiplier = qualification_load_multiplier()
+            for offset in range(multiplier):
+                response = _assert_ok(
+                    views[(query_index * multiplier + offset) % len(views)]()
+                )
+                bounds = assert_response_bounded(response)
+                response_summary["count"] += 1
+                response_summary["max_encoded_bytes"] = max(
+                    response_summary["max_encoded_bytes"], bounds["encoded_bytes"]
+                )
+                response_summary["max_list_records"] = max(
+                    response_summary["max_list_records"], bounds["max_list_records"]
+                )
+                response_digest(response, response_hash)
 
         query_phase = stream_group(
             case_artifacts,
@@ -587,7 +637,8 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
             phase=f"query-{index}",
             repetition=1,
             duration_seconds=max(
-                len(views), env_int("E2E_RI_QUERY_SECONDS", 10, minimum=10)
+                len(views),
+                qualification_duration("E2E_RI_QUERY_SECONDS", 10, minimum=10),
             ),
             action=query,
         )
@@ -597,7 +648,9 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
             [(sandbox, f"size-{index}", default_resource_ring_path(sandbox))],
             phase=f"query-cooldown-{index}",
             repetition=1,
-            duration_seconds=env_int("E2E_RI_QUERY_COOLDOWN_SECONDS", 300, minimum=300),
+            duration_seconds=qualification_duration(
+                "E2E_RI_QUERY_COOLDOWN_SECONDS", 300, minimum=300
+            ),
         )
         phase_analysis = {
             "baseline": analyze_phase(
@@ -646,7 +699,11 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
         )
     case_artifacts.write_json("store-before.json", [item["before"] for item in results])
     case_artifacts.write_json("store-after.json", [item["after"] for item in results])
-    case_artifacts.write_json("summary.json", {"sizes": results}, reserved=True)
+    case_artifacts.write_json(
+        "summary.json",
+        {"qualification_profile": qualification_profile(), "sizes": results},
+        reserved=True,
+    )
 
     with validation(
         "query-response-bounded",
@@ -750,7 +807,9 @@ def test_enabled_disabled_fixed_overhead(
                 targets,
                 phase="ab-warmup",
                 repetition=repetition,
-                duration_seconds=env_int("E2E_RI_WARM_SECONDS", 300, minimum=300),
+                duration_seconds=qualification_duration(
+                    "E2E_RI_WARM_SECONDS", 300, minimum=300
+                ),
             )
             enabled_before = fingerprint_store(sandboxes["enabled"])
             idle = stream_group(
@@ -758,7 +817,9 @@ def test_enabled_disabled_fixed_overhead(
                 targets,
                 phase="ab-idle",
                 repetition=repetition,
-                duration_seconds=env_int("E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800),
+                duration_seconds=qualification_duration(
+                    "E2E_RI_IDLE_SECONDS", 1_800, minimum=1_800
+                ),
             )
             enabled_after = fingerprint_store(sandboxes["enabled"])
             disabled_store = fingerprint_store(sandboxes["disabled"])
@@ -799,7 +860,11 @@ def test_enabled_disabled_fixed_overhead(
             )
             registered_sandbox_factory.destroy(sandboxes["enabled"])
             registered_sandbox_factory.destroy(sandboxes["disabled"])
-    case_artifacts.write_json("summary.json", {"repetitions": results}, reserved=True)
+    case_artifacts.write_json(
+        "summary.json",
+        {"qualification_profile": qualification_profile(), "repetitions": results},
+        reserved=True,
+    )
 
     with validation(
         "fixed-overhead-bounded",
