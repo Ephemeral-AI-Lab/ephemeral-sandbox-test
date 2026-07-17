@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:ENGINE.conflict.blame:runtime",
+    "file_blame",
+    "--path",
+    "src/config.js"
+  ],
+  "cancelled": false,
+  "duration_ms": 35.283,
+  "kind": "public_cli_process",
+  "label": "conflict-winner-blame",
+  "parse_error": null,
+  "parsed_json": {
+    "path": "src/config.js",
+    "ranges": [
+      {
+        "line_count": 2,
+        "owner": "workspace_session:00000118c32da8d26b9d6d",
+        "start_line": 1
+      },
+      {
+        "line_count": 3,
+        "owner": "workspace_session:00000f18c32db014cee289",
+        "start_line": 3
+      },
+      {
+        "line_count": 2,
+        "owner": "workspace_session:00000118c32da8d26b9d6d",
+        "start_line": 6
+      }
+    ]
+  },
+  "pid": 65969,
+  "provenance": "engine",
+  "request_id": "console-20260717T202759Z:ENGINE.conflict.blame:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1152,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/config.js\",\"ranges\":[{\"start_line\":1,\"line_count\":2,\"owner\":\"workspace_session:00000118c32da8d26b9d6d\"},{\"start_line\":3,\"line_count\":3,\"owner\":\"workspace_session:00000f18c32db014cee289\"},{\"start_line\":6,\"line_count\":2,\"owner\":\"workspace_session:00000118c32da8d26b9d6d\"}]}\n",
+  "timed_out": false
+}

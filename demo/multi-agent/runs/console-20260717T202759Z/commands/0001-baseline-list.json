@@ -1,0 +1,204 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-manager-cli",
+    "list_sandboxes"
+  ],
+  "cancelled": false,
+  "duration_ms": 55.685,
+  "kind": "public_cli_process",
+  "label": "baseline-list",
+  "parse_error": null,
+  "parsed_json": {
+    "sandboxes": [
+      {
+        "activity_revision": 0,
+        "daemon": {
+          "host": "127.0.0.1",
+          "port": 57324
+        },
+        "daemon_http": {
+          "host": "127.0.0.1",
+          "port": 57325
+        },
+        "id": "eos-2eed7dad-7142-48c1-bbdf-b7ad7279a815",
+        "shared_base": {
+          "readonly": true,
+          "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source": "<host-path>",
+          "target": "/eos/layer-stack/base"
+        },
+        "state": "ready",
+        "workspace_root": "<host-path>"
+      },
+      {
+        "activity_revision": 0,
+        "daemon": {
+          "host": "127.0.0.1",
+          "port": 57314
+        },
+        "daemon_http": {
+          "host": "127.0.0.1",
+          "port": 57315
+        },
+        "id": "eos-373f2c73-9f70-4d04-ac65-6c8f3979eb86",
+        "shared_base": {
+          "readonly": true,
+          "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source": "<e2e-state-root>/workspaces/templates/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base",
+          "target": "/eos/layer-stack/base"
+        },
+        "state": "ready",
+        "workspace_root": "<e2e-state-root>/workspaces/templates/testbed"
+      },
+      {
+        "activity_revision": 0,
+        "daemon": {
+          "host": "127.0.0.1",
+          "port": 57214
+        },
+        "daemon_http": {
+          "host": "127.0.0.1",
+          "port": 57215
+        },
+        "id": "eos-71a07627-8387-4f84-84ec-1a0fc01ff221",
+        "shared_base": {
+          "readonly": true,
+          "root_hash": "a3121cd7692e6ebe2f12dbdba85e204ffa6a8bfc24cfa32fbe43c4bfadc14936",
+          "source": "<host-path>",
+          "target": "/eos/layer-stack/base"
+        },
+        "state": "ready",
+        "workspace_root": "<host-path>"
+      },
+      {
+        "activity_revision": 1,
+        "daemon": {
+          "host": "127.0.0.1",
+          "port": 57328
+        },
+        "daemon_http": {
+          "host": "127.0.0.1",
+          "port": 57329
+        },
+        "id": "eos-888f5abd-81d1-47f3-8403-4ef0d2466260",
+        "shared_base": {
+          "readonly": true,
+          "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source": "<host-path>",
+          "target": "/eos/layer-stack/base"
+        },
+        "state": "ready",
+        "workspace_root": "<host-path>"
+      },
+      {
+        "activity_revision": 0,
+        "daemon": {
+          "host": "127.0.0.1",
+          "port": 57226
+        },
+        "daemon_http": {
+          "host": "127.0.0.1",
+          "port": 57227
+        },
+        "id": "eos-94000190-7d3c-482f-b150-0d7bb62cc586",
+        "shared_base": {
+          "readonly": true,
+          "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source": "<host-path>",
+          "target": "/eos/layer-stack/base"
+        },
+        "state": "ready",
+        "workspace_root": "<host-path>"
+      },
+      {
+        "activity_revision": 0,
+        "daemon": {
+          "host": "127.0.0.1",
+          "port": 57232
+        },
+        "daemon_http": {
+          "host": "127.0.0.1",
+          "port": 57233
+        },
+        "id": "eos-c8d71627-d85f-439b-8c29-8fe630a351cf",
+        "shared_base": {
+          "readonly": true,
+          "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source": "<host-path>",
+          "target": "/eos/layer-stack/base"
+        },
+        "state": "ready",
+        "workspace_root": "<host-path>"
+      },
+      {
+        "activity_revision": 0,
+        "daemon": {
+          "host": "127.0.0.1",
+          "port": 57330
+        },
+        "daemon_http": {
+          "host": "127.0.0.1",
+          "port": 57331
+        },
+        "id": "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+        "shared_base": {
+          "readonly": true,
+          "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source": "<host-path>",
+          "target": "/eos/layer-stack/base"
+        },
+        "state": "ready",
+        "workspace_root": "<host-path>"
+      },
+      {
+        "activity_revision": 0,
+        "daemon": {
+          "host": "127.0.0.1",
+          "port": 56604
+        },
+        "daemon_http": {
+          "host": "127.0.0.1",
+          "port": 56605
+        },
+        "id": "eos-cefaf2c1-a0ab-4ff0-8845-84e89f6d1948",
+        "shared_base": {
+          "readonly": true,
+          "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source": "<e2e-state-root>/workspaces/templates/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base",
+          "target": "/eos/layer-stack/base"
+        },
+        "state": "ready",
+        "workspace_root": "<e2e-state-root>/workspaces/templates/testbed"
+      },
+      {
+        "activity_revision": 0,
+        "daemon": {
+          "host": "127.0.0.1",
+          "port": 57306
+        },
+        "daemon_http": {
+          "host": "127.0.0.1",
+          "port": 57307
+        },
+        "id": "eos-dc8ac076-5bf8-4706-b563-51d4e5597dc5",
+        "shared_base": {
+          "readonly": true,
+          "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source": "<host-path>",
+          "target": "/eos/layer-stack/base"
+        },
+        "state": "ready",
+        "workspace_root": "<host-path>"
+      }
+    ]
+  },
+  "pid": 36194,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1,
+  "stderr": "",
+  "stdout": "{\"sandboxes\":[{\"id\":\"eos-2eed7dad-7142-48c1-bbdf-b7ad7279a815\",\"workspace_root\":\"<host-path>\",\"state\":\"ready\",\"activity_revision\":0,\"daemon\":{\"host\":\"127.0.0.1\",\"port\":57324},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":57325},\"shared_base\":{\"source\":\"<host-path>\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}},{\"id\":\"eos-373f2c73-9f70-4d04-ac65-6c8f3979eb86\",\"workspace_root\":\"<e2e-state-root>/workspaces/templates/testbed\",\"state\":\"ready\",\"activity_revision\":0,\"daemon\":{\"host\":\"127.0.0.1\",\"port\":57314},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":57315},\"shared_base\":{\"source\":\"<e2e-state-root>/workspaces/templates/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}},{\"id\":\"eos-71a07627-8387-4f84-84ec-1a0fc01ff221\",\"workspace_root\":\"<host-path>\",\"state\":\"ready\",\"activity_revision\":0,\"daemon\":{\"host\":\"127.0.0.1\",\"port\":57214},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":57215},\"shared_base\":{\"source\":\"<host-path>\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"a3121cd7692e6ebe2f12dbdba85e204ffa6a8bfc24cfa32fbe43c4bfadc14936\",\"readonly\":true}},{\"id\":\"eos-888f5abd-81d1-47f3-8403-4ef0d2466260\",\"workspace_root\":\"<host-path>\",\"state\":\"ready\",\"activity_revision\":1,\"daemon\":{\"host\":\"127.0.0.1\",\"port\":57328},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":57329},\"shared_base\":{\"source\":\"<host-path>\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}},{\"id\":\"eos-94000190-7d3c-482f-b150-0d7bb62cc586\",\"workspace_root\":\"<host-path>\",\"state\":\"ready\",\"activity_revision\":0,\"daemon\":{\"host\":\"127.0.0.1\",\"port\":57226},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":57227},\"shared_base\":{\"source\":\"<host-path>\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}},{\"id\":\"eos-c8d71627-d85f-439b-8c29-8fe630a351cf\",\"workspace_root\":\"<host-path>\",\"state\":\"ready\",\"activity_revision\":0,\"daemon\":{\"host\":\"127.0.0.1\",\"port\":57232},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":57233},\"shared_base\":{\"source\":\"<host-path>\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}},{\"id\":\"eos-cb44de6a-0587-42bb-8c6d-bafad6473216\",\"workspace_root\":\"<host-path>\",\"state\":\"ready\",\"activity_revision\":0,\"daemon\":{\"host\":\"127.0.0.1\",\"port\":57330},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":57331},\"shared_base\":{\"source\":\"<host-path>\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}},{\"id\":\"eos-cefaf2c1-a0ab-4ff0-8845-84e89f6d1948\",\"workspace_root\":\"<e2e-state-root>/workspaces/templates/testbed\",\"state\":\"ready\",\"activity_revision\":0,\"daemon\":{\"host\":\"127.0.0.1\",\"port\":56604},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":56605},\"shared_base\":{\"source\":\"<e2e-state-root>/workspaces/templates/eos-shared-workspace-base-cache/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/base\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}},{\"id\":\"eos-dc8ac076-5bf8-4706-b563-51d4e5597dc5\",\"workspace_root\":\"<host-path>\",\"state\":\"ready\",\"activity_revision\":0,\"daemon\":{\"host\":\"127.0.0.1\",\"port\":57306},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":57307},\"shared_base\":{\"source\":\"<host-path>\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}}]}\n",
+  "timed_out": false
+}

@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A02.027:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A02: { id: 'A02', role: 'Design system', stage: 'manifest', deterministic: true, verify() { return true; }, tokens() { return { accent: '#175b50', surface: '#fffdf8', focus: '#124ea0' }; }, fixture: 'design-system-fixture', view: '<section data-domain=\\\"design-system\\\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A02', schemaVersion: 1 },\",\n    \"old_string\": \"  A02: { id: 'A02', role: 'Design system', stage: 'accessibility', deterministic: true, verify() { return true; }, tokens() { return { accent: '#175b50', surface: '#fffdf8', focus: '#124ea0' }; }, fixture: 'design-system-fixture', view: '<section data-domain=\\\"design-system\\\"></section>', focusVisible: true, keyboard: true, reducedMotion: true },\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000418c32da9581d8c22"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.767,
+  "kind": "public_cli_process",
+  "label": "A02.027",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 622,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 48330,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A02.027:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 646,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":622}\n",
+  "timed_out": false
+}

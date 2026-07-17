@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A10.016:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A10: { id: 'A10', role: 'Integration QA', stage: 'view', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }, fixture: 'qa-fixture', view: '<section data-domain=\\\"qa\\\"></section>' },\",\n    \"old_string\": \"  A10: { id: 'A10', role: 'Integration QA', stage: 'data', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }, fixture: 'qa-fixture' },\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000c18c32da971429264"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.241,
+  "kind": "public_cli_process",
+  "label": "A10.016",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 568,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 43933,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A10.016:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 426,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":568}\n",
+  "timed_out": false
+}

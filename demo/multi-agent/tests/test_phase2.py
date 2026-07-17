@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import asyncio
+import base64
 import sys
 import tempfile
 import threading
@@ -414,7 +415,7 @@ class Phase2CliTests(unittest.TestCase):
             self.assertEqual(publish_peak, 1)
             self.assertGreaterEqual(file_peak, 2)
 
-    def test_bootstrap_creates_only_the_five_file_application_tree(self) -> None:
+    def test_bootstrap_creates_five_compact_shared_files(self) -> None:
         with tempfile.TemporaryDirectory() as temp_name:
             original_runs = run_demo.RUNS
             run_demo.RUNS = Path(temp_name) / "runs"
@@ -435,13 +436,16 @@ class Phase2CliTests(unittest.TestCase):
             asyncio.run(runner.bootstrap())
 
             bootstrap_command = captured[0][-1]
+            encoded_files = bootstrap_command.split("Buffer.from('", 1)[1].split("','base64')", 1)[0]
+            embedded_files = json.loads(base64.b64decode(encoded_files).decode("utf-8"))
             self.assertNotIn("src/features", bootstrap_command)
-            self.assertNotIn("'tests'", bootstrap_command)
+            self.assertIn("tests/storefront.test.mjs", embedded_files)
             self.assertIn("path.includes('/')", bootstrap_command)
             self.assertEqual(
                 sorted(run_demo.recipes.bootstrap_files()),
-                ["index.html", "src/app.js", "src/config.js", "src/registry.js", "src/styles.css"],
+                ["index.html", "src/app.js", "src/config.js", "src/registry.js", "tests/storefront.test.mjs"],
             )
+            self.assertIn(":focus-visible", run_demo.recipes.bootstrap_files()["index.html"])
 
     def test_call_budget_requires_one_parsed_agent_process_per_authored_row(self) -> None:
         with tempfile.TemporaryDirectory() as temp_name:

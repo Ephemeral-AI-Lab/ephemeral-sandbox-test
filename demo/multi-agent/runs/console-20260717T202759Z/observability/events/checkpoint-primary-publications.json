@@ -1,0 +1,261 @@
+{
+  "label": "checkpoint-primary-publications",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.acquired",
+      "parent": "d-171",
+      "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.ten-workspaces:runtime",
+      "ts": 1784320083646
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-179",
+      "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.ten-workspaces:runtime",
+      "ts": 1784320083706
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1706",
+      "trace": "console-20260717T202759Z:A01.001:runtime",
+      "ts": 1784320110540
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1712",
+      "trace": "console-20260717T202759Z:A02.001:runtime",
+      "ts": 1784320110606
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1718",
+      "trace": "console-20260717T202759Z:A03.001:runtime",
+      "ts": 1784320110673
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1724",
+      "trace": "console-20260717T202759Z:A04.001:runtime",
+      "ts": 1784320110746
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1730",
+      "trace": "console-20260717T202759Z:A05.001:runtime",
+      "ts": 1784320110817
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1736",
+      "trace": "console-20260717T202759Z:A06.001:runtime",
+      "ts": 1784320110884
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1742",
+      "trace": "console-20260717T202759Z:A07.001:runtime",
+      "ts": 1784320110957
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1748",
+      "trace": "console-20260717T202759Z:A08.001:runtime",
+      "ts": 1784320111025
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1754",
+      "trace": "console-20260717T202759Z:A09.001:runtime",
+      "ts": 1784320111090
+    },
+    {
+      "attrs": {
+        "revision": 2
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1760",
+      "trace": "console-20260717T202759Z:A10.001:runtime",
+      "ts": 1784320111161
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.acquired",
+        "parent": "d-111",
+        "trace": "console-20260717T202759Z:A10.001:runtime",
+        "ts": 1784320083147
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.acquired",
+        "parent": "d-171",
+        "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.ten-workspaces:runtime",
+        "ts": 1784320083646
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-179",
+        "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.ten-workspaces:runtime",
+        "ts": 1784320083706
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1706",
+        "trace": "console-20260717T202759Z:A01.001:runtime",
+        "ts": 1784320110540
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1712",
+        "trace": "console-20260717T202759Z:A02.001:runtime",
+        "ts": 1784320110606
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1718",
+        "trace": "console-20260717T202759Z:A03.001:runtime",
+        "ts": 1784320110673
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1724",
+        "trace": "console-20260717T202759Z:A04.001:runtime",
+        "ts": 1784320110746
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1730",
+        "trace": "console-20260717T202759Z:A05.001:runtime",
+        "ts": 1784320110817
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1736",
+        "trace": "console-20260717T202759Z:A06.001:runtime",
+        "ts": 1784320110884
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1742",
+        "trace": "console-20260717T202759Z:A07.001:runtime",
+        "ts": 1784320110957
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1748",
+        "trace": "console-20260717T202759Z:A08.001:runtime",
+        "ts": 1784320111025
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1754",
+        "trace": "console-20260717T202759Z:A09.001:runtime",
+        "ts": 1784320111090
+      },
+      {
+        "attrs": {
+          "revision": 2
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1760",
+        "trace": "console-20260717T202759Z:A10.001:runtime",
+        "ts": 1784320111161
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784320111161
+}

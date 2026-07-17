@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A06.047:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000f18c32db014cee289",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval 'import { readFile, writeFile } from '\"'\"'node:fs/promises'\"'\"'; const paths = ['\"'\"'src/config.js'\"'\"', '\"'\"'tests/storefront.test.mjs'\"'\"']; const values = await Promise.all(paths.map(function (path) { return readFile(path, '\"'\"'utf8'\"'\"'); })); const replacements = [[\"freeShippingCents: 5000\", \"freeShippingCents: 6000\"], [\"standardShippingCents: 700\", \"standardShippingCents: 650\"], [\"taxRate: 0.08\", \"taxRate: 0.075\"]]; const updated = values.map(function (source) { for (const [before, after] of replacements) { if (!source.includes(before)) throw new Error('\"'\"'missing policy marker: '\"'\"' + before); source = source.replace(before, after); } return source; }); await Promise.all(paths.map(function (path, index) { return writeFile(path, updated[index]); }));'"
+  ],
+  "cancelled": false,
+  "duration_ms": 63.799,
+  "kind": "public_cli_process",
+  "label": "A06.047",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.025038583,
+    "end_offset": 0,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 0,
+    "wall_time_seconds": 0.025087417,
+    "workspace_session_id": "00000f18c32db014cee289"
+  },
+  "pid": 64124,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A06.047:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1100,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.025087417,\"command_total_time_seconds\":0.025038583,\"start_offset\":0,\"end_offset\":0,\"total_lines\":0,\"original_token_count\":0,\"output\":\"\",\"workspace_session_id\":\"00000f18c32db014cee289\"}\n",
+  "timed_out": false
+}

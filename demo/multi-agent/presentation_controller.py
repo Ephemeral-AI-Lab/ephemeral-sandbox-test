@@ -22,8 +22,8 @@ from pathlib import Path
 from pathlib import PurePosixPath
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote, unquote, urljoin, urlparse
-from urllib.request import urlopen
+from urllib.parse import parse_qs, quote, unquote, urljoin, urlparse
+from urllib.request import Request, urlopen
 
 import console_sandbox
 
@@ -63,6 +63,46 @@ class ControllerError(RuntimeError):
 
 def json_bytes(value: Any) -> bytes:
     return (json.dumps(value, sort_keys=True, separators=(",", ":")) + "\n").encode()
+
+
+def console_rpc(
+    console_url: str,
+    sandbox_id: str,
+    operation: str,
+    args: dict[str, Any],
+) -> dict[str, Any]:
+    """Use the same published-sandbox RPC contract as the web console Files tab."""
+    request = Request(  # noqa: S310 - controller and console are fixed loopback services
+        f"{console_url.rstrip('/')}/api/rpc",
+        data=json_bytes({
+            "op": operation,
+            "scope": {"kind": "sandbox", "sandbox_id": sandbox_id},
+            "args": args,
+        }),
+        headers={"content-type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urlopen(request, timeout=10) as response:  # noqa: S310 - fixed loopback target
+            payload = json.loads(response.read())
+    except HTTPError as exc:
+        try:
+            detail = exc.read().decode("utf-8", errors="replace")
+        except OSError:
+            detail = ""
+        raise ControllerError(
+            f"sandbox {operation} returned HTTP {exc.code}: {detail[:240]}"
+        ) from exc
+    except (URLError, OSError, json.JSONDecodeError) as exc:
+        raise ControllerError(f"sandbox {operation} unavailable: {exc}") from exc
+    if not isinstance(payload, dict):
+        raise ControllerError(f"sandbox {operation} returned a non-object response")
+    error = payload.get("error")
+    if isinstance(error, dict):
+        raise ControllerError(
+            f"sandbox {operation} failed: {error.get('message') or error.get('kind') or 'unknown error'}"
+        )
+    return payload
 
 
 def flag_value(argv: list[str], flag: str) -> str | None:
@@ -230,14 +270,35 @@ def workspace_agent_mapping(
     return mapping
 
 
+def operation_agent_mapping(records: list[dict[str, Any]]) -> dict[str, str]:
+    """Join exact sandbox request IDs to authored runner agent identities."""
+    mapping: dict[str, str] = {}
+    for record in records:
+        label = record.get("label")
+        if not isinstance(label, str) or not re.fullmatch(r"A\d{2}\.\d{3}", label):
+            continue
+        request_id = record.get("request_id")
+        argv = record.get("argv")
+        if not isinstance(request_id, str) and isinstance(argv, list):
+            request_id = flag_value(argv, "--request-id")
+        if isinstance(request_id, str) and request_id:
+            mapping[request_id] = label.split(".", 1)[0]
+    return mapping
+
+
 def compact_owner(
     owner: str,
     mapping: dict[str, str],
     bootstrap_workspace: str | None = None,
+    operation_mapping: dict[str, str] | None = None,
 ) -> dict[str, Any]:
-    prefix = "workspace_session:"
-    workspace = owner[len(prefix):] if owner.startswith(prefix) else None
+    workspace_prefix = "workspace_session:"
+    operation_prefix = "operation:"
+    workspace = owner[len(workspace_prefix):] if owner.startswith(workspace_prefix) else None
+    operation = owner[len(operation_prefix):] if owner.startswith(operation_prefix) else None
     agent = mapping.get(workspace) if workspace is not None else None
+    if agent is None and operation is not None:
+        agent = (operation_mapping or {}).get(operation)
     if agent is not None:
         label = agent
         provenance = "runner_mapping"
@@ -247,12 +308,22 @@ def compact_owner(
     elif workspace is not None:
         label = "Unmapped workspace"
         provenance = "unmapped_raw_owner"
+    elif operation is not None:
+        label = "Unmapped operation"
+        provenance = "unmapped_raw_owner"
+    elif owner == "original":
+        label = "Original / base"
+        provenance = "original"
+    elif owner == "unknown":
+        label = "Unknown owner"
+        provenance = "sandbox_unknown"
     else:
         label = "Unknown owner"
         provenance = "unmapped_raw_owner"
     return {
         "raw_owner": owner,
         "workspace_id": workspace,
+        "operation_id": operation,
         "agent_id": agent,
         "label": label,
         "provenance": provenance,
@@ -299,6 +370,7 @@ def presentation_evidence(
     }
     bootstrap_workspace = bootstrap_workspace_id(run_root)
     workspace_mapping = workspace_agent_mapping(finished, operations)
+    operation_mapping = operation_agent_mapping(records)
     operation_mix: dict[str, int] = {}
     for operation in operations:
         name = operation["operation"]
@@ -378,9 +450,11 @@ def presentation_evidence(
     # artifacts, not as authored operation responses. They are the authoritative
     # presentation evidence for the published registry and conflict winner.
     primary_merge = read_object(run_root / "assertions" / "primary-merge.json") or {}
-    for assertion, read_key in (
-        (primary_merge, "registry"),
-        (conflict_atomic, "config"),
+    for assertion, read_key, blame_key in (
+        (primary_merge, "registry", "blame"),
+        (primary_merge, "test", "test_blame"),
+        (conflict_atomic, "config", "blame"),
+        (conflict_atomic, "test", "test_blame"),
     ):
         read_value = assertion.get(read_key)
         if isinstance(read_value, dict) and isinstance(read_value.get("path"), str):
@@ -390,7 +464,7 @@ def presentation_evidence(
                     "content": content,
                     "provenance": "sandbox_file_read",
                 }
-        blame_value = assertion.get("blame")
+        blame_value = assertion.get(blame_key)
         if isinstance(blame_value, dict) and isinstance(blame_value.get("path"), str):
             ranges = blame_value.get("ranges")
             if isinstance(ranges, list):
@@ -428,7 +502,12 @@ def presentation_evidence(
             raw_owner = value.get("owner")
             if not isinstance(raw_owner, str):
                 continue
-            owner = compact_owner(raw_owner, workspace_mapping, bootstrap_workspace)
+            owner = compact_owner(
+                raw_owner,
+                workspace_mapping,
+                bootstrap_workspace,
+                operation_mapping,
+            )
             owner.update({
                 "start_line": value.get("start_line"),
                 "line_count": value.get("line_count"),
@@ -668,6 +747,96 @@ class PresentationState:
 class PresentationController:
     def __init__(self, state: PresentationState) -> None:
         self.state = state
+
+    def file_detail(self, path: str) -> dict[str, Any]:
+        """Load current published source and blame, then join raw owners to agents."""
+        candidate = PurePosixPath(path)
+        if (
+            not path
+            or candidate.is_absolute()
+            or ".." in candidate.parts
+            or str(candidate) != path
+        ):
+            raise ControllerError("file path must be a normalized published relative path")
+        with self.state.lock:
+            sandbox_id = self.state.sandbox_id
+            run_root = self.state.run_root
+            console_url = self.state.console_url
+        if run_root is None:
+            raise ControllerError("run evidence is not available for agent attribution")
+
+        finished = read_finished_run(run_root)
+        records = authored_records(run_root)
+        operations = [
+            event for record in records if (event := operation_event(record)) is not None
+        ]
+        workspace_mapping = workspace_agent_mapping(finished, operations)
+        operation_mapping = operation_agent_mapping(records)
+        bootstrap_workspace = bootstrap_workspace_id(run_root)
+
+        chunks: list[str] = []
+        offset: int | None = None
+        total_lines: int | None = None
+        total_bytes: int | None = None
+        for _ in range(1000):
+            args: dict[str, Any] = {"path": path, "limit": 2000}
+            if offset is not None:
+                args["offset"] = offset
+            window = console_rpc(console_url, sandbox_id, "file_read", args)
+            content = window.get("content")
+            if not isinstance(content, str):
+                raise ControllerError("sandbox file_read response omitted content")
+            chunks.append(content)
+            if isinstance(window.get("total_lines"), int):
+                total_lines = window["total_lines"]
+            if isinstance(window.get("total_bytes"), int):
+                total_bytes = window["total_bytes"]
+            next_offset = window.get("next_offset")
+            if next_offset is None:
+                break
+            if not isinstance(next_offset, int) or next_offset == offset:
+                raise ControllerError("sandbox file_read returned an invalid next offset")
+            offset = next_offset
+        else:
+            raise ControllerError("sandbox file_read exceeded the page limit")
+
+        blame_result = console_rpc(
+            console_url,
+            sandbox_id,
+            "file_blame",
+            {"path": path},
+        )
+        raw_ranges = blame_result.get("ranges")
+        raw_ranges = raw_ranges if isinstance(raw_ranges, list) else []
+        ranges: list[dict[str, Any]] = []
+        published_by: set[str] = set()
+        for value in raw_ranges:
+            if not isinstance(value, dict) or not isinstance(value.get("owner"), str):
+                continue
+            owner = compact_owner(
+                value["owner"],
+                workspace_mapping,
+                bootstrap_workspace,
+                operation_mapping,
+            )
+            owner.update({
+                "start_line": value.get("start_line"),
+                "line_count": value.get("line_count"),
+            })
+            ranges.append(owner)
+            if isinstance(owner.get("agent_id"), str):
+                published_by.add(owner["agent_id"])
+        return {
+            "path": path,
+            "content": "\n".join(chunks),
+            "content_provenance": "live_sandbox_file_read",
+            "total_lines": total_lines,
+            "total_bytes": total_bytes,
+            "blame": ranges,
+            "ownership_available": bool(ranges),
+            "published_by": sorted(published_by),
+            "mapping_provenance": "runner_join",
+        }
 
     def snapshot(self) -> dict[str, Any]:
         with self.state.lock:
@@ -936,6 +1105,26 @@ def serve(controller: PresentationController, host: str, port: int) -> Threading
                 return
             if path == "/api/status":
                 self.respond(json_bytes(controller.snapshot()), "application/json; charset=utf-8")
+                return
+            if path == "/api/file":
+                values = parse_qs(parsed_url.query).get("path", [])
+                if len(values) != 1:
+                    self.respond(
+                        json_bytes({"error": "exactly one file path is required"}),
+                        "application/json; charset=utf-8",
+                        HTTPStatus.BAD_REQUEST,
+                    )
+                    return
+                try:
+                    detail = controller.file_detail(values[0])
+                except ControllerError as exc:
+                    self.respond(
+                        json_bytes({"error": str(exc)}),
+                        "application/json; charset=utf-8",
+                        HTTPStatus.BAD_GATEWAY,
+                    )
+                    return
+                self.respond(json_bytes(detail), "application/json; charset=utf-8")
                 return
             if path.startswith("/published/"):
                 relative = unquote(path.removeprefix("/published/")).lstrip("/")

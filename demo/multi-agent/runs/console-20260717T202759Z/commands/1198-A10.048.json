@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A10.048:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00001a18c32db0d121c9c0",
+    "--timeout-ms",
+    "120000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval 'import { readFile, readdir } from '\"'\"'node:fs/promises'\"'\"'; const root = (await readdir('\"'\"'.'\"'\"')).sort(); const src = (await readdir('\"'\"'src'\"'\"')).sort(); const testsDir = (await readdir('\"'\"'tests'\"'\"')).sort(); const [index, app, config, registry, tests] = await Promise.all(['\"'\"'index.html'\"'\"', '\"'\"'src/app.js'\"'\"', '\"'\"'src/config.js'\"'\"', '\"'\"'src/registry.js'\"'\"', '\"'\"'tests/storefront.test.mjs'\"'\"'].map(function (path) { return readFile(path, '\"'\"'utf8'\"'\"'); })); const ready = (registry.match(/status: '\"'\"'ready'\"'\"'/g) || []).length; const contributions = (tests.match(/contribution is ready/g) || []).length; if (root.join('\"'\"','\"'\"') !== '\"'\"'index.html,src,tests'\"'\"' || src.join('\"'\"','\"'\"') !== '\"'\"'app.js,config.js,registry.js'\"'\"' || testsDir.join('\"'\"','\"'\"') !== '\"'\"'storefront.test.mjs'\"'\"' || ready !== 10 || contributions !== 10 || !config.includes(\"checkoutRetry: '\"'\"'complete'\"'\"'\") || !tests.includes(\"checkoutRetry: '\"'\"'complete'\"'\"'\") || !index.includes('\"'\"'./src/app.js'\"'\"') || !index.includes('\"'\"':focus-visible'\"'\"') || !app.includes('\"'\"'product-grid'\"'\"')) process.exit(1); console.log('\"'\"'Shared storefront final regression passed'\"'\"');'"
+  ],
+  "cancelled": false,
+  "duration_ms": 68.096,
+  "kind": "public_cli_process",
+  "label": "A10.048",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.029324708,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "Shared storefront final regression passed",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.029406791,
+    "workspace_session_id": "00001a18c32db0d121c9c0"
+  },
+  "pid": 67845,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A10.048:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1198,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.029406791,\"command_total_time_seconds\":0.029324708,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":11,\"output\":\"Shared storefront final regression passed\",\"workspace_session_id\":\"00001a18c32db0d121c9c0\"}\n",
+  "timed_out": false
+}

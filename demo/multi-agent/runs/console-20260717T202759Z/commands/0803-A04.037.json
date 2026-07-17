@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A04.037:runtime",
+    "file_read",
+    "--path",
+    "src/registry.js",
+    "--workspace-session-id",
+    "00000618c32da95e0d553d"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.385,
+  "kind": "public_cli_process",
+  "label": "A04.037",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 628,
+    "content": "window.FlashCart = window.FlashCart || {};\nwindow.FlashCart.features = {\n  A01: null,\n  A02: null,\n  A03: null,\n  A04: { id: 'A04', role: 'Catalog and PDP', stage: 'manifest', deterministic: true, verify() { return true; }, selectVariant(product, variant) { return { ...product, variant, selectable: Boolean(variant) }; }, fixture: 'catalog-fixture', view: '<section data-domain=\"catalog\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A04', schemaVersion: 1 },\n  A05: null,\n  A06: null,\n  A07: null,\n  A08: null,\n  A09: null,\n  A10: null,\n};\nwindow.FlashCart.registry = window.FlashCart.features;",
+    "next_offset": null,
+    "num_lines": 14,
+    "path": "src/registry.js",
+    "start_line": 1,
+    "total_bytes": 629,
+    "total_lines": 14,
+    "truncated": false
+  },
+  "pid": 54281,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A04.037:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 803,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/registry.js\",\"content\":\"window.FlashCart = window.FlashCart || {};\\nwindow.FlashCart.features = {\\n  A01: null,\\n  A02: null,\\n  A03: null,\\n  A04: { id: 'A04', role: 'Catalog and PDP', stage: 'manifest', deterministic: true, verify() { return true; }, selectVariant(product, variant) { return { ...product, variant, selectable: Boolean(variant) }; }, fixture: 'catalog-fixture', view: '<section data-domain=\\\"catalog\\\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A04', schemaVersion: 1 },\\n  A05: null,\\n  A06: null,\\n  A07: null,\\n  A08: null,\\n  A09: null,\\n  A10: null,\\n};\\nwindow.FlashCart.registry = window.FlashCart.features;\",\"start_line\":1,\"num_lines\":14,\"total_lines\":14,\"bytes_read\":628,\"total_bytes\":629,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

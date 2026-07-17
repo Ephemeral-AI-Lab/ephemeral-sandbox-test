@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 import materialize
+import recipes
 
 
 ROOT = Path(__file__).resolve().parent
@@ -200,7 +201,7 @@ def create(args: argparse.Namespace) -> int:
         "sandbox_id": sandbox_id,
         "workspace_root": str(workspace_root),
         "image": args.image,
-        "commands": ["node scripts/serve.mjs"],
+        "commands": [recipes.preview_server_command(args.port)],
         "urls": urls,
         "cleanup": cleanup_command(args.manager_cli, sandbox_id, workspace_root),
     }
@@ -289,14 +290,14 @@ def live(args: argparse.Namespace) -> int:
     finished = {
         **start,
         "status": "passed",
-        "preview_command": "node scripts/serve.mjs",
+        "preview_command": recipes.preview_server_command(args.port),
     }
     if args.json:
         print(json.dumps(finished, sort_keys=True), flush=True)
     else:
         print("\n482 operations complete; target sandbox retained.", flush=True)
         print("Run in the Terminal tab to keep the storefront live:", flush=True)
-        print("  node scripts/serve.mjs", flush=True)
+        print(f"  {finished['preview_command']}", flush=True)
     return 0
 
 

@@ -218,6 +218,69 @@ class PresentationControllerTests(unittest.TestCase):
         self.assertEqual(unknown["label"], "Unmapped workspace")
         self.assertEqual(unknown["provenance"], "unmapped_raw_owner")
 
+    def test_compact_owner_joins_operation_request_to_agent(self) -> None:
+        owner = presentation_controller.compact_owner(
+            "operation:presentation-test:A04.017:runtime",
+            {},
+            operation_mapping={"presentation-test:A04.017:runtime": "A04"},
+        )
+
+        self.assertEqual(owner["agent_id"], "A04")
+        self.assertEqual(owner["operation_id"], "presentation-test:A04.017:runtime")
+        self.assertEqual(owner["label"], "A04")
+        self.assertEqual(owner["provenance"], "runner_mapping")
+
+    def test_file_detail_reads_published_source_and_maps_live_blame(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            run_root = root / "run"
+            commands = run_root / "commands"
+            commands.mkdir(parents=True)
+            (commands / "0001-A03.001.json").write_text(json.dumps({
+                "label": "A03.001",
+                "request_id": "presentation-test:A03.001:runtime",
+                "argv": [
+                    "sandbox-runtime-cli", "file_write", "--path", "src/app.js",
+                    "--workspace-session-id", "workspace-3",
+                ],
+                "return_code": 0,
+            }), encoding="utf-8")
+            (run_root / "run.json").write_text(json.dumps({
+                "workspaces": {"A03.primary.workspace": "workspace-3"},
+            }), encoding="utf-8")
+            state = self.state(root, phase="passed")
+            state.run_root = run_root
+            controller = presentation_controller.PresentationController(state)
+            with mock.patch.object(
+                presentation_controller,
+                "console_rpc",
+                side_effect=[
+                    {
+                        "path": "src/app.js",
+                        "content": "export const app = true;",
+                        "total_lines": 1,
+                        "total_bytes": 24,
+                        "next_offset": None,
+                    },
+                    {
+                        "path": "src/app.js",
+                        "ranges": [{
+                            "start_line": 1,
+                            "line_count": 1,
+                            "owner": "operation:presentation-test:A03.001:runtime",
+                        }],
+                    },
+                ],
+            ) as rpc:
+                detail = controller.file_detail("src/app.js")
+
+        self.assertEqual(detail["content"], "export const app = true;")
+        self.assertEqual(detail["content_provenance"], "live_sandbox_file_read")
+        self.assertEqual(detail["published_by"], ["A03"])
+        self.assertEqual(detail["blame"][0]["agent_id"], "A03")
+        self.assertEqual(detail["blame"][0]["raw_owner"], "operation:presentation-test:A03.001:runtime")
+        self.assertEqual([call.args[2] for call in rpc.call_args_list], ["file_read", "file_blame"])
+
     def test_bootstrap_workspace_id_reads_non_authored_control_record(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             run_root = Path(temporary)
@@ -284,9 +347,9 @@ class PresentationControllerTests(unittest.TestCase):
             records = [
                 {
                     "label": "A06.047", "argv": [
-                        "sandbox-runtime-cli", "file_edit", "--path", "src/config.js",
+                        "sandbox-runtime-cli", "exec_command", "edit shared policy surfaces",
                         "--workspace-session-id", "winner-workspace",
-                    ], "return_code": 0, "parsed_json": {"path": "src/config.js"},
+                    ], "return_code": 0, "parsed_json": {"workspace_session_id": "winner-workspace"},
                 },
                 {
                     "label": "A06.050", "argv": [
@@ -326,13 +389,20 @@ class PresentationControllerTests(unittest.TestCase):
                 )
             for label in ("A06.047", "A08.047"):
                 (effects / f"{label}.json").write_text(json.dumps({
-                    "row": label, "changed_paths": ["src/config.js"],
+                    "row": label,
+                    "changed_paths": ["src/config.js", "tests/storefront.test.mjs"],
                 }), encoding="utf-8")
             config = "window.FlashCart.config = {\n  freeShippingCents: 6000,\n  standardShippingCents: 650,\n  taxRate: 0.075,\n};\n"
+            shared_test = "const expectedPolicy = {\n  freeShippingCents: 6000,\n  standardShippingCents: 650,\n  taxRate: 0.075,\n};\n"
             (run_root / "assertions" / "conflict-atomic.json").write_text(json.dumps({
-                "winner": {"manifest": {"src/config.js": "digest"}},
+                "winner": {"manifest": {"src/config.js": "digest", "tests/storefront.test.mjs": "test-digest"}},
                 "config": {"path": "src/config.js", "content": config},
                 "blame": {"path": "src/config.js", "ranges": [{
+                    "start_line": 2, "line_count": 3,
+                    "owner": "workspace_session:winner-workspace",
+                }]},
+                "test": {"path": "tests/storefront.test.mjs", "content": shared_test},
+                "test_blame": {"path": "tests/storefront.test.mjs", "ranges": [{
                     "start_line": 2, "line_count": 3,
                     "owner": "workspace_session:winner-workspace",
                 }]},
@@ -340,6 +410,9 @@ class PresentationControllerTests(unittest.TestCase):
                     {"key": "free", "label": "Free shipping", "path": "src/config.js", "line_start": 2, "winner": "freeShippingCents: 6000", "rejected": "freeShippingCents: 7500"},
                     {"key": "shipping", "label": "Shipping price", "path": "src/config.js", "line_start": 3, "winner": "standardShippingCents: 650", "rejected": "standardShippingCents: 900"},
                     {"key": "tax", "label": "Tax rate", "path": "src/config.js", "line_start": 4, "winner": "taxRate: 0.075", "rejected": "taxRate: 0.095"},
+                    {"key": "test-free", "label": "Shared test free shipping", "path": "tests/storefront.test.mjs", "line_start": 2, "winner": "freeShippingCents: 6000", "rejected": "freeShippingCents: 7500"},
+                    {"key": "test-shipping", "label": "Shared test shipping price", "path": "tests/storefront.test.mjs", "line_start": 3, "winner": "standardShippingCents: 650", "rejected": "standardShippingCents: 900"},
+                    {"key": "test-tax", "label": "Shared test tax rate", "path": "tests/storefront.test.mjs", "line_start": 4, "winner": "taxRate: 0.075", "rejected": "taxRate: 0.095"},
                 ],
                 "checks": {"winner_content": True},
             }), encoding="utf-8")
@@ -359,10 +432,10 @@ class PresentationControllerTests(unittest.TestCase):
                 run_root, finished, "passed"
             )
 
-        self.assertEqual(len(evidence["conflicts"]), 3)
+        self.assertEqual(len(evidence["conflicts"]), 6)
         self.assertEqual(
             [value["line_start"] for value in evidence["conflicts"]],
-            [2, 3, 4],
+            [2, 3, 4, 2, 3, 4],
         )
         self.assertEqual(
             {value["group_id"] for value in evidence["conflicts"]},
@@ -374,6 +447,13 @@ class PresentationControllerTests(unittest.TestCase):
         self.assertEqual(config_file["conflict_count"], 3)
         self.assertEqual(len(config_file["contentions"]), 3)
         self.assertEqual(config_file["published_by"], ["A06"])
+        test_file = next(
+            value for value in evidence["files"]
+            if value["path"] == "tests/storefront.test.mjs"
+        )
+        self.assertEqual(test_file["conflict_count"], 3)
+        self.assertEqual(len(test_file["contentions"]), 3)
+        self.assertEqual(test_file["published_by"], ["A06"])
 
     def test_start_run_requires_clean_ready_target(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

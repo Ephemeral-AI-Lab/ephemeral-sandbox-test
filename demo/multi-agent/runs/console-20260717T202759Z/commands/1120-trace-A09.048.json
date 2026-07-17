@@ -1,0 +1,65 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "trace",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--trace-id",
+    "console-20260717T202759Z:A09.048:runtime"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.341,
+  "kind": "public_cli_process",
+  "label": "trace-A09.048",
+  "parse_error": null,
+  "parsed_json": {
+    "spans": [
+      {
+        "children": [
+          {
+            "children": [],
+            "events": [],
+            "offset_ms": 0.0,
+            "span": {
+              "attrs": {
+                "finalize_policy": "no_op",
+                "session_created": false
+              },
+              "dur_ms": 2.0,
+              "name": "command.exec",
+              "parent": "d-1834",
+              "span": "d-1835",
+              "status": "completed",
+              "trace": "console-20260717T202759Z:A09.048:runtime",
+              "ts": 1784320112617
+            }
+          }
+        ],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "exec_command"
+          },
+          "dur_ms": 2.0,
+          "name": "daemon.dispatch",
+          "span": "d-1834",
+          "status": "completed",
+          "trace": "console-20260717T202759Z:A09.048:runtime",
+          "ts": 1784320112617
+        }
+      }
+    ],
+    "trace": "console-20260717T202759Z:A09.048:runtime",
+    "view": "trace"
+  },
+  "pid": 64889,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1120,
+  "stderr": "",
+  "stdout": "{\"view\":\"trace\",\"trace\":\"console-20260717T202759Z:A09.048:runtime\",\"spans\":[{\"span\":{\"ts\":1784320112617,\"trace\":\"console-20260717T202759Z:A09.048:runtime\",\"span\":\"d-1834\",\"name\":\"daemon.dispatch\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{\"op\":\"exec_command\"}},\"offset_ms\":0.0,\"children\":[{\"span\":{\"ts\":1784320112617,\"trace\":\"console-20260717T202759Z:A09.048:runtime\",\"span\":\"d-1835\",\"parent\":\"d-1834\",\"name\":\"command.exec\",\"dur_ms\":2.0,\"status\":\"completed\",\"attrs\":{\"session_created\":false,\"finalize_policy\":\"no_op\"}},\"offset_ms\":0.0,\"children\":[],\"events\":[]}],\"events\":[]}]}\n",
+  "timed_out": false
+}

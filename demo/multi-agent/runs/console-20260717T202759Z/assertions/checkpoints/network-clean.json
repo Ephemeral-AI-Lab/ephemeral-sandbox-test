@@ -1,0 +1,355 @@
+{
+  "events": {
+    "label": "checkpoint-network-clean",
+    "new_events": [
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.acquired",
+        "parent": "d-1868",
+        "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784320113279
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1873",
+        "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784320113341
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1880",
+        "trace": "e2e-direct-daemon-5a5ed9ec-6c66-45b1-a9bd-8514169650c3",
+        "ts": 1784320113518
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1883",
+        "trace": "e2e-direct-daemon-00f293e8-887b-4578-ad65-f8e49612ae5c",
+        "ts": 1784320113592
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1886",
+        "trace": "e2e-direct-daemon-53369c1a-f29d-40f5-8b41-320a8ef552a4",
+        "ts": 1784320113690
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1889",
+        "trace": "e2e-direct-daemon-a5dfba04-aaf1-4645-8069-f03d5e1d1554",
+        "ts": 1784320113790
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.acquired",
+        "parent": "d-1892",
+        "trace": "console-20260717T202759Z:A08.053:runtime",
+        "ts": 1784320113809
+      }
+    ],
+    "response": {
+      "events": [
+        {
+          "attrs": {
+            "revision": 12
+          },
+          "kind": "event",
+          "name": "lease.released",
+          "parent": "d-1861",
+          "trace": "console-20260717T202759Z:A08.045:runtime",
+          "ts": 1784320113069
+        },
+        {
+          "attrs": {
+            "revision": 13
+          },
+          "kind": "event",
+          "name": "lease.acquired",
+          "parent": "d-1868",
+          "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+          "ts": 1784320113279
+        },
+        {
+          "attrs": {
+            "revision": 13
+          },
+          "kind": "event",
+          "name": "lease.released",
+          "parent": "d-1873",
+          "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+          "ts": 1784320113341
+        },
+        {
+          "attrs": {
+            "revision": 12
+          },
+          "kind": "event",
+          "name": "lease.released",
+          "parent": "d-1880",
+          "trace": "e2e-direct-daemon-5a5ed9ec-6c66-45b1-a9bd-8514169650c3",
+          "ts": 1784320113518
+        },
+        {
+          "attrs": {
+            "revision": 12
+          },
+          "kind": "event",
+          "name": "lease.released",
+          "parent": "d-1883",
+          "trace": "e2e-direct-daemon-00f293e8-887b-4578-ad65-f8e49612ae5c",
+          "ts": 1784320113592
+        },
+        {
+          "attrs": {
+            "revision": 12
+          },
+          "kind": "event",
+          "name": "lease.released",
+          "parent": "d-1886",
+          "trace": "e2e-direct-daemon-53369c1a-f29d-40f5-8b41-320a8ef552a4",
+          "ts": 1784320113690
+        },
+        {
+          "attrs": {
+            "revision": 12
+          },
+          "kind": "event",
+          "name": "lease.released",
+          "parent": "d-1889",
+          "trace": "e2e-direct-daemon-a5dfba04-aaf1-4645-8069-f03d5e1d1554",
+          "ts": 1784320113790
+        },
+        {
+          "attrs": {
+            "revision": 13
+          },
+          "kind": "event",
+          "name": "lease.acquired",
+          "parent": "d-1892",
+          "trace": "console-20260717T202759Z:A08.053:runtime",
+          "ts": 1784320113809
+        }
+      ],
+      "view": "events"
+    },
+    "watermark_ms": 1784320113809
+  },
+  "layerstack": {
+    "active_lease_count": 1,
+    "layers": [
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 1898,
+        "layer_id": "L000013-00000040",
+        "leased_by_workspaces": 1
+      },
+      {
+        "allocated_bytes": 24576,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": 6407,
+        "layer_id": "L000012-00000035",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 24576,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": 5911,
+        "layer_id": "L000011-00000031",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": 5364,
+        "layer_id": "L000010-0000002d",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": 4839,
+        "layer_id": "L000009-00000029",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": 4357,
+        "layer_id": "L000008-00000025",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": 3575,
+        "layer_id": "L000007-00000021",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": 3064,
+        "layer_id": "L000006-0000001d",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": 2599,
+        "layer_id": "L000005-00000019",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": 2073,
+        "layer_id": "L000004-00000015",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": 1617,
+        "layer_id": "L000003-00000011",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 40960,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": 15631,
+        "layer_id": "L000002-00000001",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": null,
+        "booked_by": [
+          "L000013-00000040"
+        ],
+        "bytes": null,
+        "layer_id": "B000001-base",
+        "leased_by_workspaces": 0
+      }
+    ],
+    "manifest_version": 13,
+    "root_hash": "8b49bc81770c3c79c8f5e7306ddfe8c5ab358625389ac9158edf963bf367d5f2",
+    "staging_entry_count": 0,
+    "storage_allocated_bytes": 409600,
+    "storage_logical_bytes": 59615,
+    "total_allocated_bytes": null,
+    "total_bytes": null,
+    "trend": [],
+    "view": "layerstack"
+  },
+  "name": "network-clean",
+  "sandbox_id": "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+  "scene": "network",
+  "shared_manifest": {
+    "index.html": "47ce8816d87ce313502b3d0512aa65225d6861700e20737dfc7dd9d85d0b4c0b",
+    "src/app.js": "67ebc7f26e5ea4d544e1d519a5ebf530b2168d9e14b758f736e0956394974834",
+    "src/config.js": "4cb193e6492597f043334ec50ef6eca9b591951ce9b430ae620d003f0df0f636",
+    "src/registry.js": "1f0c539e1349837cc46a45e5fdc61cecc95581f54a7448c7c7481136a71dfadb",
+    "tests/storefront.test.mjs": "2a849b93b36a0b76a52d84aa26aea0f10e1c49954ffdfb931dc918eb4fd842ed"
+  },
+  "snapshot": {
+    "availability": "available",
+    "daemon": {
+      "daemon_pid": 7,
+      "event_store": {
+        "dropped_oversized": 0,
+        "dropped_storage": 0,
+        "truncated_records": 0
+      },
+      "runtime_dir": "/eos/runtime/daemon"
+    },
+    "errors": [],
+    "lifecycle_state": "ready",
+    "resources": {
+      "history": [],
+      "latest": null
+    },
+    "sampled_at_unix_ms": 1784320113907,
+    "sandbox_id": "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "stack": {
+      "active_leases": 1,
+      "layer_count": 13,
+      "layers_allocated_bytes": null,
+      "layers_bytes": null,
+      "staging_entry_count": 0,
+      "storage_allocated_bytes": 409600
+    },
+    "workspaces": [
+      {
+        "active_namespace_executions": [
+          {
+            "command": "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_360",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "8b49bc81770c3c79c8f5e7306ddfe8c5ab358625389ac9158edf963bf367d5f2",
+          "layer_count": 13
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00001718c32db094e57eb2"
+      }
+    ]
+  }
+}

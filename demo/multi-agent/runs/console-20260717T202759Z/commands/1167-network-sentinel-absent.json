@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:ENGINE.network-sentinel:runtime",
+    "file_read",
+    "--path",
+    ".flashcart-network/shared-one.txt"
+  ],
+  "cancelled": false,
+  "duration_ms": 37.197,
+  "kind": "public_cli_process",
+  "label": "network-sentinel-absent",
+  "parse_error": null,
+  "parsed_json": {
+    "error": {
+      "details": {
+        "path": ".flashcart-network/shared-one.txt"
+      },
+      "kind": "not_found",
+      "message": "file not found: .flashcart-network/shared-one.txt"
+    }
+  },
+  "pid": 66478,
+  "provenance": "engine",
+  "request_id": "console-20260717T202759Z:ENGINE.network-sentinel:runtime",
+  "return_code": 1,
+  "schema_version": 1,
+  "sequence": 1167,
+  "stderr": "{\"error\":{\"kind\":\"not_found\",\"message\":\"file not found: .flashcart-network/shared-one.txt\",\"details\":{\"path\":\".flashcart-network/shared-one.txt\"}}}\n",
+  "stdout": "",
+  "timed_out": false
+}

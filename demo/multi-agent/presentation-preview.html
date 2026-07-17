@@ -342,7 +342,37 @@
       ["files","Files","files"],["conflicts","Conflicts","conflict"],["preview","Output Preview","preview"],["evidence","Evidence","evidence"]
     ];
     const ui = { opAgent:"", opType:"", opStatus:"", opSearch:"", fileSearch:"", fileMode:"showcase", busy:"", error:"" };
+    const fileDetails = new Map();
     let state=null, disconnected=false, pollTimer=null, lastFingerprint="";
+
+    function fileDetailKey(path) {
+      return `${state?.sandbox_id||"none"}:${state?.run_id||"none"}:${state?.latest_revision??"none"}:${state?.phase||"none"}:${path}`;
+    }
+    function hydrateFile(file) {
+      const detail=fileDetails.get(fileDetailKey(file.path));
+      if(!detail)return {...file,detail_status:"idle"};
+      if(detail.status!=="ready")return {...file,detail_status:detail.status,detail_error:detail.error};
+      return {...file,...detail.data,detail_status:"ready"};
+    }
+    function pickFile(files,detail) {
+      const showcase=presentationFiles(files);
+      return files.find(f=>f.path===detail)||files.find(f=>f.path==="src/registry.js")||showcase[0]||files.find(f=>f.ownership_available)||files[0];
+    }
+    async function loadFileDetail(path) {
+      if(!state||!path)return;
+      const key=fileDetailKey(path), current=fileDetails.get(key);
+      if(current?.status==="loading"||current?.status==="ready")return;
+      fileDetails.set(key,{status:"loading"}); render();
+      try {
+        const response=await fetch(`/api/file?path=${encodeURIComponent(path)}`,{cache:"no-store"});
+        const body=await response.json().catch(()=>({}));
+        if(!response.ok)throw new Error(body.error||`file detail ${response.status}`);
+        fileDetails.set(key,{status:"ready",data:body});
+      } catch(error) {
+        fileDetails.set(key,{status:"error",error:error.message||String(error)});
+      }
+      render();
+    }
 
     function route() {
       const raw=(location.hash||"#control").slice(1); const [name,...rest]=raw.split("/");
@@ -357,11 +387,11 @@
     function avatars(ids,max=4) { const list=(ids||[]).slice(0,max); return `<span class="avatars">${list.map(id=>`<i class="tiny-avatar" title="${esc(id)}" style="--agent:${hue(id)}">${esc(id.slice(1))}</i>`).join("")}${(ids||[]).length>max?`<i class="tiny-avatar" style="--agent:#64748b">+${(ids||[]).length-max}</i>`:""}</span>`; }
     function empty(title,copy,icon="info") { return `<div class="empty"><div><div class="empty-icon">${icons[icon]}</div><strong>${esc(title)}</strong><span>${esc(copy)}</span></div></div>`; }
     function collaborationFiles(files) {
-      const priority={"src/registry.js":0,"src/config.js":1,"src/app.js":2,"src/styles.css":3,"index.html":4};
+      const priority={"src/registry.js":0,"tests/storefront.test.mjs":1,"src/config.js":2,"src/app.js":3,"index.html":4};
       return (files||[]).filter(f=>f.collaboration_surface).sort((a,b)=>(priority[a.path]??20)-(priority[b.path]??20)||(b.collaboration_agents||[]).length-(a.collaboration_agents||[]).length||a.path.localeCompare(b.path));
     }
     function presentationFiles(files) {
-      const ordered=["src/registry.js","src/config.js","src/app.js","src/styles.css","index.html"], collaboration=collaborationFiles(files), selected=[];
+      const ordered=["src/registry.js","tests/storefront.test.mjs","src/config.js","src/app.js","index.html"], collaboration=collaborationFiles(files), selected=[];
       for(const path of ordered){const file=(files||[]).find(f=>f.path===path); if(file) selected.push(file);}
       for(const file of collaboration){if(selected.length>=5)break; if(!selected.includes(file))selected.push(file);}
       return selected.slice(0,5);
@@ -459,40 +489,41 @@
     }
 
     function filesView(detail) {
-      const all=state.files||[], surfaces=collaborationFiles(all), showcase=presentationFiles(all), q=ui.fileSearch.toLowerCase();
+      const all=(state.files||[]).map(hydrateFile), surfaces=collaborationFiles(all), showcase=presentationFiles(all), q=ui.fileSearch.toLowerCase();
       const filtered=all.filter(f=>(!q||f.path.toLowerCase().includes(q))&&(ui.fileMode==="all"||(ui.fileMode==="showcase"&&showcase.includes(f))||(ui.fileMode==="collab"&&f.collaboration_surface)||(ui.fileMode==="multi"&&f.multi_agent)||(ui.fileMode==="blame"&&f.ownership_available)||(ui.fileMode==="content"&&typeof f.content==="string")));
-      let selected=all.find(f=>f.path===detail); if(!selected) selected=all.find(f=>f.path==="src/registry.js")||showcase[0]||all.find(f=>f.ownership_available)||filtered[0];
-      return `${pageHead("Collaboration Files","The complete published application is intentionally compact: at most five domain-named files, with agent ownership shown on the exact lines they contributed.")}
+      const selected=pickFile(all,detail)||filtered[0];
+      return `${pageHead("Collaboration Files","The presentation stays focused on five compact shared surfaces, including one test module edited by every agent, with ownership shown on the exact published lines.")}
         <section class="grid collab-grid">${showcase.map(collaborationCard).join("")||empty("No collaboration surfaces yet","The complete changed-path inventory remains available below.","files")}</section>
         <section class="panel file-layout"><aside class="file-browser"><div class="toolbar"><div class="field search">${icons.search}<input id="file-search" value="${esc(ui.fileSearch)}" placeholder="Filter file evidence" aria-label="Search files"></div><div class="field"><select id="file-mode" aria-label="Filter files"><option value="showcase" ${ui.fileMode==="showcase"?"selected":""}>Presentation set (${nfmt(showcase.length)})</option><option value="collab" ${ui.fileMode==="collab"?"selected":""}>All collaboration surfaces (${nfmt(surfaces.length)})</option><option value="content" ${ui.fileMode==="content"?"selected":""}>Source available</option><option value="multi" ${ui.fileMode==="multi"?"selected":""}>Multiple authors</option><option value="blame" ${ui.fileMode==="blame"?"selected":""}>Blame available</option><option value="all" ${ui.fileMode==="all"?"selected":""}>All changed paths (${nfmt(all.length)})</option></select></div></div><div class="tree">${fileTree(filtered,selected?.path)}</div></aside><div class="source-view">${selected?sourceView(selected):empty("No files match","Change the file filters or run the demo.","files")}</div></section>`;
     }
     function collaborationCard(f) {
       const ids=f.collaboration_agents||[], refs=f.referenced_agents||[];
-      const why=f.path==="src/app.js"?"One application runtime composes every contribution from the shared registry.":f.path==="src/registry.js"?"Ten neighboring registry lines expose the exact published contribution of each agent.":f.path==="src/config.js"?`${nfmt(f.conflict_count||0)} verified line contentions converge through one atomic resolution.`:f.path==="index.html"?"One domain entry point loads the complete published application.":f.path==="src/styles.css"?"One shared visual system styles the combined result.":"A shared boundary records coordinated edits and the published result.";
+      const why=f.path==="src/app.js"?"One application runtime composes every contribution from the shared registry.":f.path==="src/registry.js"?"Neighboring registry lines expose the exact published contribution of every agent.":f.path==="tests/storefront.test.mjs"?"Every agent contributes a separately owned verification line; policy lines also carry real contention and retry history.":f.path==="src/config.js"?"One shared runtime configuration exposes published ownership and contention by line.":f.path==="index.html"?"One domain entry point loads the complete published application.":f.path==="src/styles.css"?"One shared visual system styles the combined result.":"A shared boundary records coordinated edits and the published result.";
       return `<a class="collab-card" href="#files/${encodeURIComponent(f.path)}"><div class="collab-card-top">${icons.files}<span class="pill blue">collaboration surface</span></div><h3>${esc(f.path)}</h3><p>${esc(why)}</p><div class="collab-card-foot">${avatars(ids,10)}<div class="collab-count"><b>${nfmt(ids.length)}</b><span>connected agents</span></div></div></a>`;
     }
     function fileTree(files,selected) {
       if(!files.length) return empty("No matching files","Try another path or filter.","search");
       const groups=new Map(); for(const f of files){const parts=f.path.split("/"); const folder=parts.length>1?parts.slice(0,-1).join("/"):"workspace root"; if(!groups.has(folder))groups.set(folder,[]); groups.get(folder).push(f);}
-      return [...groups.entries()].sort().map(([folder,items])=>`<div class="tree-group"><div class="tree-label">${icons.files}<span>${esc(folder)}</span><span class="muted">${items.length}</span></div><div class="tree-files">${items.sort((a,b)=>a.path.localeCompare(b.path)).map(f=>`<a class="tree-file ${f.path===selected?"active":""}" href="#files/${encodeURIComponent(f.path)}"><span class="truncate">${esc(f.path.split("/").pop())}</span>${f.conflict?'<i class="mark" style="background:var(--amber)" title="Conflict"></i>':f.multi_agent?'<i class="mark" style="background:var(--blue)" title="Multi-agent"></i>':""}</a>`).join("")}</div></div>`).join("");
+      return [...groups.entries()].sort().map(([folder,items])=>`<div class="tree-group"><div class="tree-label">${icons.files}<span>${esc(folder)}</span><span class="muted">${items.length}</span></div><div class="tree-files">${items.sort((a,b)=>a.path.localeCompare(b.path)).map(f=>`<a class="tree-file ${f.path===selected?"active":""}" href="#files/${encodeURIComponent(f.path)}"><span class="truncate">${esc(f.path.split("/").pop())}</span>${f.multi_agent?'<i class="mark" style="background:var(--blue)" title="Multi-agent"></i>':""}</a>`).join("")}</div></div>`).join("");
     }
     function ownershipMap(f) {
       const ranges=(f.blame||[]).filter(r=>Number.isFinite(Number(r.start_line))&&Number.isFinite(Number(r.line_count)));
       if(!ranges.length)return "";
-      return `<div class="ownership-map"><div class="ownership-map-head"><div><strong>Who owns which lines</strong><span>Current published revision · sandbox blame joined through runner metadata</span></div><span>${nfmt(ranges.reduce((sum,r)=>sum+Number(r.line_count),0))} attributed lines</span></div><div class="ownership-ranges">${ranges.map(r=>{const start=Number(r.start_line),end=start+Number(r.line_count)-1,id=r.agent_id,color=id?hue(id):r.provenance==="base_workspace"?"#94a3b8":"#f59e0b";return `<div class="owner-range" style="--agent:${color}"><i></i><b>${esc(r.label||"Unknown owner")}</b><span>line${start===end?"":"s"} ${start}${start===end?"":`–${end}`}</span></div>`;}).join("")}</div></div>`;
+      return `<div class="ownership-map"><div class="ownership-map-head"><div><strong>Who owns which lines</strong><span>Loaded from the current published sandbox · raw owners joined through runner metadata</span></div><span>${nfmt(ranges.reduce((sum,r)=>sum+Number(r.line_count),0))} attributed lines</span></div><div class="ownership-ranges">${ranges.map(r=>{const start=Number(r.start_line),end=start+Number(r.line_count)-1,id=r.agent_id,color=id?hue(id):r.provenance==="base_workspace"||r.provenance==="original"?"#94a3b8":"#f59e0b";return `<div class="owner-range" style="--agent:${color}" title="${esc(r.raw_owner||"")}"><i></i><b>${esc(r.label||"Unknown owner")}</b><span>line${start===end?"":"s"} ${start}${start===end?"":`–${end}`}</span></div>`;}).join("")}</div></div>`;
     }
     function sourceView(f) {
       const published=f.published_by||[], attempted=f.attempted_by||[], referenced=f.referenced_agents||[], connected=f.collaboration_agents||[], lines=typeof f.content==="string"?f.content.split("\n"):[];
       const hasOwnership=Boolean((f.blame||[]).length);
-      const contentEvidence=f.content_provenance==="sandbox_file_read"?"Sandbox file_read":f.content_provenance==="authored_file_write"?"Successful authored file_write":"Not sampled";
-      return `<div class="source-head"><div><h2>${esc(f.path)}</h2><div class="source-meta">${statusPill(f.status)} ${f.collaboration_surface?'<span class="pill blue">collaboration surface</span>':""}</div></div><div class="ownership-split"><div class="ownership-block"><label>Published line owners</label>${published.length?avatars(published,10):'<span class="muted">Not sampled</span>'}</div><div class="ownership-block"><label>Recorded edits</label>${attempted.length?avatars(attempted,10):'<span class="muted">None recorded</span>'}</div><div class="ownership-block"><label>Connected agents</label>${connected.length?avatars(connected,10):'<span class="muted">None linked</span>'}</div></div></div>
+      const contentEvidence=f.content_provenance==="live_sandbox_file_read"?"Live published sandbox file_read":f.content_provenance==="sandbox_file_read"?"Recorded sandbox file_read":f.content_provenance==="authored_file_write"?"Successful authored file_write":"Unavailable";
+      const detailNotice=f.detail_status==="loading"?`<div class="ownership-note">${icons.info}<span><strong>Loading the published file and blame…</strong> This uses the same on-demand sandbox calls as the web console.</span></div>`:f.detail_status==="error"?`<div class="ownership-note">${icons.alert}<span><strong>Live file evidence is unavailable.</strong> ${esc(f.detail_error||"The sandbox lookup failed.")}</span></div>`:lines.length&&!hasOwnership?`<div class="ownership-note">${icons.info}<span><strong>The sandbox returned no blame ranges for this published file.</strong> No agent identity is inferred.</span></div>`:"";
+      return `<div class="source-head"><div><h2>${esc(f.path)}</h2><div class="source-meta">${statusPill(f.present_in_final?"published":f.status)} ${f.collaboration_surface?'<span class="pill blue">collaboration surface</span>':""}</div></div><div class="ownership-split"><div class="ownership-block"><label>Published line owners</label>${published.length?avatars(published,10):'<span class="muted">Base or unavailable</span>'}</div><div class="ownership-block"><label>Recorded edits</label>${attempted.length?avatars(attempted,10):'<span class="muted">None recorded</span>'}</div><div class="ownership-block"><label>Connected agents</label>${connected.length?avatars(connected,10):'<span class="muted">None linked</span>'}</div></div></div>
         ${ownershipMap(f)}
-        ${lines.length&&!hasOwnership?`<div class="ownership-note">${icons.info}<span><strong>Line ownership was not sampled for this file.</strong> The source is real; agent links below come from recorded edits and references in the shared registry.</span></div>`:""}
-        ${lines.length?`<pre class="source ${hasOwnership?"":"no-ownership"}" aria-label="${hasOwnership?"Source with line ownership":"Source; line ownership not sampled"}">${lines.map((line,i)=>sourceLine(f,i+1,line)).join("")}</pre>`:`<div class="source-empty"><div><strong>Source content is not sampled for this path</strong><br><span>Effect and publication evidence remain available.</span></div></div>`}
-        <div class="provenance">${icons.info}<span><strong>Attribution remains evidence-specific.</strong> Owners come from sandbox blame joined to runner metadata; connected agents additionally include references detected in the sampled shared files.</span></div>
-        <div class="context-body"><dl>${kv("Operations",(f.operation_ids||[]).slice(0,12).map(id=>`<span class="mono">${esc(id)}</span>`).join(", ")||"—")}${kv("Source evidence",contentEvidence)}${kv("Agent references",referenced.length?referenced.map(agentChip).join(" "):"No agent references detected")}${kv("Published",f.present_in_final?"Present in final manifest":"Not present in final manifest")}${f.conflict?kv("Resolution",'<a class="panel-link" href="#conflicts">Open conflict evidence →</a>'):""}</dl></div>`;
+        ${detailNotice}
+        ${lines.length?`<pre class="source ${hasOwnership?"":"no-ownership"}" aria-label="${hasOwnership?"Source with line ownership":"Published source without blame ranges"}">${lines.map((line,i)=>sourceLine(f,i+1,line)).join("")}</pre>`:`<div class="source-empty"><div><strong>${f.detail_status==="loading"?"Loading current published source":"Published source unavailable"}</strong><br><span>${f.detail_status==="loading"?"Waiting for sandbox file_read and file_blame.":"The operation and file-effect evidence remains available."}</span></div></div>`}
+        <div class="provenance">${icons.info}<span><strong>Attribution is an explicit join.</strong> The sandbox supplies raw workspace or operation owners; the runner mapping supplies the displayed agent. Hover an ownership range or line label to inspect the raw owner.</span></div>
+        <div class="context-body"><dl>${kv("Operations",(f.operation_ids||[]).slice(0,12).map(id=>`<span class="mono">${esc(id)}</span>`).join(", ")||"—")}${kv("Source evidence",contentEvidence)}${kv("Agent references",referenced.length?referenced.map(agentChip).join(" "):"No agent references detected")}${kv("Published",f.present_in_final?"Present in final manifest":"Not present in final manifest")}</dl></div>`;
     }
-    function sourceLine(f,n,line) { const owner=(f.blame||[]).find(b=>n>=Number(b.start_line)&&n<Number(b.start_line)+Number(b.line_count)), contention=(f.contentions||[]).find(c=>n>=Number(c.line_start)&&n<Number(c.line_start)+Number(c.line_count||1)); if(!owner)return `<span class="source-line ${contention?"contested":""}"><span class="line-no">${n}</span><span class="line-code">${contention?'<i class="line-conflict">resolved conflict</i>':""}${esc(line)||" "}</span></span>`; const id=owner.agent_id; const color=id?hue(id):owner.provenance==="base_workspace"?"#94a3b8":"#f59e0b"; const ownerLabel=esc(owner.label||"Unknown owner"), ownership=contention?`<span class="blame-owner contenders" title="${esc(owner.raw_owner||"Unknown owner")}"><b>${ownerLabel} published</b><i>${esc(contention.rejected_agent||"Unknown agent")} rejected edit</i></span>`:`<span class="blame-owner" title="${esc(owner.raw_owner||"Unknown owner")}">${ownerLabel}</span>`; return `<span class="source-line owned ${contention?"contested":""}" style="--agent:${color}"><span class="line-no">${n}</span>${ownership}<span class="line-code">${contention?'<i class="line-conflict">resolved conflict</i>':""}${esc(line)||" "}</span></span>`; }
+    function sourceLine(f,n,line) { const owner=(f.blame||[]).find(b=>n>=Number(b.start_line)&&n<Number(b.start_line)+Number(b.line_count)), contention=(f.contentions||[]).find(c=>n>=Number(c.line_start)&&n<Number(c.line_start)+Number(c.line_count||1)), conflictTag=contention?'<i class="line-conflict">resolved contention</i>':""; if(!owner){const ownerGap=(f.blame||[]).length?'<span class="blame-owner muted">Base</span>':"";return `<span class="source-line ${contention?"contested":""}"><span class="line-no">${n}</span>${ownerGap}<span class="line-code">${conflictTag}${esc(line)||" "}</span></span>`;} const id=owner.agent_id, color=id?hue(id):owner.provenance==="base_workspace"||owner.provenance==="original"?"#94a3b8":"#f59e0b", ownerLabel=esc(owner.label||"Unknown owner"), ownership=contention?`<span class="blame-owner contenders" title="${esc(owner.raw_owner||"Unknown owner")}"><b>${ownerLabel} published</b><i>${esc(contention.rejected_agent||"stale agent")} rejected</i></span>`:`<span class="blame-owner" title="${esc(owner.raw_owner||"Unknown owner")}">${ownerLabel}</span>`; return `<span class="source-line owned ${contention?"contested":""}" style="--agent:${color}"><span class="line-no">${n}</span>${ownership}<span class="line-code">${conflictTag}${esc(line)||" "}</span></span>`; }
 
     function conflictsView(detail) {
       const conflicts=state.conflicts||[]; if(!conflicts.length) return `${pageHead("Conflict Resolver","Publication contention and resolution evidence are shown only when the backend records them.")}${empty("No conflicts recorded","This run has no rejected or stale publication evidence.","conflict")}`;
@@ -538,6 +569,10 @@
       else if(r.name==="preview") html=previewView();
       else html=evidenceView();
       $("#view").innerHTML=html;
+      if(state&&r.name==="files") {
+        const selected=pickFile((state.files||[]).map(hydrateFile),r.detail);
+        if(selected)queueMicrotask(()=>loadFileDetail(selected.path));
+      }
     }
 
     async function control(path) {

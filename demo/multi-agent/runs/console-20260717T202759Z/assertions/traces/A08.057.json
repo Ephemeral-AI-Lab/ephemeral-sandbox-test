@@ -1,0 +1,26 @@
+{
+  "request_id": "console-20260717T202759Z:A08.057:runtime",
+  "row": "A08.057",
+  "trace": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "write_command_stdin"
+          },
+          "dur_ms": 38.0,
+          "name": "daemon.dispatch",
+          "span": "d-1918",
+          "status": "completed",
+          "trace": "console-20260717T202759Z:A08.057:runtime",
+          "ts": 1784320114494
+        }
+      }
+    ],
+    "trace": "console-20260717T202759Z:A08.057:runtime",
+    "view": "trace"
+  }
+}

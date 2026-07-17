@@ -805,7 +805,7 @@ class Runner:
             await asyncio.sleep(0.25)
 
     async def bootstrap(self) -> None:
-        """Publish the complete five-file application skeleton via Node APIs."""
+        """Publish the compact application and its one shared test via Node APIs."""
         body = base64.b64encode(json.dumps(recipes.bootstrap_files(), sort_keys=True).encode("utf-8")).decode("ascii")
         command = (
             "node --input-type=module --eval \"import { mkdir, writeFile } from 'node:fs/promises'; "
@@ -1276,11 +1276,15 @@ class Runner:
             after = self._shared_heads["conflict-rejected"]
             config = await self.runtime("conflict-shared-config", "ENGINE.conflict.config", "file_read", "--path", "src/config.js", provenance="engine")
             blame = await self.runtime("conflict-winner-blame", "ENGINE.conflict.blame", "file_blame", "--path", "src/config.js", provenance="engine")
-            owners = {entry.get("owner") for entry in blame.get("ranges", []) if isinstance(entry, dict)}
+            tests = await self.runtime("conflict-shared-test", "ENGINE.conflict.test", "file_read", "--path", "tests/storefront.test.mjs", provenance="engine")
+            test_blame = await self.runtime("conflict-test-winner-blame", "ENGINE.conflict.test-blame", "file_blame", "--path", "tests/storefront.test.mjs", provenance="engine")
+            config_owners = {entry.get("owner") for entry in blame.get("ranges", []) if isinstance(entry, dict)}
+            test_owners = {entry.get("owner") for entry in test_blame.get("ranges", []) if isinstance(entry, dict)}
             a06_owner = self.attempt_owners.get("A06.conflict")
             atomic = {
                 "winner": winner, "rejected": after, "rejection": response,
                 "config": config, "blame": blame,
+                "test": tests, "test_blame": test_blame,
                 "contentions": [
                     {
                         "key": "free_shipping_threshold",
@@ -1309,27 +1313,54 @@ class Runner:
                         "winner": "taxRate: 0.075",
                         "rejected": "taxRate: 0.095",
                     },
+                    {
+                        "key": "test_free_shipping_threshold",
+                        "label": "Shared test free shipping expectation",
+                        "path": "tests/storefront.test.mjs",
+                        "line_start": recipes.shared_test_line("freeShippingCents:"),
+                        "base": "freeShippingCents: 5000",
+                        "winner": "freeShippingCents: 6000",
+                        "rejected": "freeShippingCents: 7500",
+                    },
+                    {
+                        "key": "test_standard_shipping_price",
+                        "label": "Shared test shipping expectation",
+                        "path": "tests/storefront.test.mjs",
+                        "line_start": recipes.shared_test_line("standardShippingCents:"),
+                        "base": "standardShippingCents: 700",
+                        "winner": "standardShippingCents: 650",
+                        "rejected": "standardShippingCents: 900",
+                    },
+                    {
+                        "key": "test_tax_rate",
+                        "label": "Shared test tax expectation",
+                        "path": "tests/storefront.test.mjs",
+                        "line_start": recipes.shared_test_line("taxRate:"),
+                        "base": "taxRate: 0.08",
+                        "winner": "taxRate: 0.075",
+                        "rejected": "taxRate: 0.095",
+                    },
                 ],
                 "checks": {
                     "same_revision": winner is not None and winner["revision"] == after["revision"],
                     "same_manifest": winner is not None and winner["manifest"] == after["manifest"],
                     "winner_content": all(
-                        marker in str(config.get("content", ""))
+                        all(marker in str(sample.get("content", "")) for sample in (config, tests))
                         for marker in (
                             "freeShippingCents: 6000",
                             "standardShippingCents: 650",
                             "taxRate: 0.075",
                         )
                     ) and all(
-                        marker not in str(config.get("content", ""))
+                        all(marker not in str(sample.get("content", "")) for sample in (config, tests))
                         for marker in (
                             "freeShippingCents: 7500",
                             "standardShippingCents: 900",
                             "taxRate: 0.095",
                         )
                     ),
-                    "retry_pending": "checkoutRetry: 'pending'" in str(config.get("content", "")),
-                    "winner_blame": a06_owner in owners,
+                    "retry_pending": all("checkoutRetry: 'pending'" in str(sample.get("content", "")) for sample in (config, tests)),
+                    "winner_blame": a06_owner in config_owners and a06_owner in test_owners,
                 },
             }
             self.evidence.write_once("assertions/conflict-atomic.json", atomic)
@@ -1528,11 +1559,30 @@ class Runner:
         missing = [agent.id for agent in recipes.AGENTS if f"{agent.id}: {{" not in content]
         blame = await self.runtime("primary-registry-blame", "ENGINE.primary.blame", "file_blame", "--path", "src/registry.js", provenance="engine")
         owners = {item.get("owner") for item in blame.get("ranges", []) if isinstance(item, dict)}
+        tests = await self.runtime("primary-shared-test-read", "ENGINE.primary.test", "file_read", "--path", "tests/storefront.test.mjs", provenance="engine")
+        test_content = str(tests.get("content", ""))
+        missing_tests = [agent.id for agent in recipes.AGENTS if f"{agent.id} {agent.role} contribution is ready" not in test_content]
+        test_blame = await self.runtime("primary-shared-test-blame", "ENGINE.primary.test-blame", "file_blame", "--path", "tests/storefront.test.mjs", provenance="engine")
+        test_ranges = [item for item in test_blame.get("ranges", []) if isinstance(item, dict)]
+
+        def owner_at(line: int) -> str | None:
+            for item in test_ranges:
+                start = item.get("start_line")
+                count = item.get("line_count")
+                if isinstance(start, int) and isinstance(count, int) and start <= line < start + count:
+                    return item.get("owner") if isinstance(item.get("owner"), str) else None
+            return None
+
         mapping = {agent.id: self.raw_owners.get(agent.id) for agent in recipes.AGENTS}
-        if missing or None in mapping.values() or len(set(mapping.values())) != 10 or set(mapping.values()) - owners:
-            raise DemoFailure(f"primary merge/blame proof failed: missing={missing}, mapping={mapping}, raw={sorted(owners)}")
+        test_line_owners = {
+            agent.id: owner_at(recipes.shared_test_line(f"{agent.id} contribution check"))
+            for agent in recipes.AGENTS
+        }
+        if missing or missing_tests or None in mapping.values() or len(set(mapping.values())) != 10 or set(mapping.values()) - owners or test_line_owners != mapping:
+            raise DemoFailure(f"primary merge/blame proof failed: registry_missing={missing}, test_missing={missing_tests}, mapping={mapping}, registry_raw={sorted(owners)}, test_lines={test_line_owners}")
         self.evidence.write_once("assertions/primary-merge.json", {
             "registry": registry, "blame": blame,
+            "test": tests, "test_blame": test_blame, "test_line_owners": test_line_owners,
             "raw_owner_to_agent": {raw: agent for agent, raw in sorted(mapping.items())},
             "display_mapping_provenance": "runner_join",
         })
@@ -1663,6 +1713,40 @@ class Runner:
             raise DemoFailure(
                 f"primary registry entry blame did not retain the ten mapped owners: lines={entry_owners}, owners={unique}"
             )
+        tests = await self.runtime("final-shared-test-blame", "ENGINE.final.test", "file_blame", "--path", "tests/storefront.test.mjs", provenance="engine")
+        test_ranges = [item for item in tests.get("ranges", []) if isinstance(item, dict)]
+
+        def test_owner_at(line: int) -> str | None:
+            for item in test_ranges:
+                start = item.get("start_line")
+                count = item.get("line_count")
+                if isinstance(start, int) and isinstance(count, int) and start <= line < start + count:
+                    return item.get("owner") if isinstance(item.get("owner"), str) else None
+            return None
+
+        test_entry_owners = {
+            agent.id: test_owner_at(recipes.shared_test_line(f"{agent.id} contribution check"))
+            for agent in recipes.AGENTS
+        }
+        expected_test_owners = {agent.id: self.raw_owners[agent.id] for agent in recipes.AGENTS}
+        policy_owners = {
+            "freeShippingCents": test_owner_at(recipes.shared_test_line("freeShippingCents:")),
+            "standardShippingCents": test_owner_at(recipes.shared_test_line("standardShippingCents:")),
+            "taxRate": test_owner_at(recipes.shared_test_line("taxRate:")),
+            "checkoutRetry": test_owner_at(recipes.shared_test_line("checkoutRetry:")),
+        }
+        if test_entry_owners != expected_test_owners:
+            raise DemoFailure(f"shared test did not retain every primary agent owner: {test_entry_owners}")
+        a06_conflict_owner = self.attempt_owners.get("A06.conflict")
+        a08_retry_owner = self.attempt_owners.get("A08.retry")
+        expected_policy_owners = {
+            "freeShippingCents": a06_conflict_owner,
+            "standardShippingCents": a06_conflict_owner,
+            "taxRate": a06_conflict_owner,
+            "checkoutRetry": a08_retry_owner,
+        }
+        if None in expected_policy_owners.values() or policy_owners != expected_policy_owners:
+            raise DemoFailure(f"shared test policy ownership did not retain conflict and retry owners: {policy_owners}")
         self.evidence.write_once("preview/verified-tree.json", {"files": actual, "sha256": digest(canonical(actual))})
         self._preview = {
             "state": "verified_retained_tree", "path": "preview/site/index.html",
@@ -1672,6 +1756,7 @@ class Runner:
         self.evidence.write_once("assertions/final-tree.json", {
             "expected": expected, "actual": actual, "shared_manifest": actual_manifest,
             "registry_blame": registry, "primary_entry_lines": entry_owners,
+            "test_blame": tests, "test_entry_owners": test_entry_owners, "test_policy_owners": policy_owners,
             "raw_owners": unique, "runner_owner_mapping": self.raw_owners,
             "owner_mapping_provenance": "runner_join_primary_publications_only",
         })

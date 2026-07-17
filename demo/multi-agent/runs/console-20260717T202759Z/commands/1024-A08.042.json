@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A08.042:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A08: { id: 'A08', role: 'Checkout', stage: 'ready', deterministic: true, verify() { return true; }, validateCheckout(form) { const missing = ['email', 'address', 'postal'].filter((key) => !String(form[key] || '').trim()); return { ok: missing.length === 0, missing }; }, fixture: 'checkout-fixture', view: '<section data-domain=\\\"checkout\\\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A08', schemaVersion: 1, status: 'ready' },\",\n    \"old_string\": \"  A08: { id: 'A08', role: 'Checkout', stage: 'manifest', deterministic: true, verify() { return true; }, validateCheckout(form) { const missing = ['email', 'address', 'postal'].filter((key) => !String(form[key] || '').trim()); return { ok: missing.length === 0, missing }; }, fixture: 'checkout-fixture', view: '<section data-domain=\\\"checkout\\\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A08', schemaVersion: 1 },\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000a18c32da96a704a60"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.764,
+  "kind": "public_cli_process",
+  "label": "A08.042",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 710,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 61090,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A08.042:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1024,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":710}\n",
+  "timed_out": false
+}

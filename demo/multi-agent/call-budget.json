@@ -1,6 +1,6 @@
 {
-  "authored_plan_digest": "fb566342b81bbfb6f938a02f6be4e21109d04567a85e993f90ea00624d2d360b",
-  "matrix_digest": "71d2706dc15a667d7de352348c78bce935045dc14913e264b192fc10785e96bf",
+  "authored_plan_digest": "de8208c9cf0ebac69aeb5ba958e1d0fe580ad68026dfa42886e0f88f21dbb689",
+  "matrix_digest": "179bf1b5036ac5f0a425458338b8a7a62f3c7043272c1e0519893693b7069f05",
   "per_agent": {
     "A01": 44,
     "A02": 44,
@@ -17,80 +17,80 @@
     "A01": {
       "build_lint": 6,
       "conflict_network_audit": 0,
-      "inspect": 19,
-      "patch": 8,
+      "inspect": 18,
+      "patch": 9,
       "test_debug": 9,
       "workspace_control": 2
     },
     "A02": {
       "build_lint": 6,
       "conflict_network_audit": 0,
-      "inspect": 19,
-      "patch": 8,
+      "inspect": 18,
+      "patch": 9,
       "test_debug": 9,
       "workspace_control": 2
     },
     "A03": {
       "build_lint": 6,
       "conflict_network_audit": 0,
-      "inspect": 19,
-      "patch": 8,
+      "inspect": 18,
+      "patch": 9,
       "test_debug": 9,
       "workspace_control": 2
     },
     "A04": {
       "build_lint": 6,
       "conflict_network_audit": 0,
-      "inspect": 19,
-      "patch": 8,
+      "inspect": 18,
+      "patch": 9,
       "test_debug": 9,
       "workspace_control": 2
     },
     "A05": {
       "build_lint": 6,
       "conflict_network_audit": 0,
-      "inspect": 19,
-      "patch": 8,
+      "inspect": 18,
+      "patch": 9,
       "test_debug": 9,
       "workspace_control": 2
     },
     "A06": {
       "build_lint": 7,
       "conflict_network_audit": 3,
-      "inspect": 22,
-      "patch": 9,
+      "inspect": 21,
+      "patch": 10,
       "test_debug": 9,
       "workspace_control": 2
     },
     "A07": {
       "build_lint": 6,
       "conflict_network_audit": 0,
-      "inspect": 19,
-      "patch": 8,
+      "inspect": 18,
+      "patch": 9,
       "test_debug": 9,
       "workspace_control": 2
     },
     "A08": {
       "build_lint": 6,
       "conflict_network_audit": 6,
-      "inspect": 26,
-      "patch": 10,
+      "inspect": 25,
+      "patch": 11,
       "test_debug": 9,
       "workspace_control": 2
     },
     "A09": {
       "build_lint": 6,
       "conflict_network_audit": 10,
-      "inspect": 19,
-      "patch": 8,
+      "inspect": 18,
+      "patch": 9,
       "test_debug": 9,
       "workspace_control": 2
     },
     "A10": {
       "build_lint": 7,
       "conflict_network_audit": 0,
-      "inspect": 21,
-      "patch": 8,
+      "inspect": 20,
+      "patch": 9,
       "test_debug": 12,
       "workspace_control": 5
     }
@@ -98,22 +98,22 @@
   "per_category": {
     "build_lint": 62,
     "conflict_network_audit": 19,
-    "inspect": 202,
-    "patch": 83,
+    "inspect": 192,
+    "patch": 93,
     "test_debug": 93,
     "workspace_control": 23
   },
   "plan_digests": {
-    "agents/A01-foundation.plan.jsonl": "1bb72c714871e59d0dd30a4283ef85472bdd2bc1d205615b351c227ced888b1b",
-    "agents/A02-design-system.plan.jsonl": "a40053297bc511d02966668135952e409114dd684d3246384dbddfd40913f38c",
-    "agents/A03-products.plan.jsonl": "3dbf73019c8e71edefe752efef44e8c0ff6f70ae67a81a5613c62f716d18c1cb",
-    "agents/A04-catalog.plan.jsonl": "03098f01f87e2296671bd72988b73a8c3f482d0bf25e75e126daea64f3763063",
-    "agents/A05-search.plan.jsonl": "ce41a22b8b8ab795f67f56712b9f2150f583f77d78f3891794869010bd06da27",
-    "agents/A06-cart.plan.jsonl": "ec858e7e8445c7d84fc311ddee63b6bd9db0a172f6cd7cfbd7b53c1df6a685cd",
-    "agents/A07-wishlist.plan.jsonl": "af66b0f7f586e66a75047ac12a8dd397dcc05cd7d87e9e8193dd431c603fab78",
-    "agents/A08-checkout.plan.jsonl": "c3b3dacfc4fd022fb113f18f92ad480ef1770c21492b295cd71878c328909172",
-    "agents/A09-accessibility.plan.jsonl": "837c6a7ab9079c46b7a11ce823c5c88279878af48596393a2f3dc786806e766a",
-    "agents/A10-qa.plan.jsonl": "ac8e115b20320ac7e0c7ff65bcdc15a5c5120505fc22a10ba1f4f0eeb7e2bf9a"
+    "agents/A01-foundation.plan.jsonl": "ada8951688279530652b0c00985324bba51d5519984c41db7735de3f6c5d3a57",
+    "agents/A02-design-system.plan.jsonl": "cdb7a7893c8532caf65f1767c9a00166955d63011537606ce01ebe6d26df3afb",
+    "agents/A03-products.plan.jsonl": "f041e5d12e42151de5c515489036149b0c3f0fd6041943451bd1837c5e7bcf70",
+    "agents/A04-catalog.plan.jsonl": "7424d90cecdaaccbf6804ce98d2d39f58ccb7f62e44fc75c9c4f169bda1ed2eb",
+    "agents/A05-search.plan.jsonl": "8edb8bec7c10ce27fa2bccf9eafc9cf3a1f7b8b5ce9fd19e39c87345767bbdf8",
+    "agents/A06-cart.plan.jsonl": "672f61e0c5505445aef8405e3dc63af68fdc7ec50aa3c0148264d1dd3b25c774",
+    "agents/A07-wishlist.plan.jsonl": "44f670cfebaa37685b432115f36669ca7c60f4a43a8e31e8308223b38da56391",
+    "agents/A08-checkout.plan.jsonl": "baa538b3e6456036b02fb959a94d5c5dd3699088390039609d21ec2e37395921",
+    "agents/A09-accessibility.plan.jsonl": "5e0c9ab43081bb05b6c769484bfd8ec76143b99e136b0eb12fbfc4f90944e1bb",
+    "agents/A10-qa.plan.jsonl": "c0e7cfa05ddc2fb3d34fa1f6cbc163cff64bdbf5471f0acb7f52c678dadf250b"
   },
   "planned_authored_public_cli_calls": 482,
   "preferred_band": {

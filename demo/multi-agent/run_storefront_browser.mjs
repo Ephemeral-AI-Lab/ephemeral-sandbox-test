@@ -18,7 +18,26 @@ const outputIndex = process.argv.indexOf('--output');
 const evidenceOutput = outputIndex >= 0 && process.argv[outputIndex + 1] ? resolve(process.argv[outputIndex + 1]) : null;
 const port = 4187;
 const origin = `http://127.0.0.1:${port}`;
-const server = spawn(process.execPath, ['scripts/serve.mjs'], { cwd: tree, env: { ...process.env, PORT: String(port), HOST: '127.0.0.1' }, stdio: ['ignore', 'pipe', 'pipe'] });
+const serverSource = `
+  import { createReadStream, statSync } from 'node:fs';
+  import { createServer } from 'node:http';
+  import { extname, resolve, sep } from 'node:path';
+  const root = resolve(process.cwd());
+  const types = { '.html': 'text/html; charset=utf-8', '.js': 'application/javascript; charset=utf-8' };
+  createServer((request, response) => {
+    const pathname = decodeURIComponent(new URL(request.url, 'http://flashcart.local').pathname);
+    const file = resolve(root, pathname === '/' ? 'index.html' : '.' + pathname);
+    if (!file.startsWith(root + sep) && file !== root) return response.writeHead(403).end('forbidden');
+    try {
+      if (!statSync(file).isFile()) throw new Error('not file');
+      response.writeHead(200, { 'Content-Type': types[extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
+      createReadStream(file).pipe(response);
+    } catch {
+      response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('not found');
+    }
+  }).listen(Number(process.env.PORT), process.env.HOST, () => console.log('FLASHCART_READY'));
+`;
+const server = spawn(process.execPath, ['--input-type=module', '--eval', serverSource], { cwd: tree, env: { ...process.env, PORT: String(port), HOST: '127.0.0.1' }, stdio: ['ignore', 'pipe', 'pipe'] });
 let output = '';
 let serverError = '';
 server.stdout.on('data', (value) => { output += value; });

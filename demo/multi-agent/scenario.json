@@ -4,61 +4,61 @@
       "id": "A01",
       "plan": "agents/A01-foundation.plan.jsonl",
       "role": "Foundation",
-      "sha256": "1bb72c714871e59d0dd30a4283ef85472bdd2bc1d205615b351c227ced888b1b"
+      "sha256": "ada8951688279530652b0c00985324bba51d5519984c41db7735de3f6c5d3a57"
     },
     {
       "id": "A02",
       "plan": "agents/A02-design-system.plan.jsonl",
       "role": "Design system",
-      "sha256": "a40053297bc511d02966668135952e409114dd684d3246384dbddfd40913f38c"
+      "sha256": "cdb7a7893c8532caf65f1767c9a00166955d63011537606ce01ebe6d26df3afb"
     },
     {
       "id": "A03",
       "plan": "agents/A03-products.plan.jsonl",
       "role": "Product data",
-      "sha256": "3dbf73019c8e71edefe752efef44e8c0ff6f70ae67a81a5613c62f716d18c1cb"
+      "sha256": "f041e5d12e42151de5c515489036149b0c3f0fd6041943451bd1837c5e7bcf70"
     },
     {
       "id": "A04",
       "plan": "agents/A04-catalog.plan.jsonl",
       "role": "Catalog and PDP",
-      "sha256": "03098f01f87e2296671bd72988b73a8c3f482d0bf25e75e126daea64f3763063"
+      "sha256": "7424d90cecdaaccbf6804ce98d2d39f58ccb7f62e44fc75c9c4f169bda1ed2eb"
     },
     {
       "id": "A05",
       "plan": "agents/A05-search.plan.jsonl",
       "role": "Search and facets",
-      "sha256": "ce41a22b8b8ab795f67f56712b9f2150f583f77d78f3891794869010bd06da27"
+      "sha256": "8edb8bec7c10ce27fa2bccf9eafc9cf3a1f7b8b5ce9fd19e39c87345767bbdf8"
     },
     {
       "id": "A06",
       "plan": "agents/A06-cart.plan.jsonl",
       "role": "Cart and pricing",
-      "sha256": "ec858e7e8445c7d84fc311ddee63b6bd9db0a172f6cd7cfbd7b53c1df6a685cd"
+      "sha256": "672f61e0c5505445aef8405e3dc63af68fdc7ec50aa3c0148264d1dd3b25c774"
     },
     {
       "id": "A07",
       "plan": "agents/A07-wishlist.plan.jsonl",
       "role": "Wishlist",
-      "sha256": "af66b0f7f586e66a75047ac12a8dd397dcc05cd7d87e9e8193dd431c603fab78"
+      "sha256": "44f670cfebaa37685b432115f36669ca7c60f4a43a8e31e8308223b38da56391"
     },
     {
       "id": "A08",
       "plan": "agents/A08-checkout.plan.jsonl",
       "role": "Checkout",
-      "sha256": "c3b3dacfc4fd022fb113f18f92ad480ef1770c21492b295cd71878c328909172"
+      "sha256": "baa538b3e6456036b02fb959a94d5c5dd3699088390039609d21ec2e37395921"
     },
     {
       "id": "A09",
       "plan": "agents/A09-accessibility.plan.jsonl",
       "role": "Accessibility and performance",
-      "sha256": "837c6a7ab9079c46b7a11ce823c5c88279878af48596393a2f3dc786806e766a"
+      "sha256": "5e0c9ab43081bb05b6c769484bfd8ec76143b99e136b0eb12fbfc4f90944e1bb"
     },
     {
       "id": "A10",
       "plan": "agents/A10-qa.plan.jsonl",
       "role": "Integration QA",
-      "sha256": "ac8e115b20320ac7e0c7ff65bcdc15a5c5120505fc22a10ba1f4f0eeb7e2bf9a"
+      "sha256": "c0e7cfa05ddc2fb3d34fa1f6cbc163cff64bdbf5471f0acb7f52c678dadf250b"
     }
   ],
   "argv_payload_limit_bytes": 49152,
@@ -72,11 +72,11 @@
   ],
   "call_budget": {
     "path": "call-budget.json",
-    "sha256": "7e3970bde025e3df6ae798a03f17f777cffa674adf3bc624f95e5768cd687b85"
+    "sha256": "2d0fd239bbd1fada9f949781043df1fcee9807a9977a2e8f5ed9e712da29c4a6"
   },
   "demo": "FlashCart",
   "image": "node:24-bookworm-slim",
-  "payload_digest": "31ef5cf9fe122280a9fe74b81e9fd60867e44557462e130ba7ab0dad0514482c",
+  "payload_digest": "85af8da0fae54b9c0fec634bab05db37b0f2a92b4bda70acc43ec4fa2ebacb57",
   "schema_version": 1,
   "trusted_network_sessions": [
     {

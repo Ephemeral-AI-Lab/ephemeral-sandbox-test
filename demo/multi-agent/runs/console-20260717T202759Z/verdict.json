@@ -1,0 +1,236 @@
+{
+  "result": {
+    "agents": [
+      {
+        "completed": 44,
+        "id": "A01",
+        "planned": 44,
+        "role": "Foundation"
+      },
+      {
+        "completed": 44,
+        "id": "A02",
+        "planned": 44,
+        "role": "Design system"
+      },
+      {
+        "completed": 44,
+        "id": "A03",
+        "planned": 44,
+        "role": "Product data"
+      },
+      {
+        "completed": 44,
+        "id": "A04",
+        "planned": 44,
+        "role": "Catalog and PDP"
+      },
+      {
+        "completed": 44,
+        "id": "A05",
+        "planned": 44,
+        "role": "Search and facets"
+      },
+      {
+        "completed": 52,
+        "id": "A06",
+        "planned": 52,
+        "role": "Cart and pricing"
+      },
+      {
+        "completed": 44,
+        "id": "A07",
+        "planned": 44,
+        "role": "Wishlist"
+      },
+      {
+        "completed": 59,
+        "id": "A08",
+        "planned": 59,
+        "role": "Checkout"
+      },
+      {
+        "completed": 54,
+        "id": "A09",
+        "planned": 54,
+        "role": "Accessibility and performance"
+      },
+      {
+        "completed": 53,
+        "id": "A10",
+        "planned": 53,
+        "role": "Integration QA"
+      }
+    ],
+    "commands": {
+      "A01.primary.anchor": "namespace_execution_3",
+      "A02.primary.anchor": "namespace_execution_4",
+      "A03.primary.anchor": "namespace_execution_5",
+      "A04.primary.anchor": "namespace_execution_6",
+      "A05.primary.anchor": "namespace_execution_7",
+      "A06.conflict.anchor": "namespace_execution_345",
+      "A06.primary.anchor": "namespace_execution_8",
+      "A07.primary.anchor": "namespace_execution_9",
+      "A08.conflict.anchor": "namespace_execution_346",
+      "A08.primary.anchor": "namespace_execution_10",
+      "A08.retry.anchor": "namespace_execution_360",
+      "A09.network.isolated1.server": "namespace_execution_356",
+      "A09.network.isolated2.server": "namespace_execution_357",
+      "A09.network.shared1.server": "namespace_execution_350",
+      "A09.primary.anchor": "namespace_execution_11",
+      "A10.final.anchor": "namespace_execution_366",
+      "A10.final.preview": "namespace_execution_369",
+      "A10.primary.anchor": "namespace_execution_12"
+    },
+    "evidence": {
+      "network_probes": {
+        "A09.049": {
+          "body_preview": "ok",
+          "body_sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "byte_length": 2,
+          "duration_ms": 14.927,
+          "headers": {},
+          "label": "A09.049",
+          "network_profile": "shared",
+          "provenance": "sandbox_preview",
+          "status": 200,
+          "url": "http://127.0.0.1:57331/forward/shared/4173/",
+          "workspace_session_id": "00001018c32db0169d9685"
+        },
+        "A09.050": {
+          "body_preview": "ok",
+          "body_sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "byte_length": 2,
+          "duration_ms": 5.243,
+          "headers": {},
+          "label": "A09.050",
+          "network_profile": "isolated",
+          "provenance": "sandbox_preview",
+          "status": 200,
+          "url": "http://127.0.0.1:57331/forward/isolated=00001318c32db01eca99e1/4173/",
+          "workspace_session_id": "00001318c32db01eca99e1"
+        },
+        "A09.051": {
+          "body_preview": "ok",
+          "body_sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "byte_length": 2,
+          "duration_ms": 4.573,
+          "headers": {},
+          "label": "A09.051",
+          "network_profile": "isolated",
+          "provenance": "sandbox_preview",
+          "status": 200,
+          "url": "http://127.0.0.1:57331/forward/isolated=00001418c32db023a5d2db/4173/",
+          "workspace_session_id": "00001418c32db023a5d2db"
+        }
+      },
+      "preview": {
+        "path": null,
+        "sha256": "47ce8816d87ce313502b3d0512aa65225d6861700e20737dfc7dd9d85d0b4c0b",
+        "state": "captured",
+        "status": 200
+      },
+      "raw_owner_mapping": {
+        "A01": "workspace_session:00000318c32da955032e0f",
+        "A02": "workspace_session:00000418c32da9581d8c22",
+        "A03": "workspace_session:00000518c32da95b0517ca",
+        "A04": "workspace_session:00000618c32da95e0d553d",
+        "A05": "workspace_session:00000718c32da96119d3e1",
+        "A06": "workspace_session:00000818c32da96456f1c9",
+        "A07": "workspace_session:00000918c32da9678a6ffd",
+        "A08": "workspace_session:00000a18c32da96a704a60",
+        "A09": "workspace_session:00000b18c32da96e19eed5",
+        "A10": "workspace_session:00000c18c32da971429264"
+      }
+    },
+    "presentation": {
+      "active_scene": "conflict",
+      "checkpoints": {
+        "bootstrap": {
+          "path": "assertions/checkpoints/bootstrap.json",
+          "revision": 2,
+          "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "sha256": "2adb440bbf3132e5ecf4f5df46d75a1fef3e9f2e90cc10d33c5b5731a88cedc4"
+        },
+        "conflict-rejected": {
+          "path": "assertions/checkpoints/conflict-rejected.json",
+          "revision": 13,
+          "root_hash": "8b49bc81770c3c79c8f5e7306ddfe8c5ab358625389ac9158edf963bf367d5f2",
+          "sha256": "9ea6657ba8bf99841ed3e3a7082973f221b7e5e23520466643e9181ad7f22d55"
+        },
+        "conflict-retry": {
+          "path": "assertions/checkpoints/conflict-retry.json",
+          "revision": 14,
+          "root_hash": "4f99fb5f006f3392ffdf9ff0a39d70d2a2c83c2b71f7cd1881b788cef02f5782",
+          "sha256": "1543842cf49ac1782890aa96abf4870ee2663e2e402063e55345aa7c47962cfb"
+        },
+        "conflict-winner": {
+          "path": "assertions/checkpoints/conflict-winner.json",
+          "revision": 13,
+          "root_hash": "8b49bc81770c3c79c8f5e7306ddfe8c5ab358625389ac9158edf963bf367d5f2",
+          "sha256": "8cf8b02eb734a138b71ab8bd72bcad6c0863e8ab21794bd5222b1aa20aa4ac62"
+        },
+        "network-clean": {
+          "path": "assertions/checkpoints/network-clean.json",
+          "revision": 13,
+          "root_hash": "8b49bc81770c3c79c8f5e7306ddfe8c5ab358625389ac9158edf963bf367d5f2",
+          "sha256": "b6ce0f6735ab881d8b830a299bc80e00c7e423d4e45480b5f777daf330ebc44f"
+        },
+        "primary-publications": {
+          "path": "assertions/checkpoints/primary-publications.json",
+          "revision": 12,
+          "root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+          "sha256": "fac6642380a43c3cf61ffdb40ac3579a1c4fe5440c96bf2b6a13f275d1b2f992"
+        },
+        "ten-workspaces": {
+          "path": "assertions/checkpoints/ten-workspaces.json",
+          "revision": 2,
+          "root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "sha256": "d51e962d4063518b1baea99b6544a3ee7d63a65fbae97b69faba7770bebd210b"
+        }
+      }
+    },
+    "projection_seq": 494,
+    "run": {
+      "calls": {
+        "agent": 482,
+        "completed": 482,
+        "engine": 728,
+        "engine_runtime_cli": 209,
+        "manager_control_cli": 6,
+        "planned": 482,
+        "telemetry_cli": 505,
+        "trusted_session_control": 8
+      },
+      "cleanup_verdict": "not_run_presentation",
+      "elapsed_ms": 35370.427,
+      "execution_verdict": "passed",
+      "failed": null,
+      "id": "console-20260717T202759Z",
+      "operations_elapsed_ms": 35370.427,
+      "sandbox_id": "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+      "sandbox_mode": "attached_target",
+      "status": "passed",
+      "title": "FlashCart: ten agents, one workspace"
+    },
+    "schema_version": "multiagent-demo/v1",
+    "workspaces": {
+      "A01.primary.workspace": "00000318c32da955032e0f",
+      "A02.primary.workspace": "00000418c32da9581d8c22",
+      "A03.primary.workspace": "00000518c32da95b0517ca",
+      "A04.primary.workspace": "00000618c32da95e0d553d",
+      "A05.primary.workspace": "00000718c32da96119d3e1",
+      "A06.conflict.workspace": "00000f18c32db014cee289",
+      "A06.primary.workspace": "00000818c32da96456f1c9",
+      "A07.primary.workspace": "00000918c32da9678a6ffd",
+      "A08.conflict.workspace": "00001118c32db0179722a2",
+      "A08.primary.workspace": "00000a18c32da96a704a60",
+      "A08.retry.workspace": "00001718c32db094e57eb2",
+      "A09.primary.workspace": "00000b18c32da96e19eed5",
+      "A10.final.workspace": "00001a18c32db0d121c9c0",
+      "A10.primary.workspace": "00000c18c32da971429264"
+    }
+  },
+  "run_id": "console-20260717T202759Z",
+  "status": "OPERATIONS_COMPLETE"
+}

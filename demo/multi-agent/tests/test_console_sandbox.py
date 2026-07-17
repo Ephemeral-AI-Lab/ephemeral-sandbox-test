@@ -76,7 +76,9 @@ class ConsoleSandboxTests(unittest.TestCase):
             )
             result = json.loads(output.getvalue())
             self.assertEqual(result["sandbox_id"], "eos-demo")
-            self.assertEqual(result["commands"], ["node scripts/serve.mjs"])
+            self.assertEqual(len(result["commands"]), 1)
+            self.assertNotIn("scripts/serve.mjs", result["commands"][0])
+            self.assertIn("server.listen(4173", result["commands"][0])
 
     def test_target_runner_command_attaches_host_runner_to_target(self) -> None:
         command = console_sandbox.target_runner_command(

@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A05.016:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A05: { id: 'A05', role: 'Search and facets', stage: 'view', deterministic: true, verify() { return true; }, search(items, query) { const needle = String(query).toLowerCase(); return items.filter((item) => item.name.toLowerCase().includes(needle)); }, fixture: 'search-fixture', view: '<section data-domain=\\\"search\\\"></section>' },\",\n    \"old_string\": \"  A05: { id: 'A05', role: 'Search and facets', stage: 'data', deterministic: true, verify() { return true; }, search(items, query) { const needle = String(query).toLowerCase(); return items.filter((item) => item.name.toLowerCase().includes(needle)); }, fixture: 'search-fixture' },\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000718c32da96119d3e1"
+  ],
+  "cancelled": false,
+  "duration_ms": 49.14,
+  "kind": "public_cli_process",
+  "label": "A05.016",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 580,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 43279,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A05.016:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 390,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":580}\n",
+  "timed_out": false
+}

@@ -34,7 +34,7 @@ AGENTS = (
     Agent("A03", "products", "Product data", "deterministic products, variants, and inventory", "products() { return [{ id: 'trail-pack', name: 'Trail Pack', cents: 7400, inventory: 8 }, { id: 'studio-mug', name: 'Studio Mug', cents: 2600, inventory: 11 }]; }"),
     Agent("A04", "catalog", "Catalog and PDP", "catalog cards and variant selection", "selectVariant(product, variant) { return { ...product, variant, selectable: Boolean(variant) }; }"),
     Agent("A05", "search", "Search and facets", "query, URL facets, sort, and empty states", "search(items, query) { const needle = String(query).toLowerCase(); return items.filter((item) => item.name.toLowerCase().includes(needle)); }"),
-    Agent("A06", "cart", "Cart and pricing", "integer-money cart, promotion, tax, and shipping", "quoteCart(subtotalCents, promotionCents = 0) { const config = root.FlashCart.config; const discounted = Math.max(0, subtotalCents - promotionCents); const shippingCents = discounted >= config.freeShippingCents ? 0 : config.standardShippingCents; return { discounted, shippingCents, taxCents: Math.round(discounted * config.taxRate), totalCents: discounted + shippingCents + Math.round(discounted * config.taxRate) }; }"),
+    Agent("A06", "cart", "Cart and pricing", "integer-money cart, promotion, tax, and shipping", "quoteCart(subtotalCents, promotionCents = 0) { const config = globalThis.FlashCart.config; const discounted = Math.max(0, subtotalCents - promotionCents); const shippingCents = discounted >= config.freeShippingCents ? 0 : config.standardShippingCents; return { discounted, shippingCents, taxCents: Math.round(discounted * config.taxRate), totalCents: discounted + shippingCents + Math.round(discounted * config.taxRate) }; }"),
     Agent("A07", "wishlist", "Wishlist", "persistent wishlist and recommendations", "toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }"),
     Agent("A08", "checkout", "Checkout", "validated checkout, review, and receipt", "validateCheckout(form) { const missing = ['email', 'address', 'postal'].filter((key) => !String(form[key] || '').trim()); return { ok: missing.length === 0, missing }; }"),
     Agent("A09", "accessibility", "Accessibility and performance", "keyboard, live regions, reduced motion, and budgets", "auditDocument(documentLike) { return { hasMain: Boolean(documentLike && documentLike.main), reducedMotion: true, maxImageBytes: 120000 }; }"),
@@ -63,21 +63,66 @@ def bootstrap_files() -> dict[str, str]:
     return {
         "index.html": index_html(),
         "src/app.js": app_js(),
-        "src/styles.css": base_style(),
         "src/config.js": "window.FlashCart = window.FlashCart || {};\nwindow.FlashCart.config = {\n  freeShippingCents: 5000,\n  standardShippingCents: 700,\n  taxRate: 0.08,\n  checkoutRetry: 'pending',\n};\n",
         "src/registry.js": registry,
+        "tests/storefront.test.mjs": shared_test_mjs(),
     }
 
 
+def _shared_test_agent_line(agent: Agent, *, ready: bool) -> str:
+    if not ready:
+        return f"// {agent.id} contribution check"
+    return (
+        f"test('{agent.id} {agent.role} contribution is ready', () => "
+        f"assert.match(registry, /{agent.id}: \\{{.*status: 'ready'/));"
+    )
+
+
+def shared_test_mjs(*, ready: bool = False) -> str:
+    """One collaborative test surface with stable, separately owned lines."""
+    lines = [
+        "import test from 'node:test';",
+        "import assert from 'node:assert/strict';",
+        "import { readFile } from 'node:fs/promises';",
+        "",
+        "const registry = await readFile(new URL('../src/registry.js', import.meta.url), 'utf8');",
+        "const config = await readFile(new URL('../src/config.js', import.meta.url), 'utf8');",
+        "",
+        "const expectedPolicy = {",
+        "  freeShippingCents: 5000,",
+        "  standardShippingCents: 700,",
+        "  taxRate: 0.08,",
+        "  checkoutRetry: 'pending',",
+        "};",
+        "",
+        "test('published configuration matches the shared policy', () => Object.entries(expectedPolicy).forEach(([key, value]) => assert.ok(config.includes(`${key}: ${typeof value === 'string' ? `'${value}'` : value}`))));",
+        "",
+        *[_shared_test_agent_line(agent, ready=ready) for agent in AGENTS],
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def shared_test_line(marker: str) -> int:
+    """Return a stable one-based line for authored blame assertions."""
+    for number, line in enumerate(shared_test_mjs().splitlines(), 1):
+        if marker in line:
+            return number
+    raise ValueError(f"shared test marker is missing: {marker}")
+
+
 def index_html() -> str:
-    return """<!doctype html>
+    style = base_style().strip()
+    return f"""<!doctype html>
 <html lang=\"en\">
   <head>
     <meta charset=\"utf-8\">
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
     <meta name=\"description\" content=\"FlashCart offline storefront\">
     <title>FlashCart — offline storefront</title>
-    <link rel=\"stylesheet\" href=\"./src/styles.css\">
+    <style>
+{style}
+    </style>
   </head>
   <body>
     <a class=\"skip\" href=\"#app\">Skip to storefront</a>
@@ -374,10 +419,10 @@ def _cycle_command(agent: Agent, cycle: str) -> str:
 def _workspace_contract_command(agent: Agent) -> str:
     script = (
         "import { readFile } from 'node:fs/promises'; "
-        "const [index, app, registry] = await Promise.all(['index.html', 'src/app.js', 'src/registry.js'].map(function (path) { return readFile(path, 'utf8'); })); "
+        "const [index, app, registry, tests] = await Promise.all(['index.html', 'src/app.js', 'src/registry.js', 'tests/storefront.test.mjs'].map(function (path) { return readFile(path, 'utf8'); })); "
         f"const line = registry.split('\\n').find(function (value) {{ return value.trimStart().startsWith('{agent.id}:'); }}); "
-        "if (!index.includes('./src/registry.js') || !app.includes('FlashCart.features') || !line || !line.includes('schemaVersion: 1')) process.exit(1); "
-        f"console.log('{agent.id} shared five-file contract verified');"
+        f"if (!index.includes('./src/registry.js') || !app.includes('FlashCart.features') || !line || !line.includes('schemaVersion: 1') || !tests.includes('{agent.id} {agent.role} contribution is ready')) process.exit(1); "
+        f"console.log('{agent.id} shared application contract verified');"
     )
     return _inline_node(script)
 
@@ -385,21 +430,40 @@ def _workspace_contract_command(agent: Agent) -> str:
 def _final_regression_command() -> str:
     script = (
         "import { readFile, readdir } from 'node:fs/promises'; "
-        "const root = (await readdir('.')).sort(); const src = (await readdir('src')).sort(); "
-        "const [index, app, style, config, registry] = await Promise.all(['index.html', 'src/app.js', 'src/styles.css', 'src/config.js', 'src/registry.js'].map(function (path) { return readFile(path, 'utf8'); })); "
+        "const root = (await readdir('.')).sort(); const src = (await readdir('src')).sort(); const testsDir = (await readdir('tests')).sort(); "
+        "const [index, app, config, registry, tests] = await Promise.all(['index.html', 'src/app.js', 'src/config.js', 'src/registry.js', 'tests/storefront.test.mjs'].map(function (path) { return readFile(path, 'utf8'); })); "
         "const ready = (registry.match(/status: 'ready'/g) || []).length; "
-        "if (root.join(',') !== 'index.html,src' || src.join(',') !== 'app.js,config.js,registry.js,styles.css' || ready !== 10 || !config.includes(\"checkoutRetry: 'complete'\") || !index.includes('./src/app.js') || !app.includes('product-grid') || !style.includes(':focus-visible')) process.exit(1); "
-        "console.log('Five-file storefront final regression passed');"
+        "const contributions = (tests.match(/contribution is ready/g) || []).length; "
+        "if (root.join(',') !== 'index.html,src,tests' || src.join(',') !== 'app.js,config.js,registry.js' || testsDir.join(',') !== 'storefront.test.mjs' || ready !== 10 || contributions !== 10 || !config.includes(\"checkoutRetry: 'complete'\") || !tests.includes(\"checkoutRetry: 'complete'\") || !index.includes('./src/app.js') || !index.includes(':focus-visible') || !app.includes('product-grid')) process.exit(1); "
+        "globalThis.window = globalThis; globalThis.eval(config); globalThis.eval(registry); "
+        "const quote = globalThis.FlashCart.features.A06.quoteCart(1000); "
+        "if (quote.shippingCents !== 650 || quote.taxCents !== 75 || quote.totalCents !== 1725) process.exit(1); "
+        "console.log('Shared storefront final regression passed');"
     )
     return _inline_node(script)
 
 
-def _preview_server_command() -> str:
+def _shared_policy_edit_command(replacements: tuple[tuple[str, str], ...]) -> str:
+    serialized = json.dumps(replacements, ensure_ascii=False)
+    script = (
+        "import { readFile, writeFile } from 'node:fs/promises'; "
+        "const paths = ['src/config.js', 'tests/storefront.test.mjs']; "
+        "const values = await Promise.all(paths.map(function (path) { return readFile(path, 'utf8'); })); "
+        f"const replacements = {serialized}; "
+        "const updated = values.map(function (source) { for (const [before, after] of replacements) { if (!source.includes(before)) throw new Error('missing policy marker: ' + before); source = source.replace(before, after); } return source; }); "
+        "await Promise.all(paths.map(function (path, index) { return writeFile(path, updated[index]); }));"
+    )
+    return _inline_node(script)
+
+
+def preview_server_command(port: int = 4173) -> str:
+    if not 1 <= port <= 65535:
+        raise ValueError("preview port must be between 1 and 65535")
     script = (
         "import { createReadStream, statSync } from 'node:fs'; import { createServer } from 'node:http'; import { extname, resolve, sep } from 'node:path'; "
         "const root = resolve(process.cwd()); const types = { '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8', '.js': 'application/javascript; charset=utf-8' }; "
         "const server = createServer(function (request, response) { const pathname = decodeURIComponent(new URL(request.url, 'http://flashcart.local').pathname); const file = resolve(root, pathname === '/' ? 'index.html' : '.' + pathname); if (!file.startsWith(root + sep) && file !== root) return response.writeHead(403).end('forbidden'); try { if (!statSync(file).isFile()) throw new Error('not file'); response.writeHead(200, { 'Content-Type': types[extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' }); createReadStream(file).pipe(response); } catch { response.writeHead(404).end('not found'); } }); "
-        "process.stdin.setEncoding('utf8'); process.stdin.on('data', function (value) { if (value.trim() === 'stop') server.close(function () { process.exit(0); }); }); server.listen(4173, '0.0.0.0', function () { console.log('FLASHCART_READY 0.0.0.0:4173'); });"
+        f"process.stdin.setEncoding('utf8'); process.stdin.on('data', function (value) {{ if (value.trim() === 'stop') server.close(function () {{ process.exit(0); }}); }}); server.listen({port}, '0.0.0.0', function () {{ console.log('FLASHCART_READY 0.0.0.0:{port}'); }});"
     )
     return _inline_node(script)
 
@@ -413,18 +477,12 @@ def payloads_for(agent: Agent) -> dict[str, str]:
         "08-style": _line_edit(agent, "view", "style"),
         "10-a11y": _line_edit(agent, "style", "accessibility"),
         "12-manifest.json": _line_edit(agent, "accessibility", "manifest"),
+        "14-shared-test.json": canonical_json([{
+            "old_string": _shared_test_agent_line(agent, ready=False),
+            "new_string": _shared_test_agent_line(agent, ready=True),
+        }]),
         "15-registry-edit.json": _line_edit(agent, "manifest", "ready"),
     }
-    if agent.id == "A06":
-        old = bootstrap_files()["src/config.js"]
-        new = (
-            old.replace("freeShippingCents: 5000", "freeShippingCents: 6000")
-            .replace("standardShippingCents: 700", "standardShippingCents: 650")
-            .replace("taxRate: 0.08", "taxRate: 0.075")
-        )
-        payloads["16-conflict-winner-edit.json"] = canonical_json([{"old_string": old, "new_string": new}])
-    if agent.id == "A08":
-        payloads["17-retry-receipt.json"] = canonical_json([{"old_string": "  checkoutRetry: 'pending',", "new_string": "  checkoutRetry: 'complete',"}])
     return payloads
 
 
@@ -494,17 +552,17 @@ def primary_plan(agent: Agent) -> list[dict[str, Any]]:
         kwargs.setdefault("workspace_ref", workspace)
         rows.append(_record(agent, len(rows) + 1, attempt_ref=attempt, **kwargs))
 
-    def edit(name: str, phase: str, purpose: str) -> None:
+    def edit(name: str, phase: str, purpose: str, *, path: str = registry) -> None:
         add(
             scene="fanout",
             phase=phase,
             category="patch",
             purpose=purpose,
             op="file_edit",
-            args=_payload_args(agent, name, registry, edit=True),
+            args=_payload_args(agent, name, path, edit=True),
             expect={"kind": "file_edit"},
             after=[rows[-1]["id"]],
-            effects=[registry],
+            effects=[path],
         )
 
     def read(path: str, phase: str, purpose: str) -> None:
@@ -575,7 +633,7 @@ def primary_plan(agent: Agent) -> list[dict[str, Any]]:
     read(registry, "view", "Inspect the semantic view metadata")
     run(_cycle_command(agent, "view"), "view", "test_debug", "Verify the semantic view contract", cycle=f"{agent.id}.view")
     edit("08-style", "style", "Add visible-focus metadata to this agent's shared line")
-    read("src/styles.css", "style", "Inspect the unified presentation and focus layer")
+    read("index.html", "style", "Inspect the entry point's unified presentation and focus layer")
     run(_cycle_command(agent, "style"), "style", "test_debug", "Verify this contribution preserves visible focus", cycle=f"{agent.id}.style")
     edit("10-a11y", "accessibility", "Add keyboard and reduced-motion metadata to the shared registry")
     run("node --check src/registry.js", "accessibility", "build_lint", "Syntax-check the accessibility contribution")
@@ -587,13 +645,13 @@ def primary_plan(agent: Agent) -> list[dict[str, Any]]:
     read("index.html", "review", "Review the compact shared storefront entry point")
     read("src/config.js", "review", "Review shared commerce configuration before publication")
     read("src/app.js", "review", "Review the browser shell that composes all contributions")
-    read("src/styles.css", "review", "Review the unified responsive style layer")
+    read("index.html", "review", "Review the inline responsive style layer")
     read(registry, "review", "Review this agent's full contribution in shared context")
     read("src/config.js", "review", "Reconfirm the conflict-sensitive configuration head")
     run("node --check src/registry.js && node --check src/config.js && node --check src/app.js", "review", "build_lint", "Syntax-check every shared JavaScript surface")
     read(registry, "review", "Inspect ownership evidence before the integration checks")
-    read("index.html", "review", "Inspect the final script composition order")
-    run(_workspace_contract_command(agent), "review", "test_debug", "Verify the shared five-file application contract")
+    edit("14-shared-test.json", "review", "Add this agent's verification to the one shared test module", path="tests/storefront.test.mjs")
+    run(_workspace_contract_command(agent), "review", "test_debug", "Verify the shared application and collaborative test contract")
     read(registry, "review", "Inspect the line immediately before its ready transition")
     run("node --check src/registry.js", "review", "build_lint", "Recheck the collaborative registry before finalization")
     edit("15-registry-edit.json", "merge", "Mark this agent's line ready for the coordinated publication")
@@ -643,34 +701,34 @@ def extended_plan(agent: Agent) -> list[dict[str, Any]]:
         anchor = f"{attempt}.anchor"
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="anchor", category="conflict_network_audit", purpose="Hold A06's fresh-head conflict contender until the atomic publish gate", op="exec_command", args={"command": ANCHOR, "timeout_ms": 180000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=["all-primary-published"], bind={"workspace_session_id": workspace, "command_session_id": anchor})
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="inspect", category="inspect", purpose="Read the seeded shipping threshold on the common conflict head", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="winner-edit", category="patch", purpose="Set the conflict-winning free-shipping threshold with file_edit", op="file_edit", args=_payload_args(agent, "16-conflict-winner-edit.json", "src/config.js", edit=True), expect={"kind": "file_edit"}, after=[rows[-1]["id"]], effects=["src/config.js"])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="winner-check", category="build_lint", purpose="Syntax-check the conflict-winning commerce configuration", op="exec_command", args={"command": "node --check src/config.js", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="winner-review", category="inspect", purpose="Confirm the contender sees the 6000-cent threshold before release", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="winner-edit", category="patch", purpose="Set matching conflict-winning policy values in the application and its shared test", op="exec_command", args={"command": _shared_policy_edit_command((("freeShippingCents: 5000", "freeShippingCents: 6000"), ("standardShippingCents: 700", "standardShippingCents: 650"), ("taxRate: 0.08", "taxRate: 0.075"))), "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], effects=["src/config.js", "tests/storefront.test.mjs"])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="winner-check", category="build_lint", purpose="Syntax-check both conflict-winning shared JavaScript surfaces", op="exec_command", args={"command": "node --check src/config.js && node --check tests/storefront.test.mjs", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="winner-review", category="inspect", purpose="Confirm the shared test sees the winning policy before release", op="file_read", args={"path": "tests/storefront.test.mjs"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
         _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="winner-publish", category="conflict_network_audit", purpose="Publish A06's conflict winner before A08 attempts its stale source", op="write_command_stdin", args={"input": "publish\n", "yield_time_ms": 30000}, expect={"kind": "publish_success"}, after=["conflict-contenders-mutated"], command_ref=anchor)
-        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="winner-shared-read", category="inspect", purpose="Read the shared threshold after the winning publication", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="winner-blame", category="conflict_network_audit", purpose="Prove all three contested configuration lines belong to the A06 conflict winner", op="file_blame", args={"path": "src/config.js", "line_start": 3, "line_end": 5}, expect={"kind": "blame_owner", "owner_agent": "A06", "owner_attempt": "A06.conflict"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="winner-shared-read", category="inspect", purpose="Read the shared test policy after the winning publication", op="file_read", args={"path": "tests/storefront.test.mjs"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="winner-blame", category="conflict_network_audit", purpose="Prove all contested shared-test policy lines belong to the A06 conflict winner", op="file_blame", args={"path": "tests/storefront.test.mjs", "line_start": shared_test_line("freeShippingCents:"), "line_end": shared_test_line("taxRate:")}, expect={"kind": "blame_owner", "owner_agent": "A06", "owner_attempt": "A06.conflict"}, after=[rows[-1]["id"]])
     if agent.id == "A08":
         attempt = "A08.conflict"
         workspace = f"{attempt}.workspace"
         anchor = f"{attempt}.anchor"
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="anchor", category="conflict_network_audit", purpose="Hold A08's stale-head conflict contender until the rejection gate", op="exec_command", args={"command": ANCHOR, "timeout_ms": 180000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=["all-primary-published"], bind={"workspace_session_id": workspace, "command_session_id": anchor})
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="inspect", category="inspect", purpose="Read the original shipping boundary from A08's stale source", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="stale-exec-edit", category="patch", purpose="Use exec_command to create three divergent values in the shared configuration", op="exec_command", args={"command": "node --input-type=module --eval \"import { readFile, writeFile } from 'node:fs/promises'; const path = 'src/config.js'; const value = await readFile(path, 'utf8'); const stale = value.replace('freeShippingCents: 5000', 'freeShippingCents: 7500').replace('standardShippingCents: 700', 'standardShippingCents: 900').replace('taxRate: 0.08', 'taxRate: 0.095'); await writeFile(path, stale);\"", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], effects=["src/config.js"])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="stale-review", category="inspect", purpose="Confirm A08's stale workspace contains its divergent threshold", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="stale-exec-edit", category="patch", purpose="Create divergent policy values in both the application and its shared test", op="exec_command", args={"command": _shared_policy_edit_command((("freeShippingCents: 5000", "freeShippingCents: 7500"), ("standardShippingCents: 700", "standardShippingCents: 900"), ("taxRate: 0.08", "taxRate: 0.095"))), "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], effects=["src/config.js", "tests/storefront.test.mjs"])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="stale-review", category="inspect", purpose="Confirm A08's stale shared test contains its divergent policy", op="file_read", args={"path": "tests/storefront.test.mjs"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
         _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="rejected-publish", category="conflict_network_audit", purpose="Require atomic source-conflict rejection for A08's stale publication", op="write_command_stdin", args={"input": "publish\n", "yield_time_ms": 30000}, expect={"kind": "publish_reject", "publish_reject_class": "source_conflict"}, after=["A06.050"], command_ref=anchor)
         _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="shared-threshold", category="inspect", purpose="Prove the rejected attempt did not advance the shared threshold", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="shared-blame", category="conflict_network_audit", purpose="Prove rejected A08 work did not replace the A06 owner on any contested line", op="file_blame", args={"path": "src/config.js", "line_start": 3, "line_end": 5}, expect={"kind": "blame_owner", "owner_agent": "A06", "owner_attempt": "A06.conflict"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="atomic-shared-read", category="inspect", purpose="Re-read the single shared conflict surface after atomic rejection", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="shared-blame", category="conflict_network_audit", purpose="Prove rejected A08 work did not replace A06 on the shared-test policy", op="file_blame", args={"path": "tests/storefront.test.mjs", "line_start": shared_test_line("freeShippingCents:"), "line_end": shared_test_line("taxRate:")}, expect={"kind": "blame_owner", "owner_agent": "A06", "owner_attempt": "A06.conflict"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="atomic-shared-read", category="inspect", purpose="Re-read the shared test after atomic rejection", op="file_read", args={"path": "tests/storefront.test.mjs"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
         attempt = "A08.retry"
         workspace = f"{attempt}.workspace"
         anchor = f"{attempt}.anchor"
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-anchor", category="conflict_network_audit", purpose="Open a new A08 workspace from the post-winner head", op="exec_command", args={"command": ANCHOR, "timeout_ms": 180000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=["A08.052"], bind={"workspace_session_id": workspace, "command_session_id": anchor})
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-read", category="inspect", purpose="Confirm the retry starts from A06's published threshold", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-patch", category="patch", purpose="Record the durable post-conflict retry on the shared configuration line", op="file_edit", args=_payload_args(agent, "17-retry-receipt.json", "src/config.js", edit=True), expect={"kind": "file_edit"}, after=[rows[-1]["id"]], effects=["src/config.js"])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-review", category="inspect", purpose="Read the shared retry state before its clean publication", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-read", category="inspect", purpose="Confirm the retry starts from A06's published shared-test policy", op="file_read", args={"path": "tests/storefront.test.mjs"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-patch", category="patch", purpose="Record the durable retry in the application and its shared test", op="exec_command", args={"command": _shared_policy_edit_command((("checkoutRetry: 'pending'", "checkoutRetry: 'complete'"),)), "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], effects=["src/config.js", "tests/storefront.test.mjs"])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-review", category="inspect", purpose="Read the shared-test retry state before its clean publication", op="file_read", args={"path": "tests/storefront.test.mjs"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
         _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="retry-publish", category="conflict_network_audit", purpose="Publish the fresh-head A08 retry successfully", op="write_command_stdin", args={"input": "publish\n", "yield_time_ms": 30000}, expect={"kind": "publish_success"}, after=[rows[-1]["id"]], command_ref=anchor)
-        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="retry-shared-read", category="inspect", purpose="Verify the successful retry state is shared", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="retry-blame", category="conflict_network_audit", purpose="Prove the retry line has raw A08 ownership", op="file_blame", args={"path": "src/config.js", "line_start": 6, "line_end": 6}, expect={"kind": "blame_owner", "owner_agent": "A08", "owner_attempt": "A08.retry"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="retry-shared-read", category="inspect", purpose="Verify the successful retry is present in the shared test", op="file_read", args={"path": "tests/storefront.test.mjs"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="retry-blame", category="conflict_network_audit", purpose="Prove the shared-test retry line has raw A08 ownership", op="file_blame", args={"path": "tests/storefront.test.mjs", "line_start": shared_test_line("checkoutRetry:"), "line_end": shared_test_line("checkoutRetry:")}, expect={"kind": "blame_owner", "owner_agent": "A08", "owner_attempt": "A08.retry"}, after=[rows[-1]["id"]])
     if agent.id == "A09":
         for attempt, marker, after in (("A09.network.shared1", "shared-one", ["all-primary-published"]), ("A09.network.shared2", "shared-two", ["A09.045"]), ("A09.network.isolated1", "isolated-one", ["A09.046"]), ("A09.network.isolated2", "isolated-two", ["A09.047"])):
             workspace = f"{attempt}.workspace"
@@ -694,11 +752,11 @@ def extended_plan(agent: Agent) -> list[dict[str, Any]]:
         anchor = f"{attempt}.anchor"
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-anchor", category="workspace_control", purpose="Open a fresh post-merge A10 regression workspace", op="exec_command", args={"command": ANCHOR, "timeout_ms": 180000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=["network-experiment-clean", "A08.057"], bind={"workspace_session_id": workspace, "command_session_id": anchor})
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-context", category="inspect", purpose="Read the fully merged feature registry from the fresh final workspace", op="file_read", args={"path": "src/registry.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-syntax", category="build_lint", purpose="Syntax-check the final five-file storefront entry points", op="exec_command", args={"command": "node --check src/app.js && node --check src/config.js && node --check src/registry.js", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-syntax", category="build_lint", purpose="Syntax-check the final storefront and collaborative test module", op="exec_command", args={"command": "node --check src/app.js && node --check src/config.js && node --check src/registry.js && node --check tests/storefront.test.mjs", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]])
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-regression", category="test_debug", purpose="Run the frozen exact-inventory final regression from a fresh post-merge workspace", op="exec_command", args={"command": _final_regression_command(), "timeout_ms": 120000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], test_cycle="A10.final-regression", final_regression=True)
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-tree-read", category="inspect", purpose="Read the retained storefront shell after final regression", op="file_read", args={"path": "index.html"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
         preview = f"{attempt}.preview"
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="preview-start", category="test_debug", purpose="Start the final offline storefront for a retained trusted-preview capture", op="exec_command", args={"command": _preview_server_command(), "timeout_ms": 120000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=[rows[-1]["id"]], bind={"command_session_id": preview})
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="preview-start", category="test_debug", purpose="Start the final offline storefront for a retained trusted-preview capture", op="exec_command", args={"command": preview_server_command(), "timeout_ms": 120000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=[rows[-1]["id"]], bind={"command_session_id": preview})
         _append(rows, agent, attempt=attempt, workspace=None, scene="evidence", phase="preview-ready", category="test_debug", purpose="Read the final preview readiness marker before the trusted host probe", op="read_command_lines", args={"max_lines": 20, "wait_ms": 5000}, expect={"kind": "command_running", "output_contains": ["FLASHCART_READY"]}, after=[rows[-1]["id"]], command_ref=preview)
         _append(rows, agent, attempt=attempt, workspace=None, scene="evidence", phase="preview-stop", category="workspace_control", purpose="Stop the retained preview before closing the final workspace", op="write_command_stdin", args={"input": "stop\n", "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], command_ref=preview)
         _append(rows, agent, attempt=attempt, workspace=None, scene="evidence", phase="final-release", category="workspace_control", purpose="Close the clean final regression workspace with an explicit no-op publication", op="write_command_stdin", args={"input": "publish\n", "yield_time_ms": 30000}, expect={"kind": "publish_noop"}, after=[rows[-1]["id"]], command_ref=anchor)
@@ -729,7 +787,7 @@ def inventory() -> dict[str, Any]:
             }
     tests["A10.final-regression"] = {
         "command": _final_regression_command(),
-        "subtests": ["Five-file storefront final regression passed"],
+        "subtests": ["Shared storefront final regression passed"],
         "subtest_count": 1,
         "allowed": {"skip": [], "todo": [], "cancelled": []},
     }
@@ -741,8 +799,18 @@ def materialized_tree() -> dict[str, str]:
     tree = dict(bootstrap_files())
     for agent in AGENTS:
         tree["src/registry.js"] = tree["src/registry.js"].replace(_registry_line(agent, "pending"), _registry_line(agent, "ready"))
+        tree["tests/storefront.test.mjs"] = tree["tests/storefront.test.mjs"].replace(
+            _shared_test_agent_line(agent, ready=False),
+            _shared_test_agent_line(agent, ready=True),
+        )
     tree["src/config.js"] = (
         tree["src/config.js"].replace("freeShippingCents: 5000", "freeShippingCents: 6000")
+        .replace("standardShippingCents: 700", "standardShippingCents: 650")
+        .replace("taxRate: 0.08", "taxRate: 0.075")
+        .replace("checkoutRetry: 'pending'", "checkoutRetry: 'complete'")
+    )
+    tree["tests/storefront.test.mjs"] = (
+        tree["tests/storefront.test.mjs"].replace("freeShippingCents: 5000", "freeShippingCents: 6000")
         .replace("standardShippingCents: 700", "standardShippingCents: 650")
         .replace("taxRate: 0.08", "taxRate: 0.075")
         .replace("checkoutRetry: 'pending'", "checkoutRetry: 'complete'")

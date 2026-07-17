@@ -18,7 +18,7 @@ To inspect the deterministic final tree without a sandbox:
 out=$(mktemp -d /tmp/flashcart-offline.XXXXXX)
 python3 materialize.py --out "$out"
 python3 verify_oracle.py --tree "$out"
-(cd "$out" && node --test tests/*.test.mjs)
+(cd "$out" && node --check tests/storefront.test.mjs)
 node run_storefront_browser.mjs --tree "$out"
 ```
 

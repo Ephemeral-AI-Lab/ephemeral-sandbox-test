@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A08.056:runtime",
+    "file_read",
+    "--path",
+    "tests/storefront.test.mjs",
+    "--workspace-session-id",
+    "00001718c32db094e57eb2"
+  ],
+  "cancelled": false,
+  "duration_ms": 45.053,
+  "kind": "public_cli_process",
+  "label": "A08.056",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 1721,
+    "content": "import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\n\nconst registry = await readFile(new URL('../src/registry.js', import.meta.url), 'utf8');\nconst config = await readFile(new URL('../src/config.js', import.meta.url), 'utf8');\n\nconst expectedPolicy = {\n  freeShippingCents: 6000,\n  standardShippingCents: 650,\n  taxRate: 0.075,\n  checkoutRetry: 'complete',\n};\n\ntest('published configuration matches the shared policy', () => Object.entries(expectedPolicy).forEach(([key, value]) => assert.ok(config.includes(`${key}: ${typeof value === 'string' ? `'${value}'` : value}`))));\n\ntest('A01 Foundation contribution is ready', () => assert.match(registry, /A01: \\{.*status: 'ready'/));\ntest('A02 Design system contribution is ready', () => assert.match(registry, /A02: \\{.*status: 'ready'/));\ntest('A03 Product data contribution is ready', () => assert.match(registry, /A03: \\{.*status: 'ready'/));\ntest('A04 Catalog and PDP contribution is ready', () => assert.match(registry, /A04: \\{.*status: 'ready'/));\ntest('A05 Search and facets contribution is ready', () => assert.match(registry, /A05: \\{.*status: 'ready'/));\ntest('A06 Cart and pricing contribution is ready', () => assert.match(registry, /A06: \\{.*status: 'ready'/));\ntest('A07 Wishlist contribution is ready', () => assert.match(registry, /A07: \\{.*status: 'ready'/));\ntest('A08 Checkout contribution is ready', () => assert.match(registry, /A08: \\{.*status: 'ready'/));\ntest('A09 Accessibility and performance contribution is ready', () => assert.match(registry, /A09: \\{.*status: 'ready'/));\ntest('A10 Integration QA contribution is ready', () => assert.match(registry, /A10: \\{.*status: 'ready'/));",
+    "next_offset": null,
+    "num_lines": 26,
+    "path": "tests/storefront.test.mjs",
+    "start_line": 1,
+    "total_bytes": 1722,
+    "total_lines": 26,
+    "truncated": false
+  },
+  "pid": 67070,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A08.056:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1180,
+  "stderr": "",
+  "stdout": "{\"path\":\"tests/storefront.test.mjs\",\"content\":\"import test from 'node:test';\\nimport assert from 'node:assert/strict';\\nimport { readFile } from 'node:fs/promises';\\n\\nconst registry = await readFile(new URL('../src/registry.js', import.meta.url), 'utf8');\\nconst config = await readFile(new URL('../src/config.js', import.meta.url), 'utf8');\\n\\nconst expectedPolicy = {\\n  freeShippingCents: 6000,\\n  standardShippingCents: 650,\\n  taxRate: 0.075,\\n  checkoutRetry: 'complete',\\n};\\n\\ntest('published configuration matches the shared policy', () => Object.entries(expectedPolicy).forEach(([key, value]) => assert.ok(config.includes(`${key}: ${typeof value === 'string' ? `'${value}'` : value}`))));\\n\\ntest('A01 Foundation contribution is ready', () => assert.match(registry, /A01: \\\\{.*status: 'ready'/));\\ntest('A02 Design system contribution is ready', () => assert.match(registry, /A02: \\\\{.*status: 'ready'/));\\ntest('A03 Product data contribution is ready', () => assert.match(registry, /A03: \\\\{.*status: 'ready'/));\\ntest('A04 Catalog and PDP contribution is ready', () => assert.match(registry, /A04: \\\\{.*status: 'ready'/));\\ntest('A05 Search and facets contribution is ready', () => assert.match(registry, /A05: \\\\{.*status: 'ready'/));\\ntest('A06 Cart and pricing contribution is ready', () => assert.match(registry, /A06: \\\\{.*status: 'ready'/));\\ntest('A07 Wishlist contribution is ready', () => assert.match(registry, /A07: \\\\{.*status: 'ready'/));\\ntest('A08 Checkout contribution is ready', () => assert.match(registry, /A08: \\\\{.*status: 'ready'/));\\ntest('A09 Accessibility and performance contribution is ready', () => assert.match(registry, /A09: \\\\{.*status: 'ready'/));\\ntest('A10 Integration QA contribution is ready', () => assert.match(registry, /A10: \\\\{.*status: 'ready'/));\",\"start_line\":1,\"num_lines\":26,\"total_lines\":26,\"bytes_read\":1721,\"total_bytes\":1722,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

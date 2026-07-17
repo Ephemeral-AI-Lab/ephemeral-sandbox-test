@@ -1,0 +1,161 @@
+{
+  "label": "checkpoint-network-clean",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "kind": "event",
+      "name": "lease.acquired",
+      "parent": "d-1868",
+      "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+      "ts": 1784320113279
+    },
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1873",
+      "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+      "ts": 1784320113341
+    },
+    {
+      "attrs": {
+        "revision": 12
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1880",
+      "trace": "e2e-direct-daemon-5a5ed9ec-6c66-45b1-a9bd-8514169650c3",
+      "ts": 1784320113518
+    },
+    {
+      "attrs": {
+        "revision": 12
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1883",
+      "trace": "e2e-direct-daemon-00f293e8-887b-4578-ad65-f8e49612ae5c",
+      "ts": 1784320113592
+    },
+    {
+      "attrs": {
+        "revision": 12
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1886",
+      "trace": "e2e-direct-daemon-53369c1a-f29d-40f5-8b41-320a8ef552a4",
+      "ts": 1784320113690
+    },
+    {
+      "attrs": {
+        "revision": 12
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1889",
+      "trace": "e2e-direct-daemon-a5dfba04-aaf1-4645-8069-f03d5e1d1554",
+      "ts": 1784320113790
+    },
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "kind": "event",
+      "name": "lease.acquired",
+      "parent": "d-1892",
+      "trace": "console-20260717T202759Z:A08.053:runtime",
+      "ts": 1784320113809
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1861",
+        "trace": "console-20260717T202759Z:A08.045:runtime",
+        "ts": 1784320113069
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.acquired",
+        "parent": "d-1868",
+        "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784320113279
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1873",
+        "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.conflict-rejected:runtime",
+        "ts": 1784320113341
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1880",
+        "trace": "e2e-direct-daemon-5a5ed9ec-6c66-45b1-a9bd-8514169650c3",
+        "ts": 1784320113518
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1883",
+        "trace": "e2e-direct-daemon-00f293e8-887b-4578-ad65-f8e49612ae5c",
+        "ts": 1784320113592
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1886",
+        "trace": "e2e-direct-daemon-53369c1a-f29d-40f5-8b41-320a8ef552a4",
+        "ts": 1784320113690
+      },
+      {
+        "attrs": {
+          "revision": 12
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1889",
+        "trace": "e2e-direct-daemon-a5dfba04-aaf1-4645-8069-f03d5e1d1554",
+        "ts": 1784320113790
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.acquired",
+        "parent": "d-1892",
+        "trace": "console-20260717T202759Z:A08.053:runtime",
+        "ts": 1784320113809
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784320113809
+}

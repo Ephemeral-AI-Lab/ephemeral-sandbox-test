@@ -1,0 +1,288 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "snapshot",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216"
+  ],
+  "cancelled": false,
+  "duration_ms": 58.707,
+  "kind": "public_cli_process",
+  "label": "checkpoint-ten-workspaces-snapshot",
+  "parse_error": null,
+  "parsed_json": {
+    "availability": "available",
+    "daemon": {
+      "daemon_pid": 7,
+      "event_store": {
+        "dropped_oversized": 0,
+        "dropped_storage": 0,
+        "truncated_records": 0
+      },
+      "runtime_dir": "/eos/runtime/daemon"
+    },
+    "errors": [],
+    "lifecycle_state": "ready",
+    "resources": {
+      "history": [],
+      "latest": null
+    },
+    "sampled_at_unix_ms": 1784320083358,
+    "sandbox_id": "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "stack": {
+      "active_leases": 10,
+      "layer_count": 2,
+      "layers_allocated_bytes": null,
+      "layers_bytes": null,
+      "staging_entry_count": 0,
+      "storage_allocated_bytes": 86016
+    },
+    "workspaces": [
+      {
+        "active_namespace_executions": [
+          {
+            "command": "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_3",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00000318c32da955032e0f"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "command": "node --input-type=module --eval \"import { createHash } from 'node:crypto'; import { readdir, readFile } from 'node:fs/promises'; const walk=async(d='.')=>{const out=[];for(const e of await readdir(d,{withFileTypes:true})){const p=(d==='.'?'':d+'/')+e.name;if(p==='.git'||p.startsWith('.git/')||p==='node_modules'||p.startsWith('node_modules/'))continue;if(e.isDirectory())out.push(...await walk(p));else if(e.isFile())out.push([p,createHash('sha256').update(await readFile(p)).digest('hex')]);}return out};console.log(JSON.stringify(Object.fromEntries((await walk()).sort((a,b)=>a[0].localeCompare(b[0])))));\"",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_14",
+            "operation": "exec_command"
+          },
+          {
+            "command": "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_4",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00000418c32da9581d8c22"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "command": "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_5",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00000518c32da95b0517ca"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "command": "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_6",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00000618c32da95e0d553d"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "command": "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_7",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00000718c32da96119d3e1"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "command": "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_8",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00000818c32da96456f1c9"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "command": "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_9",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00000918c32da9678a6ffd"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "command": "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_10",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00000a18c32da96a704a60"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "command": "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_11",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00000b18c32da96e19eed5"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "command": "set -eu\ncd /workspace\nprintf '__DEMO_READY__\\n'\nIFS= read -r action\n[ \"$action\" = publish ]",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_12",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "publish_then_destroy",
+        "layers": {
+          "base_root_hash": "bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608",
+          "layer_count": 2
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00000c18c32da971429264"
+      }
+    ]
+  },
+  "pid": 37895,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 96,
+  "stderr": "",
+  "stdout": "{\"sandbox_id\":\"eos-cb44de6a-0587-42bb-8c6d-bafad6473216\",\"lifecycle_state\":\"ready\",\"availability\":\"available\",\"sampled_at_unix_ms\":1784320083358,\"errors\":[],\"daemon\":{\"daemon_pid\":7,\"runtime_dir\":\"/eos/runtime/daemon\",\"event_store\":{\"dropped_storage\":0,\"dropped_oversized\":0,\"truncated_records\":0}},\"resources\":{\"latest\":null,\"history\":[]},\"workspaces\":[{\"workspace_id\":\"00000318c32da955032e0f\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"publish_then_destroy\",\"layers\":{\"base_root_hash\":\"bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608\",\"layer_count\":2},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_3\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"set -eu\\ncd /workspace\\nprintf '__DEMO_READY__\\\\n'\\nIFS= read -r action\\n[ \\\"$action\\\" = publish ]\"}]},{\"workspace_id\":\"00000418c32da9581d8c22\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"publish_then_destroy\",\"layers\":{\"base_root_hash\":\"bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608\",\"layer_count\":2},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_14\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"node --input-type=module --eval \\\"import { createHash } from 'node:crypto'; import { readdir, readFile } from 'node:fs/promises'; const walk=async(d='.')=>{const out=[];for(const e of await readdir(d,{withFileTypes:true})){const p=(d==='.'?'':d+'/')+e.name;if(p==='.git'||p.startsWith('.git/')||p==='node_modules'||p.startsWith('node_modules/'))continue;if(e.isDirectory())out.push(...await walk(p));else if(e.isFile())out.push([p,createHash('sha256').update(await readFile(p)).digest('hex')]);}return out};console.log(JSON.stringify(Object.fromEntries((await walk()).sort((a,b)=>a[0].localeCompare(b[0])))));\\\"\"},{\"namespace_execution_id\":\"namespace_execution_4\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"set -eu\\ncd /workspace\\nprintf '__DEMO_READY__\\\\n'\\nIFS= read -r action\\n[ \\\"$action\\\" = publish ]\"}]},{\"workspace_id\":\"00000518c32da95b0517ca\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"publish_then_destroy\",\"layers\":{\"base_root_hash\":\"bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608\",\"layer_count\":2},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_5\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"set -eu\\ncd /workspace\\nprintf '__DEMO_READY__\\\\n'\\nIFS= read -r action\\n[ \\\"$action\\\" = publish ]\"}]},{\"workspace_id\":\"00000618c32da95e0d553d\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"publish_then_destroy\",\"layers\":{\"base_root_hash\":\"bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608\",\"layer_count\":2},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_6\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"set -eu\\ncd /workspace\\nprintf '__DEMO_READY__\\\\n'\\nIFS= read -r action\\n[ \\\"$action\\\" = publish ]\"}]},{\"workspace_id\":\"00000718c32da96119d3e1\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"publish_then_destroy\",\"layers\":{\"base_root_hash\":\"bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608\",\"layer_count\":2},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_7\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"set -eu\\ncd /workspace\\nprintf '__DEMO_READY__\\\\n'\\nIFS= read -r action\\n[ \\\"$action\\\" = publish ]\"}]},{\"workspace_id\":\"00000818c32da96456f1c9\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"publish_then_destroy\",\"layers\":{\"base_root_hash\":\"bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608\",\"layer_count\":2},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_8\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"set -eu\\ncd /workspace\\nprintf '__DEMO_READY__\\\\n'\\nIFS= read -r action\\n[ \\\"$action\\\" = publish ]\"}]},{\"workspace_id\":\"00000918c32da9678a6ffd\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"publish_then_destroy\",\"layers\":{\"base_root_hash\":\"bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608\",\"layer_count\":2},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_9\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"set -eu\\ncd /workspace\\nprintf '__DEMO_READY__\\\\n'\\nIFS= read -r action\\n[ \\\"$action\\\" = publish ]\"}]},{\"workspace_id\":\"00000a18c32da96a704a60\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"publish_then_destroy\",\"layers\":{\"base_root_hash\":\"bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608\",\"layer_count\":2},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_10\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"set -eu\\ncd /workspace\\nprintf '__DEMO_READY__\\\\n'\\nIFS= read -r action\\n[ \\\"$action\\\" = publish ]\"}]},{\"workspace_id\":\"00000b18c32da96e19eed5\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"publish_then_destroy\",\"layers\":{\"base_root_hash\":\"bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608\",\"layer_count\":2},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_11\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"set -eu\\ncd /workspace\\nprintf '__DEMO_READY__\\\\n'\\nIFS= read -r action\\n[ \\\"$action\\\" = publish ]\"}]},{\"workspace_id\":\"00000c18c32da971429264\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"publish_then_destroy\",\"layers\":{\"base_root_hash\":\"bcd4682efc9385ae5b5ae8775b8928a4342bb89bb96b33ba7564165cffcad608\",\"layer_count\":2},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_12\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"set -eu\\ncd /workspace\\nprintf '__DEMO_READY__\\\\n'\\nIFS= read -r action\\n[ \\\"$action\\\" = publish ]\"}]}],\"stack\":{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_allocated_bytes\":86016,\"staging_entry_count\":0,\"active_leases\":10}}\n",
+  "timed_out": false
+}

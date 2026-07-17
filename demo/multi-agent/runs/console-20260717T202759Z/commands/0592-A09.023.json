@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A09.023:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A09: { id: 'A09', role: 'Accessibility and performance', stage: 'accessibility', deterministic: true, verify() { return true; }, auditDocument(documentLike) { return { hasMain: Boolean(documentLike && documentLike.main), reducedMotion: true, maxImageBytes: 120000 }; }, fixture: 'accessibility-fixture', view: '<section data-domain=\\\"accessibility\\\"></section>', focusVisible: true, keyboard: true, reducedMotion: true },\",\n    \"old_string\": \"  A09: { id: 'A09', role: 'Accessibility and performance', stage: 'style', deterministic: true, verify() { return true; }, auditDocument(documentLike) { return { hasMain: Boolean(documentLike && documentLike.main), reducedMotion: true, maxImageBytes: 120000 }; }, fixture: 'accessibility-fixture', view: '<section data-domain=\\\"accessibility\\\"></section>', focusVisible: true },\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000b18c32da96e19eed5"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.166,
+  "kind": "public_cli_process",
+  "label": "A09.023",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 670,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 47181,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A09.023:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 592,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":670}\n",
+  "timed_out": false
+}
