@@ -134,3 +134,23 @@ set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T163816+0800-obs
 **Fix** - Complete final static verification and the run-owned resource audit, then close out the implementation.
 
 ---
+
+### Iteration 10 - merged-main Docker proof and web-console demo
+
+**Command**
+```bash
+set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T170651+0800-observability-cgroup-main PYTHONPATH=e2e .venv/bin/python -m pytest e2e/observability/cgroup -vv --test-repository-root /tmp/eos-topology-e2e.uaA3dl/main --product-root /tmp/eos-topology-product.rMhibO/main 2>&1 | tee e2e/.artifacts/20260717T170651+0800-observability-cgroup-main/pytest.log
+```
+
+**Execution correction**
+```bash
+set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T170651+0800-observability-cgroup-main PYTHONPATH=e2e /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python -m pytest e2e/observability/cgroup -vv --test-repository-root /private/tmp/eos-topology-e2e.uaA3dl/main --product-root /private/tmp/eos-topology-product.rMhibO/main 2>&1 | tee e2e/.artifacts/20260717T170651+0800-observability-cgroup-main/pytest.log
+```
+
+**Good** - The complete merged-main `e2e/observability/cgroup` family passed in the Docker sandbox (9/9, 22.28s). Fixture teardown destroyed all nine run-owned sandboxes. A retained two-workspace console demo independently matched holder/process PID and mount namespace device/inode identities and remained available with a read-only cgroup mount and `0::/` membership. Artifacts: `e2e/.artifacts/20260717T170651+0800-observability-cgroup-main/pytest.log` and `/Users/yifanxu/Ephemeral-AI-Lab/observability-cgroup-demo-workspace-2-20260717.png`.
+
+**Defect** - The temporary main worktree lacked generated `dist/git` archives, and the first pytest launcher used non-canonical `/tmp` roots. Neither failure reached a product assertion.
+
+**Fix** - Reused the repository's packaged Git toolchains through `SANDBOX_GIT_TOOLCHAIN_DIR`, rebuilt and reloaded the merged-main Docker gateway/console, and reran with canonical `/private/tmp` roots without weakening assertions.
+
+---
