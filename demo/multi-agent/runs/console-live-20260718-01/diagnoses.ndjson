@@ -1,0 +1,7 @@
+{
+  "classification": "runner_or_artifact",
+  "defect": "defects/0001-execution.json",
+  "disposition": "blocked_external_gateway_or_stale_binary",
+  "patch_or_test": "tests/test_phase2.py::test_gateway_permission_error_is_environment_classified",
+  "root_cause": "retained public CLI response; no mutation was reissued"
+}

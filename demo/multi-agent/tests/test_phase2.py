@@ -187,6 +187,34 @@ class Phase2CliTests(unittest.TestCase):
                 "request-label:ENGINE.bootstrap.src-config.js:runtime",
             )
 
+    def test_cgroup_readiness_accepts_only_the_documented_transient_empty_ring(self) -> None:
+        pending = {
+            "view": "cgroup",
+            "scope": "sandbox",
+            "availability": "partial",
+            "errors": ["resource ring is not available yet"],
+            "series": [],
+        }
+        self.assertIsNone(run_demo.cgroup_metrics(pending))
+
+        ready = {
+            "view": "cgroup",
+            "scope": "sandbox",
+            "series": [{"metrics": {
+                "cpu_usec": 1, "mem_cur": 2, "mem_max": 3,
+                "io_rbytes": 4, "io_wbytes": 5,
+            }}],
+        }
+        self.assertEqual(run_demo.cgroup_metrics(ready)["mem_cur"], 2)
+
+        for invalid in (
+            {**pending, "errors": ["another error"]},
+            {**pending, "availability": "available"},
+            {**ready, "series": [{"metrics": {"cpu_usec": 1}}]},
+        ):
+            with self.assertRaises(run_demo.DemoFailure):
+                run_demo.cgroup_metrics(invalid)
+
     def test_ten_lane_spike_run_id_is_bounded_without_losing_scene_identity(self) -> None:
         agents = [f"A{number:02d}" for number in range(1, 11)]
         run_id = run_demo.spike_run_id(1, "ten-lane", agents, "20260714T065400Z")

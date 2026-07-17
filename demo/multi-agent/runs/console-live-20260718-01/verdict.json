@@ -1,0 +1,5 @@
+{
+  "error": "DemoFailure: lane failure before gates ('A01.001', 'A02.001', 'A03.001', 'A04.001', 'A05.001', 'A06.001', 'A07.001', 'A08.001', 'A09.001', 'A10.001'): DemoFailure: observer failed: observer cgroup sample 1 is invalid: {'view': 'cgroup', 'scope': 'sandbox', 'availability': 'partial', 'errors': ['resource ring is not available yet'], 'series': [], 'topology': {'schema_version': 2, 'available': False, 'source': None, 'error': 'daemon topology is not queried by the manager resource route', 'truncated': False, 'warnings': [], 'workspaces': []}}",
+  "run_id": "console-live-20260718-01",
+  "status": "FAIL"
+}

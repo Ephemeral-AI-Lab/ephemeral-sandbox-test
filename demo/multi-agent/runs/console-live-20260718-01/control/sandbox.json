@@ -1,0 +1,31 @@
+{
+  "attached": {
+    "activity_revision": 0,
+    "daemon": {
+      "host": "127.0.0.1",
+      "port": 57222
+    },
+    "daemon_http": {
+      "host": "127.0.0.1",
+      "port": 57223
+    },
+    "id": "eos-d04792bd-1c27-4eec-9af0-f2bac0f1f2ae",
+    "shared_base": {
+      "readonly": true,
+      "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "<host-path>",
+      "target": "/eos/layer-stack/base"
+    },
+    "state": "ready",
+    "workspace_root": "<host-path>"
+  },
+  "baseline_ids": [
+    "eos-373f2c73-9f70-4d04-ac65-6c8f3979eb86",
+    "eos-71a07627-8387-4f84-84ec-1a0fc01ff221",
+    "eos-8186b0ee-7eb2-4ba0-ac2c-bb6042df9728",
+    "eos-cefaf2c1-a0ab-4ff0-8845-84e89f6d1948",
+    "eos-d04792bd-1c27-4eec-9af0-f2bac0f1f2ae"
+  ],
+  "ownership": "external_target",
+  "workspace_bind_root": "<host-path>"
+}

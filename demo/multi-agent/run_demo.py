@@ -68,6 +68,31 @@ class DemoFailure(RuntimeError):
     """A plan assertion failed after its raw response was retained."""
 
 
+CGROUP_REQUIRED_METRICS = {
+    "cpu_usec", "mem_cur", "mem_max", "io_rbytes", "io_wbytes",
+}
+CGROUP_RING_PENDING_ERRORS = ["resource ring is not available yet"]
+
+
+def cgroup_metrics(sample: dict[str, Any]) -> dict[str, Any] | None:
+    """Return aggregate metrics, or None for the one documented startup state."""
+    series = sample.get("series")
+    if sample.get("view") != "cgroup" or not isinstance(series, list):
+        raise DemoFailure(f"invalid cgroup response: {sample}")
+    if not series:
+        if (
+            sample.get("availability") == "partial"
+            and sample.get("errors") == CGROUP_RING_PENDING_ERRORS
+        ):
+            return None
+        raise DemoFailure(f"empty cgroup response outside resource-ring startup: {sample}")
+    latest = series[-1]
+    metrics = latest.get("metrics") if isinstance(latest, dict) else None
+    if not isinstance(metrics, dict) or not CGROUP_REQUIRED_METRICS <= set(metrics):
+        raise DemoFailure(f"cgroup response lacks aggregate metrics: {sample}")
+    return metrics
+
+
 def canonical(value: Any) -> bytes:
     return (json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
@@ -410,14 +435,29 @@ def load_plans() -> dict[str, list[dict[str, Any]]]:
 class Runner:
     """Stateful executor for exactly one immutable FlashCart run."""
 
-    def __init__(self, evidence: ImmutableEvidence, *, keep_sandbox: bool = False):
+    def __init__(
+        self,
+        evidence: ImmutableEvidence,
+        *,
+        keep_sandbox: bool = False,
+        target_sandbox_id: str | None = None,
+        target_workspace_root: Path | None = None,
+    ):
+        if (target_sandbox_id is None) != (target_workspace_root is None):
+            raise ValueError(
+                "target_sandbox_id and target_workspace_root must be provided together"
+            )
+        if keep_sandbox and target_sandbox_id is not None:
+            raise ValueError("an attached target sandbox is retained automatically")
         self.evidence = evidence
         self.keep_sandbox = keep_sandbox
+        self.target_sandbox_id = target_sandbox_id
+        self.owns_sandbox = target_sandbox_id is None
         self.plans = load_plans()
         self.run_id = evidence.run_id
         self.cancel = threading.Event()
         self.processes = None
-        self.sandbox_id: str | None = None
+        self.sandbox_id: str | None = target_sandbox_id
         self.baseline: set[str] = set()
         self.workspace: dict[str, str] = {}
         self.command: dict[str, str] = {}
@@ -461,7 +501,11 @@ class Runner:
         self._command_output_lock = asyncio.Lock()
         self.execution_verdict = "running"
         self.cleanup_verdict = "pending"
-        self.work_root = TEST_REPOSITORY / ".e2e-state" / "flashcart" / "workspaces" / self.run_id
+        self.work_root = (
+            target_workspace_root.expanduser().resolve()
+            if target_workspace_root is not None
+            else TEST_REPOSITORY / ".e2e-state" / "flashcart" / "workspaces" / self.run_id
+        )
 
     def event_for(self, name: str) -> asyncio.Event:
         if name not in self.events:
@@ -516,6 +560,7 @@ class Runner:
                 "title": "FlashCart: ten agents, one workspace",
                 "elapsed_ms": self.elapsed_ms(),
                 "sandbox_id": self.sandbox_id,
+                "sandbox_mode": "owned" if self.owns_sandbox else "attached_target",
                 "calls": {
                     "completed": len(self.completed), "planned": sum(len(rows) for rows in self.plans.values()),
                     "agent": self._agent_count, "engine": self._engine_count,
@@ -646,7 +691,7 @@ class Runner:
         return response
 
     async def prepare(self) -> None:
-        """Validate sealed inputs, record baseline, create one isolated demo sandbox."""
+        """Validate inputs, then create or attach to one isolated demo sandbox."""
         self.checkpoint("preflight")
         result = await asyncio.to_thread(validate_preflight)
         self.evidence.write_once("assertions/preflight.json", result)
@@ -654,21 +699,75 @@ class Runner:
             raise DemoFailure("preflight validation failed")
         listing = await self.manager("baseline-list", "list_sandboxes")
         self.baseline = {item["id"] for item in listing.get("sandboxes", []) if isinstance(item, dict) and isinstance(item.get("id"), str)}
-        self.work_root.parent.mkdir(parents=True, exist_ok=True)
-        self.work_root.mkdir()
         # This is the timing boundary defined by the specification: static
         # validation and baseline inspection are done, and sandbox ownership
-        # begins with the next public manager operation.
+        # or attachment begins with the next public manager operation.
         self.mark_execution_start()
-        created = await self.manager("create-sandbox", "create_sandbox", "--image", "node:24-bookworm-slim", "--workspace-bind-root", str(self.work_root))
-        self.sandbox_id = created.get("id")
-        if not isinstance(self.sandbox_id, str):
-            raise DemoFailure("create_sandbox response lacks id")
-        self.evidence.write_once("control/sandbox.json", {"baseline_ids": sorted(self.baseline), "created": created, "workspace_bind_root": str(self.work_root)})
+        if self.owns_sandbox:
+            self.work_root.parent.mkdir(parents=True, exist_ok=True)
+            self.work_root.mkdir()
+            created = await self.manager("create-sandbox", "create_sandbox", "--image", "node:24-bookworm-slim", "--workspace-bind-root", str(self.work_root))
+            self.sandbox_id = created.get("id")
+            if not isinstance(self.sandbox_id, str):
+                raise DemoFailure("create_sandbox response lacks id")
+            control = {
+                "baseline_ids": sorted(self.baseline),
+                "created": created,
+                "workspace_bind_root": str(self.work_root),
+                "ownership": "runner",
+            }
+        else:
+            if not self.work_root.is_dir() or any(self.work_root.iterdir()):
+                raise DemoFailure(
+                    f"attached target workspace must be an existing empty directory: {self.work_root}"
+                )
+            if self.sandbox_id not in self.baseline:
+                raise DemoFailure(f"attached target sandbox is not registered: {self.sandbox_id}")
+            attached = await self.manager(
+                "inspect-target-sandbox", "inspect_sandbox", "--sandbox-id", self.sandbox_id
+            )
+            if attached.get("id") != self.sandbox_id:
+                raise DemoFailure("inspect_sandbox returned another target")
+            control = {
+                "baseline_ids": sorted(self.baseline),
+                "attached": attached,
+                "workspace_bind_root": str(self.work_root),
+                "ownership": "external_target",
+            }
+        self.evidence.write_once("control/sandbox.json", control)
         await self.bootstrap()
         await self.capture_checkpoint("bootstrap", scene="fanout")
+        await self.wait_for_cgroup_ready()
         self.event_for("bootstrap-published").set()
         self.checkpoint("bootstrap-published")
+
+    async def wait_for_cgroup_ready(self, *, timeout_seconds: float = 10.0) -> None:
+        """Wait for the manager's first real aggregate sample before fan-out."""
+        if not self.sandbox_id:
+            raise DemoFailure("cgroup readiness check without sandbox")
+        deadline = time.monotonic() + timeout_seconds
+        attempt = 0
+        while True:
+            attempt += 1
+            sample = await self.observability(
+                f"cgroup-ready-{attempt:04d}", "cgroup", "--sandbox-id", self.sandbox_id,
+                "--scope", "sandbox", "--window-ms", "600000",
+            )
+            if cgroup_metrics(sample) is not None:
+                self.evidence.write_once("assertions/cgroup-ready.json", {
+                    "attempts": attempt,
+                    "condition": "first_real_aggregate_cgroup_sample",
+                    "response": sample,
+                })
+                return
+            if time.monotonic() >= deadline:
+                raise DemoFailure(
+                    f"resource ring did not produce an aggregate sample within {timeout_seconds:g}s"
+                )
+            # The manager's resource sampler is asynchronous. Poll the exact
+            # readiness condition; this interval limits CLI churn and is not
+            # used as a claim that the resource ring must be ready by then.
+            await asyncio.sleep(0.25)
 
     async def bootstrap(self) -> None:
         """Publish only the three documented minimal bootstrap files via Node APIs."""
@@ -1015,14 +1114,8 @@ class Runner:
                 f"observer-cgroup-{ordinal:04d}", "cgroup", "--sandbox-id", self.sandbox_id,
                 "--scope", "sandbox", "--window-ms", "600000",
             )
-            series = sample.get("series")
-            if sample.get("view") != "cgroup" or not isinstance(series, list) or not series:
-                raise DemoFailure(f"observer cgroup sample {ordinal} is invalid: {sample}")
-            latest = series[-1]
-            metrics = latest.get("metrics") if isinstance(latest, dict) else None
-            required = {"cpu_usec", "mem_cur", "mem_max", "io_rbytes", "io_wbytes"}
-            if not isinstance(metrics, dict) or not required <= set(metrics):
-                raise DemoFailure(f"observer cgroup sample {ordinal} lacks aggregate metrics")
+            if cgroup_metrics(sample) is None:
+                raise DemoFailure(f"observer cgroup readiness regressed at sample {ordinal}")
             value = {"ordinal": ordinal, "captured_at": utc_stamp(), "response": sample}
             self.evidence.write_once(f"observability/cgroup/{ordinal:04d}.json", value)
             self._cgroup_samples.append(value)
@@ -1606,7 +1699,7 @@ class Runner:
                     raise DemoFailure("trusted cleanup destroy returned another workspace")
             except BaseException as exc:
                 cleanup_errors.append(f"{ref}: {type(exc).__name__}: {exc}")
-        if self.sandbox_id and not self.keep_sandbox:
+        if self.sandbox_id and self.owns_sandbox and not self.keep_sandbox:
             try:
                 await self.manager("destroy-sandbox", "destroy_sandbox", "--sandbox-id", self.sandbox_id)
                 final = await self.manager("cleanup-list", "list_sandboxes")
@@ -1618,7 +1711,7 @@ class Runner:
                 self.cleanup_verdict = "clean"
             finally:
                 self.sandbox_id = None
-        if not self.keep_sandbox:
+        if self.owns_sandbox and not self.keep_sandbox:
             try:
                 if self.work_root.exists():
                     shutil.rmtree(self.work_root)
@@ -1629,12 +1722,25 @@ class Runner:
             except BaseException:
                 # The top-level failure evidence must retain the original cleanup fault.
                 raise
+        if not self.owns_sandbox:
+            self.evidence.write_once("control/cleanup.json", {
+                "baseline_ids": sorted(self.baseline),
+                "target_sandbox": self.sandbox_id,
+                "ownership": "external_target",
+                "retained": True,
+                "clean": not cleanup_errors,
+                "errors": cleanup_errors,
+            })
         if cleanup_errors:
             self.cleanup_verdict = "failed"
             self.mark_execution_terminal()
             raise DemoFailure("; ".join(cleanup_errors))
         if self.cleanup_verdict == "pending":
-            self.cleanup_verdict = "clean" if not self.keep_sandbox else "retained-debug"
+            self.cleanup_verdict = (
+                "clean"
+                if not self.keep_sandbox
+                else "retained-debug"
+            )
         self.mark_execution_terminal()
         self.checkpoint("passed" if self.execution_verdict == "passed" and self.cleanup_verdict == "clean" else "failed")
 
@@ -1662,7 +1768,12 @@ def configure_harness() -> None:
 async def run_command(args: argparse.Namespace) -> int:
     configure_harness()
     evidence = ImmutableEvidence(safe_run_id(args.run_id), create=True)
-    runner = Runner(evidence, keep_sandbox=args.keep_sandbox)
+    runner = Runner(
+        evidence,
+        keep_sandbox=args.keep_sandbox,
+        target_sandbox_id=args.target_sandbox_id,
+        target_workspace_root=args.target_workspace_root,
+    )
     try:
         freeze_run_inputs(evidence)
         await runner.run()
@@ -1772,6 +1883,15 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     run = sub.add_parser("run", help="run the live FlashCart plan")
     run.add_argument("--run-id")
     run.add_argument("--keep-sandbox", action="store_true", help="debug-only: retain the owned sandbox")
+    run.add_argument(
+        "--target-sandbox-id",
+        help="attach the 482 authored operations to an existing sandbox and retain it",
+    )
+    run.add_argument(
+        "--target-workspace-root",
+        type=Path,
+        help="empty host workspace already bound to --target-sandbox-id",
+    )
     export = sub.add_parser("export", help="install a redacted recorded package from a terminal clean run")
     export.add_argument("--run-id", required=True)
     verify = sub.add_parser("verify-export", help="rehash a recorded package")
@@ -1780,7 +1900,16 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     serve.add_argument("--run-id", required=True)
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8765)
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.command == "run":
+        attached = args.target_sandbox_id is not None or args.target_workspace_root is not None
+        if (args.target_sandbox_id is None) != (args.target_workspace_root is None):
+            parser.error(
+                "--target-sandbox-id and --target-workspace-root must be provided together"
+            )
+        if attached and args.keep_sandbox:
+            parser.error("--keep-sandbox cannot be combined with an attached target")
+    return args
 
 
 def main(argv: list[str] | None = None) -> int:
