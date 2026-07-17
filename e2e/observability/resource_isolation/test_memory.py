@@ -349,6 +349,7 @@ def test_idle_daemon_memory_neutral(
         "does not contact daemons, mutate storage, or retain anonymous memory."
     ),
     features=(
+        "observability.snapshot",
         "observability.cgroup",
         "manager.management",
     ),
