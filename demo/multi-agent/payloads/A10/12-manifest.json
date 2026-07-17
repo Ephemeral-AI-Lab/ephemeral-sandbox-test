@@ -1,13 +1,6 @@
-{
-  "owner": "A10",
-  "paths": {
-    "a11y": "src/features/A10-qa-a11y.js",
-    "core": "src/features/A10-qa.js",
-    "data": "src/features/A10-qa-data.js",
-    "manifest": "src/features/A10-qa.json",
-    "style": "src/features/A10-qa.css",
-    "view": "src/features/A10-qa-view.js"
-  },
-  "role": "Integration QA",
-  "schema_version": 1
-}
+[
+  {
+    "new_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'manifest', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }, fixture: 'qa-fixture', view: '<section data-domain=\"qa\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A10', schemaVersion: 1 },",
+    "old_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'accessibility', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }, fixture: 'qa-fixture', view: '<section data-domain=\"qa\"></section>', focusVisible: true, keyboard: true, reducedMotion: true },"
+  }
+]

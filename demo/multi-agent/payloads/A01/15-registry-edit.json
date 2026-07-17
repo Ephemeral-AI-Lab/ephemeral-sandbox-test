@@ -1,6 +1,6 @@
 [
   {
-    "new_string": "  A01: { role: 'Foundation', entry: 'src/features/A01-foundation.js' },",
-    "old_string": "  A01: null,"
+    "new_string": "  A01: { id: 'A01', role: 'Foundation', stage: 'ready', deterministic: true, verify() { return true; }, routeFor(path) { return ['/', '/catalog', '/checkout'].includes(path) ? path : '/not-found'; }, fixture: 'foundation-fixture', view: '<section data-domain=\"foundation\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A01', schemaVersion: 1, status: 'ready' },",
+    "old_string": "  A01: { id: 'A01', role: 'Foundation', stage: 'manifest', deterministic: true, verify() { return true; }, routeFor(path) { return ['/', '/catalog', '/checkout'].includes(path) ? path : '/not-found'; }, fixture: 'foundation-fixture', view: '<section data-domain=\"foundation\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A01', schemaVersion: 1 },"
   }
 ]

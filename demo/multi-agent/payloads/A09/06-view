@@ -1,5 +1,6 @@
-(function (root) {
-  root.FlashCart = root.FlashCart || {};
-  root.FlashCart.views = root.FlashCart.views || {};
-  root.FlashCart.views.A09 = function () { return '<section data-feature="A09"><h2>Accessibility and performance</h2><p>keyboard, live regions, reduced motion, and budgets</p></section>'; };
-})(globalThis);
+[
+  {
+    "new_string": "  A09: { id: 'A09', role: 'Accessibility and performance', stage: 'view', deterministic: true, verify() { return true; }, auditDocument(documentLike) { return { hasMain: Boolean(documentLike && documentLike.main), reducedMotion: true, maxImageBytes: 120000 }; }, fixture: 'accessibility-fixture', view: '<section data-domain=\"accessibility\"></section>' },",
+    "old_string": "  A09: { id: 'A09', role: 'Accessibility and performance', stage: 'data', deterministic: true, verify() { return true; }, auditDocument(documentLike) { return { hasMain: Boolean(documentLike && documentLike.main), reducedMotion: true, maxImageBytes: 120000 }; }, fixture: 'accessibility-fixture' },"
+  }
+]

@@ -122,6 +122,7 @@
     .avatars { display:flex; padding-left:6px }
     .tiny-avatar { width:20px; height:20px; display:grid; place-items:center; margin-left:-6px; color:#fff; background:var(--agent); border:2px solid #fff; border-radius:50%; font-size:7px; font-weight:850 }
     .collab-grid { grid-template-columns:repeat(3,minmax(0,1fr)); margin-bottom:16px }
+    .collab-grid .collab-card:nth-child(n+4) { grid-column:span 1 }
     .collab-card { min-width:0; min-height:156px; display:flex; flex-direction:column; padding:16px; background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); transition:border-color .18s,box-shadow .18s,transform .18s }
     .collab-card:hover { border-color:#bfdbfe; box-shadow:0 10px 24px rgba(37,99,235,.08); transform:translateY(-1px) }
     .collab-card-top { display:flex; align-items:center; justify-content:space-between; gap:10px }
@@ -183,12 +184,32 @@
     .ownership-block { min-width:130px }
     .ownership-block label { display:block; margin-bottom:4px; color:var(--muted); font-size:9px; font-weight:800; letter-spacing:.05em; text-transform:uppercase }
     .source { margin:0; padding:10px 0; background:#fbfcfe; border-bottom:1px solid var(--line); overflow:auto; font:11px/1.72 var(--mono) }
-    .source-line { min-width:max-content; display:grid; grid-template-columns:44px 86px minmax(620px,1fr); min-height:22px }
+    .source-line { min-width:max-content; display:grid; grid-template-columns:44px 150px minmax(620px,1fr); min-height:22px; border-left:3px solid transparent }
+    .source-line.owned { border-left-color:var(--agent); background:color-mix(in srgb,var(--agent) 6%,transparent) }
+    .source-line.contested { box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--amber) 32%,transparent); background:var(--amber-soft) }
+    .source.no-ownership .source-line { grid-template-columns:44px minmax(620px,1fr) }
     .source-line:hover { background:#f1f5f9 }
     .line-no { padding-right:10px; color:var(--muted-2); text-align:right; user-select:none }
-    .blame-owner { display:flex; align-items:center; gap:5px; padding-left:9px; border-left:3px solid var(--agent,#cbd5e1); color:#475569; font-size:9px }
-    .line-code { padding:0 14px; white-space:pre }
+    .blame-owner { display:flex; align-items:center; gap:6px; padding-left:9px; color:#334155; font-size:9px; font-weight:750 }
+    .blame-owner::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--agent,#cbd5e1); box-shadow:0 0 0 2px #fff }
+    .blame-owner.contenders { display:grid; grid-template-columns:7px auto; gap:0 6px; align-content:center; padding-block:3px }
+    .blame-owner.contenders::before { grid-row:1/3 }
+    .blame-owner.contenders b { font-size:9px; line-height:1.25 }
+    .blame-owner.contenders i { color:#92400e; font-size:8px; font-style:normal; font-weight:700; line-height:1.25 }
+    .line-code { display:flex; align-items:center; gap:8px; padding:0 14px; white-space:pre }
+    .line-conflict { padding:1px 5px; border:1px solid #fcd34d; border-radius:99px; color:#92400e; background:#fff7d6; font:700 8px/1.3 ui-sans-serif,system-ui,sans-serif; white-space:nowrap }
+    .ownership-map { padding:12px 16px; border-bottom:1px solid var(--line); background:#fff }
+    .ownership-map-head { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:9px }
+    .ownership-map-head strong { display:block; font-size:11px }
+    .ownership-map-head span { color:var(--muted); font-size:9px }
+    .ownership-ranges { display:flex; flex-wrap:wrap; gap:7px }
+    .owner-range { display:grid; grid-template-columns:8px auto; align-items:center; gap:2px 7px; min-width:154px; padding:8px 10px; border:1px solid var(--line); border-radius:7px; background:#fbfcfe }
+    .owner-range i { grid-row:1/3; width:8px; height:28px; border-radius:5px; background:var(--agent) }
+    .owner-range b { font-size:10px }
+    .owner-range span { color:var(--muted); font:9px var(--mono) }
     .source-empty { display:grid; place-items:center; min-height:300px; color:var(--muted); text-align:center }
+    .ownership-note { display:flex; align-items:flex-start; gap:9px; padding:10px 16px; color:#475569; background:#f8fafc; border-bottom:1px solid var(--line); font-size:10px; line-height:1.5 }
+    .ownership-note svg { width:15px; height:15px; flex:0 0 auto; margin-top:1px; color:var(--blue) }
     .provenance { display:flex; align-items:center; gap:8px; min-height:42px; padding:0 16px; color:var(--muted); background:#fff; font-size:10px }
     .provenance svg { width:15px; height:15px; color:var(--blue) }
     .conflict-layout { display:grid; grid-template-columns:270px minmax(0,1fr); min-height:700px }
@@ -196,11 +217,14 @@
     .conflict-item { display:block; padding:14px; border-bottom:1px solid var(--line); background:#fff }
     .conflict-item.active { background:var(--amber-soft); box-shadow:inset 3px 0 var(--amber) }
     .conflict-item strong { display:block; margin:7px 0 3px; font-size:11px }
+    .conflict-item span.conflict-location { display:block; color:#92400e; font:9px/1.4 var(--mono) }
     .conflict-item code { color:var(--muted); font:9px/1.4 var(--mono) }
     .conflict-main { padding:18px }
     .conflict-title { display:flex; align-items:flex-start; justify-content:space-between; gap:15px; margin-bottom:16px }
     .conflict-title h2 { margin:4px 0; font-size:19px }
     .conflict-title p { margin:0; color:var(--muted); font-size:11px }
+    .conflict-group-note { display:flex; align-items:center; gap:9px; margin-bottom:12px; padding:10px 12px; color:#78350f; background:var(--amber-soft); border:1px solid #fde68a; border-radius:7px; font-size:10px }
+    .conflict-group-note svg { width:15px; height:15px }
     .sequence { display:flex; align-items:center; gap:0; padding:14px 16px; margin-bottom:16px; overflow:auto; background:#fff; border:1px solid var(--line); border-radius:8px }
     .seq-step { min-width:105px; text-align:center }
     .seq-dot { width:24px; height:24px; display:grid; place-items:center; margin:0 auto 7px; border-radius:50%; color:#fff; background:var(--green); font-size:10px; font-weight:800 }
@@ -293,7 +317,8 @@
     const pct = (n,d) => d ? Math.max(0,Math.min(100,(n/d)*100)) : 0;
     const nfmt = (n) => Number.isFinite(Number(n)) ? Number(n).toLocaleString() : "—";
     const time = (ms) => { const s=Math.max(0,Math.round((ms||0)/1000)); const m=Math.floor(s/60); return `${String(m).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`; };
-    const hue = (id) => { let h=0; for(const c of String(id)) h=(h*31+c.charCodeAt(0))>>>0; return `hsl(${h%360} 62% 45%)`; };
+    const agentPalette = ["#2563eb","#7c3aed","#0f766e","#c2410c","#be185d","#4f46e5","#15803d","#b45309","#0369a1","#a21caf"];
+    const hue = (id) => { const value=String(id), match=/^A(\d+)$/.exec(value); let seed=match?Number(match[1])-1:0; if(!match) for(const c of value) seed=(seed*33+c.charCodeAt(0))>>>0; return agentPalette[Math.abs(seed)%agentPalette.length]; };
     const short = (v,n=15) => v ? String(v).slice(0,n)+(String(v).length>n?"…":"") : "—";
     const icons = {
       mark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4h10l4 7-4 9H7l-4-9 4-7Z"/><path d="m8.5 13 2.2 2.2 4.8-5"/></svg>',
@@ -316,7 +341,7 @@
       ["control","Control Room","room"],["agents","Agents","agents"],["operations","Operations","operations"],
       ["files","Files","files"],["conflicts","Conflicts","conflict"],["preview","Output Preview","preview"],["evidence","Evidence","evidence"]
     ];
-    const ui = { opAgent:"", opType:"", opStatus:"", opSearch:"", fileSearch:"", fileMode:"collab", busy:"", error:"" };
+    const ui = { opAgent:"", opType:"", opStatus:"", opSearch:"", fileSearch:"", fileMode:"showcase", busy:"", error:"" };
     let state=null, disconnected=false, pollTimer=null, lastFingerprint="";
 
     function route() {
@@ -332,15 +357,21 @@
     function avatars(ids,max=4) { const list=(ids||[]).slice(0,max); return `<span class="avatars">${list.map(id=>`<i class="tiny-avatar" title="${esc(id)}" style="--agent:${hue(id)}">${esc(id.slice(1))}</i>`).join("")}${(ids||[]).length>max?`<i class="tiny-avatar" style="--agent:#64748b">+${(ids||[]).length-max}</i>`:""}</span>`; }
     function empty(title,copy,icon="info") { return `<div class="empty"><div><div class="empty-icon">${icons[icon]}</div><strong>${esc(title)}</strong><span>${esc(copy)}</span></div></div>`; }
     function collaborationFiles(files) {
-      const priority={"src/app.js":0,"src/registry.js":1,"index.html":2,"src/config.js":3};
+      const priority={"src/registry.js":0,"src/config.js":1,"src/app.js":2,"src/styles.css":3,"index.html":4};
       return (files||[]).filter(f=>f.collaboration_surface).sort((a,b)=>(priority[a.path]??20)-(priority[b.path]??20)||(b.collaboration_agents||[]).length-(a.collaboration_agents||[]).length||a.path.localeCompare(b.path));
+    }
+    function presentationFiles(files) {
+      const ordered=["src/registry.js","src/config.js","src/app.js","src/styles.css","index.html"], collaboration=collaborationFiles(files), selected=[];
+      for(const path of ordered){const file=(files||[]).find(f=>f.path===path); if(file) selected.push(file);}
+      for(const file of collaboration){if(selected.length>=5)break; if(!selected.includes(file))selected.push(file);}
+      return selected.slice(0,5);
     }
 
     function chrome() {
-      const r=route(), agents=state?.agents||[], conflicts=state?.conflicts||[], collab=collaborationFiles(state?.files||[]);
+      const r=route(), agents=state?.agents||[], conflicts=state?.conflicts||[], showcase=presentationFiles(state?.files||[]);
       $("#brand-icon").innerHTML=icons.mark;
       $("#nav").innerHTML=navItems.map(([id,label,icon])=>{
-        const count=id==="agents"?agents.length:id==="operations"?(state?.operations||[]).length:id==="files"?collab.length:id==="conflicts"?conflicts.length:"";
+        const count=id==="agents"?agents.length:id==="operations"?(state?.operations||[]).length:id==="files"?showcase.length:id==="conflicts"?conflicts.length:"";
         return `<a href="#${id}" class="${r.name===id?"active":""}">${icons[icon]}<span>${label}</span>${count!==""?`<span class="nav-badge">${nfmt(count)}</span>`:""}</a>`;
       }).join("");
       const live=state?.phase==="running", connected=!disconnected&&!!state;
@@ -363,7 +394,7 @@
         <div class="agent-top"><div class="agent-avatar">${esc(a.id)}</div><div class="truncate"><div class="agent-name">${esc(a.id)}</div><div class="agent-role truncate">${esc(a.role)}</div></div><i class="agent-state" title="${esc(a.state)}" style="background:${a.state==="completed"?"var(--green)":a.state==="active"?"var(--blue)":"var(--muted-2)"}"></i></div>
         <div class="agent-current">${current?`${esc(current.action)} · ${esc(current.target)}`:"Awaiting operation evidence"}</div>
         <div class="progress"><i style="width:${progress}%"></i></div>
-        <div class="agent-meta"><span>${nfmt(a.completed)} / ${nfmt(a.planned)} ops</span><span class="${a.conflicts?"agent-alert":""}">${a.conflicts?`${nfmt(a.conflicts)} conflict`: `${nfmt(a.files_touched)} files`}</span></div>
+        <div class="agent-meta"><span>${nfmt(a.completed)} / ${nfmt(a.planned)} ops</span><span class="${a.conflicts?"agent-alert":""}">${a.conflicts?`${nfmt(a.conflicts)} conflict${a.conflicts===1?"":"s"}`: `${nfmt(a.files_touched)} files`}</span></div>
       </a>`;
     }
     function opRows(ops) {
@@ -375,14 +406,14 @@
     function controlView() {
       const agents=state.agents||[], ops=state.operations||[], files=state.files||[], conflicts=state.conflicts||[];
       const completedAgents=agents.filter(a=>a.state==="completed").length, resolved=conflicts.filter(c=>["retried_successfully","winner_preserved"].includes(c.state)).length;
-      const importantFiles=collaborationFiles(files).slice(0,5);
+      const importantFiles=presentationFiles(files), publicationConflicts=new Set(conflicts.map(c=>c.group_id||c.id)).size;
       return `${pageHead("Control Room","One coordinated sandbox, independent agent workspaces, and evidence for every published result.")}
         ${state.error||ui.error?`<div class="error-banner">${icons.alert}<span>${esc(state.error||ui.error)}</span></div>`:""}
         <section class="grid stats" aria-label="Run summary">
           ${stat("agents",agents.length,"Participating agents",`${completedAgents} completed`)}
           ${stat("operations",state.completed,"CLI operations",`${nfmt(state.completed)} of ${nfmt(state.planned)} recorded`)}
-          ${stat("files",importantFiles.length,"Collaboration surfaces",`${nfmt(files.length)} changed paths retained as evidence`)}
-          ${stat("conflict",conflicts.length,"Conflicts detected",`${resolved} resolved with evidence`)}
+          ${stat("files",importantFiles.length,"Published app files",`${nfmt(files.length)} total paths in the final workspace`)}
+          ${stat("conflict",conflicts.length,"Contested lines",`${publicationConflicts} atomic publication${publicationConflicts===1?"":"s"} · ${resolved} resolved`)}
           ${stat("evidence",state.latest_revision,"Published revision",state.execution_verdict||phaseLabel(state.phase))}
         </section>
         <section class="panel agent-section"><div class="panel-head"><div class="panel-title">Agent constellation<small>Independent workers sharing one published workspace</small></div><a class="panel-link" href="#agents">View all agents →</a></div><div class="agent-grid">${agents.length?agents.map(agentCard).join(""):empty("No agents yet","Reset the workspace, then run the demo to populate live agents.","agents")}</div></section>
@@ -428,16 +459,16 @@
     }
 
     function filesView(detail) {
-      const all=state.files||[], surfaces=collaborationFiles(all), q=ui.fileSearch.toLowerCase();
-      const filtered=all.filter(f=>(!q||f.path.toLowerCase().includes(q))&&(ui.fileMode==="all"||(ui.fileMode==="collab"&&f.collaboration_surface)||(ui.fileMode==="multi"&&f.multi_agent)||(ui.fileMode==="blame"&&f.ownership_available)||(ui.fileMode==="content"&&typeof f.content==="string")));
-      let selected=all.find(f=>f.path===detail); if(!selected) selected=all.find(f=>f.path==="src/app.js")||surfaces[0]||all.find(f=>f.ownership_available)||filtered[0];
-      return `${pageHead("Collaboration Files","Focus on the larger integration surfaces where independently authored work becomes one published application.")}
-        <section class="grid collab-grid">${surfaces.slice(0,3).map(collaborationCard).join("")||empty("No collaboration surfaces yet","The complete changed-path inventory remains available below.","files")}</section>
-        <section class="panel file-layout"><aside class="file-browser"><div class="toolbar"><div class="field search">${icons.search}<input id="file-search" value="${esc(ui.fileSearch)}" placeholder="Filter file evidence" aria-label="Search files"></div><div class="field"><select id="file-mode" aria-label="Filter files"><option value="collab" ${ui.fileMode==="collab"?"selected":""}>Collaboration surfaces (${nfmt(surfaces.length)})</option><option value="content" ${ui.fileMode==="content"?"selected":""}>Source available</option><option value="multi" ${ui.fileMode==="multi"?"selected":""}>Multiple authors</option><option value="blame" ${ui.fileMode==="blame"?"selected":""}>Blame available</option><option value="all" ${ui.fileMode==="all"?"selected":""}>All changed paths (${nfmt(all.length)})</option></select></div></div><div class="tree">${fileTree(filtered,selected?.path)}</div></aside><div class="source-view">${selected?sourceView(selected):empty("No files match","Change the file filters or run the demo.","files")}</div></section>`;
+      const all=state.files||[], surfaces=collaborationFiles(all), showcase=presentationFiles(all), q=ui.fileSearch.toLowerCase();
+      const filtered=all.filter(f=>(!q||f.path.toLowerCase().includes(q))&&(ui.fileMode==="all"||(ui.fileMode==="showcase"&&showcase.includes(f))||(ui.fileMode==="collab"&&f.collaboration_surface)||(ui.fileMode==="multi"&&f.multi_agent)||(ui.fileMode==="blame"&&f.ownership_available)||(ui.fileMode==="content"&&typeof f.content==="string")));
+      let selected=all.find(f=>f.path===detail); if(!selected) selected=all.find(f=>f.path==="src/registry.js")||showcase[0]||all.find(f=>f.ownership_available)||filtered[0];
+      return `${pageHead("Collaboration Files","The complete published application is intentionally compact: at most five domain-named files, with agent ownership shown on the exact lines they contributed.")}
+        <section class="grid collab-grid">${showcase.map(collaborationCard).join("")||empty("No collaboration surfaces yet","The complete changed-path inventory remains available below.","files")}</section>
+        <section class="panel file-layout"><aside class="file-browser"><div class="toolbar"><div class="field search">${icons.search}<input id="file-search" value="${esc(ui.fileSearch)}" placeholder="Filter file evidence" aria-label="Search files"></div><div class="field"><select id="file-mode" aria-label="Filter files"><option value="showcase" ${ui.fileMode==="showcase"?"selected":""}>Presentation set (${nfmt(showcase.length)})</option><option value="collab" ${ui.fileMode==="collab"?"selected":""}>All collaboration surfaces (${nfmt(surfaces.length)})</option><option value="content" ${ui.fileMode==="content"?"selected":""}>Source available</option><option value="multi" ${ui.fileMode==="multi"?"selected":""}>Multiple authors</option><option value="blame" ${ui.fileMode==="blame"?"selected":""}>Blame available</option><option value="all" ${ui.fileMode==="all"?"selected":""}>All changed paths (${nfmt(all.length)})</option></select></div></div><div class="tree">${fileTree(filtered,selected?.path)}</div></aside><div class="source-view">${selected?sourceView(selected):empty("No files match","Change the file filters or run the demo.","files")}</div></section>`;
     }
     function collaborationCard(f) {
       const ids=f.collaboration_agents||[], refs=f.referenced_agents||[];
-      const why=f.path==="src/app.js"?`${nfmt(refs.length)} independently authored feature modules are composed here.`:f.path==="src/registry.js"?"Published line ownership records the shared agent registry.":f.path==="index.html"?"The published shell loads every agent-owned feature into one output.":"A shared boundary records coordinated edits and the published result.";
+      const why=f.path==="src/app.js"?"One application runtime composes every contribution from the shared registry.":f.path==="src/registry.js"?"Ten neighboring registry lines expose the exact published contribution of each agent.":f.path==="src/config.js"?`${nfmt(f.conflict_count||0)} verified line contentions converge through one atomic resolution.`:f.path==="index.html"?"One domain entry point loads the complete published application.":f.path==="src/styles.css"?"One shared visual system styles the combined result.":"A shared boundary records coordinated edits and the published result.";
       return `<a class="collab-card" href="#files/${encodeURIComponent(f.path)}"><div class="collab-card-top">${icons.files}<span class="pill blue">collaboration surface</span></div><h3>${esc(f.path)}</h3><p>${esc(why)}</p><div class="collab-card-foot">${avatars(ids,10)}<div class="collab-count"><b>${nfmt(ids.length)}</b><span>connected agents</span></div></div></a>`;
     }
     function fileTree(files,selected) {
@@ -445,28 +476,37 @@
       const groups=new Map(); for(const f of files){const parts=f.path.split("/"); const folder=parts.length>1?parts.slice(0,-1).join("/"):"workspace root"; if(!groups.has(folder))groups.set(folder,[]); groups.get(folder).push(f);}
       return [...groups.entries()].sort().map(([folder,items])=>`<div class="tree-group"><div class="tree-label">${icons.files}<span>${esc(folder)}</span><span class="muted">${items.length}</span></div><div class="tree-files">${items.sort((a,b)=>a.path.localeCompare(b.path)).map(f=>`<a class="tree-file ${f.path===selected?"active":""}" href="#files/${encodeURIComponent(f.path)}"><span class="truncate">${esc(f.path.split("/").pop())}</span>${f.conflict?'<i class="mark" style="background:var(--amber)" title="Conflict"></i>':f.multi_agent?'<i class="mark" style="background:var(--blue)" title="Multi-agent"></i>':""}</a>`).join("")}</div></div>`).join("");
     }
+    function ownershipMap(f) {
+      const ranges=(f.blame||[]).filter(r=>Number.isFinite(Number(r.start_line))&&Number.isFinite(Number(r.line_count)));
+      if(!ranges.length)return "";
+      return `<div class="ownership-map"><div class="ownership-map-head"><div><strong>Who owns which lines</strong><span>Current published revision · sandbox blame joined through runner metadata</span></div><span>${nfmt(ranges.reduce((sum,r)=>sum+Number(r.line_count),0))} attributed lines</span></div><div class="ownership-ranges">${ranges.map(r=>{const start=Number(r.start_line),end=start+Number(r.line_count)-1,id=r.agent_id,color=id?hue(id):r.provenance==="base_workspace"?"#94a3b8":"#f59e0b";return `<div class="owner-range" style="--agent:${color}"><i></i><b>${esc(r.label||"Unknown owner")}</b><span>line${start===end?"":"s"} ${start}${start===end?"":`–${end}`}</span></div>`;}).join("")}</div></div>`;
+    }
     function sourceView(f) {
       const published=f.published_by||[], attempted=f.attempted_by||[], referenced=f.referenced_agents||[], connected=f.collaboration_agents||[], lines=typeof f.content==="string"?f.content.split("\n"):[];
+      const hasOwnership=Boolean((f.blame||[]).length);
       const contentEvidence=f.content_provenance==="sandbox_file_read"?"Sandbox file_read":f.content_provenance==="authored_file_write"?"Successful authored file_write":"Not sampled";
-      return `<div class="source-head"><div><h2>${esc(f.path)}</h2><div class="source-meta">${statusPill(f.status)} ${f.collaboration_surface?'<span class="pill blue">collaboration surface</span>':""}</div></div><div class="ownership-split"><div class="ownership-block"><label>Published owners</label>${published.length?avatars(published,10):'<span class="muted">No blame sample</span>'}</div><div class="ownership-block"><label>Attempted edits</label>${attempted.length?avatars(attempted,10):'<span class="muted">None recorded</span>'}</div><div class="ownership-block"><label>Connected agents</label>${connected.length?avatars(connected,10):'<span class="muted">None linked</span>'}</div></div></div>
-        ${lines.length?`<pre class="source" aria-label="Source with line ownership">${lines.map((line,i)=>sourceLine(f,i+1,line)).join("")}</pre>`:`<div class="source-empty"><div><strong>Source content is not sampled for this path</strong><br><span>Effect and publication evidence remain available.</span></div></div>`}
-        <div class="provenance">${icons.info}<span><strong>Attribution remains evidence-specific.</strong> Owners come from sandbox blame joined to runner metadata; connected agents additionally include explicit feature-module references in the sampled source.</span></div>
-        <div class="context-body"><dl>${kv("Operations",(f.operation_ids||[]).slice(0,12).map(id=>`<span class="mono">${esc(id)}</span>`).join(", ")||"—")}${kv("Source evidence",contentEvidence)}${kv("Module links",referenced.length?referenced.map(agentChip).join(" "):"No agent module references detected")}${kv("Published",f.present_in_final?"Present in final manifest":"Not present in final manifest")}${f.conflict?kv("Resolution",'<a class="panel-link" href="#conflicts">Open conflict evidence →</a>'):""}</dl></div>`;
+      return `<div class="source-head"><div><h2>${esc(f.path)}</h2><div class="source-meta">${statusPill(f.status)} ${f.collaboration_surface?'<span class="pill blue">collaboration surface</span>':""}</div></div><div class="ownership-split"><div class="ownership-block"><label>Published line owners</label>${published.length?avatars(published,10):'<span class="muted">Not sampled</span>'}</div><div class="ownership-block"><label>Recorded edits</label>${attempted.length?avatars(attempted,10):'<span class="muted">None recorded</span>'}</div><div class="ownership-block"><label>Connected agents</label>${connected.length?avatars(connected,10):'<span class="muted">None linked</span>'}</div></div></div>
+        ${ownershipMap(f)}
+        ${lines.length&&!hasOwnership?`<div class="ownership-note">${icons.info}<span><strong>Line ownership was not sampled for this file.</strong> The source is real; agent links below come from recorded edits and references in the shared registry.</span></div>`:""}
+        ${lines.length?`<pre class="source ${hasOwnership?"":"no-ownership"}" aria-label="${hasOwnership?"Source with line ownership":"Source; line ownership not sampled"}">${lines.map((line,i)=>sourceLine(f,i+1,line)).join("")}</pre>`:`<div class="source-empty"><div><strong>Source content is not sampled for this path</strong><br><span>Effect and publication evidence remain available.</span></div></div>`}
+        <div class="provenance">${icons.info}<span><strong>Attribution remains evidence-specific.</strong> Owners come from sandbox blame joined to runner metadata; connected agents additionally include references detected in the sampled shared files.</span></div>
+        <div class="context-body"><dl>${kv("Operations",(f.operation_ids||[]).slice(0,12).map(id=>`<span class="mono">${esc(id)}</span>`).join(", ")||"—")}${kv("Source evidence",contentEvidence)}${kv("Agent references",referenced.length?referenced.map(agentChip).join(" "):"No agent references detected")}${kv("Published",f.present_in_final?"Present in final manifest":"Not present in final manifest")}${f.conflict?kv("Resolution",'<a class="panel-link" href="#conflicts">Open conflict evidence →</a>'):""}</dl></div>`;
     }
-    function sourceLine(f,n,line) { const owner=(f.blame||[]).find(b=>n>=Number(b.start_line)&&n<Number(b.start_line)+Number(b.line_count)); const id=owner?.agent_id; const color=id?hue(id):"#cbd5e1"; return `<span class="source-line"><span class="line-no">${n}</span><span class="blame-owner" style="--agent:${color}" title="${esc(owner?.raw_owner||"No line-level blame sample")}">${esc(owner?.label||"no blame")}</span><span class="line-code">${esc(line)||" "}</span></span>`; }
+    function sourceLine(f,n,line) { const owner=(f.blame||[]).find(b=>n>=Number(b.start_line)&&n<Number(b.start_line)+Number(b.line_count)), contention=(f.contentions||[]).find(c=>n>=Number(c.line_start)&&n<Number(c.line_start)+Number(c.line_count||1)); if(!owner)return `<span class="source-line ${contention?"contested":""}"><span class="line-no">${n}</span><span class="line-code">${contention?'<i class="line-conflict">resolved conflict</i>':""}${esc(line)||" "}</span></span>`; const id=owner.agent_id; const color=id?hue(id):owner.provenance==="base_workspace"?"#94a3b8":"#f59e0b"; const ownerLabel=esc(owner.label||"Unknown owner"), ownership=contention?`<span class="blame-owner contenders" title="${esc(owner.raw_owner||"Unknown owner")}"><b>${ownerLabel} published</b><i>${esc(contention.rejected_agent||"Unknown agent")} rejected edit</i></span>`:`<span class="blame-owner" title="${esc(owner.raw_owner||"Unknown owner")}">${ownerLabel}</span>`; return `<span class="source-line owned ${contention?"contested":""}" style="--agent:${color}"><span class="line-no">${n}</span>${ownership}<span class="line-code">${contention?'<i class="line-conflict">resolved conflict</i>':""}${esc(line)||" "}</span></span>`; }
 
-    function conflictsView() {
+    function conflictsView(detail) {
       const conflicts=state.conflicts||[]; if(!conflicts.length) return `${pageHead("Conflict Resolver","Publication contention and resolution evidence are shown only when the backend records them.")}${empty("No conflicts recorded","This run has no rejected or stale publication evidence.","conflict")}`;
-      const c=conflicts[0]; const steps=[
+      const c=conflicts.find(x=>x.id===detail)||conflicts[0], publicationGroups=new Set(conflicts.map(x=>x.group_id||x.id)).size; const steps=[
         ["Concurrent edits",`${c.winner_agent||"winner"} + ${c.rejected_agent||"stale"}`,""],
         ["Publish attempt",c.rejected_publish_operation,"warning"],["Conflict detected",c.type,"warning"],
         ["Winner preserved",c.winner_publish_operation,""],["Retry isolated",c.retry_operation,""],["Final verified",`revision ${c.retry_revision??c.winner_revision??"—"}`,""]
       ];
-      return `${pageHead("Conflict Resolver","Trace contention from concurrent workspaces through rejection, winner preservation, retry, and final verification.")}
-        <section class="panel conflict-layout"><aside class="conflict-list"><div class="panel-head"><div class="panel-title">Recorded conflicts<small>${nfmt(conflicts.length)} evidence-backed item${conflicts.length===1?"":"s"}</small></div></div>${conflicts.map(x=>`<a class="conflict-item active" href="#conflicts">${statusPill(x.state)}<strong>${esc(x.path)}</strong><code>${esc(x.id)}</code></a>`).join("")}</aside>
-        <div class="conflict-main"><div class="conflict-title"><div><div class="eyebrow">${esc(c.type)}</div><h2>${esc(c.path)}</h2><p>${agentChip(c.winner_agent)} winner &nbsp;·&nbsp; ${agentChip(c.rejected_agent)} rejected stale attempt</p></div>${statusPill(c.state)}</div>
+      return `${pageHead("Conflict Resolver","Inspect each contested line, then follow the single atomic publication decision that preserved all winners together.")}
+        <section class="panel conflict-layout"><aside class="conflict-list"><div class="panel-head"><div class="panel-title">Contested lines<small>${nfmt(conflicts.length)} line conflict${conflicts.length===1?"":"s"} · ${nfmt(publicationGroups)} publication decision${publicationGroups===1?"":"s"}</small></div></div>${conflicts.map(x=>`<a class="conflict-item ${x.id===c.id?"active":""}" href="#conflicts/${encodeURIComponent(x.id)}">${statusPill(x.state)}<strong>${esc(x.label||x.path)}</strong><span class="conflict-location">${esc(x.path)}${x.line_start?`:${nfmt(x.line_start)}`:""}</span><code>${esc(x.id)}</code></a>`).join("")}</aside>
+        <div class="conflict-main"><div class="conflict-title"><div><div class="eyebrow">${esc(c.type)} · contention ${nfmt(c.group_index)} of ${nfmt(c.group_count)}</div><h2>${esc(c.label||c.path)}</h2><p><span class="mono">${esc(c.path)}${c.line_start?`:${nfmt(c.line_start)}`:""}</span> &nbsp;·&nbsp; ${agentChip(c.winner_agent)} winner &nbsp;·&nbsp; ${agentChip(c.rejected_agent)} rejected stale attempt</p></div>${statusPill(c.state)}</div>
+          <div class="conflict-group-note">${icons.info}<span><strong>${nfmt(c.group_count)} independently verified line contentions</strong> were carried by one stale workspace and resolved by one atomic publication rejection. Nothing is counted as a separate publish.</span></div>
           <div class="sequence">${steps.map((s,i)=>`${i?'<i class="seq-line"></i>':''}<div class="seq-step ${s[2]}"><i class="seq-dot">${i+1}</i><b>${esc(s[0])}</b><span>${esc(s[1]||"—")}</span></div>`).join("")}</div>
-          <div class="compare"><section class="compare-card winner"><div class="compare-head"><span>Published winner · ${esc(c.winner_agent||"unknown")}</span>${statusPill("completed","preserved")}</div><pre class="code-block">${esc(c.published_content||"Published content was not sampled.")}</pre></section><section class="compare-card rejected"><div class="compare-head"><span>Rejected attempt · ${esc(c.rejected_agent||"unknown")}</span>${statusPill("rejected")}</div><pre class="code-block">${esc(c.rejected_command||"Rejected command evidence was not sampled.")}</pre></section></div>
+          <div class="compare"><section class="compare-card winner"><div class="compare-head"><span>Published line · ${esc(c.winner_agent||"unknown")}</span>${statusPill("completed","preserved")}</div><pre class="code-block">${esc(c.published_content||"Published content was not sampled.")}</pre></section><section class="compare-card rejected"><div class="compare-head"><span>Rejected line · ${esc(c.rejected_agent||"unknown")}</span>${statusPill("rejected")}</div><pre class="code-block">${esc(c.rejected_content||c.rejected_command||"Rejected content was not sampled.")}</pre></section></div>
           <div class="resolution"><div class="resolution-copy"><strong>Resolution evidence</strong><p>${esc(c.resolution)}</p><p style="margin-top:7px"><span class="mono">${esc(c.rejected_publish_operation)}</span> was rejected; <span class="mono">${esc(c.retry_publish_operation||"no retry publish")}</span> records the follow-up.</p></div><div class="checks"><div class="eyebrow">Verification assertions</div>${Object.entries(c.checks||{}).map(([k,v])=>`<div class="check">${v?icons.check:icons.alert}<span>${esc(k.replaceAll("_"," "))}</span></div>`).join("")}</div></div>
         </div></section>`;
     }
@@ -494,7 +534,7 @@
       else if(r.name==="agents") html=agentsView(r.detail);
       else if(r.name==="operations") html=operationsView();
       else if(r.name==="files") html=filesView(r.detail);
-      else if(r.name==="conflicts") html=conflictsView();
+      else if(r.name==="conflicts") html=conflictsView(r.detail);
       else if(r.name==="preview") html=previewView();
       else html=evidenceView();
       $("#view").innerHTML=html;

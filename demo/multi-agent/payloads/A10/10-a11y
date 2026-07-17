@@ -1,5 +1,6 @@
-(function (root) {
-  root.FlashCart = root.FlashCart || {};
-  root.FlashCart.a11y = root.FlashCart.a11y || {};
-  root.FlashCart.a11y.A10 = { label: 'Integration QA', keyboard: true, reducedMotion: true };
-})(globalThis);
+[
+  {
+    "new_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'accessibility', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }, fixture: 'qa-fixture', view: '<section data-domain=\"qa\"></section>', focusVisible: true, keyboard: true, reducedMotion: true },",
+    "old_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'style', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }, fixture: 'qa-fixture', view: '<section data-domain=\"qa\"></section>', focusVisible: true },"
+  }
+]

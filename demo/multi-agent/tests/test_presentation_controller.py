@@ -205,6 +205,33 @@ class PresentationControllerTests(unittest.TestCase):
         self.assertEqual(shared["blame"][0]["raw_owner"], "workspace_session:workspace-1")
         self.assertEqual(shared["blame"][0]["provenance"], "runner_mapping")
 
+    def test_compact_owner_distinguishes_bootstrap_from_unmapped_workspace(self) -> None:
+        bootstrap = presentation_controller.compact_owner(
+            "workspace_session:bootstrap-workspace", {}, "bootstrap-workspace"
+        )
+        unknown = presentation_controller.compact_owner(
+            "workspace_session:orphan-workspace", {}, "bootstrap-workspace"
+        )
+
+        self.assertEqual(bootstrap["label"], "Base / bootstrap")
+        self.assertEqual(bootstrap["provenance"], "base_workspace")
+        self.assertEqual(unknown["label"], "Unmapped workspace")
+        self.assertEqual(unknown["provenance"], "unmapped_raw_owner")
+
+    def test_bootstrap_workspace_id_reads_non_authored_control_record(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            run_root = Path(temporary)
+            commands = run_root / "commands"
+            commands.mkdir()
+            (commands / "0003-bootstrap-publish.json").write_text(json.dumps({
+                "label": "bootstrap-publish",
+                "parsed_json": {"workspace_session_id": "bootstrap-workspace"},
+            }), encoding="utf-8")
+
+            workspace = presentation_controller.bootstrap_workspace_id(run_root)
+
+        self.assertEqual(workspace, "bootstrap-workspace")
+
     def test_presentation_evidence_uses_successful_file_write_as_source_sample(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             run_root = Path(temporary)
@@ -246,6 +273,107 @@ class PresentationControllerTests(unittest.TestCase):
         self.assertEqual(app["referenced_agents"], ["A08"])
         self.assertEqual(app["collaboration_agents"], ["A01", "A08"])
         self.assertTrue(app["collaboration_surface"])
+
+    def test_presentation_evidence_projects_atomic_rejection_as_line_contentions(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            run_root = Path(temporary)
+            commands = run_root / "commands"
+            effects = run_root / "assertions" / "effects"
+            commands.mkdir(parents=True)
+            effects.mkdir(parents=True)
+            records = [
+                {
+                    "label": "A06.047", "argv": [
+                        "sandbox-runtime-cli", "file_edit", "--path", "src/config.js",
+                        "--workspace-session-id", "winner-workspace",
+                    ], "return_code": 0, "parsed_json": {"path": "src/config.js"},
+                },
+                {
+                    "label": "A06.050", "argv": [
+                        "sandbox-runtime-cli", "write_command_stdin", "publish\n",
+                    ], "return_code": 0, "parsed_json": {"workspace_session_id": "winner-workspace"},
+                },
+                {
+                    "label": "A08.047", "argv": [
+                        "sandbox-runtime-cli", "exec_command", "edit three config lines",
+                        "--workspace-session-id", "stale-workspace",
+                    ], "return_code": 0, "parsed_json": {"workspace_session_id": "stale-workspace"},
+                },
+                {
+                    "label": "A08.049", "argv": [
+                        "sandbox-runtime-cli", "write_command_stdin", "publish\n",
+                    ], "return_code": 0, "parsed_json": {
+                        "workspace_session_id": "stale-workspace",
+                        "publish_rejected": True,
+                        "publish_reject_class": "source_conflict",
+                    },
+                },
+                {
+                    "label": "A08.055", "argv": [
+                        "sandbox-runtime-cli", "file_write", "--path", "retry.json",
+                        "--workspace-session-id", "retry-workspace",
+                    ], "return_code": 0, "parsed_json": {"path": "retry.json"},
+                },
+                {
+                    "label": "A08.057", "argv": [
+                        "sandbox-runtime-cli", "write_command_stdin", "publish\n",
+                    ], "return_code": 0, "parsed_json": {"workspace_session_id": "retry-workspace"},
+                },
+            ]
+            for index, record in enumerate(records, 1):
+                (commands / f"{index:04d}-{record['label']}.json").write_text(
+                    json.dumps(record), encoding="utf-8"
+                )
+            for label in ("A06.047", "A08.047"):
+                (effects / f"{label}.json").write_text(json.dumps({
+                    "row": label, "changed_paths": ["src/config.js"],
+                }), encoding="utf-8")
+            config = "window.FlashCart.config = {\n  freeShippingCents: 6000,\n  standardShippingCents: 650,\n  taxRate: 0.075,\n};\n"
+            (run_root / "assertions" / "conflict-atomic.json").write_text(json.dumps({
+                "winner": {"manifest": {"src/config.js": "digest"}},
+                "config": {"path": "src/config.js", "content": config},
+                "blame": {"path": "src/config.js", "ranges": [{
+                    "start_line": 2, "line_count": 3,
+                    "owner": "workspace_session:winner-workspace",
+                }]},
+                "contentions": [
+                    {"key": "free", "label": "Free shipping", "path": "src/config.js", "line_start": 2, "winner": "freeShippingCents: 6000", "rejected": "freeShippingCents: 7500"},
+                    {"key": "shipping", "label": "Shipping price", "path": "src/config.js", "line_start": 3, "winner": "standardShippingCents: 650", "rejected": "standardShippingCents: 900"},
+                    {"key": "tax", "label": "Tax rate", "path": "src/config.js", "line_start": 4, "winner": "taxRate: 0.075", "rejected": "taxRate: 0.095"},
+                ],
+                "checks": {"winner_content": True},
+            }), encoding="utf-8")
+            finished = {
+                "workspaces": {
+                    "A06.conflict.workspace": "winner-workspace",
+                    "A08.conflict.workspace": "stale-workspace",
+                    "A08.retry.workspace": "retry-workspace",
+                },
+                "presentation": {"checkpoints": {
+                    "conflict-winner": {"revision": 12},
+                    "conflict-retry": {"revision": 13},
+                }},
+            }
+
+            evidence = presentation_controller.presentation_evidence(
+                run_root, finished, "passed"
+            )
+
+        self.assertEqual(len(evidence["conflicts"]), 3)
+        self.assertEqual(
+            [value["line_start"] for value in evidence["conflicts"]],
+            [2, 3, 4],
+        )
+        self.assertEqual(
+            {value["group_id"] for value in evidence["conflicts"]},
+            {"A08.049-atomic-publication"},
+        )
+        config_file = next(
+            value for value in evidence["files"] if value["path"] == "src/config.js"
+        )
+        self.assertEqual(config_file["conflict_count"], 3)
+        self.assertEqual(len(config_file["contentions"]), 3)
+        self.assertEqual(config_file["published_by"], ["A06"])
 
     def test_start_run_requires_clean_ready_target(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

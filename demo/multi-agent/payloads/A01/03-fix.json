@@ -1,6 +1,6 @@
 [
   {
-    "new_string": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A01 = {\n    id: 'A01',\n    label: 'Foundation',\n    deterministic: true,\n    verify() { return true; },\n    routeFor(path) { return ['/', '/catalog', '/checkout'].includes(path) ? path : '/not-found'; }\n  };\n})(globalThis);\n",
-    "old_string": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A01 = { id: 'A01', verify() { return false; }, implementation: 'broken A01' };\n})(globalThis);\n"
+    "new_string": "  A01: { id: 'A01', role: 'Foundation', stage: 'core', deterministic: true, verify() { return true; }, routeFor(path) { return ['/', '/catalog', '/checkout'].includes(path) ? path : '/not-found'; } },",
+    "old_string": "  A01: { id: 'A01', role: 'Foundation', stage: 'broken', deterministic: false, verify() { return false; } },"
   }
 ]

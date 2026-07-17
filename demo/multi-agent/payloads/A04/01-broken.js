@@ -1,5 +1,6 @@
-(function (root) {
-  root.FlashCart = root.FlashCart || {};
-  root.FlashCart.features = root.FlashCart.features || {};
-  root.FlashCart.features.A04 = { id: 'A04', verify() { return false; }, implementation: 'broken A04' };
-})(globalThis);
+[
+  {
+    "new_string": "  A04: { id: 'A04', role: 'Catalog and PDP', stage: 'broken', deterministic: false, verify() { return false; } },",
+    "old_string": "  A04: null,"
+  }
+]

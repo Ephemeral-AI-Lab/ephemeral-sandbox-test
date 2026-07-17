@@ -62,8 +62,8 @@ class Phase1Tests(unittest.TestCase):
             "category": lambda root: self._change(root, "A01", 2, lambda row: row.__setitem__("category", "patch")),
             "provenance": lambda root: self._change(root, "A01", 2, lambda row: row.__setitem__("provenance", "host")),
             "padding": lambda root: self._change(root, "A01", 11, lambda row: row["args"].__setitem__("command", "sleep 1")),
-            "wrong_red": lambda root: self._change(root, "A01", 8, lambda row: row["expect"]["failing_subtests"][0].__setitem__("id", "wrong red")),
-            "infra_red": lambda root: self._change(root, "A01", 8, lambda row: row["expect"].__setitem__("forbid_output_contains", [])),
+            "wrong_red": lambda root: self._change(root, "A01", 7, lambda row: row["expect"]["failing_subtests"][0].__setitem__("id", "wrong red")),
+            "infra_red": lambda root: self._change(root, "A01", 7, lambda row: row["expect"].__setitem__("forbid_output_contains", [])),
             "compiled": lambda root: self._change_compiled(root, "image", "node:wrong"),
         }
         for name, mutate in cases.items():
@@ -107,13 +107,18 @@ class Phase1Tests(unittest.TestCase):
         errors = self.mutated(lambda root: self._rewrite_first_edit_payload(root))
         self.assertTrue(errors)
 
-    def test_quality_contract_is_written_before_its_review_read(self) -> None:
+    def test_published_application_is_five_domain_named_files(self) -> None:
+        tree = validate.recipes.materialized_tree()
+        self.assertEqual(
+            sorted(tree),
+            ["index.html", "src/app.js", "src/config.js", "src/registry.js", "src/styles.css"],
+        )
+        self.assertFalse(any(any(agent.id in part for agent in validate.recipes.AGENTS) for part in tree))
         for agent in (entry.id for entry in validate.recipes.AGENTS):
             _, rows = self.plan(DEMO, agent)
-            quality = f"tests/{agent}-quality.test.mjs"
-            write = next(index for index, row in enumerate(rows) if row["op"] == "file_write" and row["args"].get("path") == quality)
-            review = next(index for index, row in enumerate(rows) if row["op"] == "file_read" and row["args"].get("path") == quality)
-            self.assertLess(write, review, agent)
+            self.assertFalse(any(row["op"] == "file_write" for row in rows), agent)
+            self.assertEqual(rows[41]["args"]["path"], "src/registry.js")
+            self.assertEqual(rows[42]["test_cycle"], f"{agent}.quality")
 
     def test_terminal_shared_port_collision_does_not_bind_a_command_session(self) -> None:
         _, rows = self.plan(DEMO, "A09")

@@ -805,12 +805,11 @@ class Runner:
             await asyncio.sleep(0.25)
 
     async def bootstrap(self) -> None:
-        """Publish only the three documented minimal bootstrap files via Node APIs."""
+        """Publish the complete five-file application skeleton via Node APIs."""
         body = base64.b64encode(json.dumps(recipes.bootstrap_files(), sort_keys=True).encode("utf-8")).decode("ascii")
         command = (
             "node --input-type=module --eval \"import { mkdir, writeFile } from 'node:fs/promises'; "
             f"const files=JSON.parse(Buffer.from('{body}','base64')); "
-            "await Promise.all(['src/features','tests'].map(path=>mkdir(path,{recursive:true}))); "
             "for (const [path, content] of Object.entries(files)) { await mkdir(path.includes('/') ? path.slice(0,path.lastIndexOf('/')) : '.', {recursive:true}); await writeFile(path,content); }\""
         )
         response = await self.runtime("bootstrap-publish", "ENGINE.bootstrap", "exec_command", "--timeout-ms", "120000", "--yield-time-ms", "120000", command, provenance="engine", timeout=150)
@@ -1276,18 +1275,60 @@ class Runner:
             rejected = await self.capture_checkpoint("conflict-rejected", scene="conflict")
             after = self._shared_heads["conflict-rejected"]
             config = await self.runtime("conflict-shared-config", "ENGINE.conflict.config", "file_read", "--path", "src/config.js", provenance="engine")
-            stale = await self.runtime("conflict-stale-absent", "ENGINE.conflict.stale", "file_read", "--path", "src/conflict/A08-stale-attempt.txt", provenance="engine")
             blame = await self.runtime("conflict-winner-blame", "ENGINE.conflict.blame", "file_blame", "--path", "src/config.js", provenance="engine")
             owners = {entry.get("owner") for entry in blame.get("ranges", []) if isinstance(entry, dict)}
             a06_owner = self.attempt_owners.get("A06.conflict")
             atomic = {
                 "winner": winner, "rejected": after, "rejection": response,
-                "config": config, "stale": stale, "blame": blame,
+                "config": config, "blame": blame,
+                "contentions": [
+                    {
+                        "key": "free_shipping_threshold",
+                        "label": "Free shipping threshold",
+                        "path": "src/config.js",
+                        "line_start": 3,
+                        "base": "freeShippingCents: 5000",
+                        "winner": "freeShippingCents: 6000",
+                        "rejected": "freeShippingCents: 7500",
+                    },
+                    {
+                        "key": "standard_shipping_price",
+                        "label": "Standard shipping price",
+                        "path": "src/config.js",
+                        "line_start": 4,
+                        "base": "standardShippingCents: 700",
+                        "winner": "standardShippingCents: 650",
+                        "rejected": "standardShippingCents: 900",
+                    },
+                    {
+                        "key": "tax_rate",
+                        "label": "Checkout tax rate",
+                        "path": "src/config.js",
+                        "line_start": 5,
+                        "base": "taxRate: 0.08",
+                        "winner": "taxRate: 0.075",
+                        "rejected": "taxRate: 0.095",
+                    },
+                ],
                 "checks": {
                     "same_revision": winner is not None and winner["revision"] == after["revision"],
                     "same_manifest": winner is not None and winner["manifest"] == after["manifest"],
-                    "winner_content": "freeShippingCents: 6000" in str(config.get("content", "")) and "7500" not in str(config.get("content", "")),
-                    "stale_absent": isinstance(stale.get("error"), dict) and stale["error"].get("kind") == "not_found",
+                    "winner_content": all(
+                        marker in str(config.get("content", ""))
+                        for marker in (
+                            "freeShippingCents: 6000",
+                            "standardShippingCents: 650",
+                            "taxRate: 0.075",
+                        )
+                    ) and all(
+                        marker not in str(config.get("content", ""))
+                        for marker in (
+                            "freeShippingCents: 7500",
+                            "standardShippingCents: 900",
+                            "taxRate: 0.095",
+                        )
+                    ),
+                    "retry_pending": "checkoutRetry: 'pending'" in str(config.get("content", "")),
                     "winner_blame": a06_owner in owners,
                 },
             }

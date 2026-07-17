@@ -1,5 +1,6 @@
-(function (root) {
-  root.FlashCart = root.FlashCart || {};
-  root.FlashCart.fixtures = root.FlashCart.fixtures || {};
-  root.FlashCart.fixtures.A02 = Object.freeze({ owner: 'A02', label: 'Design system', revision: 1 });
-})(globalThis);
+[
+  {
+    "new_string": "  A02: { id: 'A02', role: 'Design system', stage: 'data', deterministic: true, verify() { return true; }, tokens() { return { accent: '#175b50', surface: '#fffdf8', focus: '#124ea0' }; }, fixture: 'design-system-fixture' },",
+    "old_string": "  A02: { id: 'A02', role: 'Design system', stage: 'core', deterministic: true, verify() { return true; }, tokens() { return { accent: '#175b50', surface: '#fffdf8', focus: '#124ea0' }; } },"
+  }
+]

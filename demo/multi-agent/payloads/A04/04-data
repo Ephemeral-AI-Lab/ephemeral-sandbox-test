@@ -1,5 +1,6 @@
-(function (root) {
-  root.FlashCart = root.FlashCart || {};
-  root.FlashCart.fixtures = root.FlashCart.fixtures || {};
-  root.FlashCart.fixtures.A04 = Object.freeze({ owner: 'A04', label: 'Catalog and PDP', revision: 1 });
-})(globalThis);
+[
+  {
+    "new_string": "  A04: { id: 'A04', role: 'Catalog and PDP', stage: 'data', deterministic: true, verify() { return true; }, selectVariant(product, variant) { return { ...product, variant, selectable: Boolean(variant) }; }, fixture: 'catalog-fixture' },",
+    "old_string": "  A04: { id: 'A04', role: 'Catalog and PDP', stage: 'core', deterministic: true, verify() { return true; }, selectVariant(product, variant) { return { ...product, variant, selectable: Boolean(variant) }; } },"
+  }
+]

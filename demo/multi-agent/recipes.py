@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shlex
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 from typing import Any
@@ -54,36 +55,37 @@ def payload_ref(agent: str, name: str) -> str:
 
 
 def bootstrap_files() -> dict[str, str]:
-    registry = "\n".join(["window.FlashCart = window.FlashCart || {};", "window.FlashCart.registry = {"] + [f"  {agent}: null," for agent in AGENT_IDS] + ["};", ""])
+    registry = "\n".join(
+        ["window.FlashCart = window.FlashCart || {};", "window.FlashCart.features = {"]
+        + [f"  {agent}: null," for agent in AGENT_IDS]
+        + ["};", "window.FlashCart.registry = window.FlashCart.features;", ""]
+    )
     return {
-        "package.json": canonical_json({
-            "name": "flashcart-offline-demo",
-            "private": True,
-            "type": "module",
-            "scripts": {"test": "node --test tests/*.test.mjs", "serve": "node scripts/serve.mjs"},
-        }),
-        "src/config.js": "window.FlashCart = window.FlashCart || {};\nwindow.FlashCart.config = { freeShippingCents: 5000, standardShippingCents: 700, taxRate: 0.08 };\n",
+        "index.html": index_html(),
+        "src/app.js": app_js(),
+        "src/styles.css": base_style(),
+        "src/config.js": "window.FlashCart = window.FlashCart || {};\nwindow.FlashCart.config = {\n  freeShippingCents: 5000,\n  standardShippingCents: 700,\n  taxRate: 0.08,\n  checkoutRetry: 'pending',\n};\n",
         "src/registry.js": registry,
     }
 
 
 def index_html() -> str:
-    styles = "\n".join(["    <link rel=\"stylesheet\" href=\"./src/styles.css\">", *[f"    <link rel=\"stylesheet\" href=\"./src/features/{agent.id}-{agent.slug}.css\">" for agent in AGENTS[1:]]])
-    scripts = "\n".join(["    <script src=\"./src/config.js\"></script>", "    <script src=\"./src/registry.js\"></script>", *[f"    <script src=\"./src/features/{agent.id}-{agent.slug}.js\"></script>" for agent in AGENTS], "    <script src=\"./src/app.js\"></script>"])
-    return f"""<!doctype html>
+    return """<!doctype html>
 <html lang=\"en\">
   <head>
     <meta charset=\"utf-8\">
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
     <meta name=\"description\" content=\"FlashCart offline storefront\">
     <title>FlashCart — offline storefront</title>
-{styles}
+    <link rel=\"stylesheet\" href=\"./src/styles.css\">
   </head>
   <body>
     <a class=\"skip\" href=\"#app\">Skip to storefront</a>
     <main id=\"app\" tabindex=\"-1\" aria-live=\"polite\"></main>
     <noscript>FlashCart needs JavaScript enabled for its offline checkout demo.</noscript>
-{scripts}
+    <script src=\"./src/config.js\"></script>
+    <script src=\"./src/registry.js\"></script>
+    <script src=\"./src/app.js\"></script>
   </body>
 </html>
 """
@@ -294,61 +296,135 @@ def _quality_test(agent: Agent, core_path: str) -> str:
 
 
 def paths_for(agent: Agent) -> dict[str, str]:
-    prefix = f"src/features/{agent.id}-{agent.slug}"
-    paths = {
-        "core": f"{prefix}.js",
-        "data": f"{prefix}-data.js",
-        "view": f"{prefix}-view.js",
-        "style": f"{prefix}.css",
-        "a11y": f"{prefix}-a11y.js",
-        "manifest": f"src/features/{agent.id}-{agent.slug}.json",
+    """Every agent collaborates in the same durable domain file."""
+    del agent
+    return {key: "src/registry.js" for key in ("core", "data", "view", "style", "a11y", "manifest")}
+
+
+def _registry_line(agent: Agent, stage: str) -> str:
+    if stage == "pending":
+        return f"  {agent.id}: null,"
+    fields = [
+        f"id: '{agent.id}'",
+        f"role: '{agent.role}'",
+        f"stage: '{stage}'",
+        f"deterministic: {'false' if stage == 'broken' else 'true'}",
+        f"verify() {{ return {'false' if stage == 'broken' else 'true'}; }}",
+    ]
+    if stage != "broken":
+        fields.append(agent.implementation)
+    if stage in {"data", "view", "style", "accessibility", "manifest", "ready"}:
+        fields.append(f"fixture: '{agent.slug}-fixture'")
+    if stage in {"view", "style", "accessibility", "manifest", "ready"}:
+        fields.append(f"view: '<section data-domain=\"{agent.slug}\"></section>'")
+    if stage in {"style", "accessibility", "manifest", "ready"}:
+        fields.append("focusVisible: true")
+    if stage in {"accessibility", "manifest", "ready"}:
+        fields.extend(["keyboard: true", "reducedMotion: true"])
+    if stage in {"manifest", "ready"}:
+        fields.extend([f"owner: '{agent.id}'", "schemaVersion: 1"])
+    if stage == "ready":
+        fields.append("status: 'ready'")
+    return f"  {agent.id}: {{ " + ", ".join(fields) + " },"
+
+
+def _line_edit(agent: Agent, old_stage: str, new_stage: str) -> str:
+    return canonical_json([{"old_string": _registry_line(agent, old_stage), "new_string": _registry_line(agent, new_stage)}])
+
+
+def _inline_node(script: str) -> str:
+    return "node --input-type=module --eval " + shlex.quote(script)
+
+
+def _cycle_title(agent: Agent, cycle: str) -> str:
+    titles = {
+        "repair": "target settles after repair",
+        "data": "fixture is deterministic",
+        "view": "view has a semantic section",
+        "style": "style keeps focus visible",
+        "a11y": "honors reduced motion",
+        "manifest": "manifest names its owner",
+        "quality": "implementation is marked ready",
     }
-    if agent.id == "A01":
-        paths.update({"data": "index.html", "view": "src/app.js", "style": "src/styles.css", "a11y": "scripts/serve.mjs"})
-    return paths
+    return f"{agent.id} {titles[cycle]}"
+
+
+def _cycle_command(agent: Agent, cycle: str) -> str:
+    markers = {
+        "repair": "verify() { return true; }",
+        "data": f"fixture: '{agent.slug}-fixture'",
+        "view": f'data-domain="{agent.slug}"',
+        "style": "focusVisible: true",
+        "a11y": "reducedMotion: true",
+        "manifest": f"owner: '{agent.id}'",
+        "quality": "status: 'ready'",
+    }
+    title = _cycle_title(agent, cycle)
+    reason = f"{agent.id} implementation should report verified" if cycle == "repair" else f"{agent.id} shared registry is missing {cycle} evidence"
+    script = (
+        "import { readFile } from 'node:fs/promises'; "
+        "const source = await readFile('src/registry.js', 'utf8'); "
+        f"const line = source.split('\\n').find(function (value) {{ return value.trimStart().startsWith('{agent.id}:'); }}); "
+        f"if (!line || !line.includes({json.dumps(markers[cycle])})) {{ console.error({json.dumps(title)}); console.error({json.dumps(reason)}); process.exit(1); }} "
+        f"console.log({json.dumps(title)});"
+    )
+    return _inline_node(script)
+
+
+def _workspace_contract_command(agent: Agent) -> str:
+    script = (
+        "import { readFile } from 'node:fs/promises'; "
+        "const [index, app, registry] = await Promise.all(['index.html', 'src/app.js', 'src/registry.js'].map(function (path) { return readFile(path, 'utf8'); })); "
+        f"const line = registry.split('\\n').find(function (value) {{ return value.trimStart().startsWith('{agent.id}:'); }}); "
+        "if (!index.includes('./src/registry.js') || !app.includes('FlashCart.features') || !line || !line.includes('schemaVersion: 1')) process.exit(1); "
+        f"console.log('{agent.id} shared five-file contract verified');"
+    )
+    return _inline_node(script)
+
+
+def _final_regression_command() -> str:
+    script = (
+        "import { readFile, readdir } from 'node:fs/promises'; "
+        "const root = (await readdir('.')).sort(); const src = (await readdir('src')).sort(); "
+        "const [index, app, style, config, registry] = await Promise.all(['index.html', 'src/app.js', 'src/styles.css', 'src/config.js', 'src/registry.js'].map(function (path) { return readFile(path, 'utf8'); })); "
+        "const ready = (registry.match(/status: 'ready'/g) || []).length; "
+        "if (root.join(',') !== 'index.html,src' || src.join(',') !== 'app.js,config.js,registry.js,styles.css' || ready !== 10 || !config.includes(\"checkoutRetry: 'complete'\") || !index.includes('./src/app.js') || !app.includes('product-grid') || !style.includes(':focus-visible')) process.exit(1); "
+        "console.log('Five-file storefront final regression passed');"
+    )
+    return _inline_node(script)
+
+
+def _preview_server_command() -> str:
+    script = (
+        "import { createReadStream, statSync } from 'node:fs'; import { createServer } from 'node:http'; import { extname, resolve, sep } from 'node:path'; "
+        "const root = resolve(process.cwd()); const types = { '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8', '.js': 'application/javascript; charset=utf-8' }; "
+        "const server = createServer(function (request, response) { const pathname = decodeURIComponent(new URL(request.url, 'http://flashcart.local').pathname); const file = resolve(root, pathname === '/' ? 'index.html' : '.' + pathname); if (!file.startsWith(root + sep) && file !== root) return response.writeHead(403).end('forbidden'); try { if (!statSync(file).isFile()) throw new Error('not file'); response.writeHead(200, { 'Content-Type': types[extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' }); createReadStream(file).pipe(response); } catch { response.writeHead(404).end('not found'); } }); "
+        "process.stdin.setEncoding('utf8'); process.stdin.on('data', function (value) { if (value.trim() === 'stop') server.close(function () { process.exit(0); }); }); server.listen(4173, '0.0.0.0', function () { console.log('FLASHCART_READY 0.0.0.0:4173'); });"
+    )
+    return _inline_node(script)
 
 
 def payloads_for(agent: Agent) -> dict[str, str]:
-    paths = paths_for(agent)
-    core_final = _feature_core(agent, agent.implementation)
-    core_broken = _broken_core(agent)
-    core_edit = canonical_json([{"old_string": core_broken, "new_string": core_final}])
-    data = index_html() if agent.id == "A01" else _data_js(agent)
-    view = app_js() if agent.id == "A01" else _view_js(agent)
-    style = base_style() if agent.id == "A01" else _feature_style(agent)
-    a11y = server_js() if agent.id == "A01" else _a11y_js(agent)
-    manifest = canonical_json({"owner": agent.id, "role": agent.role, "paths": paths, "schema_version": 1})
-    registry_edit = canonical_json([{"old_string": f"  {agent.id}: null,", "new_string": f"  {agent.id}: {{ role: '{agent.role}', entry: '{paths['core']}' }},"}])
-    data_test = _data_test(agent, paths["data"])
-    view_test = _view_test(agent, paths["view"])
-    a11y_test = _a11y_test(agent, paths["a11y"])
-    if agent.id == "A01":
-        data_test = "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A01 fixture is deterministic', async () => assert.match(await readFile(new URL('../index.html', import.meta.url), 'utf8'), /<main/));\n"
-        view_test = "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A01 view has a semantic section', async () => assert.match(await readFile(new URL('../src/app.js', import.meta.url), 'utf8'), /product-grid/));\n"
-        a11y_test = "import assert from 'node:assert/strict';\nimport { readFile } from 'node:fs/promises';\nimport test from 'node:test';\ntest('A01 honors reduced motion', async () => assert.match(await readFile(new URL('../scripts/serve.mjs', import.meta.url), 'utf8'), /FLASHCART_READY/));\n"
     payloads = {
-        "01-broken.js": core_broken,
-        "02-red.test.mjs": _red_test(agent, paths["core"]),
-        "03-fix.json": core_edit,
-        "04-data": data,
-        "05-data.test.mjs": data_test,
-        "06-view": view,
-        "07-view.test.mjs": view_test,
-        "08-style": style,
-        "09-style.test.mjs": _style_test(agent, paths["style"]),
-        "10-a11y": a11y,
-        "11-a11y.test.mjs": a11y_test,
-        "12-manifest.json": manifest,
-        "13-manifest.test.mjs": _manifest_test(agent, paths["manifest"]),
-        "14-quality.test.mjs": _quality_test(agent, paths["core"]),
-        "15-registry-edit.json": registry_edit,
+        "01-broken.js": _line_edit(agent, "pending", "broken"),
+        "03-fix.json": _line_edit(agent, "broken", "core"),
+        "04-data": _line_edit(agent, "core", "data"),
+        "06-view": _line_edit(agent, "data", "view"),
+        "08-style": _line_edit(agent, "view", "style"),
+        "10-a11y": _line_edit(agent, "style", "accessibility"),
+        "12-manifest.json": _line_edit(agent, "accessibility", "manifest"),
+        "15-registry-edit.json": _line_edit(agent, "manifest", "ready"),
     }
     if agent.id == "A06":
         old = bootstrap_files()["src/config.js"]
-        new = old.replace("freeShippingCents: 5000", "freeShippingCents: 6000")
+        new = (
+            old.replace("freeShippingCents: 5000", "freeShippingCents: 6000")
+            .replace("standardShippingCents: 700", "standardShippingCents: 650")
+            .replace("taxRate: 0.08", "taxRate: 0.075")
+        )
         payloads["16-conflict-winner-edit.json"] = canonical_json([{"old_string": old, "new_string": new}])
     if agent.id == "A08":
-        payloads["17-retry-receipt.json"] = canonical_json({"owner": "A08", "kind": "fresh-head-retry", "receipt": "checkout conflict retried from A06's published threshold"})
+        payloads["17-retry-receipt.json"] = canonical_json([{"old_string": "  checkoutRetry: 'pending',", "new_string": "  checkoutRetry: 'complete',"}])
     return payloads
 
 
@@ -407,61 +483,133 @@ def _artifact_check(path: str) -> str:
 
 
 def primary_plan(agent: Agent) -> list[dict[str, Any]]:
-    """One explicit 44-call recipe. Every test command differs by test file."""
-    paths = paths_for(agent)
+    """One explicit 44-call recipe over one shared, line-owned registry."""
     attempt = f"{agent.id}.primary"
     workspace = f"{attempt}.workspace"
     anchor = f"{attempt}.anchor"
+    registry = "src/registry.js"
     rows: list[dict[str, Any]] = []
+
     def add(**kwargs: Any) -> None:
         kwargs.setdefault("workspace_ref", workspace)
         rows.append(_record(agent, len(rows) + 1, attempt_ref=attempt, **kwargs))
-    add(scene="fanout", phase="anchor", category="workspace_control", purpose="Hold the primary workspace open behind the publication gate", op="exec_command", args={"command": ANCHOR, "timeout_ms": 180000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=["bootstrap-published"], bind={"workspace_session_id": workspace, "command_session_id": anchor})
-    for path, purpose, expected in (("package.json", "Inspect the standard-library-only package contract", "file_read"), ("src/registry.js", "Inspect the unclaimed feature registry line", "file_read"), ("src/config.js", "Inspect the seeded commerce boundary", "file_read"), (paths["core"], "Prove this workspace starts without its agent-owned implementation", "not_found")):
-        add(scene="fanout", phase="context", category="inspect", purpose=purpose, op="file_read", args={"path": path}, expect={"kind": expected}, after=["all-primary-workspaces-ready"])
-    add(scene="fanout", phase="red", category="patch", purpose="Create the deliberately incomplete feature contract", op="file_write", args=_payload_args(agent, "01-broken.js", paths["core"]), expect={"kind": "file_write"}, after=["all-primary-workspaces-ready"], effects=[paths["core"]])
-    red_path = f"tests/{agent.id}-red.test.mjs"
-    add(scene="fanout", phase="red", category="patch", purpose="Write the exact targeted red test", op="file_write", args=_payload_args(agent, "02-red.test.mjs", red_path), expect={"kind": "file_write"}, after=[rows[-1]["id"]], effects=[red_path])
+
+    def edit(name: str, phase: str, purpose: str) -> None:
+        add(
+            scene="fanout",
+            phase=phase,
+            category="patch",
+            purpose=purpose,
+            op="file_edit",
+            args=_payload_args(agent, name, registry, edit=True),
+            expect={"kind": "file_edit"},
+            after=[rows[-1]["id"]],
+            effects=[registry],
+        )
+
+    def read(path: str, phase: str, purpose: str) -> None:
+        add(
+            scene="fanout",
+            phase=phase,
+            category="inspect",
+            purpose=purpose,
+            op="file_read",
+            args={"path": path},
+            expect={"kind": "file_read"},
+            after=[rows[-1]["id"]] if rows else ["all-primary-workspaces-ready"],
+        )
+
+    def run(command: str, phase: str, category: str, purpose: str, *, cycle: str | None = None, expect: dict[str, Any] | None = None) -> None:
+        add(
+            scene="fanout",
+            phase=phase,
+            category=category,
+            purpose=purpose,
+            op="exec_command",
+            args={"command": command, "timeout_ms": 60000, "yield_time_ms": 30000},
+            expect=expect or {"kind": "command_ok"},
+            after=[rows[-1]["id"]],
+            test_cycle=cycle,
+        )
+
+    add(
+        scene="fanout",
+        phase="anchor",
+        category="workspace_control",
+        purpose="Hold the primary workspace open behind the publication gate",
+        op="exec_command",
+        args={"command": ANCHOR, "timeout_ms": 180000, "yield_time_ms": 0},
+        expect={"kind": "command_running"},
+        after=["bootstrap-published"],
+        bind={"workspace_session_id": workspace, "command_session_id": anchor},
+    )
+    read("index.html", "context", "Inspect the shared storefront entry point")
+    read(registry, "context", "Inspect this agent's unclaimed line in the shared feature registry")
+    read("src/config.js", "context", "Inspect the shared commerce boundary")
+    read("src/app.js", "context", "Inspect the browser shell that consumes the shared registry")
+    edit("01-broken.js", "red", "Introduce a deliberately incomplete implementation on this agent's registry line")
     cycle = f"{agent.id}.repair"
-    add(scene="fanout", phase="red", category="test_debug", purpose="Prove the feature contract fails before its repair", op="exec_command", args={"command": f"node --test {red_path}", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "expected_red", "child_exit_code": 1, "failing_subtests": [{"id": f"{agent.id} target settles after repair", "reason_contains": f"{agent.id} implementation should report verified"}], "forbid_output_contains": ["SyntaxError", "ERR_MODULE_NOT_FOUND", "Could not find"]}, after=[rows[-1]["id"]], test_cycle=cycle)
-    add(scene="fanout", phase="diagnose", category="inspect", purpose="Read the failed implementation before applying the smallest repair", op="file_read", args={"path": paths["core"]}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-    add(scene="fanout", phase="repair", category="patch", purpose="Replace the incomplete feature contract with its deterministic implementation", op="file_edit", args=_payload_args(agent, "03-fix.json", paths["core"], edit=True), expect={"kind": "file_edit"}, after=[rows[-1]["id"]], effects=[paths["core"]])
-    add(scene="fanout", phase="repair", category="build_lint", purpose="Syntax-check the repaired feature module", op="exec_command", args={"command": f"node --check {paths['core']}", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]])
-    add(scene="fanout", phase="green", category="test_debug", purpose="Prove the original red contract turns green after the repair", op="exec_command", args={"command": f"node --test {red_path}", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], test_cycle=cycle)
-    for key, test_name, suffix, description in (("data", "05-data.test.mjs", "data", "Add deterministic feature fixtures"), ("view", "07-view.test.mjs", "view", "Add a semantic feature view")):
-        data_path = paths[key]
-        payload_name = "04-data" if key == "data" else "06-view"
-        add(scene="fanout", phase=key, category="patch", purpose=description, op="file_write", args=_payload_args(agent, payload_name, data_path), expect={"kind": "file_write"}, after=[rows[-1]["id"]], effects=[data_path])
-        add(scene="fanout", phase=key, category="build_lint", purpose=f"Syntax-check the {key} artifact", op="exec_command", args={"command": _artifact_check(data_path), "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]])
-        test_path = f"tests/{agent.id}-{suffix}.test.mjs"
-        add(scene="fanout", phase=key, category="patch", purpose=f"Write the {key} contract test", op="file_write", args=_payload_args(agent, test_name, test_path), expect={"kind": "file_write"}, after=[rows[-1]["id"]], effects=[test_path])
-        add(scene="fanout", phase=key, category="test_debug", purpose=f"Run the {key} contract test", op="exec_command", args={"command": f"node --test {test_path}", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], test_cycle=f"{agent.id}.{suffix}")
-    style_path = paths["style"]
-    add(scene="fanout", phase="style", category="patch", purpose="Add responsive visible-focus feature styling", op="file_write", args=_payload_args(agent, "08-style", style_path), expect={"kind": "file_write"}, after=[rows[-1]["id"]], effects=[style_path])
-    style_test = f"tests/{agent.id}-style.test.mjs"
-    add(scene="fanout", phase="style", category="patch", purpose="Write the focus-style assertion", op="file_write", args=_payload_args(agent, "09-style.test.mjs", style_test), expect={"kind": "file_write"}, after=[rows[-1]["id"]], effects=[style_test])
-    add(scene="fanout", phase="style", category="test_debug", purpose="Verify the shipped style keeps keyboard focus visible", op="exec_command", args={"command": f"node --test {style_test}", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], test_cycle=f"{agent.id}.style")
-    a11y_path = paths["a11y"]
-    add(scene="fanout", phase="accessibility", category="patch", purpose="Add reduced-motion and keyboard behavior metadata", op="file_write", args=_payload_args(agent, "10-a11y", a11y_path), expect={"kind": "file_write"}, after=[rows[-1]["id"]], effects=[a11y_path])
-    add(scene="fanout", phase="accessibility", category="build_lint", purpose="Syntax-check the accessibility behavior", op="exec_command", args={"command": _javascript_checks([a11y_path]), "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]])
-    a11y_test = f"tests/{agent.id}-a11y.test.mjs"
-    add(scene="fanout", phase="accessibility", category="patch", purpose="Write the reduced-motion contract test", op="file_write", args=_payload_args(agent, "11-a11y.test.mjs", a11y_test), expect={"kind": "file_write"}, after=[rows[-1]["id"]], effects=[a11y_test])
-    add(scene="fanout", phase="accessibility", category="test_debug", purpose="Run the accessibility behavior test", op="exec_command", args={"command": f"node --test {a11y_test}", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], test_cycle=f"{agent.id}.a11y")
-    manifest_path = paths["manifest"]
-    add(scene="fanout", phase="manifest", category="patch", purpose="Add the feature manifest used by integration QA", op="file_write", args=_payload_args(agent, "12-manifest.json", manifest_path), expect={"kind": "file_write"}, after=[rows[-1]["id"]], effects=[manifest_path])
-    manifest_test = f"tests/{agent.id}-manifest.test.mjs"
-    add(scene="fanout", phase="manifest", category="patch", purpose="Write the manifest ownership assertion", op="file_write", args=_payload_args(agent, "13-manifest.test.mjs", manifest_test), expect={"kind": "file_write"}, after=[rows[-1]["id"]], effects=[manifest_test])
-    add(scene="fanout", phase="manifest", category="test_debug", purpose="Verify the manifest names its durable feature owner", op="exec_command", args={"command": f"node --test {manifest_test}", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], test_cycle=f"{agent.id}.manifest")
-    for path, purpose in ((paths["core"], "Inspect the final feature implementation"), (paths["data"], "Inspect the deterministic feature data"), (paths["view"], "Inspect the rendered feature surface"), (style_path, "Inspect the final responsive style"), (a11y_path, "Inspect the keyboard and reduced-motion behavior"), (manifest_path, "Inspect the feature ownership manifest"), (f"tests/{agent.id}-red.test.mjs", "Inspect the preserved repaired-contract test")):
-        add(scene="fanout", phase="review", category="inspect", purpose=purpose, op="file_read", args={"path": path}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-    add(scene="fanout", phase="review", category="build_lint", purpose="Check every owned JavaScript artifact together", op="exec_command", args={"command": _javascript_checks([paths["core"], paths["data"], paths["view"], paths["a11y"]]), "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]])
-    quality_test = f"tests/{agent.id}-quality.test.mjs"
-    add(scene="fanout", phase="review", category="patch", purpose="Write the deterministic implementation quality check", op="file_write", args=_payload_args(agent, "14-quality.test.mjs", quality_test), expect={"kind": "file_write"}, after=[rows[-1]["id"]], effects=[quality_test])
-    add(scene="fanout", phase="review", category="inspect", purpose="Inspect the independent quality contract", op="file_read", args={"path": quality_test}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-    add(scene="fanout", phase="review", category="test_debug", purpose="Run the independent implementation quality check", op="exec_command", args={"command": f"node --test {quality_test}", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], test_cycle=f"{agent.id}.quality")
-    add(scene="fanout", phase="merge", category="patch", purpose="Claim exactly this agent's registry line", op="file_edit", args=_payload_args(agent, "15-registry-edit.json", "src/registry.js", edit=True), expect={"kind": "file_edit"}, after=[rows[-1]["id"]], effects=["src/registry.js"])
-    add(scene="fanout", phase="merge", category="inspect", purpose="Verify this workspace sees its claimed registry value", op="file_read", args={"path": "src/registry.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-    add(scene="merge", phase="release", category="workspace_control", purpose="Release the gated workspace only after every primary feature gate is green", op="write_command_stdin", args={"input": "publish\n", "yield_time_ms": 30000}, expect={"kind": "publish_success"}, after=["all-primary-feature-gates-green"], command_ref=anchor, workspace_ref=None)
+    run(
+        _cycle_command(agent, "repair"),
+        "red",
+        "test_debug",
+        "Prove the registry contract fails before repair",
+        cycle=cycle,
+        expect={
+            "kind": "expected_red",
+            "child_exit_code": 1,
+            "failing_subtests": [{"id": _cycle_title(agent, "repair"), "reason_contains": f"{agent.id} implementation should report verified"}],
+            "forbid_output_contains": ["SyntaxError", "ERR_MODULE_NOT_FOUND", "Could not find"],
+        },
+    )
+    read(registry, "diagnose", "Inspect the failed line before applying the smallest repair")
+    edit("03-fix.json", "repair", "Repair this agent's implementation in the shared registry")
+    run("node --check src/registry.js", "repair", "build_lint", "Syntax-check the repaired shared registry")
+    run(_cycle_command(agent, "repair"), "green", "test_debug", "Prove the original red contract turns green", cycle=cycle)
+    edit("04-data", "data", "Add deterministic fixture metadata to this agent's registry line")
+    run("node --check src/registry.js", "data", "build_lint", "Syntax-check the registry after the data edit")
+    read(registry, "data", "Inspect the deterministic fixture metadata")
+    run(_cycle_command(agent, "data"), "data", "test_debug", "Verify the deterministic fixture contract", cycle=f"{agent.id}.data")
+    edit("06-view", "view", "Add this domain's semantic view metadata to the shared registry")
+    run("node --check src/registry.js", "view", "build_lint", "Syntax-check the registry after the view edit")
+    read(registry, "view", "Inspect the semantic view metadata")
+    run(_cycle_command(agent, "view"), "view", "test_debug", "Verify the semantic view contract", cycle=f"{agent.id}.view")
+    edit("08-style", "style", "Add visible-focus metadata to this agent's shared line")
+    read("src/styles.css", "style", "Inspect the unified presentation and focus layer")
+    run(_cycle_command(agent, "style"), "style", "test_debug", "Verify this contribution preserves visible focus", cycle=f"{agent.id}.style")
+    edit("10-a11y", "accessibility", "Add keyboard and reduced-motion metadata to the shared registry")
+    run("node --check src/registry.js", "accessibility", "build_lint", "Syntax-check the accessibility contribution")
+    read(registry, "accessibility", "Inspect keyboard and reduced-motion metadata")
+    run(_cycle_command(agent, "a11y"), "accessibility", "test_debug", "Verify the reduced-motion contract", cycle=f"{agent.id}.a11y")
+    edit("12-manifest.json", "manifest", "Add durable ownership metadata to this agent's registry line")
+    read(registry, "manifest", "Inspect the durable ownership metadata")
+    run(_cycle_command(agent, "manifest"), "manifest", "test_debug", "Verify the line names its durable owner", cycle=f"{agent.id}.manifest")
+    read("index.html", "review", "Review the compact shared storefront entry point")
+    read("src/config.js", "review", "Review shared commerce configuration before publication")
+    read("src/app.js", "review", "Review the browser shell that composes all contributions")
+    read("src/styles.css", "review", "Review the unified responsive style layer")
+    read(registry, "review", "Review this agent's full contribution in shared context")
+    read("src/config.js", "review", "Reconfirm the conflict-sensitive configuration head")
+    run("node --check src/registry.js && node --check src/config.js && node --check src/app.js", "review", "build_lint", "Syntax-check every shared JavaScript surface")
+    read(registry, "review", "Inspect ownership evidence before the integration checks")
+    read("index.html", "review", "Inspect the final script composition order")
+    run(_workspace_contract_command(agent), "review", "test_debug", "Verify the shared five-file application contract")
+    read(registry, "review", "Inspect the line immediately before its ready transition")
+    run("node --check src/registry.js", "review", "build_lint", "Recheck the collaborative registry before finalization")
+    edit("15-registry-edit.json", "merge", "Mark this agent's line ready for the coordinated publication")
+    run(_cycle_command(agent, "quality"), "merge", "test_debug", "Prove this contribution is publication-ready", cycle=f"{agent.id}.quality")
+    add(
+        scene="merge",
+        phase="release",
+        category="workspace_control",
+        purpose="Release the gated workspace only after every primary feature gate is green",
+        op="write_command_stdin",
+        args={"input": "publish\n", "yield_time_ms": 30000},
+        expect={"kind": "publish_success"},
+        after=["all-primary-feature-gates-green"],
+        command_ref=anchor,
+        workspace_ref=None,
+    )
     if len(rows) != 44:
         raise AssertionError(f"{agent.id} recipe changed its reviewed call count: {len(rows)}")
     return rows
@@ -476,7 +624,14 @@ def _append(rows: list[dict[str, Any]], agent: Agent, *, attempt: str, workspace
 
 
 def _port_server(marker: str) -> str:
-    return "node --input-type=module --eval \"import { mkdir, writeFile } from 'node:fs/promises'; import { createServer } from 'node:http'; await mkdir('.flashcart-network', { recursive: true }); await writeFile('.flashcart-network/" + marker + ".txt', 'ephemeral network experiment\\n'); const server = createServer((_, response) => response.end('ok')); server.once('error', (error) => { if (error.code === 'EADDRINUSE') { console.log('PORT_COLLISION'); process.exit(0); } throw error; }); process.stdin.setEncoding('utf8'); process.stdin.on('data', (value) => { if (value.trim() === 'stop') server.close(() => process.exit(0)); }); server.listen(4173, '0.0.0.0', () => console.log('PORT_BOUND " + marker + "'));\""
+    script = (
+        "import { createServer } from 'node:http'; "
+        "const server = createServer(function (_, response) { response.end('ok'); }); "
+        "server.once('error', function (error) { if (error.code === 'EADDRINUSE') { console.log('PORT_COLLISION'); process.exit(0); } throw error; }); "
+        "process.stdin.setEncoding('utf8'); process.stdin.on('data', function (value) { if (value.trim() === 'stop') server.close(function () { process.exit(0); }); }); "
+        f"server.listen(4173, '0.0.0.0', function () {{ console.log('PORT_BOUND {marker}'); }});"
+    )
+    return _inline_node(script)
 
 
 def extended_plan(agent: Agent) -> list[dict[str, Any]]:
@@ -493,29 +648,29 @@ def extended_plan(agent: Agent) -> list[dict[str, Any]]:
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="winner-review", category="inspect", purpose="Confirm the contender sees the 6000-cent threshold before release", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
         _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="winner-publish", category="conflict_network_audit", purpose="Publish A06's conflict winner before A08 attempts its stale source", op="write_command_stdin", args={"input": "publish\n", "yield_time_ms": 30000}, expect={"kind": "publish_success"}, after=["conflict-contenders-mutated"], command_ref=anchor)
         _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="winner-shared-read", category="inspect", purpose="Read the shared threshold after the winning publication", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="winner-blame", category="conflict_network_audit", purpose="Prove raw line ownership belongs to the A06 conflict winner", op="file_blame", args={"path": "src/config.js", "line_start": 2, "line_end": 2}, expect={"kind": "blame_owner", "owner_agent": "A06", "owner_attempt": "A06.conflict"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="winner-blame", category="conflict_network_audit", purpose="Prove all three contested configuration lines belong to the A06 conflict winner", op="file_blame", args={"path": "src/config.js", "line_start": 3, "line_end": 5}, expect={"kind": "blame_owner", "owner_agent": "A06", "owner_attempt": "A06.conflict"}, after=[rows[-1]["id"]])
     if agent.id == "A08":
         attempt = "A08.conflict"
         workspace = f"{attempt}.workspace"
         anchor = f"{attempt}.anchor"
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="anchor", category="conflict_network_audit", purpose="Hold A08's stale-head conflict contender until the rejection gate", op="exec_command", args={"command": ANCHOR, "timeout_ms": 180000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=["all-primary-published"], bind={"workspace_session_id": workspace, "command_session_id": anchor})
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="inspect", category="inspect", purpose="Read the original shipping boundary from A08's stale source", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="stale-exec-edit", category="patch", purpose="Use exec_command to change the seeded line and create an unrelated stale artifact", op="exec_command", args={"command": "node --input-type=module --eval \"import { mkdir, readFile, writeFile } from 'node:fs/promises'; const path = 'src/config.js'; const value = await readFile(path, 'utf8'); await writeFile(path, value.replace('freeShippingCents: 5000', 'freeShippingCents: 7500')); await mkdir('src/conflict', { recursive: true }); await writeFile('src/conflict/A08-stale-attempt.txt', 'must not publish\\n');\"", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], effects=["src/config.js", "src/conflict/A08-stale-attempt.txt"])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="stale-exec-edit", category="patch", purpose="Use exec_command to create three divergent values in the shared configuration", op="exec_command", args={"command": "node --input-type=module --eval \"import { readFile, writeFile } from 'node:fs/promises'; const path = 'src/config.js'; const value = await readFile(path, 'utf8'); const stale = value.replace('freeShippingCents: 5000', 'freeShippingCents: 7500').replace('standardShippingCents: 700', 'standardShippingCents: 900').replace('taxRate: 0.08', 'taxRate: 0.095'); await writeFile(path, stale);\"", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], effects=["src/config.js"])
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="stale-review", category="inspect", purpose="Confirm A08's stale workspace contains its divergent threshold", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
         _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="rejected-publish", category="conflict_network_audit", purpose="Require atomic source-conflict rejection for A08's stale publication", op="write_command_stdin", args={"input": "publish\n", "yield_time_ms": 30000}, expect={"kind": "publish_reject", "publish_reject_class": "source_conflict"}, after=["A06.050"], command_ref=anchor)
         _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="shared-threshold", category="inspect", purpose="Prove the rejected attempt did not advance the shared threshold", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="shared-blame", category="conflict_network_audit", purpose="Prove rejected A08 work did not replace the A06 raw owner", op="file_blame", args={"path": "src/config.js", "line_start": 2, "line_end": 2}, expect={"kind": "blame_owner", "owner_agent": "A06", "owner_attempt": "A06.conflict"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="no-partial-file", category="inspect", purpose="Prove the unrelated stale artifact never reached shared content", op="file_read", args={"path": "src/conflict/A08-stale-attempt.txt"}, expect={"kind": "not_found"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="shared-blame", category="conflict_network_audit", purpose="Prove rejected A08 work did not replace the A06 owner on any contested line", op="file_blame", args={"path": "src/config.js", "line_start": 3, "line_end": 5}, expect={"kind": "blame_owner", "owner_agent": "A06", "owner_attempt": "A06.conflict"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="atomic-shared-read", category="inspect", purpose="Re-read the single shared conflict surface after atomic rejection", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
         attempt = "A08.retry"
         workspace = f"{attempt}.workspace"
         anchor = f"{attempt}.anchor"
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-anchor", category="conflict_network_audit", purpose="Open a new A08 workspace from the post-winner head", op="exec_command", args={"command": ANCHOR, "timeout_ms": 180000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=["A08.052"], bind={"workspace_session_id": workspace, "command_session_id": anchor})
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-read", category="inspect", purpose="Confirm the retry starts from A06's published threshold", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-patch", category="patch", purpose="Add the durable post-conflict checkout retry receipt", op="file_write", args=_payload_args(agent, "17-retry-receipt.json", "src/features/A08-checkout-retry.json"), expect={"kind": "file_write"}, after=[rows[-1]["id"]], effects=["src/features/A08-checkout-retry.json"])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-review", category="inspect", purpose="Read the durable retry receipt before its clean publication", op="file_read", args={"path": "src/features/A08-checkout-retry.json"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-patch", category="patch", purpose="Record the durable post-conflict retry on the shared configuration line", op="file_edit", args=_payload_args(agent, "17-retry-receipt.json", "src/config.js", edit=True), expect={"kind": "file_edit"}, after=[rows[-1]["id"]], effects=["src/config.js"])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="conflict", phase="retry-review", category="inspect", purpose="Read the shared retry state before its clean publication", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
         _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="retry-publish", category="conflict_network_audit", purpose="Publish the fresh-head A08 retry successfully", op="write_command_stdin", args={"input": "publish\n", "yield_time_ms": 30000}, expect={"kind": "publish_success"}, after=[rows[-1]["id"]], command_ref=anchor)
-        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="retry-shared-read", category="inspect", purpose="Verify the successful retry receipt is shared", op="file_read", args={"path": "src/features/A08-checkout-retry.json"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="retry-blame", category="conflict_network_audit", purpose="Prove the retry receipt has raw A08 ownership", op="file_blame", args={"path": "src/features/A08-checkout-retry.json", "line_start": 1, "line_end": 1}, expect={"kind": "blame_owner", "owner_agent": "A08", "owner_attempt": "A08.retry"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="retry-shared-read", category="inspect", purpose="Verify the successful retry state is shared", op="file_read", args={"path": "src/config.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=None, scene="conflict", phase="retry-blame", category="conflict_network_audit", purpose="Prove the retry line has raw A08 ownership", op="file_blame", args={"path": "src/config.js", "line_start": 6, "line_end": 6}, expect={"kind": "blame_owner", "owner_agent": "A08", "owner_attempt": "A08.retry"}, after=[rows[-1]["id"]])
     if agent.id == "A09":
         for attempt, marker, after in (("A09.network.shared1", "shared-one", ["all-primary-published"]), ("A09.network.shared2", "shared-two", ["A09.045"]), ("A09.network.isolated1", "isolated-one", ["A09.046"]), ("A09.network.isolated2", "isolated-two", ["A09.047"])):
             workspace = f"{attempt}.workspace"
@@ -528,7 +683,7 @@ def extended_plan(agent: Agent) -> list[dict[str, Any]]:
             # only successful servers can be bound for later probes and
             # explicit stdin shutdown.
             bind = {"command_session_id": command} if kind == "command_running" else None
-            _append(rows, agent, attempt=attempt, workspace=workspace, scene="network", phase="port-bind", category="conflict_network_audit", purpose=f"Bind or observe the port-4173 {marker} trusted-session experiment", op="exec_command", args={"command": _port_server(marker), "timeout_ms": 60000, "yield_time_ms": 0 if kind == "command_running" else 30000}, expect=expect, after=after, effects=[f".flashcart-network/{marker}.txt"], bind=bind)
+            _append(rows, agent, attempt=attempt, workspace=workspace, scene="network", phase="port-bind", category="conflict_network_audit", purpose=f"Bind or observe the port-4173 {marker} trusted-session experiment", op="exec_command", args={"command": _port_server(marker), "timeout_ms": 60000, "yield_time_ms": 0 if kind == "command_running" else 30000}, expect=expect, after=after, bind=bind)
         for attempt, start_id in (("A09.network.shared1", "A09.045"), ("A09.network.isolated1", "A09.047"), ("A09.network.isolated2", "A09.048")):
             _append(rows, agent, attempt=attempt, workspace=None, scene="network", phase="port-ready", category="conflict_network_audit", purpose="Read the running server readiness marker without publishing experiment files", op="read_command_lines", args={"max_lines": 20, "wait_ms": 5000}, expect={"kind": "command_running", "output_contains": ["PORT_BOUND"]}, after=[start_id], command_ref=f"{attempt}.server")
         for attempt in ("A09.network.shared1", "A09.network.isolated1", "A09.network.isolated2"):
@@ -537,13 +692,13 @@ def extended_plan(agent: Agent) -> list[dict[str, Any]]:
         attempt = "A10.final"
         workspace = f"{attempt}.workspace"
         anchor = f"{attempt}.anchor"
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-anchor", category="workspace_control", purpose="Open a fresh post-merge A10 regression workspace", op="exec_command", args={"command": ANCHOR, "timeout_ms": 180000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=["network-experiment-clean"], bind={"workspace_session_id": workspace, "command_session_id": anchor})
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-anchor", category="workspace_control", purpose="Open a fresh post-merge A10 regression workspace", op="exec_command", args={"command": ANCHOR, "timeout_ms": 180000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=["network-experiment-clean", "A08.057"], bind={"workspace_session_id": workspace, "command_session_id": anchor})
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-context", category="inspect", purpose="Read the fully merged feature registry from the fresh final workspace", op="file_read", args={"path": "src/registry.js"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-syntax", category="build_lint", purpose="Syntax-check the final offline storefront entry points", op="exec_command", args={"command": "node --check src/app.js && node --check scripts/serve.mjs", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]])
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-regression", category="test_debug", purpose="Run the frozen exact-inventory final regression from a fresh post-merge workspace", op="exec_command", args={"command": "node --test tests/*.test.mjs", "timeout_ms": 120000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], test_cycle="A10.final-regression", final_regression=True)
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-syntax", category="build_lint", purpose="Syntax-check the final five-file storefront entry points", op="exec_command", args={"command": "node --check src/app.js && node --check src/config.js && node --check src/registry.js", "timeout_ms": 60000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]])
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-regression", category="test_debug", purpose="Run the frozen exact-inventory final regression from a fresh post-merge workspace", op="exec_command", args={"command": _final_regression_command(), "timeout_ms": 120000, "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], test_cycle="A10.final-regression", final_regression=True)
         _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="final-tree-read", category="inspect", purpose="Read the retained storefront shell after final regression", op="file_read", args={"path": "index.html"}, expect={"kind": "file_read"}, after=[rows[-1]["id"]])
         preview = f"{attempt}.preview"
-        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="preview-start", category="test_debug", purpose="Start the final offline storefront for a retained trusted-preview capture", op="exec_command", args={"command": "node scripts/serve.mjs", "timeout_ms": 120000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=[rows[-1]["id"]], bind={"command_session_id": preview})
+        _append(rows, agent, attempt=attempt, workspace=workspace, scene="evidence", phase="preview-start", category="test_debug", purpose="Start the final offline storefront for a retained trusted-preview capture", op="exec_command", args={"command": _preview_server_command(), "timeout_ms": 120000, "yield_time_ms": 0}, expect={"kind": "command_running"}, after=[rows[-1]["id"]], bind={"command_session_id": preview})
         _append(rows, agent, attempt=attempt, workspace=None, scene="evidence", phase="preview-ready", category="test_debug", purpose="Read the final preview readiness marker before the trusted host probe", op="read_command_lines", args={"max_lines": 20, "wait_ms": 5000}, expect={"kind": "command_running", "output_contains": ["FLASHCART_READY"]}, after=[rows[-1]["id"]], command_ref=preview)
         _append(rows, agent, attempt=attempt, workspace=None, scene="evidence", phase="preview-stop", category="workspace_control", purpose="Stop the retained preview before closing the final workspace", op="write_command_stdin", args={"input": "stop\n", "yield_time_ms": 30000}, expect={"kind": "command_ok"}, after=[rows[-1]["id"]], command_ref=preview)
         _append(rows, agent, attempt=attempt, workspace=None, scene="evidence", phase="final-release", category="workspace_control", purpose="Close the clean final regression workspace with an explicit no-op publication", op="write_command_stdin", args={"input": "publish\n", "yield_time_ms": 30000}, expect={"kind": "publish_noop"}, after=[rows[-1]["id"]], command_ref=anchor)
@@ -565,11 +720,19 @@ def all_payloads() -> dict[str, str]:
 def inventory() -> dict[str, Any]:
     tests: dict[str, Any] = {}
     for agent in AGENTS:
-        for suffix, title in (("repair", f"{agent.id} target settles after repair"), ("data", f"{agent.id} fixture is deterministic"), ("view", f"{agent.id} view has a semantic section"), ("style", f"{agent.id} style keeps focus visible"), ("a11y", f"{agent.id} honors reduced motion"), ("manifest", f"{agent.id} manifest names its owner"), ("quality", f"{agent.id} implementation is marked deterministic")):
-            filename = "red" if suffix == "repair" else suffix
-            tests[f"{agent.id}.{suffix}"] = {"command": f"node --test tests/{agent.id}-{filename}.test.mjs", "subtests": [title], "subtest_count": 1, "allowed": {"skip": [], "todo": [], "cancelled": []}}
-    all_subtests = [title for entry in tests.values() for title in entry["subtests"]]
-    tests["A10.final-regression"] = {"command": "node --test tests/*.test.mjs", "subtests": all_subtests, "subtest_count": len(all_subtests), "allowed": {"skip": [], "todo": [], "cancelled": []}}
+        for suffix in ("repair", "data", "view", "style", "a11y", "manifest", "quality"):
+            tests[f"{agent.id}.{suffix}"] = {
+                "command": _cycle_command(agent, suffix),
+                "subtests": [_cycle_title(agent, suffix)],
+                "subtest_count": 1,
+                "allowed": {"skip": [], "todo": [], "cancelled": []},
+            }
+    tests["A10.final-regression"] = {
+        "command": _final_regression_command(),
+        "subtests": ["Five-file storefront final regression passed"],
+        "subtest_count": 1,
+        "allowed": {"skip": [], "todo": [], "cancelled": []},
+    }
     return {"schema_version": 1, "tests": tests}
 
 
@@ -577,21 +740,13 @@ def materialized_tree() -> dict[str, str]:
     """The independently oracle-reviewed final tree; no run data participates."""
     tree = dict(bootstrap_files())
     for agent in AGENTS:
-        paths = paths_for(agent)
-        payloads = payloads_for(agent)
-        tree[paths["core"]] = _feature_core(agent, agent.implementation)
-        tree[paths["data"]] = payloads["04-data"]
-        tree[paths["view"]] = payloads["06-view"]
-        tree[paths["style"]] = payloads["08-style"]
-        tree[paths["a11y"]] = payloads["10-a11y"]
-        tree[paths["manifest"]] = payloads["12-manifest.json"]
-        for suffix, payload in (("red", "02-red.test.mjs"), ("data", "05-data.test.mjs"), ("view", "07-view.test.mjs"), ("style", "09-style.test.mjs"), ("a11y", "11-a11y.test.mjs"), ("manifest", "13-manifest.test.mjs"), ("quality", "14-quality.test.mjs")):
-            tree[f"tests/{agent.id}-{suffix}.test.mjs"] = payloads[payload]
-        old = f"  {agent.id}: null,"
-        new = f"  {agent.id}: {{ role: '{agent.role}', entry: '{paths['core']}' }},"
-        tree["src/registry.js"] = tree["src/registry.js"].replace(old, new)
-    tree["src/config.js"] = tree["src/config.js"].replace("freeShippingCents: 5000", "freeShippingCents: 6000")
-    tree["src/features/A08-checkout-retry.json"] = payloads_for(AGENTS[7])["17-retry-receipt.json"]
+        tree["src/registry.js"] = tree["src/registry.js"].replace(_registry_line(agent, "pending"), _registry_line(agent, "ready"))
+    tree["src/config.js"] = (
+        tree["src/config.js"].replace("freeShippingCents: 5000", "freeShippingCents: 6000")
+        .replace("standardShippingCents: 700", "standardShippingCents: 650")
+        .replace("taxRate: 0.08", "taxRate: 0.075")
+        .replace("checkoutRetry: 'pending'", "checkoutRetry: 'complete'")
+    )
     return dict(sorted(tree.items()))
 
 

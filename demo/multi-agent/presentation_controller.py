@@ -230,15 +230,22 @@ def workspace_agent_mapping(
     return mapping
 
 
-def compact_owner(owner: str, mapping: dict[str, str]) -> dict[str, Any]:
+def compact_owner(
+    owner: str,
+    mapping: dict[str, str],
+    bootstrap_workspace: str | None = None,
+) -> dict[str, Any]:
     prefix = "workspace_session:"
     workspace = owner[len(prefix):] if owner.startswith(prefix) else None
     agent = mapping.get(workspace) if workspace is not None else None
     if agent is not None:
         label = agent
         provenance = "runner_mapping"
-    elif workspace is not None:
+    elif workspace is not None and workspace == bootstrap_workspace:
         label = "Base / bootstrap"
+        provenance = "base_workspace"
+    elif workspace is not None:
+        label = "Unmapped workspace"
         provenance = "unmapped_raw_owner"
     else:
         label = "Unknown owner"
@@ -250,6 +257,19 @@ def compact_owner(owner: str, mapping: dict[str, str]) -> dict[str, Any]:
         "label": label,
         "provenance": provenance,
     }
+
+
+def bootstrap_workspace_id(run_root: Path) -> str | None:
+    """Return the non-agent workspace used to seed the shared base."""
+    for path in sorted((run_root / "commands").glob("*-bootstrap-publish.json")):
+        record = read_object(path)
+        if not isinstance(record, dict) or record.get("label") != "bootstrap-publish":
+            continue
+        parsed = record.get("parsed_json")
+        workspace = parsed.get("workspace_session_id") if isinstance(parsed, dict) else None
+        if isinstance(workspace, str):
+            return workspace
+    return None
 
 
 def presentation_evidence(
@@ -277,6 +297,7 @@ def presentation_evidence(
         for record in records
         if isinstance(record.get("label"), str)
     }
+    bootstrap_workspace = bootstrap_workspace_id(run_root)
     workspace_mapping = workspace_agent_mapping(finished, operations)
     operation_mix: dict[str, int] = {}
     for operation in operations:
@@ -407,7 +428,7 @@ def presentation_evidence(
             raw_owner = value.get("owner")
             if not isinstance(raw_owner, str):
                 continue
-            owner = compact_owner(raw_owner, workspace_mapping)
+            owner = compact_owner(raw_owner, workspace_mapping, bootstrap_workspace)
             owner.update({
                 "start_line": value.get("start_line"),
                 "line_count": value.get("line_count"),
@@ -439,29 +460,70 @@ def presentation_evidence(
         checkpoints = presentation.get("checkpoints", {}) if isinstance(presentation, dict) else {}
         winner_checkpoint = checkpoints.get("conflict-winner", {}) if isinstance(checkpoints, dict) else {}
         retry_checkpoint = checkpoints.get("conflict-retry", {}) if isinstance(checkpoints, dict) else {}
-        conflicts.append({
-            "id": f"{rejected['id']}-source-conflict",
-            "type": rejected.get("publish_reject_class") or "source_conflict",
-            "path": conflict_path,
-            "state": "retried_successfully" if retry_checkpoint else "winner_preserved",
-            "winner_agent": winner_agents[0] if winner_agents else None,
-            "rejected_agent": rejected.get("agent"),
-            "winner_operation": "A06.047" if "A06.047" in records_by_label else None,
-            "winner_publish_operation": "A06.050" if "A06.050" in records_by_label else None,
-            "rejected_edit_operation": "A08.047" if "A08.047" in records_by_label else None,
-            "rejected_publish_operation": rejected.get("id"),
-            "retry_operation": "A08.055" if "A08.055" in records_by_label else None,
-            "retry_publish_operation": "A08.057" if "A08.057" in records_by_label else None,
-            "winner_revision": winner_checkpoint.get("revision") if isinstance(winner_checkpoint, dict) else None,
-            "retry_revision": retry_checkpoint.get("revision") if isinstance(retry_checkpoint, dict) else None,
-            "workspace_id": rejected.get("workspace_id"),
-            "published_content": config.get("content"),
-            "rejected_command": rejected_command,
-            "checks": conflict_atomic.get("checks", {}),
-            "resolution": "The published winner remained atomic; the stale workspace was isolated and a fresh-head retry published separately.",
-        })
+        contention_values = conflict_atomic.get("contentions")
+        contentions = (
+            [value for value in contention_values if isinstance(value, dict)]
+            if isinstance(contention_values, list)
+            else []
+        )
+        if not contentions:
+            contentions = [{
+                "key": "source_conflict",
+                "label": "Concurrent source edit",
+                "path": conflict_path,
+                "line_start": None,
+                "winner": config.get("content"),
+                "rejected": rejected_command,
+            }]
+        group_id = f"{rejected['id']}-atomic-publication"
+        for index, contention in enumerate(contentions, 1):
+            path = contention.get("path")
+            path = path if isinstance(path, str) else conflict_path
+            line_start = contention.get("line_start")
+            key = contention.get("key")
+            key = key if isinstance(key, str) and key else f"contention-{index}"
+            conflicts.append({
+                "id": f"{group_id}-{key}",
+                "group_id": group_id,
+                "group_index": index,
+                "group_count": len(contentions),
+                "type": rejected.get("publish_reject_class") or "source_conflict",
+                "label": contention.get("label") or "Concurrent source edit",
+                "path": path,
+                "line_start": line_start if isinstance(line_start, int) else None,
+                "line_count": 1 if isinstance(line_start, int) else None,
+                "base_content": contention.get("base"),
+                "published_content": contention.get("winner") or config.get("content"),
+                "rejected_content": contention.get("rejected") or rejected_command,
+                "state": "retried_successfully" if retry_checkpoint else "winner_preserved",
+                "winner_agent": winner_agents[0] if winner_agents else None,
+                "rejected_agent": rejected.get("agent"),
+                "winner_operation": "A06.047" if "A06.047" in records_by_label else None,
+                "winner_publish_operation": "A06.050" if "A06.050" in records_by_label else None,
+                "rejected_edit_operation": "A08.047" if "A08.047" in records_by_label else None,
+                "rejected_publish_operation": rejected.get("id"),
+                "retry_operation": "A08.055" if "A08.055" in records_by_label else None,
+                "retry_publish_operation": "A08.057" if "A08.057" in records_by_label else None,
+                "winner_revision": winner_checkpoint.get("revision") if isinstance(winner_checkpoint, dict) else None,
+                "retry_revision": retry_checkpoint.get("revision") if isinstance(retry_checkpoint, dict) else None,
+                "workspace_id": rejected.get("workspace_id"),
+                "rejected_command": rejected_command,
+                "checks": conflict_atomic.get("checks", {}),
+                "resolution": "The published winner remained atomic; the stale workspace was isolated and a fresh-head retry published separately.",
+            })
 
     conflict_paths = {conflict["path"] for conflict in conflicts}
+    contentions_by_path: dict[str, list[dict[str, Any]]] = {}
+    for conflict in conflicts:
+        contentions_by_path.setdefault(conflict["path"], []).append({
+            "id": conflict["id"],
+            "label": conflict["label"],
+            "line_start": conflict["line_start"],
+            "line_count": conflict["line_count"],
+            "winner_agent": conflict["winner_agent"],
+            "rejected_agent": conflict["rejected_agent"],
+            "state": conflict["state"],
+        })
     files: list[dict[str, Any]] = []
     for path, row in file_rows.items():
         attempted = sorted(row["attempted_by"])
@@ -489,6 +551,8 @@ def presentation_evidence(
             "ownership_available": row["ownership_available"],
             "present_in_final": present,
             "conflict": path in conflict_paths,
+            "conflict_count": len(contentions_by_path.get(path, [])),
+            "contentions": contentions_by_path.get(path, []),
             "multi_agent": len(attempted) > 1 or len(published) > 1,
             "status": "conflict_resolved" if path in conflict_paths else ("published" if present else "rejected_only"),
         })

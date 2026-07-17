@@ -1,37 +1,6 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="FlashCart offline storefront">
-    <title>FlashCart — offline storefront</title>
-    <link rel="stylesheet" href="./src/styles.css">
-    <link rel="stylesheet" href="./src/features/A02-design-system.css">
-    <link rel="stylesheet" href="./src/features/A03-products.css">
-    <link rel="stylesheet" href="./src/features/A04-catalog.css">
-    <link rel="stylesheet" href="./src/features/A05-search.css">
-    <link rel="stylesheet" href="./src/features/A06-cart.css">
-    <link rel="stylesheet" href="./src/features/A07-wishlist.css">
-    <link rel="stylesheet" href="./src/features/A08-checkout.css">
-    <link rel="stylesheet" href="./src/features/A09-accessibility.css">
-    <link rel="stylesheet" href="./src/features/A10-qa.css">
-  </head>
-  <body>
-    <a class="skip" href="#app">Skip to storefront</a>
-    <main id="app" tabindex="-1" aria-live="polite"></main>
-    <noscript>FlashCart needs JavaScript enabled for its offline checkout demo.</noscript>
-    <script src="./src/config.js"></script>
-    <script src="./src/registry.js"></script>
-    <script src="./src/features/A01-foundation.js"></script>
-    <script src="./src/features/A02-design-system.js"></script>
-    <script src="./src/features/A03-products.js"></script>
-    <script src="./src/features/A04-catalog.js"></script>
-    <script src="./src/features/A05-search.js"></script>
-    <script src="./src/features/A06-cart.js"></script>
-    <script src="./src/features/A07-wishlist.js"></script>
-    <script src="./src/features/A08-checkout.js"></script>
-    <script src="./src/features/A09-accessibility.js"></script>
-    <script src="./src/features/A10-qa.js"></script>
-    <script src="./src/app.js"></script>
-  </body>
-</html>
+[
+  {
+    "new_string": "  A01: { id: 'A01', role: 'Foundation', stage: 'data', deterministic: true, verify() { return true; }, routeFor(path) { return ['/', '/catalog', '/checkout'].includes(path) ? path : '/not-found'; }, fixture: 'foundation-fixture' },",
+    "old_string": "  A01: { id: 'A01', role: 'Foundation', stage: 'core', deterministic: true, verify() { return true; }, routeFor(path) { return ['/', '/catalog', '/checkout'].includes(path) ? path : '/not-found'; } },"
+  }
+]

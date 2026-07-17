@@ -414,7 +414,7 @@ class Phase2CliTests(unittest.TestCase):
             self.assertEqual(publish_peak, 1)
             self.assertGreaterEqual(file_peak, 2)
 
-    def test_bootstrap_precreates_shared_agent_directories(self) -> None:
+    def test_bootstrap_creates_only_the_five_file_application_tree(self) -> None:
         with tempfile.TemporaryDirectory() as temp_name:
             original_runs = run_demo.RUNS
             run_demo.RUNS = Path(temp_name) / "runs"
@@ -435,8 +435,13 @@ class Phase2CliTests(unittest.TestCase):
             asyncio.run(runner.bootstrap())
 
             bootstrap_command = captured[0][-1]
-            self.assertIn("['src/features','tests']", bootstrap_command)
-            self.assertIn("mkdir(path,{recursive:true})", bootstrap_command)
+            self.assertNotIn("src/features", bootstrap_command)
+            self.assertNotIn("'tests'", bootstrap_command)
+            self.assertIn("path.includes('/')", bootstrap_command)
+            self.assertEqual(
+                sorted(run_demo.recipes.bootstrap_files()),
+                ["index.html", "src/app.js", "src/config.js", "src/registry.js", "src/styles.css"],
+            )
 
     def test_call_budget_requires_one_parsed_agent_process_per_authored_row(self) -> None:
         with tempfile.TemporaryDirectory() as temp_name:

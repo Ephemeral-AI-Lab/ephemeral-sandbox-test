@@ -1,13 +1,6 @@
-{
-  "owner": "A03",
-  "paths": {
-    "a11y": "src/features/A03-products-a11y.js",
-    "core": "src/features/A03-products.js",
-    "data": "src/features/A03-products-data.js",
-    "manifest": "src/features/A03-products.json",
-    "style": "src/features/A03-products.css",
-    "view": "src/features/A03-products-view.js"
-  },
-  "role": "Product data",
-  "schema_version": 1
-}
+[
+  {
+    "new_string": "  A03: { id: 'A03', role: 'Product data', stage: 'manifest', deterministic: true, verify() { return true; }, products() { return [{ id: 'trail-pack', name: 'Trail Pack', cents: 7400, inventory: 8 }, { id: 'studio-mug', name: 'Studio Mug', cents: 2600, inventory: 11 }]; }, fixture: 'products-fixture', view: '<section data-domain=\"products\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A03', schemaVersion: 1 },",
+    "old_string": "  A03: { id: 'A03', role: 'Product data', stage: 'accessibility', deterministic: true, verify() { return true; }, products() { return [{ id: 'trail-pack', name: 'Trail Pack', cents: 7400, inventory: 8 }, { id: 'studio-mug', name: 'Studio Mug', cents: 2600, inventory: 11 }]; }, fixture: 'products-fixture', view: '<section data-domain=\"products\"></section>', focusVisible: true, keyboard: true, reducedMotion: true },"
+  }
+]

@@ -1,1 +1,6 @@
-.feature-a07 { border-inline-start: 4px solid #175b50; } .feature-a07 :focus-visible { outline: 3px solid #124ea0; }
+[
+  {
+    "new_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'style', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\"wishlist\"></section>', focusVisible: true },",
+    "old_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'view', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\"wishlist\"></section>' },"
+  }
+]
