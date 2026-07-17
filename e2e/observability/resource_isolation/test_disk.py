@@ -13,6 +13,7 @@ from runtime.file.helpers import exec_command
 
 from .helpers import (
     EVENT_SEGMENTS,
+    MAX_LINE_BYTES,
     MAX_RING_BYTES,
     assert_response_bounded,
     assert_store_bounded,
@@ -34,6 +35,15 @@ from .helpers import (
 def _assert_ok(response):
     assert isinstance(response, dict) and not is_error(response), response
     return response
+
+
+def _event_store_stats(sandbox_id: str) -> dict[str, int]:
+    response = _assert_ok(cli("observability", "snapshot", "--sandbox-id", sandbox_id))
+    stats = response.get("daemon", {}).get("event_store")
+    assert isinstance(stats, dict), response
+    names = ("dropped_storage", "dropped_oversized", "truncated_records")
+    assert all(isinstance(stats.get(name), int) for name in names), stats
+    return {name: int(stats[name]) for name in names}
 
 
 def _views(sandbox_id: str):
@@ -73,7 +83,8 @@ def _views(sandbox_id: str):
     title="Two-segment event storage obeys its total cap",
     description=(
         "A one-MiB configured store remains bounded and parseable through ten "
-        "pre-append rotations driven by public runtime operations."
+        "boundary-sensitive pre-append rotations and an escaped multibyte "
+        "oversized record driven by public runtime operations."
     ),
     features=(
         "runtime.command",
@@ -99,11 +110,10 @@ def test_two_segment_total_cap(
 ):
     total_cap = 1024 * 1024
     segment_cap = total_cap // 2
-    fixture = tmp_path / "near-segment-cap.ndjson"
-    written = stream_history_fixture(fixture, segment_cap - 1)
-    assert written == segment_cap - 1
     observations = []
+    rotation_evidence = []
     rotations = 0
+    boundary_remaining_bytes = (1, 4095, 4096, MAX_LINE_BYTES - 1, MAX_LINE_BYTES)
     with generated_gateway(
         daemon_overrides={"observability": {"max_disk_bytes": total_cap}}
     ):
@@ -111,36 +121,78 @@ def test_two_segment_total_cap(
         verify_packaged_daemon(sandbox_id)
         case_artifacts.write_json("environment.json", environment_evidence(sandbox_id))
         for index in range(10):
+            remaining = boundary_remaining_bytes[index % len(boundary_remaining_bytes)]
+            fixture = tmp_path / f"near-segment-cap-{index}.ndjson"
+            written = stream_history_fixture(fixture, segment_cap - remaining)
+            assert written == segment_cap - remaining
             docker_copy_to(sandbox_id, fixture, EVENT_SEGMENTS[0])
             before = fingerprint_store(sandbox_id)
-            result = _assert_ok(exec_command(sandbox_id, f"printf ds01-{index}"))
-            assert result.get("exit_code") == 0, result
-            after = fingerprint_store(sandbox_id)
-            bounded = assert_store_bounded(after, total_cap)
-            rotated = after["segments"]["observability.ndjson.1"]
-            active_before = before["segments"]["observability.ndjson"]
-            if (
-                rotated.get("exists") is True
-                and active_before.get("exists") is True
-                and rotated.get("sha256") == active_before.get("sha256")
-            ):
-                rotations += 1
-            observations.append(
-                {
-                    "rotation": index + 1,
-                    "before": before,
-                    "after": after,
-                    "bounded": bounded,
-                }
+            for append_index in range(128):
+                result = _assert_ok(
+                    exec_command(sandbox_id, f"printf ds01-{index}-{append_index}")
+                )
+                assert result.get("exit_code") == 0, result
+                after = fingerprint_store(sandbox_id)
+                bounded = assert_store_bounded(after, total_cap)
+                observations.append(
+                    {
+                        "rotation_target": index + 1,
+                        "append": append_index + 1,
+                        "remaining_before_first_append": remaining,
+                        "before": before,
+                        "after": after,
+                        "bounded": bounded,
+                    }
+                )
+                rotated = after["segments"]["observability.ndjson.1"]
+                active_before = before["segments"]["observability.ndjson"]
+                if (
+                    rotated.get("exists") is True
+                    and active_before.get("exists") is True
+                    and rotated.get("sha256") == active_before.get("sha256")
+                ):
+                    rotations += 1
+                    rotation_evidence.append(observations[-1])
+                    break
+                before = after
+            else:
+                raise AssertionError(
+                    {"rotation_target": index + 1, "remaining_bytes": remaining}
+                )
+
+        counters_before = _event_store_stats(sandbox_id)
+        escaped_multibyte = '🦀\\"' * 6_000
+        oversized_result = _assert_ok(
+            exec_command(
+                sandbox_id,
+                f"printf '%s' '{escaped_multibyte}' >/dev/null",
             )
+        )
+        assert oversized_result.get("exit_code") == 0, oversized_result
+        counters_after = _event_store_stats(sandbox_id)
+        oversized_store = fingerprint_store(sandbox_id)
+        oversized_bounded = assert_store_bounded(oversized_store, total_cap)
+        oversized_accounted_delta = sum(
+            counters_after[name] - counters_before[name]
+            for name in ("dropped_oversized", "truncated_records")
+        )
         registered_sandbox_factory.destroy(sandbox_id)
     case_artifacts.write_json(
         "summary.json",
         {
             "configured_total_cap_bytes": total_cap,
-            "fixture_bytes": written,
+            "boundary_remaining_bytes": boundary_remaining_bytes,
             "rotations_observed": rotations,
             "observations": observations,
+            "rotation_evidence": rotation_evidence,
+            "oversized_escaped_multibyte": {
+                "input_utf8_bytes": len(escaped_multibyte.encode()),
+                "counters_before": counters_before,
+                "counters_after": counters_after,
+                "accounted_delta": oversized_accounted_delta,
+                "store": oversized_store,
+                "bounded": oversized_bounded,
+            },
         },
         reserved=True,
     )
@@ -151,6 +203,7 @@ def test_two_segment_total_cap(
         actual={
             "rotations": rotations,
             "sizes": [item["bounded"] for item in observations],
+            "oversized_accounted_delta": oversized_accounted_delta,
         },
         evidence=("summary.json",),
     ):
@@ -158,6 +211,8 @@ def test_two_segment_total_cap(
         assert all(
             item["after"]["total_logical_bytes"] <= total_cap for item in observations
         )
+        assert oversized_store["total_logical_bytes"] <= total_cap
+        assert oversized_accounted_delta >= 1
     with validation(
         "segments-parseable",
         expected="all complete lines parse and every final line is complete",
@@ -166,6 +221,7 @@ def test_two_segment_total_cap(
     ):
         for item in observations:
             assert_store_bounded(item["after"], total_cap)
+        assert_store_bounded(oversized_store, total_cap)
     with validation(
         "allocated-bytes-bounded",
         expected={"max_bytes": total_cap + 2 * 4096},
@@ -174,6 +230,7 @@ def test_two_segment_total_cap(
     ):
         for item in observations:
             assert item["after"]["total_allocated_bytes"] <= total_cap + 2 * 4096
+        assert oversized_store["total_allocated_bytes"] <= total_cap + 2 * 4096
 
 
 @e2e_test(
@@ -324,6 +381,9 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
                 )
             time.sleep(2)
         stats = [path.stat() for path in ring_paths]
+        ring_directory_entries = sorted(ring_paths[0].parent.glob("*.ring"))
+        expected_ring_paths = {path.resolve() for path in ring_paths}
+        actual_ring_paths = {path.resolve() for path in ring_directory_entries}
         response = _assert_ok(cli("observability", "snapshot"))
         response_bounds = assert_response_bounded(response)
         before_destroy = {
@@ -333,9 +393,15 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
             "ring_bytes": [stat.st_size for stat in stats],
             "total_logical_bytes": sum(stat.st_size for stat in stats),
             "unrelated_exists": unrelated.exists(),
+            "unexpected_ring_paths": sorted(
+                str(path) for path in actual_ring_paths - expected_ring_paths
+            ),
+            "missing_ring_paths": sorted(
+                str(path) for path in expected_ring_paths - actual_ring_paths
+            ),
             "aggregate_response": response_bounds,
         }
-        for sandbox_id in sandbox_ids:
+        for sandbox_id in reversed(sandbox_ids):
             registered_sandbox_factory.destroy(sandbox_id)
         for ring in ring_paths:
             wait_for_path(ring, exists=False)
@@ -344,6 +410,9 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
                 str(path) for path in ring_paths if path.exists()
             ],
             "unrelated_exists": unrelated.exists(),
+            "remaining_ring_paths": sorted(
+                str(path) for path in ring_paths[0].parent.glob("*.ring")
+            ),
         }
     case_artifacts.write_json(
         "summary.json",
@@ -368,6 +437,8 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
     ):
         assert before_destroy["total_logical_bytes"] <= count * MAX_RING_BYTES
         assert not before_destroy["unrelated_exists"]
+        assert not before_destroy["unexpected_ring_paths"]
+        assert not before_destroy["missing_ring_paths"]
     with validation(
         "destroy-removes-rings",
         expected={"remaining_run_owned_rings": [], "unrelated_exists": False},
@@ -375,4 +446,5 @@ def test_resource_ring_lifecycle_for_one_hundred_sandboxes(
         evidence=("summary.json",),
     ):
         assert not after_destroy["remaining_run_owned_rings"]
+        assert not after_destroy["remaining_ring_paths"]
         assert not after_destroy["unrelated_exists"]

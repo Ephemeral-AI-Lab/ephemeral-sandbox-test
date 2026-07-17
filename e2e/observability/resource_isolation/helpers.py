@@ -21,7 +21,7 @@ import struct
 import subprocess
 import threading
 import time
-from typing import Any, Callable, Iterable, Iterator, Mapping, Sequence
+from typing import Any, BinaryIO, Callable, Iterable, Iterator, Mapping, Sequence
 
 
 EVENT_DIRECTORY = "/eos/runtime/daemon/observability"
@@ -72,6 +72,22 @@ def compact_json_bytes(value: Any) -> bytes:
     ).encode("utf-8")
 
 
+def iter_capped_binary_lines(
+    handle: BinaryIO, *, max_bytes: int
+) -> Iterator[bytes]:
+    """Yield lines without ever asking the stream for an unbounded line."""
+    assert max_bytes > 0
+    while True:
+        raw = handle.readline(max_bytes + 1)
+        if not raw:
+            return
+        if len(raw) > max_bytes:
+            raise AssertionError(
+                {"line_bytes_exceed": max_bytes, "read_bytes": len(raw)}
+            )
+        yield raw
+
+
 def pretty_json_bytes(value: Any) -> bytes:
     return (
         json.dumps(value, indent=2, sort_keys=True, ensure_ascii=True).encode("utf-8")
@@ -118,6 +134,106 @@ def docker_exec(
         check=check,
     )
     return result.stdout.decode("utf-8", "replace")
+
+
+def sandbox_id_from_docker_create_event(event: Mapping[str, Any]) -> str | None:
+    """Extract an EphemeralOS sandbox id from one Docker create event."""
+    actor = event.get("Actor")
+    if not isinstance(actor, Mapping):
+        return None
+    attributes = actor.get("Attributes")
+    if not isinstance(attributes, Mapping):
+        return None
+    sandbox_id = attributes.get("eos.sandbox_id")
+    return sandbox_id if isinstance(sandbox_id, str) and sandbox_id else None
+
+
+class DockerSandboxCreationMonitor:
+    """Bounded live guard against concurrent sandbox creation noise."""
+
+    _MAX_RETAINED_EVENTS = 64
+
+    def __init__(self, expected_sandbox_ids: Iterable[str]):
+        self._expected = frozenset(expected_sandbox_ids)
+        self._process: subprocess.Popen[str] | None = None
+        self._thread: threading.Thread | None = None
+        self._lock = threading.Lock()
+        self._foreign_count = 0
+        self._foreign_ids: list[str] = []
+        self._parse_errors = 0
+
+    def __enter__(self) -> DockerSandboxCreationMonitor:
+        self._process = subprocess.Popen(
+            [
+                "docker",
+                "events",
+                "--filter",
+                "type=container",
+                "--filter",
+                "event=create",
+                "--format",
+                "{{json .}}",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+        )
+        self._thread = threading.Thread(target=self._consume, daemon=True)
+        self._thread.start()
+        # Let the Docker CLI establish its event subscription before the phase.
+        time.sleep(0.1)
+        if self._process.poll() is not None:
+            stderr = (
+                self._process.stderr.read()[-2_000:] if self._process.stderr else ""
+            )
+            raise AssertionError(
+                f"docker event monitor exited before sampling: {stderr}"
+            )
+        return self
+
+    def _consume(self) -> None:
+        assert self._process is not None and self._process.stdout is not None
+        for line in self._process.stdout:
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                with self._lock:
+                    self._parse_errors += 1
+                continue
+            sandbox_id = sandbox_id_from_docker_create_event(event)
+            if sandbox_id is None or sandbox_id in self._expected:
+                continue
+            with self._lock:
+                self._foreign_count += 1
+                if len(self._foreign_ids) < self._MAX_RETAINED_EVENTS:
+                    self._foreign_ids.append(sandbox_id)
+
+    def result(self) -> dict[str, Any]:
+        with self._lock:
+            return {
+                "foreign_sandbox_creations": self._foreign_count,
+                "foreign_sandbox_ids": list(self._foreign_ids),
+                "parse_errors": self._parse_errors,
+            }
+
+    def __exit__(self, exc_type, exc, traceback) -> None:
+        assert self._process is not None
+        self._process.terminate()
+        try:
+            self._process.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            self._process.kill()
+            self._process.wait(timeout=2)
+        if self._thread is not None:
+            self._thread.join(timeout=2)
+        if exc_type is None:
+            result = self.result()
+            assert result["parse_errors"] == 0, result
+            assert result["foreign_sandbox_creations"] == 0, {
+                "reason": "another E2E worker created a sandbox during measurement",
+                **result,
+            }
 
 
 def validate_packaged_daemon_identity(fields: Mapping[str, str]) -> dict[str, str]:
@@ -230,9 +346,10 @@ def _integer_map(
     values: dict[str, int | None] = {key: None for key in keys}
     for line in lines:
         parts = line.split()
-        if len(parts) >= 2 and parts[0] in values:
+        name = parts[0].removesuffix(":") if parts else ""
+        if len(parts) >= 2 and name in values:
             try:
-                values[parts[0]] = int(parts[1])
+                values[name] = int(parts[1])
             except ValueError:
                 pass
     unavailable = [name for name, value in values.items() if value is None]
@@ -609,6 +726,8 @@ def environment_evidence(sandbox_id: str | None = None) -> dict[str, Any]:
             "platform": platform.platform(),
             "machine": platform.machine(),
             "python": platform.python_version(),
+            "logical_cpu_count": os.cpu_count(),
+            "load_average": list(os.getloadavg()),
         },
         "docker": json.loads(docker_version.stdout),
         "configuration": {
@@ -619,6 +738,30 @@ def environment_evidence(sandbox_id: str | None = None) -> dict[str, Any]:
     }
     if sandbox_id:
         value["daemon"] = verify_packaged_daemon(sandbox_id)
+        measurement = docker_exec(
+            sandbox_id,
+            f"daemon_pid=$(sed -n '1p' {DAEMON_PID_PATH}); "
+            "printf 'clock_ticks_per_second\\t'; getconf CLK_TCK; "
+            "printf 'cgroup_filesystem\\t'; stat -fc '%T' /sys/fs/cgroup; "
+            "printf 'cgroup_membership\\t'; cat \"/proc/$daemon_pid/cgroup\"",
+        )
+        measurement_fields = {}
+        for line in measurement.splitlines():
+            key, separator, raw = line.partition("\t")
+            if separator:
+                measurement_fields[key] = raw.strip()
+        clock_ticks = measurement_fields.get("clock_ticks_per_second", "")
+        assert clock_ticks.isdecimal(), measurement_fields
+        value["measurement"] = {
+            "clock_ticks_per_second": int(clock_ticks),
+            "cgroup_filesystem": measurement_fields.get("cgroup_filesystem"),
+            "cgroup_mode": (
+                "v2"
+                if measurement_fields.get("cgroup_membership", "").startswith("0::")
+                else "unavailable"
+            ),
+            "cgroup_membership": measurement_fields.get("cgroup_membership"),
+        }
         inspect = docker("inspect", sandbox_id)
         document = json.loads(inspect.stdout)[0]
         value["sandbox"] = {
@@ -643,38 +786,42 @@ def stream_group(
 ) -> dict[str, Any]:
     """Sample all targets at one fixed cadence without retaining raw records."""
     assert targets
-    phase_start = time.monotonic()
-    deadline = phase_start + duration_seconds
-    next_tick = phase_start
-    index = 0
-    late = 0
-    summaries = {arm: FixedMetricSummary() for _, arm, _ in targets}
-    while True:
-        now = time.monotonic()
-        if index and now >= deadline:
-            break
-        if now < next_tick:
-            time.sleep(next_tick - now)
-        observed = time.monotonic()
-        if observed - next_tick > interval_seconds:
-            late += 1
-        if action is not None:
-            action(index)
-        for sandbox_id, arm, ring_path in targets:
-            sample = collect_sample(
-                sandbox_id,
-                phase=phase,
-                arm=arm,
-                repetition=repetition,
-                ring_path=ring_path,
-            )
-            artifacts.append_sample(sample)
-            anonymous = sample["smaps"].get("Anonymous")
-            if isinstance(anonymous, int):
-                summaries[arm].update(sample["monotonic_seconds"], anonymous)
-        index += 1
-        next_tick = phase_start + index * interval_seconds
-    phase_end = time.monotonic()
+    with DockerSandboxCreationMonitor(
+        sandbox_id for sandbox_id, _, _ in targets
+    ) as guard:
+        phase_start = time.monotonic()
+        deadline = phase_start + duration_seconds
+        next_tick = phase_start
+        index = 0
+        late = 0
+        summaries = {arm: FixedMetricSummary() for _, arm, _ in targets}
+        while True:
+            now = time.monotonic()
+            if index and now >= deadline:
+                break
+            if now < next_tick:
+                time.sleep(next_tick - now)
+            observed = time.monotonic()
+            if observed - next_tick > interval_seconds:
+                late += 1
+            if action is not None:
+                action(index)
+            for sandbox_id, arm, ring_path in targets:
+                sample = collect_sample(
+                    sandbox_id,
+                    phase=phase,
+                    arm=arm,
+                    repetition=repetition,
+                    ring_path=ring_path,
+                )
+                artifacts.append_sample(sample)
+                anonymous = sample["smaps"].get("Anonymous")
+                if isinstance(anonymous, int):
+                    summaries[arm].update(sample["monotonic_seconds"], anonymous)
+            index += 1
+            next_tick = phase_start + index * interval_seconds
+        phase_end = time.monotonic()
+        creation_guard = guard.result()
     late_fraction = late / index if index else 1.0
     assert late_fraction <= 0.01, {
         "phase": phase,
@@ -690,8 +837,73 @@ def stream_group(
         "duration_seconds": phase_end - phase_start,
         "sample_ticks": index,
         "missed_deadlines": late,
+        "docker_creation_guard": creation_guard,
         "online": {arm: summary.result() for arm, summary in summaries.items()},
     }
+
+
+def measure_sampler_free_cpu_baseline(
+    artifacts: ArtifactDirectory,
+    targets: Sequence[tuple[str, str, Path | None]],
+    *,
+    phase: str,
+    repetition: int,
+    duration_seconds: float,
+) -> dict[str, dict[str, float | int]]:
+    """Measure idle daemon ticks with no per-second sampler between endpoints."""
+    assert targets and duration_seconds > 0
+    with DockerSandboxCreationMonitor(sandbox_id for sandbox_id, _, _ in targets):
+        started = time.monotonic()
+        first = {}
+        for sandbox_id, arm, ring_path in targets:
+            sample = collect_sample(
+                sandbox_id,
+                phase=phase,
+                arm=arm,
+                repetition=repetition,
+                ring_path=ring_path,
+            )
+            artifacts.append_sample(sample)
+            first[arm] = sample
+        time.sleep(duration_seconds)
+        last = {}
+        for sandbox_id, arm, ring_path in targets:
+            sample = collect_sample(
+                sandbox_id,
+                phase=phase,
+                arm=arm,
+                repetition=repetition,
+                ring_path=ring_path,
+            )
+            artifacts.append_sample(sample)
+            last[arm] = sample
+        ended = time.monotonic()
+
+    elapsed_minutes = (ended - started) / 60.0
+    results = {}
+    for _, arm, _ in targets:
+        first_cpu = first[arm]["cpu"]
+        last_cpu = last[arm]["cpu"]
+        first_user = first_cpu.get("user_ticks")
+        first_system = first_cpu.get("system_ticks")
+        last_user = last_cpu.get("user_ticks")
+        last_system = last_cpu.get("system_ticks")
+        assert all(
+            isinstance(value, int)
+            for value in (first_user, first_system, last_user, last_system)
+        ), {
+            "arm": arm,
+            "first_cpu": first_cpu,
+            "last_cpu": last_cpu,
+        }
+        first_ticks = first_user + first_system
+        last_ticks = last_user + last_system
+        results[arm] = {
+            "duration_seconds": ended - started,
+            "cpu_tick_delta": last_ticks - first_ticks,
+            "cpu_ticks_per_minute": (last_ticks - first_ticks) / elapsed_minutes,
+        }
+    return results
 
 
 def _sampled_theil_sen(points: Sequence[tuple[float, float]]) -> float | None:
@@ -742,6 +954,7 @@ def analyze_phase(
     started_monotonic: float,
     ended_monotonic: float,
     warmup_seconds: float = 0,
+    sampler_free_cpu_baseline_ticks_per_minute: float = 0.0,
 ) -> dict[str, Any]:
     """Make one streaming analysis pass over the raw artifact."""
     steady_start = started_monotonic + warmup_seconds
@@ -760,9 +973,9 @@ def analyze_phase(
     sample_count = 0
 
     with samples_path.open("rb") as handle:
-        for raw in handle:
-            if len(raw) > MAX_LINE_BYTES * 8:
-                continue
+        for raw in iter_capped_binary_lines(
+            handle, max_bytes=MAX_LINE_BYTES * 8
+        ):
             try:
                 record = json.loads(raw)
             except (UnicodeDecodeError, json.JSONDecodeError):
@@ -833,9 +1046,13 @@ def analyze_phase(
     first_median = statistics.median(first_values) if first_values else None
     final_median = statistics.median(final_values) if final_values else None
     elapsed_minutes = steady_duration / 60.0
+    raw_cpu_ticks_per_minute = None
     cpu_ticks_per_minute = None
     if cpu_first is not None and cpu_last is not None and elapsed_minutes > 0:
-        cpu_ticks_per_minute = (cpu_last - cpu_first) / elapsed_minutes
+        raw_cpu_ticks_per_minute = (cpu_last - cpu_first) / elapsed_minutes
+        cpu_ticks_per_minute = (
+            raw_cpu_ticks_per_minute - sampler_free_cpu_baseline_ticks_per_minute
+        )
     return {
         "sample_count": sample_count,
         "steady_duration_seconds": steady_duration,
@@ -849,6 +1066,10 @@ def analyze_phase(
         ),
         "first_median_bootstrap_95": _bootstrap_median_ci(first_values),
         "final_median_bootstrap_95": _bootstrap_median_ci(final_values),
+        "cpu_ticks_per_minute_raw": raw_cpu_ticks_per_minute,
+        "sampler_free_cpu_baseline_ticks_per_minute": (
+            sampler_free_cpu_baseline_ticks_per_minute
+        ),
         "cpu_ticks_per_minute": cpu_ticks_per_minute,
         "storage_io_delta_bytes": (
             io_last - io_first if io_first is not None and io_last is not None else None
@@ -1061,11 +1282,7 @@ def stream_container_jsonl(
     records = 0
     try:
         assert process.stdout is not None
-        for raw in process.stdout:
-            assert len(raw) <= MAX_LINE_BYTES, {
-                "source": source,
-                "line_bytes": len(raw),
-            }
+        for raw in iter_capped_binary_lines(process.stdout, max_bytes=MAX_LINE_BYTES):
             value = json.loads(raw)
             assert isinstance(value, dict), value
             artifacts.append_jsonl(destination, value)
@@ -1076,6 +1293,9 @@ def stream_container_jsonl(
         returncode = process.wait()
     finally:
         timer.cancel()
+        if process.poll() is None:
+            process.kill()
+            process.wait()
     assert returncode == 0, stderr.decode("utf-8", "replace")[-2_000:]
     return records
 

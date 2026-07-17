@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import gc
+import io
 import json
 import tracemalloc
 
@@ -10,12 +11,41 @@ import pytest
 
 from harness.catalog.declarations import e2e_test
 from observability.resource_isolation.helpers import (
+    _integer_map,
     ArtifactDirectory,
     FixedMetricSummary,
     RESERVOIR_SIZE,
+    iter_capped_binary_lines,
     parse_container_stat_lines,
+    sandbox_id_from_docker_create_event,
     validate_packaged_daemon_identity,
 )
+
+
+def test_proc_io_parser_accepts_colon_delimited_linux_fields():
+    values, missing = _integer_map(
+        ["rchar: 11", "read_bytes: 22", "write_bytes: 33"],
+        ("rchar", "read_bytes", "write_bytes"),
+    )
+    assert values == {"rchar": 11, "read_bytes": 22, "write_bytes": 33}
+    assert missing == []
+
+
+def test_docker_creation_event_extracts_only_eos_sandbox_labels():
+    assert (
+        sandbox_id_from_docker_create_event(
+            {
+                "Actor": {
+                    "Attributes": {
+                        "eos.sandbox_id": "eos-run-owned",
+                        "name": "eos-run-owned",
+                    }
+                }
+            }
+        )
+        == "eos-run-owned"
+    )
+    assert sandbox_id_from_docker_create_event({"Actor": {"Attributes": {}}}) is None
 
 
 def test_artifact_summary_is_atomically_sealed_with_its_exact_final_size(tmp_path):
@@ -74,6 +104,17 @@ def test_container_stat_parser_requires_real_tab_delimiters():
         "mtime_seconds": 1784279408,
         "mtime_ns": 1784279408630307011,
     }
+
+
+def test_capped_line_reader_rejects_a_ten_megabyte_line_with_bounded_memory():
+    source = io.BytesIO(b"x" * 10_000_000 + b"\n")
+    gc.collect()
+    tracemalloc.start()
+    with pytest.raises(AssertionError):
+        next(iter_capped_binary_lines(source, max_bytes=16 * 1024))
+    _current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    assert peak <= 256 * 1024, peak
 
 
 def _peak_for(count: int) -> tuple[int, FixedMetricSummary]:

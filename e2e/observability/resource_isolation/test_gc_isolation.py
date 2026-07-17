@@ -107,7 +107,10 @@ def _gc_summary(case_artifacts, sandbox_id: str, arm: str, repetition: int) -> d
         )
     gc_values = [value for _, value in metrics["gc"].reservoir.values]
     delay_values = [value for _, value in metrics["delay"].reservoir.values]
-    rss_values = [value for _, value in metrics["rss"].reservoir.values]
+    peak_rss = metrics["rss"].maximum
+    terminal_peak = terminal.get("peak_rss_bytes") if terminal is not None else None
+    if isinstance(terminal_peak, int):
+        peak_rss = max(float(terminal_peak), peak_rss or 0.0)
     return {
         "arm": arm,
         "repetition": repetition,
@@ -115,7 +118,7 @@ def _gc_summary(case_artifacts, sandbox_id: str, arm: str, repetition: int) -> d
         "gc_count": metrics["gc"].count,
         "gc_pause_p99_ms": percentile(gc_values, 0.99),
         "event_loop_delay_p99_ms": percentile(delay_values, 0.99),
-        "peak_rss_bytes": max(rss_values) if rss_values else None,
+        "peak_rss_bytes": peak_rss,
         "reservoir_sizes": {
             name: len(summary.reservoir.values) for name, summary in metrics.items()
         },

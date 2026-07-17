@@ -74,7 +74,20 @@ def registered_sandbox_factory(case_artifacts: ArtifactDirectory):
             failures.append({"sandbox_id": sandbox_id, "error": str(error)[:1_000]})
             raise
 
+    def destroy_all() -> None:
+        errors = []
+        for sandbox_id in reversed(registered):
+            if sandbox_id in destroyed:
+                continue
+            try:
+                destroy(sandbox_id)
+            except Exception as error:
+                errors.append({"sandbox_id": sandbox_id, "error": str(error)[:1_000]})
+        if errors:
+            raise AssertionError(f"resource-isolation cleanup failed: {errors}")
+
     create.destroy = destroy
+    create.destroy_all = destroy_all
     create.registered = registered
     create.destroyed = destroyed
     yield create
@@ -119,25 +132,45 @@ class GeneratedGateway:
         self.gateway_yaml = config_helpers.make_config(
             gateway_overrides, root / "gateway.yml"
         )
+        socket = os.environ.get("SANDBOX_GATEWAY_SOCKET", "127.0.0.1:7878")
+        pid_file = os.environ.get("E2E_RI_GATEWAY_PID_FILE")
+        if pid_file is None:
+            if socket != "127.0.0.1:7878":
+                raise AssertionError(
+                    "E2E_RI_GATEWAY_PID_FILE is required for a non-default "
+                    "resource-isolation gateway"
+                )
+            pid_file = "/tmp/eos-gateway.pid"
+        self.gateway_args = (
+            "--gateway-socket",
+            socket,
+            "--pid-file",
+            pid_file,
+        )
+        self.baseline_yaml = Path(
+            os.environ.get(
+                "E2E_RI_BASELINE_CONFIG_YAML", str(config_helpers.CONFIG_YAML)
+            )
+        )
         self.restored = False
 
     def rewrite_daemon(self, overrides: dict) -> None:
         config_helpers.make_config(overrides, self.daemon_yaml)
 
     def start(self) -> None:
-        config_helpers.start_gateway(self.gateway_yaml)
+        config_helpers.start_gateway(self.gateway_yaml, *self.gateway_args)
 
     def restart(self) -> None:
-        config_helpers.start_gateway(self.gateway_yaml)
+        config_helpers.start_gateway(self.gateway_yaml, *self.gateway_args)
 
     def restore(self) -> None:
         if not self.restored:
-            config_helpers.restore_baseline_gateway()
+            config_helpers.start_gateway(self.baseline_yaml, *self.gateway_args)
             self.restored = True
 
 
 @pytest.fixture
-def generated_gateway(tmp_path: Path):
+def generated_gateway(tmp_path: Path, registered_sandbox_factory):
     @contextmanager
     def own(
         *,
@@ -153,6 +186,9 @@ def generated_gateway(tmp_path: Path):
             gateway.start()
             yield gateway
         finally:
-            gateway.restore()
+            try:
+                registered_sandbox_factory.destroy_all()
+            finally:
+                gateway.restore()
 
     return own

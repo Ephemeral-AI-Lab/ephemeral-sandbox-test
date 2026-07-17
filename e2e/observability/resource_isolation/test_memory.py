@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+
 import pytest
 
 from harness.catalog.declarations import e2e_test
@@ -18,12 +20,14 @@ from .helpers import (
     analyze_phase,
     assert_memory_gates,
     assert_response_bounded,
+    assert_store_bounded,
     assert_store_unchanged,
     default_resource_ring_path,
     docker_copy_to,
     env_int,
     environment_evidence,
     fingerprint_store,
+    measure_sampler_free_cpu_baseline,
     stream_group,
     stream_history_fixture,
     verify_packaged_daemon,
@@ -221,6 +225,13 @@ def test_idle_daemon_memory_neutral(
             repetition=repetition,
             duration_seconds=env_int("E2E_RI_WARM_SECONDS", 300),
         )
+        baseline = measure_sampler_free_cpu_baseline(
+            case_artifacts,
+            [(sandbox_id, "enabled", ring)],
+            phase="sampler-free-baseline",
+            repetition=repetition,
+            duration_seconds=env_int("E2E_RI_BASELINE_NOISE_SECONDS", 60),
+        )
         before = fingerprint_store(sandbox_id)
         idle = stream_group(
             case_artifacts,
@@ -237,6 +248,9 @@ def test_idle_daemon_memory_neutral(
             repetition=repetition,
             started_monotonic=idle["started_monotonic"],
             ended_monotonic=idle["ended_monotonic"],
+            sampler_free_cpu_baseline_ticks_per_minute=baseline["enabled"][
+                "cpu_ticks_per_minute"
+            ],
         )
         results.append(result)
         stores.append({"repetition": repetition, "before": before, "after": after})
@@ -325,6 +339,13 @@ def test_public_polling_is_memory_neutral(
             repetition=repetition,
             duration_seconds=env_int("E2E_RI_WARM_SECONDS", 300),
         )
+        baselines = measure_sampler_free_cpu_baseline(
+            case_artifacts,
+            [(target, "target", target_ring), (control, "control", control_ring)],
+            phase="polling-sampler-free-baseline",
+            repetition=repetition,
+            duration_seconds=env_int("E2E_RI_BASELINE_NOISE_SECONDS", 60),
+        )
         stores_before = {
             target: fingerprint_store(target),
             control: fingerprint_store(control),
@@ -361,6 +382,9 @@ def test_public_polling_is_memory_neutral(
             repetition=repetition,
             started_monotonic=polling["started_monotonic"],
             ended_monotonic=polling["ended_monotonic"],
+            sampler_free_cpu_baseline_ticks_per_minute=baselines["target"][
+                "cpu_ticks_per_minute"
+            ],
         )
         control_result = analyze_phase(
             case_artifacts.samples_path,
@@ -369,6 +393,9 @@ def test_public_polling_is_memory_neutral(
             repetition=repetition,
             started_monotonic=polling["started_monotonic"],
             ended_monotonic=polling["ended_monotonic"],
+            sampler_free_cpu_baseline_ticks_per_minute=baselines["control"][
+                "cpu_ticks_per_minute"
+            ],
         )
         cooldown_result = analyze_phase(
             case_artifacts.samples_path,
@@ -487,12 +514,25 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
             duration_seconds=env_int("E2E_RI_QUERY_BASELINE_SECONDS", 10),
         )
         before = fingerprint_store(sandbox)
-        response_bounds = []
+        response_summary = {
+            "count": 0,
+            "max_encoded_bytes": 0,
+            "max_list_records": 0,
+        }
+        response_hash = hashlib.sha256()
         views = _views(sandbox)
 
         def query(query_index: int) -> None:
             response = _assert_ok(views[query_index % len(views)]())
-            response_bounds.append(assert_response_bounded(response))
+            bounds = assert_response_bounded(response)
+            response_summary["count"] += 1
+            response_summary["max_encoded_bytes"] = max(
+                response_summary["max_encoded_bytes"], bounds["encoded_bytes"]
+            )
+            response_summary["max_list_records"] = max(
+                response_summary["max_list_records"], bounds["max_list_records"]
+            )
+            response_hash.update(repr(response).encode())
 
         query_phase = stream_group(
             case_artifacts,
@@ -517,7 +557,10 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
             {
                 "target_bytes": target_bytes,
                 "written_bytes": written,
-                "response_bounds": response_bounds,
+                "response_summary": {
+                    **response_summary,
+                    "sha256": response_hash.hexdigest(),
+                },
                 "baseline_median_bytes": baseline_median,
                 "query_peak_delta_bytes": query_peak - baseline_median,
                 "cooldown_delta_bytes": cooldown_median - baseline_median,
@@ -532,10 +575,14 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
     with validation(
         "query-response-bounded",
         expected={"max_records": 500, "max_bytes": 256 * 1024},
-        actual=[item["response_bounds"] for item in results],
+        actual=[item["response_summary"] for item in results],
         evidence=("summary.json",),
     ):
-        assert all(item["response_bounds"] for item in results)
+        for item in results:
+            assert item["written_bytes"] == item["target_bytes"], item
+            assert item["response_summary"]["count"] >= len(_views("bounded")), item
+            assert item["response_summary"]["max_encoded_bytes"] <= 256 * 1024
+            assert item["response_summary"]["max_list_records"] <= 500
     with validation(
         "query-memory-input-independent",
         expected={
@@ -678,8 +725,15 @@ def test_enabled_disabled_fixed_overhead(
         for item in results:
             assert item["enabled_minus_disabled_bytes"] <= ENABLED_DISABLED_LIMIT_BYTES
             assert item["cpu_ticks_per_minute_difference"] < 1.0, item
-            assert item["enabled"]["anon_huge_pages_peak_bytes"] == 0, item
+            for arm in ("enabled", "disabled"):
+                result = item[arm]
+                assert not result["required_unavailable"], item
+                assert result["anon_huge_pages_peak_bytes"] == 0, item
+                assert result["cgroup_anon_thp_peak_bytes"] == 0, item
+                assert result["resource_ring_peak_bytes"] <= MAX_RING_BYTES, item
+                assert result["event_store_peak_bytes"] <= 4 * 1024 * 1024, item
             assert_store_unchanged(item["enabled_before"], item["enabled_after"])
+            assert_store_bounded(item["enabled_after"], 4 * 1024 * 1024)
     with validation(
         "disabled-store-absent",
         expected="both event segments absent",
