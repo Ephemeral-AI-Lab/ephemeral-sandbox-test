@@ -10,6 +10,7 @@ from observability.cgroup.helpers import (
     measure_holder_identity,
     measure_namespace_identity,
     measure_process_identity,
+    measure_process_resources,
     read_topology,
     start_command,
     stop_command,
@@ -29,6 +30,12 @@ def assert_process_contract(process: dict) -> None:
     assert process.get("kind") in {"namespace_init", "process"}, process
     assert isinstance(process.get("cgroup_memberships"), list), process
     assert all(isinstance(value, str) and value for value in process["cgroup_memberships"]), process
+    for field in ("resident_memory_bytes", "cpu_time_us", "start_time_ticks"):
+        assert field in process, process
+        value = process[field]
+        assert value is None or (isinstance(value, int) and not isinstance(value, bool) and value >= 0), process
+    if process["cpu_time_us"] is not None:
+        assert process["start_time_ticks"] is not None, process
 
 
 @e2e_test(
@@ -222,3 +229,70 @@ def test_forked_descendants_stay_with_workspace(sandbox, workspace_tracker):
     stop_command(sandbox, command_id, workspace_tracker)
     destroy_workspace(sandbox, workspace_id, workspace_tracker)
     destroy_workspace(sandbox, other_workspace_id, workspace_tracker)
+
+
+@e2e_test(
+    timeout_ms=75_000,
+    id="observability.cgroup.workspace-resource-estimates",
+    title="Workspace Resource Estimate Inputs Are Live",
+    description="Per-process RSS and CPU counters support a PID-reuse-safe workspace estimate.",
+    features=("observability.cgroup", "runtime.exec_command"),
+    validations={
+        "proc-resource-estimates": "RSS is present and cumulative CPU grows for a stable workload.",
+    },
+    execution_surface="cli",
+)
+@pytest.mark.medium
+def test_workspace_resource_estimate_inputs_are_live(sandbox, workspace_tracker):
+    workspace_id = create_workspace(sandbox, workspace_tracker)
+    command_id = start_command(
+        sandbox,
+        workspace_id,
+        "sh -c 'while :; do :; done'",
+        workspace_tracker,
+    )
+    first = wait_for_topology(
+        sandbox,
+        lambda value: any(
+            process.get("resident_memory_bytes", 0) > 0
+            and isinstance(process.get("cpu_time_us"), int)
+            and isinstance(process.get("start_time_ticks"), int)
+            for process in workload_processes(workspace_by_id(value, workspace_id))
+        ),
+        workspace_ids=(workspace_id,),
+        command_ids=(command_id,),
+        label="initial workspace resource counters",
+    )
+    first_processes = {
+        (process["pid"], process["start_time_ticks"]): process["cpu_time_us"]
+        for process in workload_processes(workspace_by_id(first, workspace_id))
+        if process.get("cpu_time_us") is not None and process.get("start_time_ticks") is not None
+    }
+
+    second = wait_for_topology(
+        sandbox,
+        lambda value: any(
+            first_processes.get((process["pid"], process.get("start_time_ticks")), process.get("cpu_time_us"))
+            < process.get("cpu_time_us", 0)
+            for process in workload_processes(workspace_by_id(value, workspace_id))
+            if isinstance(process.get("cpu_time_us"), int)
+        ),
+        workspace_ids=(workspace_id,),
+        command_ids=(command_id,),
+        label="advancing workspace CPU counter",
+    )
+    process = next(
+        process
+        for process in workload_processes(workspace_by_id(second, workspace_id))
+        if (process["pid"], process.get("start_time_ticks")) in first_processes
+        and process["cpu_time_us"]
+        > first_processes[(process["pid"], process["start_time_ticks"])]
+    )
+    measured = measure_process_resources(sandbox, process["pid"])
+    assert process["resident_memory_bytes"] > 0, process
+    assert measured["resident_memory_bytes"] > 0, measured
+    assert process["start_time_ticks"] == measured["start_time_ticks"], (process, measured)
+    assert process["cpu_time_us"] <= measured["cpu_time_us"], (process, measured)
+
+    stop_command(sandbox, command_id, workspace_tracker)
+    destroy_workspace(sandbox, workspace_id, workspace_tracker)

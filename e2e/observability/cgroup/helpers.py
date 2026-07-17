@@ -278,6 +278,34 @@ def read_process_cgroup(sandbox_id: str, pid: int) -> list[str]:
     ]
 
 
+def measure_process_resources(sandbox_id: str, pid: int) -> dict:
+    status = docker_exec(sandbox_id, "cat", f"/proc/{pid}/status").stdout
+    stat = docker_exec(sandbox_id, "cat", f"/proc/{pid}/stat").stdout.strip()
+    clock_ticks = int(docker_exec(sandbox_id, "getconf", "CLK_TCK").stdout.strip())
+
+    rss_kib = None
+    for line in status.splitlines():
+        if line.startswith("VmRSS:"):
+            fields = line.split()
+            assert len(fields) >= 2 and fields[1].isdigit(), line
+            rss_kib = int(fields[1])
+            break
+    assert rss_kib is not None, status[-4096:]
+
+    closing = stat.rfind(")")
+    assert closing > 0, stat
+    fields = stat[closing + 1 :].split()
+    assert len(fields) > 19, stat
+    user_ticks = int(fields[11])
+    system_ticks = int(fields[12])
+    start_time_ticks = int(fields[19])
+    return {
+        "resident_memory_bytes": rss_kib * 1024,
+        "cpu_time_us": ((user_ticks + system_ticks) * 1_000_000) // clock_ticks,
+        "start_time_ticks": start_time_ticks,
+    }
+
+
 def docker_exec(sandbox_id: str, *args: str) -> subprocess.CompletedProcess:
     result = subprocess.run(
         ["docker", "exec", sandbox_id, *args],

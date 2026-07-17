@@ -15,6 +15,38 @@ set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T162950+0800-obs
 
 ---
 
+### Iteration 12 - focused resource estimate result and final family plan
+
+**Focused result** - `observability.cgroup.workspace-resource-estimates` passed (1/1, 3.36s) on newly created sandbox `eos-de66a259-e85d-471e-aef0-97576c5c6687`; fixture teardown destroyed it. Public RSS was positive, cumulative CPU advanced, and start identity agreed with the later read-only procfs measurement. Artifact: `e2e/.artifacts/20260717T173855+0800-observability-cgroup-estimates/pytest.log`.
+
+**Final command**
+```bash
+set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T174042+0800-observability-cgroup-estimates-final PYTHONPATH=e2e /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python -m pytest e2e/observability/cgroup -vv --test-repository-root /private/tmp/eos-topology-e2e.uaA3dl/main --product-root /private/tmp/eos-topology-product.rMhibO/main 2>&1 | tee e2e/.artifacts/20260717T174042+0800-observability-cgroup-estimates-final/pytest.log
+```
+
+**Good** - Planned: run all 10 stable cgroup cases against the rebuilt production daemon.
+
+**Defect** - None in the focused case.
+
+**Fix** - Execute the full family, then perform the new-sandbox memory and console demonstration.
+
+---
+
+### Iteration 11 - estimated workspace resource inputs
+
+**Command**
+```bash
+set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T173855+0800-observability-cgroup-estimates PYTHONPATH=e2e /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python -m pytest e2e/observability/cgroup/test_workspace_placement.py::test_workspace_resource_estimate_inputs_are_live -vv --test-repository-root /private/tmp/eos-topology-e2e.uaA3dl/main --product-root /private/tmp/eos-topology-product.rMhibO/main 2>&1 | tee e2e/.artifacts/20260717T173855+0800-observability-cgroup-estimates/pytest.log
+```
+
+**Good** - Planned: validate positive RSS, advancing cumulative CPU, and start identity through the packaged public CLIs and a read-only procfs oracle.
+
+**Defect** - Pending execution.
+
+**Fix** - Build and reload the production stack, run this focused case, then run the complete cgroup family without weakening assertions.
+
+---
+
 ### Iteration 2 - proc namespace contract after manager merge fix
 
 **Command**
@@ -152,5 +184,104 @@ set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T170651+0800-obs
 **Defect** - The temporary main worktree lacked generated `dist/git` archives, and the first pytest launcher used non-canonical `/tmp` roots. Neither failure reached a product assertion.
 
 **Fix** - Reused the repository's packaged Git toolchains through `SANDBOX_GIT_TOOLCHAIN_DIR`, rebuilt and reloaded the merged-main Docker gateway/console, and reran with canonical `/private/tmp` roots without weakening assertions.
+
+---
+
+### Iteration 13 - estimated resource inputs full-family proof
+
+**Command**
+```bash
+set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T174042+0800-observability-cgroup-estimates-final PYTHONPATH=e2e /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python -m pytest e2e/observability/cgroup -vv --test-repository-root /private/tmp/eos-topology-e2e.uaA3dl/main --product-root /private/tmp/eos-topology-product.rMhibO/main 2>&1 | tee e2e/.artifacts/20260717T174042+0800-observability-cgroup-estimates-final/pytest.log
+```
+
+**Good** - The complete rebuilt-daemon `e2e/observability/cgroup` family passed (10/10, 21.17s), including independently measured live RSS/cumulative CPU inputs. Fixture teardown destroyed all ten run-owned sandboxes. Artifact: `e2e/.artifacts/20260717T174042+0800-observability-cgroup-estimates-final/pytest.log`.
+
+**Defect** - None.
+
+**Fix** - Continue with a fresh retained console demo and sustained-memory verification.
+
+---
+
+### Iteration 14 - fresh demo and bounded daemon-memory verification
+
+**Command**
+```bash
+bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /private/tmp/eos-topology-e2e.uaA3dl/main/.e2e-state/workspaces/templates/testbed
+bin/sandbox-runtime-cli --sandbox-id eos-c248f5c4-9812-4364-b24f-380d19d60b7a create_workspace_session
+bin/sandbox-runtime-cli --sandbox-id eos-c248f5c4-9812-4364-b24f-380d19d60b7a create_workspace_session
+bin/sandbox-observability-cli cgroup --sandbox-id eos-c248f5c4-9812-4364-b24f-380d19d60b7a --scope sandbox --window-ms 60000
+```
+
+**Good** - A new sandbox from the rebuilt packaged daemon exposed two disjoint active workspaces in schema v2. The real console displayed live workspace estimates (about 3.1MiB/11.4% and 1.6MiB/0.0%) with `0::/` cgroup membership and no browser warnings or errors. After warm-up, 2,000 repeated public cgroup requests increased daemon PID 7 RSS from 4,512KiB to 6,248KiB with a sharply decelerating rate (996KiB in the first 250 calls, 220KiB in the last 1,000) and no background sampler, cache, or retained per-workspace history. Artifacts: `e2e/.artifacts/20260717T175000+0800-observability-cgroup-memory/memory-growth.log` and `/Users/yifanxu/Ephemeral-AI-Lab/observability-cgroup-estimates-demo-20260717.png`.
+
+**Defect** - None. The bounded collector and two-sample browser calculation necessarily use transient request memory; the live proof found allocator warm-up rather than linear per-request retention.
+
+**Fix** - Retained only the explicitly requested demo sandbox `eos-c248f5c4-9812-4364-b24f-380d19d60b7a` with workspaces `00000118c30a776b940fec` and `00000218c30a776c147ff8`; all automated-test resources were cleaned by the shared fixtures.
+
+---
+
+### Iteration 15 - planned final streamed-parser rebuild proof
+
+**Command**
+```bash
+PATH=/Users/yifanxu/.nvm/versions/node/v22.22.0/bin:$PATH SANDBOX_GIT_TOOLCHAIN_DIR=/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/dist/git bin/start-sandbox-console-stack --rebuild-binary
+set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T175200+0800-observability-cgroup-streamed-final PYTHONPATH=e2e /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python -m pytest e2e/observability/cgroup -vv --test-repository-root /private/tmp/eos-topology-e2e.uaA3dl/main --product-root /private/tmp/eos-topology-product.rMhibO/main 2>&1 | tee e2e/.artifacts/20260717T175200+0800-observability-cgroup-streamed-final/pytest.log
+```
+
+**Good** - Pending: rebuild and reload the final daemon/console, then exercise every stable cgroup case on new fixture-owned sandboxes.
+
+**Defect** - The memory review found that parsing `/proc/<pid>/stat` allocated a temporary vector of all fields even though only three fields are used.
+
+**Fix** - Stream the bounded stat fields directly, rerun Rust tests/clippy, rebuild production assets, rerun the full live family, and create the retained demo only after that reload.
+
+---
+
+### Iteration 16 - planned retained-demo memory proof
+
+**Command**
+```bash
+bin/sandbox-runtime-cli --sandbox-id eos-83be30a7-8d2a-4771-b5e9-72341d769c73 create_workspace_session
+bin/sandbox-runtime-cli --sandbox-id eos-83be30a7-8d2a-4771-b5e9-72341d769c73 create_workspace_session
+bin/sandbox-observability-cli cgroup --sandbox-id eos-83be30a7-8d2a-4771-b5e9-72341d769c73 --scope sandbox --window-ms 60000
+```
+
+**Good** - Pending: seed the final rebuilt-daemon sandbox, verify the public schema-v2 response and estimates, and measure daemon RSS across bounded repeated requests.
+
+**Defect** - None known.
+
+**Fix** - Keep the final demo only if placement, console rendering, and non-linear retained-memory checks pass; clean the superseded run-owned demo afterward.
+
+---
+
+### Iteration 17 - planned bounded cgroup-reader verification
+
+**Command**
+```bash
+cargo test -p sandbox-observability-telemetry -p sandbox-observability-query
+cargo clippy -p sandbox-observability-telemetry -p sandbox-observability-query --all-targets -- -D warnings
+PATH=/Users/yifanxu/.nvm/versions/node/v22.22.0/bin:$PATH SANDBOX_GIT_TOOLCHAIN_DIR=/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/dist/git bin/start-sandbox-console-stack --rebuild-binary
+```
+
+**Good** - Pending: prove the final daemon's cgroup request memory is independent of unrelated persisted observability history, then rerun the complete live family and retain one final two-workspace demo.
+
+**Defect** - The sustained check showed `Reader::samples()` materialized every parsed record plus a duplicate raw line; its peak allocation therefore grew with the append-only observability log.
+
+**Fix** - Stream both log files and retain only matching in-window samples, preserving timestamp sort and counter deltas. Use the same public-operation stress as the before/after reproduction.
+
+---
+
+### Iteration 18 - final bounded-reader, live-family, and retained-demo proof
+
+**Command**
+```bash
+PATH=/Users/yifanxu/.nvm/versions/node/v22.22.0/bin:$PATH SANDBOX_GIT_TOOLCHAIN_DIR=/Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/dist/git bin/start-sandbox-console-stack --rebuild-binary
+set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T184000+0800-observability-cgroup-bounded-reader-final PYTHONPATH=e2e /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python -m pytest e2e/observability/cgroup -vv --test-repository-root /private/tmp/eos-topology-e2e.uaA3dl/main --product-root /private/tmp/eos-topology-product.rMhibO/main 2>&1 | tee e2e/.artifacts/20260717T184000+0800-observability-cgroup-bounded-reader-final/pytest.log
+```
+
+**Good** - The final packaged daemon (`sha256=e18e88e6e14782e21549191b962c8d3fe3e7fb5d88fd634f10c0dfda880a09cf`) passed the complete live cgroup family (10/10, 20.48s); shared fixture teardown destroyed all ten test sandboxes. The retained two-workspace sandbox `eos-83bb1085-f127-426f-bb2b-7b7ae9d1a535` returned available schema-v2 topology, disjoint holder/PID/mount namespaces, live RSS/cumulative CPU inputs, `0::/` membership, and 48 manager resource samples. Across 2,000 sequential public cgroup calls, daemon RSS was 6,700KiB after warm-up, 7,112KiB after 1,000, and 7,304KiB after 2,000; the final 1,000 added only 192KiB while threads stayed 40 and file descriptors stayed 32. Artifacts: `e2e/.artifacts/20260717T184000+0800-observability-cgroup-bounded-reader-final/pytest.log` and `e2e/.artifacts/20260717T180300+0800-observability-cgroup-memory-final/memory-growth.log`.
+
+**Defect** - The before-fix reproduction grew from 7,284KiB after warm-up to 10,144KiB after 2,000 calls, then 22,168KiB after another 1,000 calls as the append-only log grew. This isolated `Reader::samples()` materializing unrelated persisted records, not topology or per-process estimate retention.
+
+**Fix** - Stream rotated and primary logs with one reusable line buffer and retain only matching in-window samples before sorting/delta calculation. The console keeps only the current topology, previous successful topology, and current estimate map; no background sampler or resource history was added.
 
 ---

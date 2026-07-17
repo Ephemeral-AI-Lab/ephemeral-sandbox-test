@@ -315,6 +315,27 @@ Assertions:
 
 On Docker Desktop and other read-only configurations this is a direct regression test. On writable Linux configurations it still proves the public contract without fabricating or mutating host cgroups.
 
+### 10. `observability.cgroup.workspace-resource-estimates`
+
+File: `test_workspace_placement.py`
+
+Steps:
+
+1. Create a workspace and start a stable CPU-active POSIX shell command through the public runtime CLI.
+2. Poll until a workload row has non-null `resident_memory_bytes`, `cpu_time_us`, and `start_time_ticks`.
+3. Poll a second public sample until CPU time increases for the same `(pid, start_time_ticks)`.
+4. Read that process's `status` and `stat` through read-only Docker inspection.
+
+Assertions:
+
+- RSS is positive in both the public row and procfs measurement;
+- cumulative CPU time increases while the workload runs;
+- returned start time exactly matches procfs, preventing PID-reuse joins;
+- returned CPU time is no greater than the later independent measurement;
+- the resource fields do not change namespace placement or cgroup-independence assertions.
+
+The live case validates collector inputs. Product console tests own refresh-interval percentage calculation, partial metrics, and the explicit estimate labels and limitations.
+
 ## Contract edge cases left to product tests
 
 The following require deterministic fault injection and belong in the product repository rather than a privileged live harness:
@@ -378,7 +399,8 @@ Implement and run the family feature by feature:
 3. `workspace-process-placement` and its independent oracle;
 4. backend-originated and forked-descendant cases;
 5. process-exit and workspace-destroy lifecycle cases;
-6. read-only-independent and bounded churn cases.
+6. read-only-independent and bounded churn cases;
+7. workspace resource estimate inputs.
 
 After each feature, run only the smallest relevant test selection, inspect its artifacts, fix failures, and then continue. Run the complete `e2e/observability/cgroup` family once all individual cases pass.
 
@@ -391,6 +413,7 @@ The backend/UI feature is ready to merge when:
 - at least one live placement is independently verified by PID and mount namespace stat identity;
 - command execution is exercised through the packaged public runtime CLI;
 - topology is exercised through the packaged public observability CLI;
+- stable live processes expose positive RSS, advancing CPU time, and a procfs-verified start identity;
 - cleanup is run-scoped and leaves no family workspace or command-session leak;
 - the complete family passes in the default live Docker environment;
 - the live report links the bounded artifact directory for the final run.
