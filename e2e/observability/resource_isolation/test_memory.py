@@ -589,16 +589,20 @@ def test_public_polling_is_memory_neutral(
 def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validation):
     verify_packaged_daemon(sandbox)
     case_artifacts.write_json("environment.json", environment_evidence(sandbox))
-    # Settle one-time decoder/client allocations before comparing history sizes.
-    # The measured phases must differ only by installed history, not by which size
-    # happened to exercise a public route for the first time.
+    sizes = (256, 2 * 1024 * 1024, 4 * 1024 * 1024 - 32 * 1024)
+    # Settle every bounded query path against the largest response shape before
+    # comparing history sizes. Otherwise the fixture that first reaches the
+    # response cap also pays allocator high-water growth and order, not history,
+    # determines the cross-size result.
+    preflight_fixture = tmp_path / "history-preflight.ndjson"
+    preflight_bytes = stream_history_fixture(preflight_fixture, sizes[-1])
+    docker_copy_to(sandbox, preflight_fixture, EVENT_SEGMENTS[1])
     preflight_before = fingerprint_store(sandbox)
     preflight_responses = []
     for view in _views(sandbox):
         response = _assert_ok(view())
         preflight_responses.append(assert_response_bounded(response))
     preflight_after = fingerprint_store(sandbox)
-    sizes = (256, 2 * 1024 * 1024, 4 * 1024 * 1024 - 32 * 1024)
     results = []
     for index, target_bytes in enumerate(sizes, 1):
         fixture = tmp_path / f"history-{index}.ndjson"
@@ -713,6 +717,7 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
         "summary.json",
         {
             "qualification_profile": qualification_profile(),
+            "preflight_bytes": preflight_bytes,
             "preflight_responses": preflight_responses,
             "preflight_store": {
                 "before": preflight_before,
@@ -770,6 +775,7 @@ def test_history_independent_queries(sandbox, tmp_path, case_artifacts, validati
         },
         evidence=("store-before.json", "store-after.json", "summary.json"),
     ):
+        assert preflight_bytes == sizes[-1]
         assert_store_unchanged(preflight_before, preflight_after)
         for item in results:
             assert_store_unchanged(item["before"], item["after"])

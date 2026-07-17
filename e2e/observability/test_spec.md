@@ -166,9 +166,10 @@ compressed profile. Compressed evidence is a fast merge qualification and is
 not represented as long-horizon soak evidence.
 
 History-size comparisons perform one fixed, fingerprint-checked pass across
-the public query routes before installing measured fixtures. This settles
-route cold-start allocations so the unchanged 64 KiB comparison measures
-stored-history dependence rather than whichever fixture ran first.
+the public query routes against a near-cap fixture before installing measured
+fixtures. This settles the bounded maximum response shape so the unchanged
+64 KiB comparison measures stored-history dependence rather than whichever
+fixture first reaches the response cap.
 Each size still has a 512 KiB peak-above-baseline cap. The cross-size 64 KiB
 gate compares absolute query peaks on the same daemon, because subtracting a
 new baseline for every size would hide allocator high-water memory retained by
