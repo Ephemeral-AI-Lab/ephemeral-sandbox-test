@@ -1,0 +1,71 @@
+{
+  "environment": {
+    "daemon_membership": [
+      "0::/"
+    ],
+    "mount_mode": "read-only"
+  },
+  "measured_membership": [
+    "0::/"
+  ],
+  "namespace_identities": {
+    "holder_mount": [
+      4,
+      4026533397
+    ],
+    "holder_pid": [
+      4,
+      4026533398
+    ],
+    "process_mount": [
+      4,
+      4026533397
+    ],
+    "process_pid": [
+      4,
+      4026533398
+    ]
+  },
+  "process": {
+    "cgroup_memberships": [
+      "0::/"
+    ],
+    "kind": "process",
+    "name": "sleep",
+    "namespace_pid": 2,
+    "parent_pid": 48,
+    "pid": 51,
+    "state": "S"
+  },
+  "workspace": {
+    "holder_pid": 43,
+    "mount_namespace": "mnt:[4026533397]",
+    "pid_namespace": "pid:[4026533398]",
+    "processes": [
+      {
+        "cgroup_memberships": [
+          "0::/"
+        ],
+        "kind": "namespace_init",
+        "name": "sandbox-daemon",
+        "namespace_pid": 1,
+        "parent_pid": 43,
+        "pid": 44,
+        "state": "S"
+      },
+      {
+        "cgroup_memberships": [
+          "0::/"
+        ],
+        "kind": "process",
+        "name": "sleep",
+        "namespace_pid": 2,
+        "parent_pid": 48,
+        "pid": 51,
+        "state": "S"
+      }
+    ],
+    "state": "active",
+    "workspace_id": "00000118c306f25593957d"
+  }
+}

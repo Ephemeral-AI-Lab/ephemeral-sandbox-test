@@ -1,0 +1,34 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/e2e
+configfile: pytest.ini
+plugins: timeout-2.4.0
+collecting ... collected 1 item
+
+e2e/observability/cgroup/test_contract.py::test_proc_topology_contract 
+-------------------------------- live log setup --------------------------------
+16:32:39.808 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli list_sandboxes  (exit=0, 0.76s)
+16:32:39.809 INFO e2e.gateway: gateway already running — reusing
+16:32:40.459 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.65s)
+-------------------------------- live log call ---------------------------------
+16:32:40.971 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-3f599b0f-e536-40b1-b57a-98cbd132e859 --scope sandbox --window-ms 60000  (exit=0, 0.51s)
+PASSED                                                                   [100%]
+------------------------------ live log teardown -------------------------------
+16:32:41.422 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-3f599b0f-e536-40b1-b57a-98cbd132e859  (exit=0, 0.33s)
+------------------------------ live log logreport ------------------------------
+16:32:41.423 INFO e2e.timing: ⏱  observability/cgroup/test_contract.py::test_proc_topology_contract — 2.377s total
+
+
+--------------------- sandbox-cli operation timing metrics ---------------------
+durations are client-side sandbox-cli wall time; no timing SLO is enforced
+manager.create_sandbox: n=1 p50=648.8ms p95=648.8ms max=648.8ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.destroy_sandbox: n=1 p50=327.9ms p95=327.9ms max=327.9ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.list_sandboxes: n=1 p50=762.1ms p95=762.1ms max=762.1ms sub50=0.0% sub100=0.0% sub200=0.0%
+observability.cgroup: n=1 p50=511.4ms p95=511.4ms max=511.4ms sub50=0.0% sub100=0.0% sub200=0.0%
+operation timing metrics: /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/metrics/operation-timing/latest.md
+============================== slowest durations ===============================
+1.41s setup    observability/cgroup/test_contract.py::test_proc_topology_contract
+0.63s call     observability/cgroup/test_contract.py::test_proc_topology_contract
+0.33s teardown observability/cgroup/test_contract.py::test_proc_topology_contract
+============================== 1 passed in 2.39s ===============================

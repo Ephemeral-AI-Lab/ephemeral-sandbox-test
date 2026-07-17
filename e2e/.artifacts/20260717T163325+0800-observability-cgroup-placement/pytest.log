@@ -1,0 +1,48 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/e2e
+configfile: pytest.ini
+plugins: timeout-2.4.0
+collecting ... collected 1 item
+
+e2e/observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity 
+-------------------------------- live log setup --------------------------------
+16:33:36.506 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli list_sandboxes  (exit=0, 0.04s)
+16:33:36.507 INFO e2e.gateway: gateway already running — reusing
+16:33:36.949 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.44s)
+-------------------------------- live log call ---------------------------------
+16:33:37.007 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373 create_workspace_session  (exit=0, 0.06s)
+16:33:37.061 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373 create_workspace_session  (exit=0, 0.05s)
+16:33:37.108 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373 exec_command --workspace-session-id 00000118c306ace3f2c996 --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.05s)
+16:33:37.148 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373 exec_command --workspace-session-id 00000218c306ace74ea161 --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+16:33:37.186 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:33:37.224 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:33:37.324 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:33:37.516 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373 write_command_stdin --command-session-id namespace_execution_1 --yield-time-ms 30000   (exit=0, 0.14s)
+16:33:37.660 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373 write_command_stdin --command-session-id namespace_execution_2 --yield-time-ms 30000   (exit=0, 0.14s)
+16:33:37.712 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373 destroy_workspace_session --workspace-session-id 00000118c306ace3f2c996 --grace-s 1  (exit=0, 0.05s)
+16:33:37.767 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373 destroy_workspace_session --workspace-session-id 00000218c306ace74ea161 --grace-s 1  (exit=0, 0.05s)
+PASSED                                                                   [100%]
+------------------------------ live log teardown -------------------------------
+16:33:38.104 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-56e39da8-ab45-4023-a3c6-76a5d959c373  (exit=0, 0.34s)
+------------------------------ live log logreport ------------------------------
+16:33:38.105 INFO e2e.timing: ⏱  observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity — 1.643s total
+
+
+--------------------- sandbox-cli operation timing metrics ---------------------
+durations are client-side sandbox-cli wall time; no timing SLO is enforced
+manager.create_sandbox: n=1 p50=441.6ms p95=441.6ms max=441.6ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.destroy_sandbox: n=1 p50=336.5ms p95=336.5ms max=336.5ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.list_sandboxes: n=1 p50=44.2ms p95=44.2ms max=44.2ms sub50=100.0% sub100=100.0% sub200=100.0%
+observability.cgroup: n=3 p50=37.5ms p95=37.7ms max=37.7ms sub50=100.0% sub100=100.0% sub200=100.0%
+runtime.create_workspace_session: n=2 p50=55.0ms p95=56.6ms max=56.8ms sub50=0.0% sub100=100.0% sub200=100.0%
+runtime.destroy_workspace_session: n=2 p50=52.6ms p95=53.5ms max=53.6ms sub50=0.0% sub100=100.0% sub200=100.0%
+runtime.exec_command: n=2 p50=43.0ms p95=46.5ms max=46.8ms sub50=100.0% sub100=100.0% sub200=100.0%
+runtime.write_command_stdin: n=2 p50=141.5ms p95=143.8ms max=144.0ms sub50=0.0% sub100=0.0% sub200=100.0%
+operation timing metrics: /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/metrics/operation-timing/latest.md
+============================== slowest durations ===============================
+0.82s call     observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity
+0.49s setup    observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity
+0.34s teardown observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity
+============================== 1 passed in 1.66s ===============================

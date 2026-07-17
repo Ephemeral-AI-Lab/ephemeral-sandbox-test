@@ -1,0 +1,40 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/e2e
+configfile: pytest.ini
+plugins: timeout-2.4.0
+collecting ... collected 1 item
+
+e2e/observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible 
+-------------------------------- live log setup --------------------------------
+16:33:15.217 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli list_sandboxes  (exit=0, 0.04s)
+16:33:15.218 INFO e2e.gateway: gateway already running — reusing
+16:33:15.597 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/workspaces/templates/testbed  (exit=0, 0.38s)
+-------------------------------- live log call ---------------------------------
+16:33:16.998 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-8114b9ab-68f0-4c34-96f5-804b92c731fd create_workspace_session  (exit=0, 1.40s)
+16:33:17.040 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-8114b9ab-68f0-4c34-96f5-804b92c731fd create_workspace_session  (exit=0, 0.04s)
+16:33:17.079 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-observability-cli cgroup --sandbox-id eos-8114b9ab-68f0-4c34-96f5-804b92c731fd --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+16:33:17.301 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-8114b9ab-68f0-4c34-96f5-804b92c731fd destroy_workspace_session --workspace-session-id 00000118c306a83b6afc77 --grace-s 1  (exit=0, 0.05s)
+16:33:17.359 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-runtime-cli --sandbox-id eos-8114b9ab-68f0-4c34-96f5-804b92c731fd destroy_workspace_session --workspace-session-id 00000218c306a83e027e60 --grace-s 1  (exit=0, 0.06s)
+PASSED                                                                   [100%]
+------------------------------ live log teardown -------------------------------
+16:33:17.578 INFO e2e.cli: ← /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-8114b9ab-68f0-4c34-96f5-804b92c731fd  (exit=0, 0.22s)
+------------------------------ live log logreport ------------------------------
+16:33:17.579 INFO e2e.timing: ⏱  observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible — 2.399s total
+
+
+--------------------- sandbox-cli operation timing metrics ---------------------
+durations are client-side sandbox-cli wall time; no timing SLO is enforced
+manager.create_sandbox: n=1 p50=378.9ms p95=378.9ms max=378.9ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.destroy_sandbox: n=1 p50=217.6ms p95=217.6ms max=217.6ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.list_sandboxes: n=1 p50=37.5ms p95=37.5ms max=37.5ms sub50=100.0% sub100=100.0% sub200=100.0%
+observability.cgroup: n=1 p50=38.5ms p95=38.5ms max=38.5ms sub50=100.0% sub100=100.0% sub200=100.0%
+runtime.create_workspace_session: n=2 p50=720.5ms p95=1331.6ms max=1399.5ms sub50=50.0% sub100=50.0% sub200=50.0%
+runtime.destroy_workspace_session: n=2 p50=55.9ms p95=57.1ms max=57.2ms sub50=0.0% sub100=100.0% sub200=100.0%
+operation timing metrics: /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.e2e-state/metrics/operation-timing/latest.md
+============================== slowest durations ===============================
+1.76s call     observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible
+0.42s setup    observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible
+0.22s teardown observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible
+============================== 1 passed in 2.41s ===============================

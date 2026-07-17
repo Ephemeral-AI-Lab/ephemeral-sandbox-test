@@ -1,6 +1,7 @@
 # Observability Resource-Isolation Live E2E Specification
 
-Status: draft; tests described below are not yet implemented.
+Status: implemented; the live cases below are registered under
+`e2e/observability/resource_isolation/`.
 Product contract:
 [`sandbox-observability-resource-isolation-spec.md`](../../../ephemeral-sandbox/docs/sandbox-observability-resource-isolation-spec.md)
 
@@ -46,11 +47,13 @@ Every case must satisfy all of these constraints:
   forbidden.
 
 Direct `/proc` and filesystem inspection is measurement evidence, not the
-operation surface. A test may use `docker exec` to read `/proc/1/*` and `stat`,
-or `docker cp` to install a deterministic persisted-history fixture. It must
-first prove that container PID 1 is the packaged sandbox daemon. One sampler
-invocation should collect all process, cgroup, and file counters so the
-measurement itself creates as little activity as possible.
+operation surface. A test may use `docker exec` to read the verified daemon's
+`/proc/<pid>/*` entries and `stat`, or `docker cp` to install a deterministic
+persisted-history fixture. It must first prove that the measured process is the
+packaged daemon and, in the normal Docker-init topology, that it is PID 1's
+direct child named by the daemon PID file. One sampler invocation should
+collect all process, cgroup, and file counters so the measurement itself
+creates as little activity as possible.
 
 Exact internal call counts are not a live-test assertion. The product
 integration suite proves “zero manager-to-daemon calls” with a counting fake.
@@ -58,7 +61,7 @@ This live suite proves the externally observable consequence: no daemon memory
 trend, no daemon CPU or I/O work, and no event-store mutation during idle
 manager polling.
 
-## 3. Proposed layout
+## 3. Implemented layout
 
 ```text
 e2e/observability/
@@ -89,10 +92,10 @@ At a monotonic one-second cadence, the sampler writes one compact JSON object
 directly to `samples.jsonl` containing:
 
 - wall and monotonic timestamps, phase, arm, repetition, and sandbox id;
-- `/proc/1/smaps_rollup`: `Rss`, `Pss`, `Anonymous`, `Private_Dirty`, and
+- daemon `/proc/<pid>/smaps_rollup`: `Rss`, `Pss`, `Anonymous`, `Private_Dirty`, and
   `AnonHugePages`;
-- `/proc/1/stat`: user and system CPU ticks;
-- `/proc/1/io`: read/write characters, syscall counts, and storage bytes;
+- daemon `/proc/<pid>/stat`: user and system CPU ticks;
+- daemon `/proc/<pid>/io`: read/write characters, syscall counts, and storage bytes;
 - cgroup v2 `memory.current` and the `memory.stat` fields `anon`, `file`,
   `kernel`, `kernel_stack`, `pagetables`, `sock`, `slab`, and `anon_thp`;
 - active and rotated event-store length, allocated blocks, inode, and mtime;
