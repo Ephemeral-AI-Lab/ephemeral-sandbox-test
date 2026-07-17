@@ -237,11 +237,14 @@ warmup. Sample out of band. Each repetition passes only when:
 
 Tier: `nightly`; three repetitions; paired target and idle-control sandboxes.
 
-After equal warmup, leave the control untouched. Against the target, alternate
-the public aggregate snapshot, scoped snapshot, events, trace/latest-trace, and
-manager-owned resource/cgroup routes at the console's active cadence for thirty
-minutes. Do not run a browser. Assert every route's documented response bound,
-then apply the RI-01 gates to both arms. Additionally:
+Resolve each daemon once through the scoped public snapshot before equal warmup,
+then leave the control untouched. Against the target, alternate the public
+manager fleet list, sandbox inspect/status, and manager-owned resource/cgroup
+routes at the console's active cadence for thirty minutes. Do not poll a
+daemon-owned snapshot or history route during the measured phase and do not run
+a browser. Assert every route's documented response bound, then apply the RI-01
+gates to both arms. Explicit history-read purity is covered by DS-02 and
+history-independent query memory is covered by RI-03. Additionally:
 
 - target-minus-control `Anonymous` median growth is at most 64 KiB;
 - target-minus-control post-cooldown `Anonymous` is at most 128 KiB;

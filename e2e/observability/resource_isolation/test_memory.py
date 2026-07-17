@@ -74,6 +74,25 @@ def _views(sandbox_id: str):
     )
 
 
+def _polling_views(sandbox_id: str):
+    return (
+        lambda: cli("manager", "list_sandboxes"),
+        lambda: cli(
+            "manager", "inspect_sandbox", "--sandbox-id", sandbox_id
+        ),
+        lambda: cli(
+            "observability",
+            "cgroup",
+            "--sandbox-id",
+            sandbox_id,
+            "--scope",
+            "sandbox",
+            "--window-ms",
+            "600000",
+        ),
+    )
+
+
 @e2e_test(
     timeout_ms=480_000,
     id="observability.resource-isolation.smoke",
@@ -326,13 +345,10 @@ def test_idle_daemon_memory_neutral(
     id="observability.resource-isolation.polling",
     title="Public observability polling is read-only and memory neutral",
     description=(
-        "Paired target and control daemons prove console-equivalent public reads do "
-        "not mutate storage or add retained anonymous memory."
+        "Paired target and control daemons prove manager status and resource polling "
+        "does not contact daemons, mutate storage, or retain anonymous memory."
     ),
     features=(
-        "observability.snapshot",
-        "observability.events",
-        "observability.trace",
         "observability.cgroup",
         "manager.management",
     ),
@@ -358,6 +374,12 @@ def test_public_polling_is_memory_neutral(
             case_artifacts.write_json("environment.json", environment_evidence(target))
         target_ring = default_resource_ring_path(target)
         control_ring = default_resource_ring_path(control)
+        for sandbox_id in (target, control):
+            assert_response_bounded(
+                _assert_ok(
+                    cli("observability", "snapshot", "--sandbox-id", sandbox_id)
+                )
+            )
         stream_group(
             case_artifacts,
             [(target, "target", target_ring), (control, "control", control_ring)],
@@ -380,7 +402,7 @@ def test_public_polling_is_memory_neutral(
             target: fingerprint_store(target),
             control: fingerprint_store(control),
         }
-        views = _views(target)
+        views = _polling_views(target)
 
         poll_requests = 0
 
