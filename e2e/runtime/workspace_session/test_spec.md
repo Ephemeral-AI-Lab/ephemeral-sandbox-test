@@ -17,18 +17,22 @@ This spec covers two things:
 
 ## 1. What changed at the runtime surface
 
-Workspace lifecycle is daemon-internal and is exercised through the test
-harness's trusted authenticated direct-daemon helper. `exec_command` remains
-public.
+Visibility correction (2026-07-18): `create_workspace_session` and
+`destroy_workspace_session` are public catalog, runtime CLI, and generated MCP
+operations. WS-05 pins that current surface. The 2026-07-03 proof retained
+later in this document predates the correction and is not evidence for the
+corrected WS-05 case.
+
+Workspace lifecycle and `exec_command` are public runtime operations.
 Responses and semantics changed:
 
 | Operation | Change | Kind |
 | --- | --- | --- |
-| `create_workspace_session` | internal response gains `finalize_policy: "no_op"`; the operation has no public CLI/MCP command | visibility + additive |
+| `create_workspace_session` | public response gains `finalize_policy: "no_op"`; the operation is projected through catalog-generated CLI and MCP surfaces | visibility + additive |
 | `exec_command` | response gains `workspace_session_id` on every yield (running and terminal, all drain paths) | additive |
 | `exec_command` | terminal response gains `publish_rejected: true` + `publish_reject_class` when this command's completion ran a finalize whose publish was rejected; the unpublished changes are discarded and the destroy still happens | additive |
 | `exec_command` (bare) | still implicitly creates a session, now named policy `publish_then_destroy`; the session id **escapes** in the response, so progress-check riders (`exec_command --workspace-session-id <id>` while the first command runs) are a supported pattern; a rider defers finalization until the last running command completes | semantic |
-| `destroy_workspace_session` | remains an internal recovery primitive; refusal contract is unchanged (`error.details.active_command_session_ids`), but the check is now the session's own command ledger | visibility + semantic |
+| `destroy_workspace_session` | remains discard-only and is public; its refusal contract is unchanged (`error.details.active_command_session_ids`), but the check is now the session's own command ledger | visibility + semantic |
 | file ops / remounts | never extend or trigger the session lifecycle; one racing the last command completion or a destroy now loses cleanly with `operation_failed` (“workspace session not found”) instead of running against a torn-down session | semantic |
 | command drains | completed commands are retained up to 512 terminal entries per daemon; a drain (`read_command_lines` / `write_command_stdin`) against an evicted id returns `command not found` | semantic |
 | observability snapshot | each workspace in the daemon snapshot JSON gains `finalize_policy` | additive |
@@ -46,7 +50,7 @@ Verified against the current tree (grep for `exec_command`,
 
 | File | Verdict | Required update |
 | --- | --- | --- |
-| `runtime/file/helpers.py` | compatible | Route lifecycle setup/teardown through the trusted authenticated direct-daemon helper and assert `finalize_policy == "no_op"`. |
+| `runtime/file/helpers.py` | compatible | Assert `finalize_policy == "no_op"`; lifecycle calls may migrate to the public runtime CLI without changing semantics. |
 | `runtime/file/**/test_*.py` (smoke, correctness, file_exec, blame, concurrent) | compatible | none — they assert by field lookup. Optional hardening: sessionless `file_exec` tests may assert the implicit exec response's `workspace_session_id` is present and no longer resolvable after terminal status (see EX-03). |
 | `compound/stress/test_runtime_stress.py` | compatible | the layer-depth benchmark never drains more than 512 completed commands per daemon; future depth extensions must account for old command-id expiry. |
 | `runtime/test_squash_remount.py` | compatible | `_publish` uses a bare exec to publish a layer — that is exactly the implicit `publish_then_destroy` path and keeps working. No change. |
@@ -65,16 +69,16 @@ WS-04/EX-06 below pin the behavior at the e2e level.
 
 Layout per the suite README: `runtime/workspace_session/{__init__.py,
 helpers.py, test_workspace_session.py, test_exec_finalize.py}` plus this spec.
-Helpers route public operations to the matching manager, runtime, or
-observability binary and use the authenticated internal daemon helper only for
-workspace-session lifecycle. They return parsed JSON; every case writes
+Helpers route operations to the matching manager, runtime, or observability
+binary, including workspace-session lifecycle through the public runtime CLI.
+They return parsed JSON; every case writes
 `test-reports/<RUN_ID>/<CASE_ID>/verdict.json` with `correctness` / `teardown`
 axes (timing axis only where noted).
 
-Policy availability constraint: the public CLI cannot create any explicit
-workspace session. The internal test setup creates `no_op` sessions, so
-the e2e policy matrix is: explicit create ⇒ `no_op`; bare `exec_command` ⇒
-implicit `publish_then_destroy`. Both rows are covered below.
+Policy availability constraint: public explicit create always creates a
+`no_op` session; it does not expose a caller-selected finalization policy. The
+e2e policy matrix is: explicit create ⇒ `no_op`; bare `exec_command` ⇒ implicit
+`publish_then_destroy`. Both rows are covered below.
 
 ### create_workspace_session (WS)
 
@@ -84,7 +88,7 @@ implicit `publish_then_destroy`. Both rows are covered below.
 | WS-02 | smoke | no_op session survives command completion | create → `exec_command --workspace-session-id … 'echo hi'` to terminal → session still usable (second exec + `file_read` succeed) → explicit destroy succeeds. |
 | WS-03 | smoke | destroy refuses while a command runs | create → start `sleep 30` with `--yield-time-ms 0` → destroy returns `operation_failed` with `error.details.active_command_session_ids == [<command id>]` → Ctrl-C via `write_command_stdin` → destroy succeeds. |
 | WS-04 | medium | destroy always discards; sync op racing destroy loses cleanly | create → `file_write` a change → destroy → new implicit exec `cat` shows the change is **absent** (no publish on explicit destroy); a `file_read` issued immediately after destroy returns `operation_failed` not-found, never stale content. |
-| WS-05 | medium | lifecycle is not public | the runtime CLI rejects `create_workspace_session` and `destroy_workspace_session` as unknown operations; top-level help omits both. |
+| WS-05 | medium | lifecycle operations are public | top-level runtime help lists `create_workspace_session` and `destroy_workspace_session` exactly once; public create returns a `no_op` session and public destroy closes it. |
 | WS-06 | medium | destroyed id stays dead | after WS-02's destroy, `exec_command --workspace-session-id <id>`, `file_read`, and a second destroy all return `operation_failed` not-found (and the daemon does not wedge — a fresh create still works). |
 
 ### exec_command (EX)
@@ -119,7 +123,7 @@ succeeds (fixture-owned, mirroring `conftest.py`).
 
 ## 4. Harness work items
 
-1. `runtime/workspace_session/helpers.py`: wrappers `create_session()`
+1. `runtime/workspace_session/helpers.py`: public runtime CLI wrappers `create_session()`
    (returns the full JSON, asserts `finalize_policy`), `exec_bare()`,
    `exec_in()`, `destroy_session()` (returns raw result for refusal checks),
    `wait_finalized(sandbox_id, workspace_session_id, timeout_s)` — polls
@@ -144,14 +148,16 @@ python3 -m pytest compound/stress \
 ```
 
 Smoke tier must stay under ~60 s wall; medium under ~5 min. EX-08, FP-04, and
-the layer-depth benchmark run together in Compound stress. Public calls go through the three purpose-built CLI binaries;
-internal workspace-session lifecycle uses only the trusted authenticated
-daemon helper's two allowlisted routes. Every assertion consumes structured
-JSON — no log scraping, per the suite charter.
+the layer-depth benchmark run together in Compound stress. All lifecycle calls
+go through the three purpose-built public CLI binaries. Every assertion
+consumes structured JSON — no log scraping, per the suite charter.
 
-## Current Proof
+## Historical Proof (before the visibility correction)
 
 Final verification date: 2026-07-03.
+
+These retained results describe the pre-correction WS-05 expectation. They do
+not claim that the corrected public-lifecycle case has been executed.
 
 Prerequisites and Phase 0 gates:
 
@@ -199,7 +205,7 @@ Per-case evidence:
 | WS-02 | PASS | `runtime/workspace_session/test_workspace_session.py::test_WS_02_no_op_session_survives_command_completion` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/WS-02/verdict.json` |
 | WS-03 | PASS | `runtime/workspace_session/test_workspace_session.py::test_WS_03_destroy_refuses_while_command_runs` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/WS-03/verdict.json` |
 | WS-04 | PASS | `runtime/workspace_session/test_workspace_session.py::test_WS_04_destroy_discards_and_sync_op_loses_cleanly` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/WS-04/verdict.json` |
-| WS-05 | PASS | `runtime/workspace_session/test_workspace_session.py::test_WS_05_no_finalize_policy_flag_exists` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/WS-05/verdict.json` |
+| WS-05 | historical PASS | `runtime/workspace_session/test_workspace_session.py::test_WS_05_no_finalize_policy_flag_exists` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/WS-05/verdict.json` |
 | WS-06 | PASS | `runtime/workspace_session/test_workspace_session.py::test_WS_06_destroyed_id_stays_dead` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/WS-06/verdict.json` |
 | EX-01 | PASS | `runtime/workspace_session/test_exec_finalize.py::test_EX_01_implicit_exec_response_contract` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/EX-01/verdict.json` |
 | EX-02 | PASS | `runtime/workspace_session/test_exec_finalize.py::test_EX_02_implicit_exec_publishes_then_destroys` | `runtime/workspace_session/test-reports/workspace-session-20260703-063529/EX-02/verdict.json` |

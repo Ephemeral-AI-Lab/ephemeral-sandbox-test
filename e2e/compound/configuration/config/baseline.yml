@@ -2,7 +2,10 @@ daemon:
   server:
     socket_path: /eos/runtime/daemon/runtime.sock
     pid_path: /eos/runtime/daemon/runtime.pid
-    max_worker_threads: 32
+    worker_threads: 2
+    max_blocking_threads: 8
+    blocking_thread_keep_alive_s: 5
+    max_concurrent_connections: 64
 runtime:
   workspace:
     layer_stack_root: /eos/layer-stack
@@ -12,6 +15,8 @@ runtime:
     rfc1918_egress: allow
   namespace_execution:
     scratch_root: /eos/namespace_execution
+  command:
+    max_active: 32
 runner:
   mount_mask:
     hidden_paths:

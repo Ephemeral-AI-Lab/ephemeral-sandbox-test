@@ -1,4 +1,4 @@
-"""Helpers and verdict reporting for workspace-session finalize-policy tests."""
+"""Helpers and verdict reporting for workspace-session lifecycle tests."""
 
 from __future__ import annotations
 
@@ -14,10 +14,9 @@ from pathlib import Path
 
 import pytest
 
-from harness.runner.cli import cli, is_error, manager, observability, runtime
+from harness.runner.cli import is_error, manager, observability, runtime
 from harness.catalog.mode import is_catalog_mode
 from harness.runner.config import E2E_STATE_ROOT, REPO_ROOT, SANDBOX_RUNTIME_CLI
-from harness.runner.direct_daemon import direct_daemon
 
 
 RUN_ID = os.environ.get(
@@ -26,7 +25,7 @@ RUN_ID = os.environ.get(
 )
 REPORT_ROOT = E2E_STATE_ROOT / "reports" / "workspace-session" / RUN_ID
 
-TIMED_CASES = {"EX-04", "EX-06", "FP-01", "FP-04"}
+TIMED_CASES = {"EX-04", "EX-06", "FP-01", "FP-04", "PWS-04", "PWS-11", "PWS-12"}
 CASE_META = {
     "WS-01": {"id": "WS-01", "tier": "smoke", "title": "create response contract"},
     "WS-02": {
@@ -40,7 +39,11 @@ CASE_META = {
         "tier": "medium",
         "title": "destroy always discards; sync op racing destroy loses cleanly",
     },
-    "WS-05": {"id": "WS-05", "tier": "medium", "title": "no --finalize-policy flag exists"},
+    "WS-05": {
+        "id": "WS-05",
+        "tier": "medium",
+        "title": "workspace lifecycle operations are public",
+    },
     "WS-06": {"id": "WS-06", "tier": "medium", "title": "destroyed id stays dead"},
     "EX-01": {"id": "EX-01", "tier": "smoke", "title": "implicit exec response contract"},
     "EX-02": {"id": "EX-02", "tier": "smoke", "title": "implicit exec publishes then destroys"},
@@ -70,6 +73,67 @@ CASE_META = {
         "title": "back-to-back implicit execs are independent sessions",
     },
     "FP-04": {"id": "FP-04", "tier": "hard", "title": "finalize-vs-destroy interleave storm"},
+    "PWS-01": {"id": "PWS-01", "tier": "smoke", "title": "public CLI surface"},
+    "PWS-02": {
+        "id": "PWS-02",
+        "tier": "smoke",
+        "title": "changed session publishes and closes",
+    },
+    "PWS-03": {
+        "id": "PWS-03",
+        "tier": "smoke",
+        "title": "empty session closes without a layer",
+    },
+    "PWS-04": {
+        "id": "PWS-04",
+        "tier": "smoke",
+        "title": "active command refuses publish before capture",
+    },
+    "PWS-05": {
+        "id": "PWS-05",
+        "tier": "medium",
+        "title": "protected change rejects atomically",
+    },
+    "PWS-06": {
+        "id": "PWS-06",
+        "tier": "medium",
+        "title": "stale sessions merge clean text changes",
+    },
+    "PWS-07": {
+        "id": "PWS-07",
+        "tier": "medium",
+        "title": "conflict retains session for one resolved retry",
+    },
+    "PWS-08": {
+        "id": "PWS-08",
+        "tier": "medium",
+        "title": "binary divergence is rejected without loss",
+    },
+    "PWS-09": {
+        "id": "PWS-09",
+        "tier": "medium",
+        "title": "destroy remains discard-only",
+    },
+    "PWS-10": {
+        "id": "PWS-10",
+        "tier": "medium",
+        "title": "validation and replay cannot duplicate publish",
+    },
+    "PWS-11": {
+        "id": "PWS-11",
+        "tier": "hard",
+        "title": "publish and discard serialize to one disposition",
+    },
+    "PWS-12": {
+        "id": "PWS-12",
+        "tier": "hard",
+        "title": "parallel disjoint sessions each publish once",
+    },
+    "PWS-13": {
+        "id": "PWS-13",
+        "tier": "medium",
+        "title": "unsupported special file blocks the changeset",
+    },
 }
 
 _summary_lock = threading.Lock()
@@ -238,10 +302,10 @@ if not is_catalog_mode():
 
 
 def create_session(sandbox_id, *, network_profile=None):
-    args = {}
+    args = []
     if network_profile is not None:
-        args["network_profile"] = network_profile
-    result = direct_daemon(sandbox_id, "create_workspace_session", args)
+        args += ["--network-profile", network_profile]
+    result = runtime(sandbox_id, "create_workspace_session", *args)
     assert_ok(result)
     assert result["workspace_session_id"], result
     assert result["finalize_policy"] == "no_op", result
@@ -291,15 +355,18 @@ def file_write(sandbox_id, path, content, *, workspace_session_id=None, timeout=
 
 
 def destroy_session(sandbox_id, workspace_session_id, *, grace_s=None, timeout=180):
-    args = {"workspace_session_id": workspace_session_id}
+    args = ["--workspace-session-id", workspace_session_id]
     if grace_s is not None:
-        args["grace_s"] = grace_s
-    return direct_daemon(
-        sandbox_id,
-        "destroy_workspace_session",
-        args,
-        timeout=timeout,
-    )
+        args += ["--grace-s", str(grace_s)]
+    return runtime(sandbox_id, "destroy_workspace_session", *args, timeout=timeout)
+
+
+def publish_session(sandbox_id, workspace_session_id, *, grace_s=None, timeout=180):
+    """Publish through the public runtime CLI; never use a daemon-only route."""
+    args = ["--workspace-session-id", workspace_session_id]
+    if grace_s is not None:
+        args += ["--grace-s", str(grace_s)]
+    return runtime(sandbox_id, "publish_workspace_session", *args, timeout=timeout)
 
 
 def write_command_stdin(
@@ -377,6 +444,16 @@ def layerstack(sandbox_id):
     return observability("layerstack", "--sandbox-id", sandbox_id)
 
 
+def revision_snapshot(stack):
+    """Normalize only public LayerStack revision fields used by publish tests."""
+    return {
+        "manifest_version": stack["manifest_version"],
+        "root_hash": stack["root_hash"],
+        "layer_ids": [layer["layer_id"] for layer in stack["layers"]],
+        "layer_count": len(stack["layers"]),
+    }
+
+
 def manifest_version(sandbox_id):
     return assert_ok(layerstack(sandbox_id))["manifest_version"]
 
@@ -397,16 +474,6 @@ def runtime_help(operation=None):
         timeout=30,
     )
     return {"returncode": proc.returncode, "stdout": proc.stdout, "stderr": proc.stderr}
-
-
-def invoke_public_lifecycle_command(sandbox_id, operation):
-    return cli(
-        "runtime",
-        "--sandbox-id",
-        sandbox_id,
-        operation,
-        timeout=30,
-    )
 
 
 def assert_ok(result):
@@ -462,8 +529,38 @@ def workspace_entry(snap, workspace_session_id):
     return None
 
 
+def is_workspace_not_found(result, workspace_session_id):
+    if not is_error(result):
+        return False
+    error = result.get("error", {})
+    if error.get("kind") not in {"not_found", "operation_failed"}:
+        return False
+    message = error.get("message", "")
+    if "workspace session not found" not in message:
+        return False
+    details = error.get("details")
+    return (
+        isinstance(details, dict)
+        and details.get("workspace_session_id") == workspace_session_id
+    )
+
+
+def wait_workspace_absent(sandbox_id, workspace_session_id, *, timeout_s=10):
+    started = time.monotonic()
+    deadline = started + timeout_s
+    last = None
+    while time.monotonic() < deadline:
+        last = assert_ok(snapshot(sandbox_id))
+        if workspace_entry(last, workspace_session_id) is None:
+            return {"elapsed_ms": monotonic_ms(started), "snapshot": last}
+        time.sleep(0.1)
+    raise AssertionError(
+        f"workspace session {workspace_session_id} remained observable: {last}"
+    )
+
+
 def assert_teardown_clean(rec, sandbox_id, tracker):
-    snap = snapshot(sandbox_id)
+    snap = assert_ok(snapshot(sandbox_id))
     rec.add_artifact("teardown-snapshot.json", snap)
     leaked = [ws_id for ws_id in sorted(tracker.seen_workspace_ids) if workspace_entry(snap, ws_id)]
     rec.axis(
@@ -516,6 +613,31 @@ class WorkspaceTracker:
         result = destroy_session(self.sandbox_id, workspace_session_id, grace_s=grace_s)
         if not is_error(result):
             self.untrack_workspace(workspace_session_id)
+        elif is_workspace_not_found(result, workspace_session_id):
+            wait_workspace_absent(self.sandbox_id, workspace_session_id)
+            self.untrack_workspace(workspace_session_id)
+        return result
+
+    def publish(self, workspace_session_id, *, grace_s=None, timeout=180):
+        result = publish_session(
+            self.sandbox_id,
+            workspace_session_id,
+            grace_s=grace_s,
+            timeout=timeout,
+        )
+        if not is_error(result):
+            self.untrack_workspace(workspace_session_id)
+            return result
+
+        details = result.get("error", {}).get("details", {})
+        if details.get("session_retained") is True:
+            return result
+        if details.get("publish_completed") is True and details.get("destroyed") is False:
+            # FinalizeFailed remains case-owned and must be cleaned by guarded destroy.
+            return result
+        if is_workspace_not_found(result, workspace_session_id):
+            wait_workspace_absent(self.sandbox_id, workspace_session_id)
+            self.untrack_workspace(workspace_session_id)
         return result
 
     def wait_finalized(self, workspace_session_id, timeout_s=30):
@@ -548,14 +670,24 @@ class WorkspaceTracker:
                 .get("active_command_session_ids", [])
             )
             if not active:
-                if "workspace session not found" in result.get("error", {}).get("message", ""):
+                if is_workspace_not_found(result, workspace_session_id):
                     self.untrack_workspace(workspace_session_id)
                 return result
-            for command_session_id in active:
+            with self._lock:
+                tracked_commands = set(self.command_ids)
+            owned_active = [
+                command_session_id
+                for command_session_id in active
+                if command_session_id in tracked_commands
+            ]
+            if not owned_active:
+                return result
+            for command_session_id in owned_active:
                 try:
                     interrupt(self.sandbox_id, command_session_id)
                 except Exception:
                     pass
+                self.untrack_command(command_session_id)
             time.sleep(0.2)
             result = destroy_session(self.sandbox_id, workspace_session_id, grace_s=1)
         if not is_error(result):

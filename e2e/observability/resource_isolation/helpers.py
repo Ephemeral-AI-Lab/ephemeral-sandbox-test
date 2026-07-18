@@ -35,6 +35,7 @@ MAX_RESPONSE_RECORDS = 500
 MAX_RING_BYTES = 64 * 1024
 MAX_ARTIFACT_BYTES = 32 * 1024 * 1024
 SUMMARY_RESERVE_BYTES = 64 * 1024
+CLEANUP_RESERVE_BYTES = 64 * 1024
 RESERVOIR_SIZE = 2_048
 MAX_THEIL_SEN_PAIRS = 100_000
 FINGERPRINT_CHUNK_BYTES = 64 * 1024
@@ -329,6 +330,20 @@ printf '@DAEMON_PID\n%s\n' "$daemon_pid"
 printf '@EXE\n'; readlink "/proc/$daemon_pid/exe"
 printf '@SMAPS\n'; cat "/proc/$daemon_pid/smaps_rollup"
 printf '@STAT\n'; cat "/proc/$daemon_pid/stat"
+printf '@STATUS\n'; cat "/proc/$daemon_pid/status"
+printf '@FD_COUNT\n'; find "/proc/$daemon_pid/fd" -mindepth 1 -maxdepth 1 -printf '.' 2>/dev/null | wc -c
+printf '@DIRECT_CHILDREN\n'
+seen=0
+for status in /proc/[0-9]*/status; do
+  seen=$((seen + 1))
+  if [ "$seen" -gt 4096 ]; then printf 'TRUNCATED\t1\n'; break; fi
+  ppid=$(sed -n 's/^PPid:[[:space:]]*//p' "$status" 2>/dev/null)
+  [ "$ppid" = "$daemon_pid" ] || continue
+  pid=${status#/proc/}; pid=${pid%/status}
+  state=$(sed -n 's/^State:[[:space:]]*\([A-Z]\).*/\1/p' "$status" 2>/dev/null)
+  case "$pid:$state" in *[!0-9A-Z:]*) continue ;; esac
+  printf '%s\t%s\n' "$pid" "$state"
+done
 printf '@IO\n'; cat "/proc/$daemon_pid/io"
 printf '@CGROUP\n'; cat "/proc/$daemon_pid/cgroup"
 cg=$(sed -n 's/^0:://p' "/proc/$daemon_pid/cgroup" | sed -n '1p')
@@ -409,6 +424,49 @@ def _proc_stat(line: str) -> tuple[dict[str, int | None], list[str]]:
         except (ValueError, IndexError):
             pass
     return values, [name for name, value in values.items() if value is None]
+
+
+def _proc_status(lines: Iterable[str]) -> tuple[dict[str, int | None], list[str]]:
+    """Parse the bounded daemon status fields used by resource gates."""
+    source_keys = {
+        "Threads": "threads",
+        "FDSize": "fd_size",
+        "voluntary_ctxt_switches": "voluntary_context_switches",
+        "nonvoluntary_ctxt_switches": "nonvoluntary_context_switches",
+    }
+    values: dict[str, int | None] = {target: None for target in source_keys.values()}
+    for line in lines:
+        name, separator, raw = line.partition(":")
+        target = source_keys.get(name)
+        if not separator or target is None:
+            continue
+        try:
+            values[target] = int(raw.strip().split()[0])
+        except (ValueError, IndexError):
+            pass
+    return values, [name for name, value in values.items() if value is None]
+
+
+def _direct_children(lines: Iterable[str]) -> dict[str, Any]:
+    """Summarize bounded direct-child rows without retaining PID identities."""
+    counts: dict[str, int] = {}
+    total = 0
+    truncated = False
+    for line in lines:
+        if line == "TRUNCATED\t1":
+            truncated = True
+            continue
+        pid, separator, state = line.partition("\t")
+        if not separator or not pid.isdecimal() or len(state) != 1 or not state.isalpha():
+            continue
+        counts[state] = counts.get(state, 0) + 1
+        total += 1
+    return {
+        "total": total,
+        "by_state": dict(sorted(counts.items())),
+        "zombies": counts.get("Z", 0),
+        "scan_truncated": truncated,
+    }
 
 
 def _parse_file_stats(lines: Iterable[str]) -> dict[str, dict[str, Any]]:
@@ -531,6 +589,13 @@ def collect_sample(
     smaps_keys = ("Rss", "Pss", "Anonymous", "Private_Dirty", "AnonHugePages")
     smaps, smaps_missing = _kilobytes(sections.get("SMAPS", []), smaps_keys)
     cpu, cpu_missing = _proc_stat("".join(sections.get("STAT", [])))
+    process_status, status_missing = _proc_status(sections.get("STATUS", []))
+    actual_open_fds = None
+    try:
+        actual_open_fds = int("".join(sections.get("FD_COUNT", [])).strip())
+    except ValueError:
+        pass
+    direct_children = _direct_children(sections.get("DIRECT_CHILDREN", []))
     io_keys = (
         "rchar",
         "wchar",
@@ -581,6 +646,11 @@ def collect_sample(
     unavailable = []
     unavailable.extend(f"smaps.{name}" for name in smaps_missing)
     unavailable.extend(f"cpu.{name}" for name in cpu_missing)
+    unavailable.extend(f"process.{name}" for name in status_missing)
+    if actual_open_fds is None:
+        unavailable.append("process.actual_open_fds")
+    if direct_children["scan_truncated"]:
+        unavailable.append("process.direct_children.scan_truncated")
     unavailable.extend(f"io.{name}" for name in io_missing)
     unavailable.extend(f"cgroup.{name}" for name in memory_missing)
     unavailable.extend(f"cgroup.memory_events.{name}" for name in event_missing)
@@ -605,6 +675,11 @@ def collect_sample(
         "daemon_pid": int(daemon_pid),
         "smaps": smaps,
         "cpu": cpu,
+        "process": {
+            **process_status,
+            "actual_open_fds": actual_open_fds,
+            "direct_children": direct_children,
+        },
         "io": process_io,
         "cgroup": {
             "membership": cgroup_membership,
@@ -688,20 +763,47 @@ class ArtifactDirectory:
         self.samples_path = self.root / "samples.jsonl"
         self._sample_handle = self.samples_path.open("ab", buffering=0)
 
-    def append_sample(self, sample: Mapping[str, Any]) -> None:
+    def _reserved_shortfall(self, *, excluding: str | None = None) -> int:
+        shortfall = 0
+        for name, reserve in (
+            ("summary.json", SUMMARY_RESERVE_BYTES),
+            ("cleanup.json", CLEANUP_RESERVE_BYTES),
+        ):
+            if name == excluding:
+                continue
+            path = self.root / name
+            existing = path.stat().st_size if path.exists() else 0
+            shortfall += max(0, reserve - existing)
+        return shortfall
+
+    def append_sample(
+        self,
+        sample: Mapping[str, Any],
+        *,
+        optional: bool = False,
+    ) -> bool:
+        """Persist one sample, or stop optional sampling before the hard cap.
+
+        Gate-bearing endpoint samples use the default required mode and fail if
+        they cannot be retained.  Cadence streams use ``optional=True`` so the
+        action campaign continues after evidence reaches its bounded capacity.
+        """
         encoded = compact_json_bytes(sample) + b"\n"
         if (
-            self.total_bytes() + len(encoded) + SUMMARY_RESERVE_BYTES
+            self.total_bytes() + len(encoded) + self._reserved_shortfall()
             > MAX_ARTIFACT_BYTES
         ):
+            if optional:
+                return False
             raise AssertionError("resource-isolation artifact cap would be exceeded")
         self._sample_handle.write(encoded)
         self._sample_handle.flush()
+        return True
 
     def append_jsonl(self, name: str, value: Mapping[str, Any]) -> None:
         encoded = compact_json_bytes(value) + b"\n"
         if (
-            self.total_bytes() + len(encoded) + SUMMARY_RESERVE_BYTES
+            self.total_bytes() + len(encoded) + self._reserved_shortfall()
             > MAX_ARTIFACT_BYTES
         ):
             raise AssertionError("resource-isolation artifact cap would be exceeded")
@@ -710,11 +812,28 @@ class ArtifactDirectory:
 
     def write_json(self, name: str, value: Any, *, reserved: bool = False) -> Path:
         encoded = pretty_json_bytes(value)
-        allowance = 0 if reserved else SUMMARY_RESERVE_BYTES
+        reserved_cap = {
+            "summary.json": SUMMARY_RESERVE_BYTES,
+            "cleanup.json": CLEANUP_RESERVE_BYTES,
+        }.get(name)
+        if reserved_cap is not None and len(encoded) > reserved_cap:
+            raise AssertionError(
+                {
+                    "reserved_artifact": name,
+                    "artifact_bytes": len(encoded),
+                    "reserved_bytes": reserved_cap,
+                }
+            )
+        # ``reserved`` remains accepted for existing callers.  Reservation is
+        # name-based so summary and cleanup capacity cannot consume each other.
+        _ = reserved
         path = self.root / name
         replaced_bytes = path.stat().st_size if path.exists() else 0
         if (
-            self.total_bytes() - replaced_bytes + len(encoded) + allowance
+            self.total_bytes()
+            - replaced_bytes
+            + len(encoded)
+            + self._reserved_shortfall(excluding=name)
             > MAX_ARTIFACT_BYTES
         ):
             raise AssertionError("resource-isolation artifact cap would be exceeded")
@@ -747,10 +866,20 @@ class ArtifactDirectory:
             artifact_bytes = next_bytes
         else:
             raise AssertionError("resource-isolation artifact size did not converge")
-        if artifact_bytes > MAX_ARTIFACT_BYTES:
+        if len(encoded) > SUMMARY_RESERVE_BYTES:
+            raise AssertionError(
+                {
+                    "reserved_artifact": "summary.json",
+                    "artifact_bytes": len(encoded),
+                    "reserved_bytes": SUMMARY_RESERVE_BYTES,
+                }
+            )
+        cleanup_shortfall = self._reserved_shortfall(excluding="summary.json")
+        if artifact_bytes + cleanup_shortfall > MAX_ARTIFACT_BYTES:
             raise AssertionError(
                 {
                     "artifact_bytes": artifact_bytes,
+                    "reserved_cleanup_bytes": cleanup_shortfall,
                     "max_artifact_bytes": MAX_ARTIFACT_BYTES,
                 }
             )
@@ -869,6 +998,8 @@ def stream_group(
         next_tick = phase_start
         index = 0
         late = 0
+        persisted_samples = 0
+        artifact_sampling_stopped = False
         summaries = {arm: FixedMetricSummary() for _, arm, _ in targets}
         while True:
             now = time.monotonic()
@@ -882,6 +1013,8 @@ def stream_group(
             if action is not None:
                 action(index)
             for sandbox_id, arm, ring_path in _balanced_sample_order(targets, index):
+                if artifact_sampling_stopped:
+                    break
                 sample = collect_sample(
                     sandbox_id,
                     phase=phase,
@@ -889,7 +1022,10 @@ def stream_group(
                     repetition=repetition,
                     ring_path=ring_path,
                 )
-                artifacts.append_sample(sample)
+                if not artifacts.append_sample(sample, optional=True):
+                    artifact_sampling_stopped = True
+                    break
+                persisted_samples += 1
                 anonymous = sample["smaps"].get("Anonymous")
                 if isinstance(anonymous, int):
                     summaries[arm].update(sample["monotonic_seconds"], anonymous)
@@ -904,6 +1040,8 @@ def stream_group(
         "missed_deadlines": late,
         "allowed_missed_deadlines": allowed_late,
         "sample_ticks": index,
+        "persisted_samples": persisted_samples,
+        "artifact_sampling_stopped": artifact_sampling_stopped,
         "fraction": late_fraction,
     }
     return {
@@ -913,6 +1051,8 @@ def stream_group(
         "ended_monotonic": phase_end,
         "duration_seconds": phase_end - phase_start,
         "sample_ticks": index,
+        "persisted_samples": persisted_samples,
+        "artifact_sampling_stopped": artifact_sampling_stopped,
         "missed_deadlines": late,
         "allowed_missed_deadlines": allowed_late,
         "docker_creation_guard": creation_guard,

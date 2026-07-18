@@ -1,4 +1,4 @@
-"""Internal workspace lifecycle and public exec finalization live coverage."""
+"""Public workspace lifecycle and exec finalization live coverage."""
 
 import pytest
 
@@ -15,13 +15,10 @@ from runtime.workspace_session.helpers import (
     file_read,
     file_write,
     interrupt,
-    invoke_public_lifecycle_command,
     record_case,
     runtime_help,
     snapshot,
-    wait_command,
     workspace_entry,
-    workspace_tracker,
 )
 from harness.catalog.declarations import e2e_test
 
@@ -152,26 +149,28 @@ def test_WS_04_destroy_discards_and_sync_op_loses_cleanly(sandbox, workspace_tra
 @e2e_test(
     timeout_ms=3_000,
     id='phase0.3e783a9735538a11a40c3ba0',
-    title='Ws 05 Workspace Lifecycle Is Not Public',
-    description='Validates the behavior exercised by Ws 05 Workspace Lifecycle Is Not Public.',
+    title='Ws 05 Workspace Lifecycle Is Public',
+    description='Validates public create and destroy workspace-session CLI discovery and dispatch.',
     features=('runtime.workspace_session',),
-    validations={'assert-ws-05-workspace-lifecycle-is-not-public': 'The assertions for ws 05 workspace lifecycle is not public hold.'},
+    validations={'assert-ws-05-workspace-lifecycle-is-public': 'Create and destroy are listed and execute through the public runtime CLI.'},
     execution_surface='cli',
 )
 @pytest.mark.medium
 def test_WS_05_workspace_lifecycle_is_not_public(sandbox, workspace_tracker):
+    # Keep the historical node id because the frozen stable-id ledger maps it.
     with record_case("WS-05") as rec:
-        for operation in ("create_workspace_session", "destroy_workspace_session"):
-            bad = invoke_public_lifecycle_command(sandbox, operation)
-            assert_error(bad, "invalid_request", f"unknown operation: {operation}")
-
         help_result = runtime_help()
         rec.add_artifact("runtime-help.json", help_result)
         assert help_result["returncode"] == 0, help_result
-        assert "create_workspace_session" not in help_result["stdout"], help_result
-        assert "destroy_workspace_session" not in help_result["stdout"], help_result
+        assert help_result["stdout"].count("create_workspace_session") == 1, help_result
+        assert help_result["stdout"].count("destroy_workspace_session") == 1, help_result
 
-        rec.axis("correctness", True, "runtime CLI rejects and omits lifecycle operations")
+        created = workspace_tracker.create_session()
+        session = created["workspace_session_id"]
+        destroyed = assert_ok(workspace_tracker.destroy(session))
+        assert destroyed["destroyed"] is True, destroyed
+
+        rec.axis("correctness", True, "runtime CLI lists and dispatches lifecycle operations")
         assert_teardown_clean(rec, sandbox, workspace_tracker)
 
 
