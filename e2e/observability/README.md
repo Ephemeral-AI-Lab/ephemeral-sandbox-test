@@ -24,6 +24,13 @@ in [`test_spec.md`](test_spec.md). Those cases are backend live E2E: they create
 real Docker sandboxes and exercise public CLI routes. Browser tests are not a
 substitute for this family.
 
+The permanent correction for stale workspace holders, oversized daemon
+runtimes, manager/daemon polling coupling, and missing resource guardrails is
+defined in
+[`sandbox_resource_efficiency_spec.md`](sandbox_resource_efficiency_spec.md).
+Its focused live-Docker coverage plan is
+[`sandbox_resource_efficiency_e2e_test_spec.md`](sandbox_resource_efficiency_e2e_test_spec.md).
+
 Run this family after building or rebuilding the gateway binaries:
 
 ```sh

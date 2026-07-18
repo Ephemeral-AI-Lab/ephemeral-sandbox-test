@@ -179,6 +179,11 @@ Successful MCP calls return the same structured value as the CLI. Failed calls
 set MCP `isError: true` and carry the normal `{error: {kind, message, details}}`
 value as structured content.
 
+The Phase Zero `runtime-tools-list.json` compatibility fixture remains
+unchanged: it pins historical tools, not the complete current list. MCP tests
+extend the current expected-name list and add direct schema/dispatch assertions
+for the new tool while continuing to compare every historical tool exactly.
+
 ## 7. Success response
 
 ### 7.1 Committed changes
@@ -422,30 +427,40 @@ FinalizeFailed -- destroy_workspace_session --> removed
 
 ## 12. Console behavior
 
-The terminal page at
-`/sandboxes/:sandboxId/terminal` adds a publish action to each persisted
-explicit session in `SessionSidebar`.
+The terminal page at `/sandboxes/:sandboxId/terminal` is owned by the separate
+`ephemeral-sandbox-console` repository. The concrete local URL from this
+proposal maps to the same parameterized route. Each persisted explicit session
+gets one lifecycle control in `SessionSidebar`.
 
-### 12.1 Session-row action
+### 12.1 Session-row lifecycle control
 
-- Accessible name: `Publish workspace session <id>`.
-- Icon and label communicate upload/persist, not squash or delete.
-- Disabled while the session has active commands, with the same "stop active
-  commands first" affordance as discard.
-- The existing trash action remains visibly distinct and keeps its discard
-  confirmation flow.
+- Keep one 44-pixel row action rather than crowding the 16-rem desktop rail
+  with separate publish and trash icons.
+- Accessible name: `Close workspace session <id>`.
+- The icon and tooltip communicate session completion rather than immediate
+  deletion; activating it opens the decision dialog and performs no mutation.
+- Disable it while the session has active commands, with the existing "stop
+  active commands first" explanation.
 
 ### 12.2 Confirmation and progress
 
-The publish modal is titled `Publish workspace session` and states:
+The modal is titled `Close workspace session` and states:
 
-> Merge unpublished changes into LayerStack and close `<id>`. Existing
-> LayerStack changes are preserved when they can be merged safely.
+> Choose what happens to this session's unpublished changes. Publishing merges
+> them into the latest LayerStack snapshot when safe, then closes `<id>`.
 
-The primary button is `Publish & close`. Confirmation by retyping the ID is not
-required because a rejected pre-commit publish is non-destructive and a
-successful publish is the requested persistence action. While the request is
-running, publish and discard controls for that session are disabled.
+The choices are:
+
+- primary `Publish to LayerStack & close`, invoking
+  `publish_workspace_session`;
+- danger `Discard & close`, invoking the unchanged
+  `destroy_workspace_session`;
+- `Cancel`, which performs no operation.
+
+Confirmation by retyping the ID is not required because the dialog makes the
+publish/discard choice explicit before either request. While a request is
+running, all modal and row lifecycle controls for that session are disabled and
+the active action reads `Publishing…` or `Discarding…`.
 
 ### 12.3 Result handling
 
@@ -457,7 +472,7 @@ running, publish and discard controls for that session are disabled.
 - Active-command or pre-commit error: keep the row and current selection;
   display the structured path/reason and explain that the session was retained.
 - Source conflict: offer guidance to inspect/edit the retained session and
-  retry, or use the existing discard action.
+  retry publish, or choose discard in the same dialog.
 - Post-commit close failure: show `Published; cleanup required`, refresh
   LayerStack, disable command/publish actions for the failed session, and leave
   only discard recovery.
@@ -474,6 +489,10 @@ running, publish and discard controls for that session are disabled.
 - Add `finalization_state` to public workspace snapshots with the stable values
   `active`, `finalizing`, and `finalize_failed`. Existing `lifecycle_state`
   remains backward compatible and retains its current activity meaning.
+- Treat the new operation as a manager mutation. Normal publish/no-op success
+  advances sandbox activity revision, and a post-commit partial-success error
+  also advances it because the layer or session finalization state changed.
+  Rejected pre-commit requests do not advance it.
 - Publish audit ownership is `workspace_session:<id>` and is appended only
   after commit.
 - The operation is sandbox-scoped and cannot address a session in another
@@ -491,10 +510,19 @@ ephemeral-sandbox/
 ├── crates/sandbox-operations/catalog/src/
 │   ├── runtime.rs                                  [modify: export + route]
 │   └── runtime/workspace_session.rs                [modify: spec + args]
-├── crates/sandbox-cli/src/projection/runtime.rs     [modify: CLI projection]
+├── crates/sandbox-operations/catalog/tests/
+│   ├── integrity.rs                                [modify: routed catalog]
+│   └── runtime.rs                                  [modify: names + args]
+├── crates/sandbox-cli/
+│   ├── src/projection/runtime.rs                   [modify: CLI projection]
+│   └── tests/
+│       ├── runtime.rs                              [modify: help + request]
+│       └── fixtures/runtime-help.txt               [modify: additive help]
 ├── crates/sandbox-runtime/operation/src/
 │   ├── observability.rs                            [modify: expose finalization state]
-│   ├── workspace_session/service/model.rs           [modify: result/error model]
+│   ├── workspace_session/error.rs                   [modify: publish errors]
+│   ├── workspace_session/service.rs                 [modify: exports]
+│   ├── workspace_session/service/model.rs           [modify: result model]
 │   ├── workspace_session/service/snapshot.rs        [modify: snapshot state]
 │   ├── workspace_session/service/impls/
 │   │   ├── mod.rs                                   [modify]
@@ -502,25 +530,36 @@ ephemeral-sandbox/
 │   └── operations/registry/
 │       ├── workspace_session_operations.rs          [modify: parse/dispatch/JSON]
 │       └── command_operations.rs                    [modify or refactor shared rejection JSON]
-├── crates/sandbox-operations/catalog/tests/         [modify]
-├── crates/sandbox-cli/tests/runtime.rs              [modify]
-├── crates/sandbox-runtime/operation/tests/          [add/modify contract + fault tests]
-├── crates/sandbox-daemon/src/observability/adapter.rs [modify: map state]
+├── crates/sandbox-runtime/operation/tests/          [modify: lifecycle, publish, fault, snapshot]
+├── crates/sandbox-manager/
+│   ├── src/router/forward.rs                     [modify: mutation accounting]
+│   └── tests/manager_router.rs                   [modify: activity revision]
+├── crates/sandbox-daemon/
+│   ├── src/observability/adapter.rs              [modify: map state]
+│   └── tests/unit/observability.rs               [modify: state contract]
 ├── crates/sandbox-observability/query/src/
 │   ├── ports.rs                                    [modify: query model]
 │   └── response.rs                                 [modify: public JSON]
-├── crates/sandbox-mcp/tests/
-│   ├── server.rs                                    [modify: list/schema/dispatch/errors]
-│   └── fixtures/runtime-tools-list.json             [modify]
-└── web/console/
-    ├── src/api/observability.ts                     [modify: finalization state]
-    ├── src/api/types.ts                             [modify: publish result/error types]
-    ├── src/pages/sandbox/terminal/SessionSidebar.tsx [modify: action/modal/states]
-    └── tests/browser/P06TerminalFixture.spec.ts     [modify: behavior + visual coverage]
+├── crates/sandbox-observability/query/tests/query.rs [modify: public JSON tests]
+└── crates/sandbox-mcp/tests/server.rs                [modify: list/schema/dispatch/errors]
+
+ephemeral-sandbox-console/
+├── Cargo.toml                                         [modify: pin implemented core revision]
+├── Cargo.lock                                         [modify: resolve same revision]
+├── server/tests/console/catalog.rs                    [modify: additive operation]
+└── web/
+    ├── src/api/observability.ts                       [modify: finalization state]
+    ├── src/api/types.ts                               [modify: publish result/error types]
+    ├── src/pages/sandbox/terminal/
+    │   ├── SessionSidebar.tsx                     [modify: lifecycle flow]
+    │   └── CloseWorkspaceSessionDialog.tsx        [add: publish/discard choice]
+    └── tests/browser/P06TerminalFixture.spec.ts       [modify: behavior + visual coverage]
 ```
 
-No MCP-only implementation module is expected: catalog projection and the
-shared gateway request builder should carry the operation through.
+No low-level LayerStack change or MCP-only implementation module is expected:
+the current atomic publisher, catalog projection, and shared gateway request
+builder carry the operation through. Phase Zero compatibility catalog/tool
+fixtures remain unchanged; only additive current-surface expectations change.
 
 ## 15. Acceptance criteria
 
@@ -538,7 +577,7 @@ shared gateway request builder should carry the operation through.
 | AC-10 | A post-commit destroy failure reports partial success, exposes durable `finalize_failed` observability, prevents republish, and allows guarded discard recovery. |
 | AC-11 | Same-session publish/destroy/command races serialize to one valid outcome with no leak or duplicate layer. |
 | AC-12 | `destroy_workspace_session` remains discard-only and implicit command finalization remains unchanged. |
-| AC-13 | Audit ownership, autosquash notification count, and sensitive-field hygiene match this spec. |
+| AC-13 | Audit ownership, autosquash notification count, manager activity revision, and sensitive-field hygiene match this spec. |
 | AC-14 | Console desktop and narrow layouts expose publish, retained-error, success/no-op, and cleanup-required states accessibly. |
 
 The feature is release-ready only when the companion E2E exit gates and the

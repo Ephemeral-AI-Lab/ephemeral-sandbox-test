@@ -44,7 +44,8 @@ coverage, but not ad hoc black-box Docker tests:
   failure, no-op destroy failure, state restoration, autosquash count/order,
   and non-retryability after commit: product Rust operation/integration tests.
 - Terminal action/modal, responsive states, retained conflict, no-op success,
-  and partial-success cleanup UI: `web/console/tests/browser/P06TerminalFixture.spec.ts`.
+  and partial-success cleanup UI:
+  `ephemeral-sandbox-console/web/tests/browser/P06TerminalFixture.spec.ts`.
 
 No case may inspect daemon storage directly, scrape logs, or call a private
 capture/publish route as its system under test.
@@ -84,7 +85,7 @@ e2e/runtime/workspace_session/
 ├── test_publish_workspace_session.py       [add]
 ├── publish_workspace_session_spec.md       [existing]
 ├── publish_workspace_session_e2e_spec.md   [existing]
-└── test_spec.md                            [existing historical proof]
+└── test_spec.md                            [modify: correct WS-05 visibility only]
 ```
 
 Do not add the new tests to `e2e/metadata/stable-id-ledger.json`. That ledger
@@ -147,6 +148,10 @@ Add a small helper that normalizes the public observability LayerStack value:
 
 Assertions compare before, after, and the publish response. They must not read
 `manifest.json` or layer directories from the Docker container.
+
+Cases that assert an exact `+N` layer delta must provision a base safely below
+the autosquash trigger or configure the case so autosquash cannot run. They may
+not rely on an incidental default threshold.
 
 ### 5.4 Waiting and concurrency
 
@@ -479,11 +484,13 @@ spec. Never persist secrets, environment dumps, or daemon logs as artifacts.
 | FI-04 | runtime operation test | No-op then inject destroy failure; `publish_completed: true`, `layer_committed: false`, guarded destroy recovers. |
 | FI-05 | runtime operation test | Count autosquash notification: one after real commit even if destroy fails; zero for no-op/rejection. |
 | FI-06 | runtime operation test | A command admission blocked behind a failed publish gate proceeds only after state returns to `Active`. |
+| FI-07 | runtime gate test | Race new command admission against successful publish; no command enters a `Finalizing` session and the publish creates at most one layer. |
 | OBS-01 | runtime/daemon/query tests | Serialize `active`, `finalizing`, and `finalize_failed` through the public workspace snapshot; preserve `finalize_failed` until guarded destroy. |
-| MCP-01 | sandbox-mcp test | Tool list and fixture include the operation once; schema has two required IDs, optional numeric grace, no extra properties. |
+| MGR-01 | manager router test | Advance activity revision for success and post-commit partial success; do not advance it for pre-commit rejection. |
+| MCP-01 | sandbox-mcp test | Current tool list includes the operation once while the Phase Zero fixture remains unchanged; schema has two required IDs, optional numeric grace, and no extra properties. |
 | MCP-02 | sandbox-mcp test | Valid request forwards exact sandbox-scoped args and returns structured success. |
 | MCP-03 | sandbox-mcp test | Validation does not dispatch; runtime rejection returns `isError: true` with unmodified structured details. |
-| UI-01 | Console browser test | Desktop rail and narrow drawer expose accessible publish action and active-command disabled state. |
+| UI-01 | Console browser test | Desktop rail and narrow drawer expose one accessible close action; its dialog offers publish, discard, and cancel, and is disabled for active commands. |
 | UI-02 | Console browser test | Commit/no-op success removes the row, refreshes snapshot/LayerStack, and selects Quick run when needed. |
 | UI-03 | Console browser test | Conflict retains the row and selection with path/retry/discard guidance. |
 | UI-04 | Console browser test | Post-commit close failure says published/cleanup-required and exposes only discard recovery before and after page reload. |
@@ -495,8 +502,8 @@ CLI case passed.
 
 1. Add `publish_session`, revision helpers, tracker semantics, and PWS metadata
    without changing existing case behavior.
-2. Reconcile the stale WS-05 visibility assertion against the current product
-   catalog.
+2. Reconcile the stale WS-05 code and `test_spec.md` visibility assertions
+   against the current product catalog.
 3. Implement PWS-01 through PWS-04 and run only the smoke slice.
 4. Implement rejection cases PWS-05, PWS-07, PWS-08, and PWS-13 one feature at
    a time; retain full artifacts on each failure.
@@ -561,6 +568,8 @@ the product runtime changed; stale containers are not acceptable proof.
 - Product fault-injection tests for pre- and post-commit failure are green.
 - Public observability contract tests preserve the finalization state through
   runtime, daemon adapter, query JSON, and Console typing.
+- Manager routing tests cover both ordinary success and committed
+  partial-success activity revision updates.
 - MCP schema/dispatch tests and Console fixture tests are green.
 
 ### Exit gates
@@ -591,9 +600,9 @@ the product runtime changed; stale containers are not acceptable proof.
 | AC-08 | PWS-04, PWS-05, PWS-07, PWS-08, PWS-13 | FI-01, FI-02 |
 | AC-09 | PWS-07 | runtime operation tests |
 | AC-10 | — | FI-03, FI-04, OBS-01, UI-04 |
-| AC-11 | PWS-11, PWS-12 | runtime gate tests |
+| AC-11 | PWS-11, PWS-12 | FI-07 |
 | AC-12 | PWS-09 plus existing EX/FP family | existing unit/E2E suites |
-| AC-13 | PWS-02 | FI-05, MCP-03 |
+| AC-13 | PWS-02 | FI-05, MGR-01, MCP-03 |
 | AC-14 | — | UI-01 through UI-04 |
 
 An em dash means the behavior cannot be made deterministic at the external
