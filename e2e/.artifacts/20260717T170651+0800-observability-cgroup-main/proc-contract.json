@@ -1,0 +1,53 @@
+{
+  "cgroup_environment": {
+    "daemon_membership": [
+      "0::/"
+    ],
+    "mount_mode": "read-only"
+  },
+  "response": {
+    "scope": "sandbox",
+    "series": [
+      {
+        "deltas": {},
+        "metrics": {
+          "cpu_usec": 19760,
+          "io_rbytes": 0,
+          "io_wbytes": 12288,
+          "mem_cur": 2179072,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": null,
+        "ts": 1784279366458
+      },
+      {
+        "deltas": {
+          "cpu_usec": 119,
+          "io_rbytes": 0,
+          "io_wbytes": 0
+        },
+        "metrics": {
+          "cpu_usec": 19879,
+          "io_rbytes": 0,
+          "io_wbytes": 12288,
+          "mem_cur": 2199552,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": 1003,
+        "ts": 1784279367461
+      }
+    ],
+    "topology": {
+      "available": true,
+      "error": null,
+      "schema_version": 2,
+      "source": "proc_namespaces",
+      "truncated": false,
+      "warnings": [],
+      "workspaces": []
+    },
+    "view": "cgroup"
+  }
+}

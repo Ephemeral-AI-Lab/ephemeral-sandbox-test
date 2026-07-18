@@ -1,0 +1,280 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /private/tmp/eos-topology-e2e.uaA3dl/main/e2e
+configfile: pytest.ini
+plugins: timeout-2.4.0
+collecting ... collected 9 items
+
+e2e/observability/cgroup/test_contract.py::test_proc_topology_contract 
+-------------------------------- live log setup --------------------------------
+17:09:25.937 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli list_sandboxes  (exit=0, 1.04s)
+17:09:25.938 INFO e2e.gateway: gateway already running — reusing
+17:09:26.416 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /private/tmp/eos-topology-e2e.uaA3dl/main/.e2e-state/workspaces/templates/testbed  (exit=0, 0.48s)
+-------------------------------- live log call ---------------------------------
+17:09:27.464 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-41b9a21f-33a8-4ac0-be3d-171c24394769 --scope sandbox --window-ms 60000  (exit=0, 1.05s)
+PASSED                                                                   [ 11%]
+------------------------------ live log teardown -------------------------------
+17:09:27.920 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-41b9a21f-33a8-4ac0-be3d-171c24394769  (exit=0, 0.32s)
+------------------------------ live log logreport ------------------------------
+17:09:27.922 INFO e2e.timing: ⏱  observability/cgroup/test_contract.py::test_proc_topology_contract — 3.025s total
+
+e2e/observability/cgroup/test_contract.py::test_process_topology_is_cgroup_independent 
+-------------------------------- live log setup --------------------------------
+17:09:28.324 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /private/tmp/eos-topology-e2e.uaA3dl/main/.e2e-state/workspaces/templates/testbed  (exit=0, 0.40s)
+-------------------------------- live log call ---------------------------------
+17:09:29.418 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-b82fc067-04bd-490a-ba10-0fe7232cc4c6 create_workspace_session  (exit=0, 1.09s)
+17:09:29.458 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-b82fc067-04bd-490a-ba10-0fe7232cc4c6 exec_command --workspace-session-id 00000118c308a209d43809 --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+17:09:29.501 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-b82fc067-04bd-490a-ba10-0fe7232cc4c6 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:29.539 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-b82fc067-04bd-490a-ba10-0fe7232cc4c6 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+PASSED                                                                   [ 22%]
+------------------------------ live log teardown -------------------------------
+17:09:29.923 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-b82fc067-04bd-490a-ba10-0fe7232cc4c6 write_command_stdin --command-session-id namespace_execution_1 --yield-time-ms 30000   (exit=0, 0.15s)
+17:09:29.959 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli inspect_sandbox --sandbox-id eos-b82fc067-04bd-490a-ba10-0fe7232cc4c6  (exit=0, 0.03s)
+17:09:30.341 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-b82fc067-04bd-490a-ba10-0fe7232cc4c6  (exit=0, 0.33s)
+------------------------------ live log logreport ------------------------------
+17:09:30.344 INFO e2e.timing: ⏱  observability/cgroup/test_contract.py::test_process_topology_is_cgroup_independent — 2.421s total
+
+e2e/observability/cgroup/test_lifecycle.py::test_exited_processes_disappear 
+-------------------------------- live log setup --------------------------------
+17:09:30.744 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /private/tmp/eos-topology-e2e.uaA3dl/main/.e2e-state/workspaces/templates/testbed  (exit=0, 0.40s)
+-------------------------------- live log call ---------------------------------
+17:09:30.797 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d create_workspace_session  (exit=0, 0.05s)
+17:09:30.836 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d exec_command --workspace-session-id 00000118c308a25c004d57 --timeout-ms 10000 --yield-time-ms 0 sleep 2  (exit=0, 0.04s)
+17:09:30.875 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:30.913 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:31.055 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:31.197 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:31.341 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:31.484 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:31.625 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:31.768 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:31.918 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+17:09:32.062 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:32.205 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:32.349 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:32.503 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+17:09:32.643 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:32.792 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:32.941 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:32.990 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:33.053 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d destroy_workspace_session --workspace-session-id 00000118c308a25c004d57 --grace-s 1  (exit=0, 0.06s)
+PASSED                                                                   [ 33%]
+------------------------------ live log teardown -------------------------------
+17:09:33.413 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-4d623695-351b-449b-a065-d05a7feafa6d  (exit=0, 0.36s)
+------------------------------ live log logreport ------------------------------
+17:09:33.415 INFO e2e.timing: ⏱  observability/cgroup/test_lifecycle.py::test_exited_processes_disappear — 3.068s total
+
+e2e/observability/cgroup/test_lifecycle.py::test_destroyed_workspace_disappears_without_reassignment 
+-------------------------------- live log setup --------------------------------
+17:09:33.782 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /private/tmp/eos-topology-e2e.uaA3dl/main/.e2e-state/workspaces/templates/testbed  (exit=0, 0.36s)
+-------------------------------- live log call ---------------------------------
+17:09:33.828 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 create_workspace_session  (exit=0, 0.04s)
+17:09:33.874 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 create_workspace_session  (exit=0, 0.05s)
+17:09:33.917 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:33.964 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 exec_command --workspace-session-id 00000118c308a310951a1a --timeout-ms 10000 --yield-time-ms 0 sleep 2  (exit=0, 0.05s)
+17:09:34.007 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:34.044 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:34.187 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:34.332 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:34.474 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:34.618 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:34.760 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:34.904 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:35.047 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:35.187 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:35.330 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:35.487 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+17:09:35.627 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:35.773 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:35.921 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+17:09:36.074 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+17:09:36.123 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:36.182 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 destroy_workspace_session --workspace-session-id 00000118c308a310951a1a --grace-s 1  (exit=0, 0.06s)
+17:09:36.231 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:36.288 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579 destroy_workspace_session --workspace-session-id 00000218c308a31373edd3 --grace-s 1  (exit=0, 0.06s)
+PASSED                                                                   [ 44%]
+------------------------------ live log teardown -------------------------------
+17:09:36.677 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-56381795-4c12-459e-bcf0-c63c5b0f2579  (exit=0, 0.39s)
+------------------------------ live log logreport ------------------------------
+17:09:36.678 INFO e2e.timing: ⏱  observability/cgroup/test_lifecycle.py::test_destroyed_workspace_disappears_without_reassignment — 3.261s total
+
+e2e/observability/cgroup/test_lifecycle.py::test_natural_process_churn_preserves_topology 
+-------------------------------- live log setup --------------------------------
+17:09:37.054 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /private/tmp/eos-topology-e2e.uaA3dl/main/.e2e-state/workspaces/templates/testbed  (exit=0, 0.38s)
+-------------------------------- live log call ---------------------------------
+17:09:37.098 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 create_workspace_session  (exit=0, 0.04s)
+17:09:37.145 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 create_workspace_session  (exit=0, 0.05s)
+17:09:37.196 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 exec_command --workspace-session-id 00000118c308a3d398723f --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.05s)
+17:09:37.236 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 exec_command --workspace-session-id 00000218c308a3d639c216 --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.04s)
+17:09:37.279 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:37.321 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:37.364 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:37.400 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:37.541 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:37.683 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:37.826 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:37.966 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:38.107 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:38.261 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_1 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+17:09:38.299 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_2 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:38.339 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:38.376 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 exec_command --workspace-session-id 00000118c308a3d398723f --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.04s)
+17:09:38.415 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 exec_command --workspace-session-id 00000218c308a3d639c216 --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.04s)
+17:09:38.464 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:38.506 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:38.545 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:38.582 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:38.729 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:38.874 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:39.024 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:39.170 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:39.320 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:39.466 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_3 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+17:09:39.509 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_4 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:39.558 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:39.603 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 exec_command --workspace-session-id 00000118c308a3d398723f --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.04s)
+17:09:39.650 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 exec_command --workspace-session-id 00000218c308a3d639c216 --timeout-ms 10000 --yield-time-ms 0 sleep 1  (exit=0, 0.05s)
+17:09:39.701 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:39.748 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:39.796 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:39.839 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:39.985 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:40.130 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:40.279 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+17:09:40.432 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+17:09:40.577 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:40.725 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_5 --start-offset 0 --limit 1000  (exit=0, 0.05s)
+17:09:40.769 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 read_command_lines --command-session-id namespace_execution_6 --start-offset 0 --limit 1000  (exit=0, 0.04s)
+17:09:40.818 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:40.862 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 exec_command --workspace-session-id 00000118c308a3d398723f --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+17:09:40.907 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 exec_command --workspace-session-id 00000218c308a3d639c216 --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+17:09:40.958 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:41.007 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:41.123 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:41.328 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 write_command_stdin --command-session-id namespace_execution_7 --yield-time-ms 30000   (exit=0, 0.14s)
+17:09:41.474 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 write_command_stdin --command-session-id namespace_execution_8 --yield-time-ms 30000   (exit=0, 0.15s)
+17:09:41.539 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 destroy_workspace_session --workspace-session-id 00000118c308a3d398723f --grace-s 1  (exit=0, 0.06s)
+17:09:41.599 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 destroy_workspace_session --workspace-session-id 00000218c308a3d639c216 --grace-s 1  (exit=0, 0.06s)
+17:09:41.646 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+PASSED                                                                   [ 55%]
+------------------------------ live log teardown -------------------------------
+17:09:42.013 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-ff276632-de4e-4169-98e8-875c904b7c66  (exit=0, 0.36s)
+------------------------------ live log logreport ------------------------------
+17:09:42.015 INFO e2e.timing: ⏱  observability/cgroup/test_lifecycle.py::test_natural_process_churn_preserves_topology — 5.335s total
+
+e2e/observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible 
+-------------------------------- live log setup --------------------------------
+17:09:42.392 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /private/tmp/eos-topology-e2e.uaA3dl/main/.e2e-state/workspaces/templates/testbed  (exit=0, 0.37s)
+-------------------------------- live log call ---------------------------------
+17:09:42.447 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-0e57fc35-edac-4620-be0d-5fcaea6b4521 create_workspace_session  (exit=0, 0.05s)
+17:09:42.494 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-0e57fc35-edac-4620-be0d-5fcaea6b4521 create_workspace_session  (exit=0, 0.05s)
+17:09:42.536 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-0e57fc35-edac-4620-be0d-5fcaea6b4521 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:42.701 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-0e57fc35-edac-4620-be0d-5fcaea6b4521 destroy_workspace_session --workspace-session-id 00000118c308a512298ec6 --grace-s 1  (exit=0, 0.05s)
+17:09:42.755 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-0e57fc35-edac-4620-be0d-5fcaea6b4521 destroy_workspace_session --workspace-session-id 00000218c308a515042318 --grace-s 1  (exit=0, 0.05s)
+PASSED                                                                   [ 66%]
+------------------------------ live log teardown -------------------------------
+17:09:43.090 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-0e57fc35-edac-4620-be0d-5fcaea6b4521  (exit=0, 0.33s)
+------------------------------ live log logreport ------------------------------
+17:09:43.091 INFO e2e.timing: ⏱  observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible — 1.075s total
+
+e2e/observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity 
+-------------------------------- live log setup --------------------------------
+17:09:43.474 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /private/tmp/eos-topology-e2e.uaA3dl/main/.e2e-state/workspaces/templates/testbed  (exit=0, 0.38s)
+-------------------------------- live log call ---------------------------------
+17:09:43.518 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75 create_workspace_session  (exit=0, 0.04s)
+17:09:43.566 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75 create_workspace_session  (exit=0, 0.05s)
+17:09:43.606 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75 exec_command --workspace-session-id 00000118c308a55241d2e3 --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+17:09:43.645 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75 exec_command --workspace-session-id 00000218c308a5550a94b5 --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+17:09:43.689 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:43.731 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:43.826 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:44.035 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75 write_command_stdin --command-session-id namespace_execution_1 --yield-time-ms 30000   (exit=0, 0.14s)
+17:09:44.182 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75 write_command_stdin --command-session-id namespace_execution_2 --yield-time-ms 30000   (exit=0, 0.15s)
+17:09:44.239 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75 destroy_workspace_session --workspace-session-id 00000118c308a55241d2e3 --grace-s 1  (exit=0, 0.06s)
+17:09:44.291 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75 destroy_workspace_session --workspace-session-id 00000218c308a5550a94b5 --grace-s 1  (exit=0, 0.05s)
+PASSED                                                                   [ 77%]
+------------------------------ live log teardown -------------------------------
+17:09:44.560 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-6aec198b-aa66-4552-97eb-d6d810ba4b75  (exit=0, 0.27s)
+------------------------------ live log logreport ------------------------------
+17:09:44.561 INFO e2e.timing: ⏱  observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity — 1.468s total
+
+e2e/observability/cgroup/test_workspace_placement.py::test_backend_originated_command_appears 
+-------------------------------- live log setup --------------------------------
+17:09:44.946 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /private/tmp/eos-topology-e2e.uaA3dl/main/.e2e-state/workspaces/templates/testbed  (exit=0, 0.38s)
+-------------------------------- live log call ---------------------------------
+17:09:44.992 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-a1862d78-4113-4fd6-bf6a-7e27999d7383 create_workspace_session  (exit=0, 0.04s)
+17:09:45.043 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-a1862d78-4113-4fd6-bf6a-7e27999d7383 --scope sandbox --window-ms 60000  (exit=0, 0.05s)
+17:09:45.081 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-a1862d78-4113-4fd6-bf6a-7e27999d7383 exec_command --workspace-session-id 00000118c308a5aa198ad9 --timeout-ms 45000 --yield-time-ms 0 sleep 30  (exit=0, 0.04s)
+17:09:45.124 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-a1862d78-4113-4fd6-bf6a-7e27999d7383 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:45.165 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-a1862d78-4113-4fd6-bf6a-7e27999d7383 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:45.269 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-a1862d78-4113-4fd6-bf6a-7e27999d7383 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:45.307 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-a1862d78-4113-4fd6-bf6a-7e27999d7383 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:45.444 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-a1862d78-4113-4fd6-bf6a-7e27999d7383 write_command_stdin --command-session-id namespace_execution_1 --yield-time-ms 30000   (exit=0, 0.14s)
+17:09:45.497 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-a1862d78-4113-4fd6-bf6a-7e27999d7383 destroy_workspace_session --workspace-session-id 00000118c308a5aa198ad9 --grace-s 1  (exit=0, 0.05s)
+PASSED                                                                   [ 88%]
+------------------------------ live log teardown -------------------------------
+17:09:45.795 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-a1862d78-4113-4fd6-bf6a-7e27999d7383  (exit=0, 0.30s)
+------------------------------ live log logreport ------------------------------
+17:09:45.796 INFO e2e.timing: ⏱  observability/cgroup/test_workspace_placement.py::test_backend_originated_command_appears — 1.234s total
+
+e2e/observability/cgroup/test_workspace_placement.py::test_forked_descendants_stay_with_workspace 
+-------------------------------- live log setup --------------------------------
+17:09:46.199 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli create_sandbox --image ubuntu:24.04 --workspace-bind-root /private/tmp/eos-topology-e2e.uaA3dl/main/.e2e-state/workspaces/templates/testbed  (exit=0, 0.40s)
+-------------------------------- live log call ---------------------------------
+17:09:46.251 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56f87ae9-b4b9-40c7-a703-f2c2c8689347 create_workspace_session  (exit=0, 0.05s)
+17:09:46.295 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56f87ae9-b4b9-40c7-a703-f2c2c8689347 create_workspace_session  (exit=0, 0.04s)
+17:09:46.336 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56f87ae9-b4b9-40c7-a703-f2c2c8689347 exec_command --workspace-session-id 00000118c308a5f524964d --timeout-ms 45000 --yield-time-ms 0 sh -c 'sleep 30 & wait'  (exit=0, 0.04s)
+17:09:46.379 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-observability-cli cgroup --sandbox-id eos-56f87ae9-b4b9-40c7-a703-f2c2c8689347 --scope sandbox --window-ms 60000  (exit=0, 0.04s)
+17:09:46.664 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56f87ae9-b4b9-40c7-a703-f2c2c8689347 write_command_stdin --command-session-id namespace_execution_1 --yield-time-ms 30000   (exit=0, 0.14s)
+17:09:46.719 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56f87ae9-b4b9-40c7-a703-f2c2c8689347 destroy_workspace_session --workspace-session-id 00000118c308a5f524964d --grace-s 1  (exit=0, 0.05s)
+17:09:46.773 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-runtime-cli --sandbox-id eos-56f87ae9-b4b9-40c7-a703-f2c2c8689347 destroy_workspace_session --workspace-session-id 00000218c308a5f7d23311 --grace-s 1  (exit=0, 0.05s)
+PASSED                                                                   [100%]
+------------------------------ live log teardown -------------------------------
+17:09:47.117 INFO e2e.cli: ← /private/tmp/eos-topology-product.rMhibO/main/bin/sandbox-manager-cli destroy_sandbox --sandbox-id eos-56f87ae9-b4b9-40c7-a703-f2c2c8689347  (exit=0, 0.34s)
+------------------------------ live log logreport ------------------------------
+17:09:47.118 INFO e2e.timing: ⏱  observability/cgroup/test_workspace_placement.py::test_forked_descendants_stay_with_workspace — 1.321s total
+
+
+--------------------- sandbox-cli operation timing metrics ---------------------
+durations are client-side sandbox-cli wall time; no timing SLO is enforced
+manager.create_sandbox: n=9 p50=384.2ms p95=447.5ms max=477.9ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.destroy_sandbox: n=9 p50=334.6ms p95=378.7ms max=387.9ms sub50=0.0% sub100=0.0% sub200=0.0%
+manager.inspect_sandbox: n=1 p50=34.6ms p95=34.6ms max=34.6ms sub50=100.0% sub100=100.0% sub200=100.0%
+manager.list_sandboxes: n=1 p50=1039.6ms p95=1039.6ms max=1039.6ms sub50=0.0% sub100=0.0% sub200=0.0%
+observability.cgroup: n=35 p50=42.8ms p95=50.5ms max=1046.4ms sub50=85.7% sub100=97.1% sub200=97.1%
+runtime.create_workspace_session: n=13 p50=46.2ms p95=469.3ms max=1092.6ms sub50=69.2% sub100=92.3% sub200=92.3%
+runtime.destroy_workspace_session: n=12 p50=55.3ms p95=63.3ms max=63.8ms sub50=0.0% sub100=100.0% sub200=100.0%
+runtime.exec_command: n=15 p50=39.9ms p95=48.1ms max=50.1ms sub50=93.3% sub100=100.0% sub200=100.0%
+runtime.read_command_lines: n=54 p50=39.6ms p95=47.8ms max=52.0ms sub50=96.3% sub100=100.0% sub200=100.0%
+runtime.write_command_stdin: n=7 p50=144.2ms p95=146.5ms max=146.5ms sub50=0.0% sub100=0.0% sub200=100.0%
+operation timing metrics: /private/tmp/eos-topology-e2e.uaA3dl/main/.e2e-state/metrics/operation-timing/latest.md
+============================== slowest durations ===============================
+4.59s call     observability/cgroup/test_lifecycle.py::test_natural_process_churn_preserves_topology
+2.51s call     observability/cgroup/test_lifecycle.py::test_destroyed_workspace_disappears_without_reassignment
+2.31s call     observability/cgroup/test_lifecycle.py::test_exited_processes_disappear
+1.52s setup    observability/cgroup/test_contract.py::test_proc_topology_contract
+1.45s call     observability/cgroup/test_contract.py::test_process_topology_is_cgroup_independent
+1.19s call     observability/cgroup/test_contract.py::test_proc_topology_contract
+0.82s call     observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity
+0.57s call     observability/cgroup/test_workspace_placement.py::test_forked_descendants_stay_with_workspace
+0.57s teardown observability/cgroup/test_contract.py::test_process_topology_is_cgroup_independent
+0.55s call     observability/cgroup/test_workspace_placement.py::test_backend_originated_command_appears
+0.40s setup    observability/cgroup/test_workspace_placement.py::test_forked_descendants_stay_with_workspace
+0.40s setup    observability/cgroup/test_contract.py::test_process_topology_is_cgroup_independent
+0.40s setup    observability/cgroup/test_lifecycle.py::test_exited_processes_disappear
+0.39s teardown observability/cgroup/test_lifecycle.py::test_destroyed_workspace_disappears_without_reassignment
+0.39s setup    observability/cgroup/test_workspace_placement.py::test_backend_originated_command_appears
+0.38s setup    observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity
+0.38s setup    observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible
+0.38s setup    observability/cgroup/test_lifecycle.py::test_natural_process_churn_preserves_topology
+0.37s teardown observability/cgroup/test_lifecycle.py::test_natural_process_churn_preserves_topology
+0.37s setup    observability/cgroup/test_lifecycle.py::test_destroyed_workspace_disappears_without_reassignment
+0.36s call     observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible
+0.36s teardown observability/cgroup/test_lifecycle.py::test_exited_processes_disappear
+0.34s teardown observability/cgroup/test_workspace_placement.py::test_forked_descendants_stay_with_workspace
+0.34s teardown observability/cgroup/test_workspace_placement.py::test_idle_workspaces_remain_visible
+0.32s teardown observability/cgroup/test_contract.py::test_proc_topology_contract
+0.30s teardown observability/cgroup/test_workspace_placement.py::test_backend_originated_command_appears
+0.27s teardown observability/cgroup/test_workspace_placement.py::test_processes_are_placed_by_dual_namespace_identity
+============================== 9 passed in 22.28s ==============================

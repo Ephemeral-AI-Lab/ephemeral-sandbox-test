@@ -1,0 +1,28 @@
+Public operation:
+  bin/sandbox-observability-cli cgroup --sandbox-id <sandbox> --scope sandbox --window-ms 60000
+
+Before bounded Reader::samples streaming (sandbox eos-83be30a7-8d2a-4771-b5e9-72341d769c73):
+  after_warmup_25  VmHWM=7300KiB  VmRSS=7284KiB
+  after_250        VmHWM=8008KiB  VmRSS=8008KiB
+  after_500        VmHWM=8708KiB  VmRSS=8588KiB
+  after_1000       VmHWM=8836KiB  VmRSS=8600KiB
+  after_2000       VmHWM=10624KiB VmRSS=10144KiB
+  after another 1000 cgroup calls with a larger log:
+                    VmHWM=23852KiB VmRSS=22168KiB
+  The daemon had 41 fixed threads and 32 file descriptors. Its 850,264-byte log
+  contained 4,385 records. Reader::samples materialized every parsed record and
+  duplicated every raw line before filtering the requested window and scope.
+
+After bounded Reader::samples streaming, final packaged daemon
+sha256=e18e88e6e14782e21549191b962c8d3fe3e7fb5d88fd634f10c0dfda880a09cf
+(sandbox eos-83bb1085-f127-426f-bb2b-7b7ae9d1a535):
+  after_warmup_25  VmHWM=6700KiB VmRSS=6700KiB
+  after_250        VmHWM=6812KiB VmRSS=6812KiB
+  after_500        VmHWM=7084KiB VmRSS=7084KiB
+  after_1000       VmHWM=7112KiB VmRSS=7112KiB
+  after_2000       VmHWM=7304KiB VmRSS=7304KiB
+  Threads remained 40 and file descriptors remained 32. The final 1,000 calls
+  added 192KiB RSS versus 1,544KiB before the fix, and the growth rate continued
+  to decelerate. The remaining bounded growth is allocator warm-up/transient
+  request state; there is no sampler, cache, or per-workspace history added by
+  the estimate feature.
