@@ -7,12 +7,18 @@ import time
 import pytest
 
 from harness.catalog.declarations import e2e_test
-from observability.resource_isolation.helpers import analyze_phase, environment_evidence, stream_group, verify_packaged_daemon
+from observability.resource_isolation.helpers import (
+    analyze_phase,
+    environment_evidence,
+    response_digest,
+    stream_group,
+    verify_packaged_daemon,
+)
 
 from .helpers import (
     ANONYMOUS_SLOPE_BYTES_PER_HOUR,
     COOLDOWN_ANONYMOUS_DELTA_BYTES,
-    count_delta,
+    cycle_resource_deltas,
 )
 
 # Importing explicitly keeps the cycle contract visible in this case.
@@ -33,6 +39,7 @@ from .helpers import (
     stop_command,
     strict_count,
     strict_duration,
+    validate_cycle_records,
     wait_self_counts,
 )
 
@@ -55,7 +62,11 @@ BALANCE_KEYS = (
     id="observability.resource-efficiency.workspace-cycle-reclaim",
     title="Repeated workspace lifecycles fully reclaim resources",
     description="At least one thousand sequential workspace cycles return holder, session, FD, thread, lease, and memory state to baseline.",
-    features=("observability.resource_efficiency", "observability.topology", "runtime.workspace_session"),
+    features=(
+        "observability.resource_efficiency",
+        "observability.topology",
+        "runtime.workspace_session",
+    ),
     validations={
         "lifecycle-memory-plateau": "Post-warmup anonymous memory has at most 4 KiB/hour slope and the final median is within 128 KiB.",
         "fd-thread-plateau": "No zombie appears and final FD and idle-thread counts equal their declared envelopes.",
@@ -97,42 +108,101 @@ def test_repeated_workspace_lifecycle_reclaim(
     runtime_config = daemon_runtime_config(read_daemon_self(sandbox_id))
 
     completed = 0
+    attempted = 0
     interrupted = 0
     sampled = 0
+    first_failure = None
     for cycle in range(1, cycles + 1):
         create_at = time.monotonic()
         workspace_id = create_workspace(tracker)
         identity = prepare_workspace_holder_fault(sandbox_id, workspace_id)
         first_command_at = time.monotonic()
-        command_id = start_command(
-            tracker,
-            workspace_id,
-            "dd if=/dev/zero of=/tmp/eos-re-buffer bs=262144 count=1 status=none && rm -f /tmp/eos-re-buffer",
-            timeout_ms=30_000,
-        )
-        terminal = await_command(tracker, command_id, timeout_seconds=30)
-        assert terminal.get("status") == "ok", terminal
-
-        if cycle % 100 == 0:
-            long_command = start_command(
+        destroy_at = first_command_at
+        settled_at = first_command_at
+        destroy_response = None
+        settled = None
+        observed = None
+        cycle_errors: list[str] = []
+        cycle_failed = False
+        try:
+            command_id = start_command(
                 tracker,
                 workspace_id,
-                "while :; do sleep 1; done",
-                timeout_ms=120_000,
+                "dd if=/dev/zero of=/tmp/eos-re-buffer bs=262144 count=1 status=none && rm -f /tmp/eos-re-buffer",
+                timeout_ms=30_000,
             )
-            stopped = stop_command(tracker, long_command)
-            assert stopped.get("status") == "cancelled", stopped
-            interrupted += 1
+            terminal = await_command(tracker, command_id, timeout_seconds=30)
+            assert terminal.get("status") == "ok", terminal
 
-        destroy_at = time.monotonic()
-        destroy_workspace(tracker, workspace_id)
-        settled = wait_self_counts(sandbox_id, baseline_self, keys=BALANCE_KEYS)
-        settled_at = time.monotonic()
-        observed = None
-        if cycle % 10 == 0:
-            observed = sample(case_artifacts, sandbox_id, phase="workspace-cycle", repetition=cycle)
-            assert_no_zombies(observed)
-            sampled += 1
+            if cycle % 100 == 0:
+                long_command = start_command(
+                    tracker,
+                    workspace_id,
+                    "while :; do sleep 1; done",
+                    timeout_ms=120_000,
+                )
+                stopped = stop_command(tracker, long_command)
+                assert stopped.get("status") == "cancelled", stopped
+                interrupted += 1
+
+            destroy_at = time.monotonic()
+            destroy_response = destroy_workspace(tracker, workspace_id)
+            settled = wait_self_counts(sandbox_id, baseline_self, keys=BALANCE_KEYS)
+            settled_at = time.monotonic()
+            if cycle % 10 == 0:
+                observed = sample(
+                    case_artifacts,
+                    sandbox_id,
+                    phase="workspace-cycle",
+                    repetition=cycle,
+                )
+                sampled += 1
+                assert_no_zombies(observed)
+        except Exception as error:  # retain first leak, then run bounded final evidence
+            cycle_failed = True
+            cycle_errors.append(f"{type(error).__name__}: {error}"[:1_000])
+            destroy_at = max(destroy_at, time.monotonic())
+        finally:
+            if settled is None:
+                try:
+                    cleanup_response = destroy_workspace(tracker, workspace_id)
+                    if destroy_response is None:
+                        destroy_response = cleanup_response
+                except Exception as cleanup_error:
+                    cycle_errors.append(
+                        f"cleanup {type(cleanup_error).__name__}: {cleanup_error}"[
+                            :1_000
+                        ]
+                    )
+                try:
+                    settled = wait_self_counts(
+                        sandbox_id,
+                        baseline_self,
+                        keys=BALANCE_KEYS,
+                        timeout_seconds=30,
+                    )
+                    settled_at = time.monotonic()
+                except Exception as settle_error:
+                    cycle_errors.append(
+                        f"settle {type(settle_error).__name__}: {settle_error}"[:1_000]
+                    )
+                    settled = daemon_self_counts(read_daemon_self(sandbox_id))
+                    settled_at = time.monotonic()
+            if observed is None and cycle_failed:
+                try:
+                    observed = sample(
+                        case_artifacts,
+                        sandbox_id,
+                        phase="workspace-cycle-failure",
+                        repetition=cycle,
+                    )
+                    sampled += 1
+                except Exception as sample_error:
+                    cycle_errors.append(
+                        f"sample {type(sample_error).__name__}: {sample_error}"[:1_000]
+                    )
+
+        deltas = cycle_resource_deltas(baseline_self, settled)
         append_cycle_record(
             case_artifacts,
             {
@@ -146,22 +216,59 @@ def test_repeated_workspace_lifecycle_reclaim(
                 "first_command_monotonic": first_command_at,
                 "destroy_monotonic": destroy_at,
                 "settled_monotonic": settled_at,
-                "terminal_lifecycle_state": "absent",
-                "resource_deltas": count_delta(baseline_self, settled),
+                "terminal_lifecycle_state": (
+                    "absent"
+                    if all(settled[key] == baseline_self[key] for key in BALANCE_KEYS)
+                    else "cleanup_failed"
+                ),
+                "resource_deltas": deltas,
                 "daemon_after_cooldown": (
                     {
+                        "sampled": True,
                         "anonymous_bytes": observed["smaps"]["Anonymous"],
                         "rss_bytes": observed["smaps"]["Rss"],
                         "threads": observed["process"]["threads"],
-                        "cpu_ticks": observed["cpu"]["user_ticks"] + observed["cpu"]["system_ticks"],
+                        "cpu_ticks": observed["cpu"]["user_ticks"]
+                        + observed["cpu"]["system_ticks"],
                     }
                     if observed is not None
-                    else {"sampled": False}
+                    else {
+                        "sampled": False,
+                        "anonymous_bytes": None,
+                        "rss_bytes": None,
+                        "threads": None,
+                        "cpu_ticks": None,
+                    }
                 ),
-                "cleanup_error": None,
+                "cleanup_error": "; ".join(cycle_errors)[:1_000] or None,
+                "cleanup_response_digest": (
+                    response_digest(destroy_response)
+                    if destroy_response is not None
+                    else None
+                ),
             },
         )
+        attempted += 1
+        if cycle_failed or cycle_errors:
+            first_failure = {
+                "cycle": cycle,
+                "errors": cycle_errors,
+                "terminal_lifecycle_state": (
+                    "absent"
+                    if all(settled[key] == baseline_self[key] for key in BALANCE_KEYS)
+                    else "cleanup_failed"
+                ),
+            }
+            break
         completed += 1
+
+    cycle_evidence = validate_cycle_records(
+        case_artifacts.root / "workspace-cycles.jsonl",
+        expected_count=attempted,
+        expected_sandbox_id=sandbox_id,
+        expected_repetition=1,
+        expected_terminal_state="absent" if first_failure is None else None,
+    )
 
     cooldown = stream_group(
         case_artifacts,
@@ -186,9 +293,12 @@ def test_repeated_workspace_lifecycle_reclaim(
     final_self = daemon_self_counts(read_daemon_self(sandbox_id))
     summary = {
         "cycles": cycles,
+        "attempted": attempted,
         "completed": completed,
+        "first_failure": first_failure,
         "interrupted_long_commands": interrupted,
         "sampled_cycles": sampled,
+        "cycle_evidence": cycle_evidence,
         "baseline": baseline_analysis,
         "cooldown": cooldown_analysis,
         "series": series,
@@ -198,31 +308,58 @@ def test_repeated_workspace_lifecycle_reclaim(
     }
     case_artifacts.write_json("summary.json", summary, reserved=True)
 
+    if first_failure is not None:
+        raise AssertionError({"first_correctness_leak": first_failure})
+
     with validation(
         "lifecycle-memory-plateau",
-        expected={"slope_max_bytes_per_hour": ANONYMOUS_SLOPE_BYTES_PER_HOUR, "final_delta_max_bytes": COOLDOWN_ANONYMOUS_DELTA_BYTES},
-        actual={"series": series, "baseline": baseline_analysis, "cooldown": cooldown_analysis},
+        expected={
+            "slope_max_bytes_per_hour": ANONYMOUS_SLOPE_BYTES_PER_HOUR,
+            "final_delta_max_bytes": COOLDOWN_ANONYMOUS_DELTA_BYTES,
+        },
+        actual={
+            "series": series,
+            "baseline": baseline_analysis,
+            "cooldown": cooldown_analysis,
+        },
         evidence=("samples.jsonl", "workspace-cycles.jsonl", "summary.json"),
     ):
-        assert series["anonymous_slope_bytes_per_hour"] <= ANONYMOUS_SLOPE_BYTES_PER_HOUR
-        assert cooldown_analysis["final_window_median_bytes"] - baseline_analysis["final_window_median_bytes"] <= COOLDOWN_ANONYMOUS_DELTA_BYTES
+        assert (
+            series["anonymous_slope_bytes_per_hour"] <= ANONYMOUS_SLOPE_BYTES_PER_HOUR
+        )
+        assert abs(
+            cooldown_analysis["final_window_median_bytes"]
+            - baseline_analysis["final_window_median_bytes"]
+        ) <= COOLDOWN_ANONYMOUS_DELTA_BYTES
         assert series["anon_huge_pages_peak_bytes"] == 0
         assert series["cgroup_anon_thp_peak_bytes"] == 0
 
     with validation(
         "fd-thread-plateau",
-        expected={"zombies": 0, "final_open_fds": baseline_sample["process"]["actual_open_fds"], "threads_max": runtime_config["worker_threads"] + 4},
+        expected={
+            "zombies": 0,
+            "final_open_fds": baseline_sample["process"]["actual_open_fds"],
+            "threads_max": runtime_config["worker_threads"] + 4,
+        },
         actual={"series": series, "final_process": final_sample["process"]},
         evidence=("samples.jsonl", "summary.json"),
     ):
         assert series["zombie_observations"] == 0
-        assert final_sample["process"]["actual_open_fds"] == baseline_sample["process"]["actual_open_fds"]
-        assert final_sample["process"]["threads"] <= runtime_config["worker_threads"] + 4
+        assert (
+            final_sample["process"]["actual_open_fds"]
+            == baseline_sample["process"]["actual_open_fds"]
+        )
+        assert (
+            final_sample["process"]["threads"] <= runtime_config["worker_threads"] + 4
+        )
         assert_no_zombies(final_sample)
 
     with validation(
         "lease-session-zero",
-        expected={"completed": cycles, "counts": {key: baseline_self[key] for key in BALANCE_KEYS}},
+        expected={
+            "completed": cycles,
+            "counts": {key: baseline_self[key] for key in BALANCE_KEYS},
+        },
         actual={"completed": completed, "counts": final_self},
         evidence=("workspace-cycles.jsonl", "summary.json"),
     ):
@@ -233,8 +370,20 @@ def test_repeated_workspace_lifecycle_reclaim(
     artifact_bytes = artifact_gate(case_artifacts)
     with validation(
         "cycle-artifact-bounded",
-        expected={"cycle_records": cycles, "max_bytes": 32 * 1024 * 1024},
-        actual={"cycle_records": completed, "artifact_bytes": artifact_bytes},
+        expected={
+            "cycle_records": cycles,
+            "sampled_records": cycles // 10,
+            "cleanup_errors": 0,
+            "max_line_bytes": 16 * 1024,
+            "max_bytes": 32 * 1024 * 1024,
+        },
+        actual={"cycle_evidence": cycle_evidence, "artifact_bytes": artifact_bytes},
         evidence=("workspace-cycles.jsonl", "summary.json"),
     ):
+        assert cycle_evidence["record_count"] == cycles
+        assert cycle_evidence["last_cycle"] == cycles
+        assert cycle_evidence["sampled_records"] == cycles // 10
+        assert cycle_evidence["cleanup_errors"] == 0
+        assert cycle_evidence["max_line_bytes"] <= 16 * 1024
+        assert cycle_evidence["total_bytes"] <= 32 * 1024 * 1024
         assert artifact_bytes <= 32 * 1024 * 1024

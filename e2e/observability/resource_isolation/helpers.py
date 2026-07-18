@@ -36,6 +36,10 @@ MAX_RING_BYTES = 64 * 1024
 MAX_ARTIFACT_BYTES = 32 * 1024 * 1024
 SUMMARY_RESERVE_BYTES = 64 * 1024
 CLEANUP_RESERVE_BYTES = 64 * 1024
+MAX_CLEANUP_IDS = 128
+MAX_CLEANUP_FAILURES = 32
+MAX_CLEANUP_ID_CHARS = 96
+MAX_CLEANUP_ERROR_CHARS = 512
 RESERVOIR_SIZE = 2_048
 MAX_THEIL_SEN_PAIRS = 100_000
 FINGERPRINT_CHUNK_BYTES = 64 * 1024
@@ -548,19 +552,56 @@ def wait_for_path(path: Path, *, exists: bool, timeout: float = 120) -> None:
 
 def resource_ring_header(path: Path) -> dict[str, int | str]:
     with path.open("rb") as handle:
+        file_bytes = os.fstat(handle.fileno()).st_size
+        assert 64 <= file_bytes <= MAX_RING_BYTES, {
+            "path": str(path),
+            "file_bytes": file_bytes,
+            "max_file_bytes": MAX_RING_BYTES,
+        }
         header = handle.read(64)
     assert len(header) == 64, {"path": str(path), "header_bytes": len(header)}
-    magic, version, record_bytes, capacity, next_index, count, sequence = struct.unpack(
-        "<8sIIIIIQ", header[:36]
+    (
+        magic,
+        version,
+        header_bytes,
+        record_bytes,
+        capacity,
+        next_index,
+        count,
+        sequence,
+    ) = struct.unpack(
+        "<8sIIIIIIQ", header[:40]
     )
-    return {
+    fields = {
+        "path": str(path),
         "magic": magic.rstrip(b"\0").decode("ascii", "replace"),
         "version": version,
+        "header_bytes": header_bytes,
         "record_bytes": record_bytes,
         "capacity": capacity,
         "next_index": next_index,
         "count": count,
         "sequence": sequence,
+        "file_bytes": file_bytes,
+    }
+    assert magic == b"EOSRING\0", fields
+    assert version == 1, fields
+    assert header_bytes == 64, fields
+    assert record_bytes == 64, fields
+    assert capacity > 0, fields
+    assert file_bytes == header_bytes + capacity * record_bytes, fields
+    assert next_index < capacity, fields
+    assert count <= capacity, fields
+    return {
+        "magic": fields["magic"],
+        "version": version,
+        "header_bytes": header_bytes,
+        "record_bytes": record_bytes,
+        "capacity": capacity,
+        "next_index": next_index,
+        "count": count,
+        "sequence": sequence,
+        "file_bytes": file_bytes,
     }
 
 
@@ -968,6 +1009,31 @@ def environment_evidence(sandbox_id: str | None = None) -> dict[str, Any]:
             "privileged": document.get("HostConfig", {}).get("Privileged"),
         }
     return value
+
+
+def initial_environment_evidence() -> dict[str, Any]:
+    """Write a Docker-free environment envelope before live setup can fail.
+
+    Live cases replace this file with :func:`environment_evidence` after they
+    own a sandbox.  Keeping the initial record independent of Docker ensures
+    the required artifact still exists when fixture setup or the first live
+    assertion fails.
+    """
+    return {
+        "captured_at": utc_now(),
+        "evidence_state": "fixture_initialized",
+        "host": {
+            "platform": platform.platform(),
+            "machine": platform.machine(),
+            "python": platform.python_version(),
+            "logical_cpu_count": os.cpu_count(),
+        },
+        "configuration": {
+            key: value
+            for key, value in os.environ.items()
+            if key.startswith(("E2E_RI_", "E2E_RE_", "E2E_DS_", "E2E_GC_"))
+        },
+    }
 
 
 def _balanced_sample_order(
@@ -1717,13 +1783,92 @@ def write_cleanup_evidence(
     registered: Sequence[str],
     destroyed: Sequence[str],
     failures: Sequence[Mapping[str, str]],
-) -> None:
+    failure_count: int | None = None,
+    state: str | None = None,
+    pytest_verdict: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    """Persist one bounded, attributable cleanup checkpoint.
+
+    The full ownership sets determine the result; only the evidence projection
+    is truncated.  Counts and omission totals make that truncation explicit,
+    while the fixed limits keep the payload inside the independently reserved
+    ``cleanup.json`` slot even under a large failure campaign.
+    """
+    total_failures = max(len(failures), failure_count or 0)
+    ownership_complete = (
+        len(registered) == len(destroyed)
+        and set(registered) == set(destroyed)
+    )
+    cleanup_complete = total_failures == 0 and ownership_complete
+    if state is None:
+        state = "passed" if cleanup_complete else "failed"
+    if state not in {"pending", "passed", "failed"}:
+        raise ValueError(f"invalid cleanup evidence state: {state}")
+    if state == "pending":
+        cleanup_complete = False
+    elif state == "passed" and not cleanup_complete:
+        state = "failed"
+
+    bounded_registered = [
+        _bounded_cleanup_text(value, MAX_CLEANUP_ID_CHARS)
+        for value in registered[:MAX_CLEANUP_IDS]
+    ]
+    bounded_destroyed = [
+        _bounded_cleanup_text(value, MAX_CLEANUP_ID_CHARS)
+        for value in destroyed[:MAX_CLEANUP_IDS]
+    ]
+    bounded_failures = [
+        {
+            "sandbox_id": _bounded_cleanup_text(
+                failure.get("sandbox_id", "unknown"), MAX_CLEANUP_ID_CHARS
+            ),
+            "error": _bounded_cleanup_text(
+                failure.get("error", "cleanup failed"), MAX_CLEANUP_ERROR_CHARS
+            ),
+        }
+        for failure in failures[:MAX_CLEANUP_FAILURES]
+    ]
+    verdict = {
+        "phase": _bounded_cleanup_text(
+            (pytest_verdict or {}).get("phase", "unknown"), 32
+        ),
+        "state": _bounded_cleanup_text(
+            (pytest_verdict or {}).get("state", "unknown"), 32
+        ),
+    }
+    payload = {
+        "state": state,
+        "registered_sandbox_ids": bounded_registered,
+        "destroyed_sandbox_ids": bounded_destroyed,
+        "failures": bounded_failures,
+        "registered_sandbox_count": len(registered),
+        "destroyed_sandbox_count": len(destroyed),
+        "failure_count": total_failures,
+        "omitted": {
+            "registered_sandbox_ids": len(registered) - len(bounded_registered),
+            "destroyed_sandbox_ids": len(destroyed) - len(bounded_destroyed),
+            "failures": total_failures - len(bounded_failures),
+        },
+        "cleanup_complete": cleanup_complete,
+        "pytest_verdict": verdict,
+        "validation_checkpoint": {
+            "name": "run-owned-cleanup",
+            "state": state,
+            "expected": {"cleanup_complete": True},
+            "actual": {"cleanup_complete": cleanup_complete},
+        },
+    }
     artifacts.write_json(
         "cleanup.json",
-        {
-            "registered_sandbox_ids": list(registered),
-            "destroyed_sandbox_ids": list(destroyed),
-            "failures": list(failures),
-            "cleanup_complete": not failures and set(registered) == set(destroyed),
-        },
+        payload,
     )
+    return payload
+
+
+def _bounded_cleanup_text(value: object, limit: int) -> str:
+    raw = str(value)
+    if len(raw) <= limit:
+        return raw
+    digest = hashlib.sha256(raw.encode("utf-8", "replace")).hexdigest()[:16]
+    suffix = f"...[sha256:{digest}]"
+    return raw[: max(0, limit - len(suffix))] + suffix

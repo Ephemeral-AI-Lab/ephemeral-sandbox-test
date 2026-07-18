@@ -25,6 +25,7 @@ from .helpers import (
     read_resources,
     read_topology,
     resource_delta,
+    route_traffic_record,
     run_route_campaign,
     sample,
     strict_duration,
@@ -102,11 +103,24 @@ def test_resource_efficiency_smoke(
     assert len(idle_processes) == 1, idle_workspace
     assert idle_processes[0].get("kind") == "namespace_init", idle_workspace
 
-    traffic = run_route_campaign(
+    route_sample_before = sample(
+        case_artifacts, sandbox_id, phase="resource-route-before"
+    )
+    campaign = run_route_campaign(
         route="observability.resources.single",
         request=lambda: read_resources(sandbox_id),
         request_count=strict_duration("E2E_RE00_RESOURCE_READS", 120, minimum=120),
         duration_seconds=strict_duration("E2E_RE00_RESOURCE_SECONDS", 120, minimum=120),
+    )
+    route_sample_after = sample(
+        case_artifacts, sandbox_id, phase="resource-route-after"
+    )
+    traffic = route_traffic_record(
+        campaign,
+        target_counter_deltas=resource_delta(
+            route_sample_before, route_sample_after
+        ),
+        control_counter_deltas={},
     )
     store_after_reads = fingerprint_store(sandbox_id)
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import gc
 import io
 import json
+import struct
 import tracemalloc
 
 import pytest
@@ -27,11 +28,98 @@ from observability.resource_isolation.helpers import (
     qualification_duration,
     qualification_load_multiplier,
     qualification_profile,
+    resource_ring_header,
     rotation_renamed_active,
     sandbox_id_from_docker_create_event,
     stream_history_fixture,
     validate_packaged_daemon_identity,
 )
+
+
+def _resource_ring_bytes(
+    *,
+    magic: bytes = b"EOSRING\0",
+    version: int = 1,
+    header_bytes: int = 64,
+    record_bytes: int = 64,
+    capacity: int = 3,
+    next_index: int = 0,
+    count: int = 0,
+    sequence: int = 0,
+) -> bytes:
+    header = struct.pack(
+        "<8sIIIIIIQ",
+        magic,
+        version,
+        header_bytes,
+        record_bytes,
+        capacity,
+        next_index,
+        count,
+        sequence,
+    )
+    return header.ljust(64, b"\0") + b"\0" * (capacity * record_bytes)
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.resource-ring-header",
+    title="Resource ring headers use the production layout",
+    description="The bounded parser reads every production header field at its exact offset and validates the ring's declared extent.",
+    validations={
+        "ring-header": "Magic, version, geometry, indices, count, sequence, and exact bounded file length are validated."
+    },
+)
+def test_resource_ring_header_parses_the_exact_bounded_production_layout(tmp_path):
+    path = tmp_path / "resource.ring"
+    path.write_bytes(
+        _resource_ring_bytes(next_index=2, count=3, sequence=4_294_967_303)
+    )
+
+    assert resource_ring_header(path) == {
+        "magic": "EOSRING",
+        "version": 1,
+        "header_bytes": 64,
+        "record_bytes": 64,
+        "capacity": 3,
+        "next_index": 2,
+        "count": 3,
+        "sequence": 4_294_967_303,
+        "file_bytes": 256,
+    }
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.resource-ring-header-rejection",
+    title="Resource ring headers fail closed",
+    description="Malformed identifiers, geometry, indices, counts, lengths, and oversized rings are rejected before evidence is trusted.",
+    validations={
+        "ring-header-rejection": "Every malformed or over-cap production header fails validation."
+    },
+)
+@pytest.mark.parametrize(
+    ("overrides", "truncate"),
+    (
+        ({"magic": b"NOTRING\0"}, 0),
+        ({"version": 2}, 0),
+        ({"header_bytes": 63}, 0),
+        ({"record_bytes": 63}, 0),
+        ({"capacity": 3, "next_index": 3}, 0),
+        ({"capacity": 3, "count": 4}, 0),
+        ({"capacity": 3}, 1),
+        ({"capacity": 1_024}, 0),
+    ),
+)
+def test_resource_ring_header_rejects_malformed_or_oversized_files(
+    tmp_path, overrides, truncate
+):
+    path = tmp_path / "resource.ring"
+    encoded = _resource_ring_bytes(**overrides)
+    path.write_bytes(encoded[:-truncate] if truncate else encoded)
+
+    with pytest.raises(AssertionError):
+        resource_ring_header(path)
 
 
 @e2e_test(

@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from datetime import datetime, timezone
+import json
 import os
 from pathlib import Path
 import re
-from typing import Iterator
+from typing import Any, Iterator, Mapping
 
 import pytest
 
@@ -17,10 +18,120 @@ from harness.runner import cleanup
 from harness.runner.config import E2E_STATE_ROOT
 from manager.management import helpers as management
 
-from .helpers import ArtifactDirectory, write_cleanup_evidence
+from .helpers import (
+    ArtifactDirectory,
+    initial_environment_evidence,
+    write_cleanup_evidence,
+)
 
 
 _SAFE = re.compile(r"[^A-Za-z0-9._-]+")
+_REPORTS_ATTRIBUTE = "_resource_isolation_reports"
+
+
+class _ReportCapture:
+    """Capture bounded phase state for the one case owning this fixture.
+
+    The resource-efficiency suite re-exports these fixtures from a sibling
+    ``conftest.py``.  A hook declared only in this module is not necessarily a
+    registered pytest plugin for those cases, so the fixture registers this
+    per-case hook explicitly and removes it after evidence finalization.
+    """
+
+    def __init__(self, node: pytest.Item, plugin_manager: Any | None):
+        self.node = node
+        self.plugin_manager = plugin_manager
+        self.artifacts: ArtifactDirectory | None = None
+
+    @pytest.hookimpl(trylast=True)
+    def pytest_runtest_logreport(self, report: pytest.TestReport) -> None:
+        if report.nodeid != self.node.nodeid:
+            return
+        reports = getattr(self.node, _REPORTS_ATTRIBUTE, None)
+        if reports is None:
+            reports = {}
+            setattr(self.node, _REPORTS_ATTRIBUTE, reports)
+        reports[report.when] = report
+        if report.when != "teardown":
+            return
+        try:
+            if self.artifacts is not None:
+                _finalize_pytest_verdict(
+                    self.artifacts,
+                    _pytest_verdict(self.node),
+                )
+        finally:
+            if self.plugin_manager is not None:
+                self.plugin_manager.unregister(self)
+
+
+def _pytest_verdict(node: pytest.Item) -> dict[str, str]:
+    reports = getattr(node, _REPORTS_ATTRIBUTE, {})
+    phases = ("setup", "call", "teardown")
+    for phase in phases:
+        report = reports.get(phase)
+        if report is not None and report.failed:
+            return {"phase": phase, "state": "failed"}
+    for phase in phases:
+        report = reports.get(phase)
+        if report is not None and report.skipped:
+            return {"phase": phase, "state": "skipped"}
+    call = reports.get("call")
+    if call is not None and call.passed:
+        return {"phase": "call", "state": "passed"}
+    return {"phase": "call", "state": "running"}
+
+
+def _ensure_summary_before_cleanup(
+    artifacts: ArtifactDirectory, pytest_verdict: Mapping[str, str]
+) -> None:
+    """Ensure a bounded summary exists before any run-owned destroy call."""
+    path = artifacts.root / "summary.json"
+    if path.exists():
+        try:
+            current = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            current = None
+        if isinstance(current, dict) and current.get("evidence_state") == "early_failure":
+            current["pytest_verdict"] = dict(pytest_verdict)
+            artifacts.write_json("summary.json", current, reserved=True)
+        return
+    artifacts.write_json(
+        "summary.json",
+        {
+            "evidence_state": "early_failure",
+            "pytest_verdict": dict(pytest_verdict),
+        },
+        reserved=True,
+    )
+
+
+def _recorded_behavior_failed(pytest_verdict: Mapping[str, str]) -> bool:
+    return pytest_verdict.get("state") == "failed"
+
+
+def _finalize_pytest_verdict(
+    artifacts: ArtifactDirectory, pytest_verdict: Mapping[str, str]
+) -> None:
+    """Seal the final setup/call/teardown verdict after pytest reports teardown."""
+    _ensure_summary_before_cleanup(artifacts, pytest_verdict)
+    path = artifacts.root / "cleanup.json"
+    if path.exists():
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            raise AssertionError("resource-isolation cleanup must be a JSON object")
+        payload["pytest_verdict"] = dict(pytest_verdict)
+        artifacts.write_json("cleanup.json", payload)
+    else:
+        write_cleanup_evidence(
+            artifacts,
+            registered=(),
+            destroyed=(),
+            failures=(),
+            state="passed",
+            pytest_verdict=pytest_verdict,
+        )
+    artifacts.finalize_summary()
 
 
 def _run_id() -> str:
@@ -33,22 +144,89 @@ def _run_id() -> str:
 
 @pytest.fixture
 def case_artifacts(request: pytest.FixtureRequest) -> Iterator[ArtifactDirectory]:
+    config = getattr(request, "config", None)
+    plugin_manager = getattr(config, "pluginmanager", None)
+    report_capture = _ReportCapture(request.node, plugin_manager)
+    if plugin_manager is not None:
+        plugin_manager.register(
+            report_capture,
+            name=f"resource-isolation-report-{id(request.node):x}",
+        )
     declaration = explicit_declaration(request.node)
     assert declaration is not None
     case = _SAFE.sub("-", declaration.id)
     root = Path(E2E_STATE_ROOT) / "observability" / _run_id() / case
     artifacts = ArtifactDirectory(root)
+    report_capture.artifacts = artifacts
+    artifacts.write_json("environment.json", initial_environment_evidence())
     try:
         yield artifacts
     finally:
+        pytest_verdict = _pytest_verdict(request.node)
+        _ensure_summary_before_cleanup(artifacts, pytest_verdict)
+        if not (artifacts.root / "cleanup.json").exists():
+            write_cleanup_evidence(
+                artifacts,
+                registered=(),
+                destroyed=(),
+                failures=(),
+                state="passed",
+                pytest_verdict=pytest_verdict,
+            )
         artifacts.finalize_summary()
 
 
 @pytest.fixture
-def registered_sandbox_factory(case_artifacts: ArtifactDirectory):
+def registered_sandbox_factory(
+    case_artifacts: ArtifactDirectory, request: pytest.FixtureRequest
+):
     registered: list[str] = []
     destroyed: list[str] = []
     failures: list[dict[str, str]] = []
+    failure_count = 0
+
+    def record_failure(sandbox_id: str, error: BaseException) -> None:
+        nonlocal failure_count
+        failure_count += 1
+        if len(failures) < 32:
+            failures.append(
+                {"sandbox_id": sandbox_id, "error": str(error)[:1_000]}
+            )
+
+    def write_evidence(state: str, pytest_verdict: Mapping[str, str]) -> dict[str, Any]:
+        return write_cleanup_evidence(
+            case_artifacts,
+            registered=registered,
+            destroyed=destroyed,
+            failures=failures,
+            failure_count=failure_count,
+            state=state,
+            pytest_verdict=pytest_verdict,
+        )
+
+    def preserve_before_destroy(pytest_verdict: Mapping[str, str]) -> None:
+        _ensure_summary_before_cleanup(case_artifacts, pytest_verdict)
+        write_evidence("pending", pytest_verdict)
+
+    def destroy_one(sandbox_id: str) -> None:
+        if sandbox_id in destroyed:
+            return
+        try:
+            result = management.destroy_sandbox(sandbox_id)
+            if isinstance(result, dict) and "error" in result:
+                raise AssertionError(result)
+            destroyed.append(sandbox_id)
+        except Exception as error:
+            record_failure(sandbox_id, error)
+            raise
+
+    def terminal_state() -> str:
+        complete = (
+            failure_count == 0
+            and len(registered) == len(destroyed)
+            and set(registered) == set(destroyed)
+        )
+        return "passed" if complete else "failed"
 
     def create(*, image: str | None = None) -> str:
         result = (
@@ -63,55 +241,99 @@ def registered_sandbox_factory(case_artifacts: ArtifactDirectory):
         return sandbox_id
 
     def destroy(sandbox_id: str) -> None:
+        if sandbox_id not in registered:
+            raise AssertionError(
+                f"refusing to destroy unregistered sandbox: {sandbox_id[:96]}"
+            )
         if sandbox_id in destroyed:
             return
+        pytest_verdict = _pytest_verdict(request.node)
+        preserve_before_destroy(pytest_verdict)
         try:
-            result = management.destroy_sandbox(sandbox_id)
-            if isinstance(result, dict) and "error" in result:
-                raise AssertionError(result)
-            destroyed.append(sandbox_id)
-        except Exception as error:
-            failures.append({"sandbox_id": sandbox_id, "error": str(error)[:1_000]})
+            destroy_one(sandbox_id)
+        except Exception:
+            write_evidence("failed", pytest_verdict)
             raise
+        state = (
+            terminal_state()
+            if len(registered) == len(destroyed)
+            and set(registered) == set(destroyed)
+            else "pending"
+        )
+        write_evidence(state, pytest_verdict)
 
     def destroy_all() -> None:
-        errors = []
-        for sandbox_id in reversed(registered):
-            if sandbox_id in destroyed:
-                continue
+        pytest_verdict = _pytest_verdict(request.node)
+        remaining = [
+            sandbox_id
+            for sandbox_id in reversed(registered)
+            if sandbox_id not in destroyed
+        ]
+        if remaining:
+            preserve_before_destroy(pytest_verdict)
+        failures_before = failure_count
+        for sandbox_id in remaining:
             try:
-                destroy(sandbox_id)
-            except Exception as error:
-                errors.append({"sandbox_id": sandbox_id, "error": str(error)[:1_000]})
-        if errors:
-            raise AssertionError(f"resource-isolation cleanup failed: {errors}")
+                destroy_one(sandbox_id)
+            except Exception:
+                pass
+            write_evidence(
+                terminal_state() if sandbox_id == remaining[-1] else "pending",
+                pytest_verdict,
+            )
+        write_evidence(terminal_state(), pytest_verdict)
+        if failure_count > failures_before:
+            raise AssertionError(
+                "resource-isolation cleanup failed for "
+                f"{failure_count - failures_before} sandbox(es)"
+            )
 
     create.destroy = destroy
     create.destroy_all = destroy_all
     create.registered = registered
     create.destroyed = destroyed
-    yield create
+    create.failures = failures
+    try:
+        yield create
+    finally:
+        pytest_verdict = _pytest_verdict(request.node)
+        remaining = [
+            sandbox_id
+            for sandbox_id in reversed(registered)
+            if sandbox_id not in destroyed
+        ]
+        if remaining:
+            preserve_before_destroy(pytest_verdict)
+        for sandbox_id in remaining:
+            try:
+                destroy_one(sandbox_id)
+            except Exception:
+                # Continue through every exact run-owned ID; no list/prune or
+                # name/prefix cleanup is permitted here.
+                pass
+            write_evidence(
+                terminal_state() if sandbox_id == remaining[-1] else "pending",
+                pytest_verdict,
+            )
+        for sandbox_id in destroyed:
+            cleanup.untrack(sandbox_id)
+        payload = write_evidence(terminal_state(), pytest_verdict)
+        if (
+            payload["validation_checkpoint"]["state"] == "failed"
+            and not _recorded_behavior_failed(pytest_verdict)
+        ):
+            pytest.fail(
+                "resource-isolation cleanup checkpoint failed: "
+                f"{payload['failure_count']} failure(s), "
+                f"{payload['registered_sandbox_count'] - payload['destroyed_sandbox_count']} "
+                "sandbox(es) not destroyed"
+            )
 
-    for sandbox_id in reversed(registered):
-        if sandbox_id in destroyed:
-            continue
-        try:
-            result = management.destroy_sandbox(sandbox_id)
-            if isinstance(result, dict) and "error" in result:
-                raise AssertionError(result)
-            destroyed.append(sandbox_id)
-        except Exception as error:
-            failures.append({"sandbox_id": sandbox_id, "error": str(error)[:1_000]})
-    for sandbox_id in destroyed:
-        cleanup.untrack(sandbox_id)
-    write_cleanup_evidence(
-        case_artifacts,
-        registered=registered,
-        destroyed=destroyed,
-        failures=failures,
-    )
-    if failures:
-        pytest.fail(f"resource-isolation cleanup failed: {failures}")
+
+@pytest.fixture
+def sandbox(registered_sandbox_factory):
+    """Resource-isolation sandbox whose exact-ID teardown emits evidence."""
+    yield registered_sandbox_factory()
 
 
 class GeneratedGateway:

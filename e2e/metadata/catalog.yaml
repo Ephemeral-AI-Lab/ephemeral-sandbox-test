@@ -34,3 +34,6 @@ harness_families:
   - id: resource_isolation
     title: Resource Isolation Harness
     summary: Constant-memory sampling and bounded evidence diagnostics.
+  - id: resource_efficiency
+    title: Resource Efficiency Harness
+    summary: Bounded helper, parser, fault-identity, and artifact-safety diagnostics.

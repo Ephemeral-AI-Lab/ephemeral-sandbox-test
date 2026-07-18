@@ -9,7 +9,12 @@ import pytest
 
 from harness.catalog.declarations import e2e_test
 from harness.runner.cli import is_error
-from observability.resource_isolation.helpers import analyze_phase, environment_evidence, stream_group, verify_packaged_daemon
+from observability.resource_isolation.helpers import (
+    analyze_phase,
+    environment_evidence,
+    stream_group,
+    verify_packaged_daemon,
+)
 from runtime.workspace_session.helpers import exec_in, read_command_lines
 
 from .helpers import (
@@ -79,6 +84,8 @@ def test_runtime_thread_budget(
         "blocking_thread_keep_alive_s": 5.0,
         "max_concurrent_connections": 64,
         "max_active_commands": 32,
+        "max_blocking_queue_depth": 0,
+        "max_command_queue_depth": 0,
     }
     result = {}
     with generated_gateway(
@@ -115,12 +122,16 @@ def test_runtime_thread_budget(
         idle_sample = sample(case_artifacts, sandbox_id, phase="runtime-idle-end")
         config = daemon_runtime_config(read_daemon_self(sandbox_id))
         for key, expected in expected_config.items():
-            assert config[key] == expected, {"config": config, "expected": expected_config}
+            assert config[key] == expected, {
+                "config": config,
+                "expected": expected_config,
+            }
         assert_settled_budget(idle_sample)
 
         workspace_id = create_workspace(tracker)
 
         barrier = threading.Barrier(32)
+        pressure_sampling_started = threading.Event()
 
         def launch(index: int) -> str:
             barrier.wait(timeout=30)
@@ -131,17 +142,32 @@ def test_runtime_thread_budget(
                 timeout_ms=120_000,
             )
 
-        with ThreadPoolExecutor(max_workers=32) as pool:
-            command_ids = list(pool.map(launch, range(32), timeout=120))
-        pressure = stream_group(
-            case_artifacts,
-            [(sandbox_id, "target", None)],
-            phase="runtime-pressure",
-            repetition=1,
-            duration_seconds=strict_duration("E2E_RE06_PRESSURE_SECONDS", 10, minimum=10),
+        pressure_seconds = strict_duration(
+            "E2E_RE06_PRESSURE_SECONDS", 10, minimum=10
         )
+        with ThreadPoolExecutor(max_workers=1) as sample_pool:
+            pressure_future = sample_pool.submit(
+                stream_group,
+                case_artifacts,
+                [(sandbox_id, "target", None)],
+                phase="runtime-pressure",
+                repetition=1,
+                duration_seconds=pressure_seconds,
+                action=lambda _tick: pressure_sampling_started.set(),
+            )
+            assert pressure_sampling_started.wait(timeout=30), (
+                "pressure sampling did not begin before command release"
+            )
+            with ThreadPoolExecutor(max_workers=32) as command_pool:
+                command_ids = list(
+                    command_pool.map(launch, range(32), timeout=120)
+                )
+            pressure = pressure_future.result(timeout=pressure_seconds + 180)
         snapshot_during = read_snapshot(sandbox_id)
-        terminals = [await_command(tracker, command_id, timeout_seconds=60) for command_id in command_ids]
+        terminals = [
+            await_command(tracker, command_id, timeout_seconds=60)
+            for command_id in command_ids
+        ]
         assert all(terminal.get("status") == "ok" for terminal in terminals), terminals
 
         interrupt_id = start_command(
@@ -180,17 +206,22 @@ def test_runtime_thread_budget(
             [(sandbox_id, "target", None)],
             phase="runtime-cooldown",
             repetition=1,
-            duration_seconds=strict_duration("E2E_RE06_COOLDOWN_SECONDS", 600, minimum=600),
+            duration_seconds=strict_duration(
+                "E2E_RE06_COOLDOWN_SECONDS", 600, minimum=600
+            ),
         )
         cooldown_analysis = _analysis(case_artifacts, cooldown, "runtime-cooldown")
         final_sample = sample(case_artifacts, sandbox_id, phase="runtime-final")
-        pressure_series = bounded_memory_series(case_artifacts.samples_path, phases=("runtime-pressure",))
+        pressure_series = bounded_memory_series(
+            case_artifacts.samples_path, phases=("runtime-pressure",)
+        )
         registered_sandbox_factory.destroy(sandbox_id)
         result = {
             "config": config,
             "idle": idle_analysis,
             "idle_cpu": idle_cpu,
             "idle_sample": idle_sample,
+            "pressure_phase": pressure,
             "pressure": pressure_series,
             "terminal_count": len(terminals),
             "snapshot_state": snapshot_during.get("lifecycle_state"),
@@ -221,7 +252,9 @@ def test_runtime_thread_budget(
         },
         evidence=("samples.jsonl", "summary.json"),
     ):
-        assert all(result["config"][key] == value for key, value in expected_config.items())
+        assert all(
+            result["config"][key] == value for key, value in expected_config.items()
+        )
         assert result["idle_sample"]["process"]["threads"] <= 2 + allowance
         assert result["idle_cpu"]["median_fraction_of_one_core"] < IDLE_CPU_FRACTION
         assert_settled_budget(result["idle_sample"])
@@ -238,7 +271,11 @@ def test_runtime_thread_budget(
     with validation(
         "concurrency-functional",
         expected={"completed": 32, "snapshot": "ready", "interrupt_terminal": True},
-        actual={"completed": result["terminal_count"], "snapshot": result["snapshot_state"], "interrupt": result["interrupted_status"]},
+        actual={
+            "completed": result["terminal_count"],
+            "snapshot": result["snapshot_state"],
+            "interrupt": result["interrupted_status"],
+        },
         evidence=("summary.json",),
     ):
         assert result["terminal_count"] == 32
@@ -265,7 +302,13 @@ def test_runtime_thread_budget(
             result["post_workspace_recovery"]["sample"], post_workspace=True
         )
         assert result["final_sample"]["process"]["threads"] <= 2 + allowance
-        assert result["cooldown"]["final_window_median_bytes"] - result["idle"]["final_window_median_bytes"] <= COOLDOWN_ANONYMOUS_DELTA_BYTES
+        assert (
+            abs(
+                result["cooldown"]["final_window_median_bytes"]
+                - result["idle"]["final_window_median_bytes"]
+            )
+            <= COOLDOWN_ANONYMOUS_DELTA_BYTES
+        )
         assert_no_zombies(result["final_sample"])
 
     with validation(
@@ -321,14 +364,30 @@ def test_admission_pressure(
         tracker = workspace_registry_factory(sandbox_id)
         verify_packaged_daemon(sandbox_id)
         case_artifacts.write_json("environment.json", environment_evidence(sandbox_id))
+        configured_runtime = daemon_runtime_config(read_daemon_self(sandbox_id))
+        expected_runtime = {
+            "worker_threads": 2,
+            "max_blocking_threads": 4,
+            "max_concurrent_connections": 8,
+            "max_active_commands": 4,
+            "max_blocking_queue_depth": 0,
+            "max_command_queue_depth": 0,
+        }
+        assert all(
+            configured_runtime[key] == value for key, value in expected_runtime.items()
+        ), {"expected": expected_runtime, "actual": configured_runtime}
         baseline_phase = stream_group(
             case_artifacts,
             [(sandbox_id, "target", None)],
             phase="admission-baseline",
             repetition=1,
-            duration_seconds=strict_duration("E2E_RE07_BASELINE_SECONDS", 300, minimum=300),
+            duration_seconds=strict_duration(
+                "E2E_RE07_BASELINE_SECONDS", 300, minimum=300
+            ),
         )
-        baseline_analysis = _analysis(case_artifacts, baseline_phase, "admission-baseline")
+        baseline_analysis = _analysis(
+            case_artifacts, baseline_phase, "admission-baseline"
+        )
         baseline_self = daemon_self_counts(read_daemon_self(sandbox_id))
         workspace_id = create_workspace(tracker)
         barrier = threading.Barrier(pressure_width + 1)
@@ -481,7 +540,9 @@ def test_admission_pressure(
             observer.start()
         try:
             with ThreadPoolExecutor(max_workers=pressure_width) as pool:
-                futures = [pool.submit(attempt, index) for index in range(pressure_width)]
+                futures = [
+                    pool.submit(attempt, index) for index in range(pressure_width)
+                ]
                 barrier.wait(timeout=30)
                 observation_release.set()
                 assert observers_armed.wait(timeout=30)
@@ -491,7 +552,9 @@ def test_admission_pressure(
             observer_stop.set()
             for observer in observers:
                 observer.join(timeout=30)
-                assert not observer.is_alive(), "admission pressure observer did not stop"
+                assert not observer.is_alive(), (
+                    "admission pressure observer did not stop"
+                )
         admitted = []
         overloads = []
         for response in attempts:
@@ -530,17 +593,23 @@ def test_admission_pressure(
         )
         snapshot_during = read_snapshot(sandbox_id)
         statuses = {
-            command_id: read_command_lines(sandbox_id, command_id, start_offset=0, limit=1, timeout=10)
+            command_id: read_command_lines(
+                sandbox_id, command_id, start_offset=0, limit=1, timeout=10
+            )
             for command_id in admitted
         }
-        terminals = {command_id: stop_command(tracker, command_id) for command_id in admitted}
+        terminals = {
+            command_id: stop_command(tracker, command_id) for command_id in admitted
+        }
         destroy_workspace(tracker, workspace_id)
         cooldown = stream_group(
             case_artifacts,
             [(sandbox_id, "target", None)],
             phase="admission-cooldown",
             repetition=1,
-            duration_seconds=strict_duration("E2E_RE07_COOLDOWN_SECONDS", 600, minimum=600),
+            duration_seconds=strict_duration(
+                "E2E_RE07_COOLDOWN_SECONDS", 600, minimum=600
+            ),
         )
         cooldown_analysis = _analysis(case_artifacts, cooldown, "admission-cooldown")
         final_self = daemon_self_counts(read_daemon_self(sandbox_id))
@@ -557,13 +626,17 @@ def test_admission_pressure(
             "terminals": {key: value.get("status") for key, value in terminals.items()},
             "snapshot_state": snapshot_during.get("lifecycle_state"),
             "baseline": baseline_analysis,
+            "configured_runtime": configured_runtime,
             "cooldown": cooldown_analysis,
             "baseline_self": baseline_self,
             "final_self": final_self,
             "final_sample": final_sample,
         }
     restored = gateway.restored
-    case_artifacts.write_json("route-traffic.json", {"admitted": result["admitted"], "overloads": result["overloads"]})
+    case_artifacts.write_json(
+        "route-traffic.json",
+        {"admitted": result["admitted"], "overloads": result["overloads"]},
+    )
     case_artifacts.write_json("summary.json", result, reserved=True)
 
     with validation(
@@ -573,14 +646,25 @@ def test_admission_pressure(
             "active_commands_max": 4,
             "async_tasks_max": 8,
             "blocking_tasks_max": 4,
-            "blocking_queue_max": 4,
+            "blocking_queue_max": 0,
+            "command_queue_max": 0,
             "connection_in_use_max": 8,
             "thread_peak_max": 12,
             "sampled_during_attempts": True,
+            "observer_errors": [],
+            "runtime_config": {
+                "worker_threads": 2,
+                "max_blocking_threads": 4,
+                "max_concurrent_connections": 8,
+                "max_active_commands": 4,
+                "max_blocking_queue_depth": 0,
+                "max_command_queue_depth": 0,
+            },
         },
         actual={
             "admitted": len(result["admitted"]),
             "observation": result["pressure_observation"],
+            "runtime_config": result["configured_runtime"],
         },
         evidence=("samples.jsonl", "summary.json"),
     ):
@@ -588,19 +672,39 @@ def test_admission_pressure(
         peaks = observation["peaks"]
         assert 1 <= len(result["admitted"]) <= 4
         assert observation["attempts_completed"] == pressure_width
+        assert observation["errors"] == [], observation
+        assert observation["public_successes"] >= 1, observation
+        assert observation["process_successes"] >= 1, observation
         assert observation["public_successes_during_attempts"] >= 1, observation
         assert observation["process_successes_during_attempts"] >= 1, observation
+        assert result["configured_runtime"]["worker_threads"] == 2
+        assert result["configured_runtime"]["max_blocking_threads"] == 4
+        assert result["configured_runtime"]["max_concurrent_connections"] == 8
+        assert result["configured_runtime"]["max_active_commands"] == 4
+        assert result["configured_runtime"]["max_blocking_queue_depth"] == 0
+        assert result["configured_runtime"]["max_command_queue_depth"] == 0
         assert peaks["commands"] <= 4
         assert peaks["async_tasks"] <= 8
         assert peaks["blocking_tasks"] <= 4
         assert peaks["connection_in_use"] <= 8
-        assert peaks["queued_tasks"] <= 4
-        assert peaks["queued_commands"] <= 4
+        assert peaks["queued_tasks"] <= result["configured_runtime"][
+            "max_blocking_queue_depth"
+        ]
+        assert peaks["queued_commands"] <= result["configured_runtime"][
+            "max_command_queue_depth"
+        ]
         assert peaks["threads"] <= 2 + 4 + 6
 
     with validation(
         "structured-overload",
-        expected={"structured": pressure_width - len(result["admitted"]), "kind": "server_busy", "allowed_limits": {"max_active_commands": 4, "max_concurrent_connections": 8}},
+        expected={
+            "structured": pressure_width - len(result["admitted"]),
+            "kind": "server_busy",
+            "allowed_limits": {
+                "max_active_commands": 4,
+                "max_concurrent_connections": 8,
+            },
+        },
         actual=result["overloads"],
         evidence=("route-traffic.json",),
     ):
@@ -614,8 +718,16 @@ def test_admission_pressure(
 
     with validation(
         "control-plane-responsive",
-        expected={"snapshot": "ready", "all_status_running": True, "all_interrupt_terminal": True},
-        actual={"snapshot": result["snapshot_state"], "statuses": result["statuses"], "terminals": result["terminals"]},
+        expected={
+            "snapshot": "ready",
+            "all_status_running": True,
+            "all_interrupt_terminal": True,
+        },
+        actual={
+            "snapshot": result["snapshot_state"],
+            "statuses": result["statuses"],
+            "terminals": result["terminals"],
+        },
         evidence=("summary.json",),
     ):
         assert result["snapshot_state"] == "ready"
@@ -624,13 +736,39 @@ def test_admission_pressure(
 
     with validation(
         "post-pressure-clean",
-        expected={"counts": result["baseline_self"], "anonymous_delta_max": COOLDOWN_ANONYMOUS_DELTA_BYTES},
+        expected={
+            "counts": result["baseline_self"],
+            "anonymous_delta_max": COOLDOWN_ANONYMOUS_DELTA_BYTES,
+        },
         actual={"counts": result["final_self"], "cooldown": result["cooldown"]},
         evidence=("samples.jsonl", "summary.json"),
     ):
-        balance = ("holders", "exited_unreaped_holders", "workspaces", "namespace_fds", "control_fds", "active_layer_leases", "commands", "scratch_resources", "persisted_handles")
-        assert all(result["final_self"][key] == result["baseline_self"][key] for key in balance)
-        assert result["cooldown"]["final_window_median_bytes"] - result["baseline"]["final_window_median_bytes"] <= COOLDOWN_ANONYMOUS_DELTA_BYTES
+        balance = (
+            "holders",
+            "exited_unreaped_holders",
+            "workspaces",
+            "namespace_fds",
+            "control_fds",
+            "active_layer_leases",
+            "commands",
+            "scratch_resources",
+            "persisted_handles",
+        )
+        assert all(
+            result["final_self"][key] == result["baseline_self"][key] for key in balance
+        )
+        assert (
+            abs(
+                result["cooldown"]["final_window_median_bytes"]
+                - result["baseline"]["final_window_median_bytes"]
+            )
+            <= COOLDOWN_ANONYMOUS_DELTA_BYTES
+        )
+        assert result["final_sample"]["process"]["threads"] <= (
+            result["configured_runtime"]["worker_threads"]
+            + result["configured_runtime"]["infrastructure_thread_allowance"]
+        )
+        assert_settled_budget(result["final_sample"])
         assert_no_zombies(result["final_sample"])
 
     with validation(
