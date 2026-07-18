@@ -1,5 +1,6 @@
-(function (root) {
-  root.FlashCart = root.FlashCart || {};
-  root.FlashCart.fixtures = root.FlashCart.fixtures || {};
-  root.FlashCart.fixtures.A06 = Object.freeze({ owner: 'A06', label: 'Cart and pricing', revision: 1 });
-})(globalThis);
+[
+  {
+    "new_string": "  A06: { id: 'A06', role: 'Cart and pricing', stage: 'data', deterministic: true, verify() { return true; }, quoteCart(subtotalCents, promotionCents = 0) { const config = globalThis.FlashCart.config; const discounted = Math.max(0, subtotalCents - promotionCents); const shippingCents = discounted >= config.freeShippingCents ? 0 : config.standardShippingCents; return { discounted, shippingCents, taxCents: Math.round(discounted * config.taxRate), totalCents: discounted + shippingCents + Math.round(discounted * config.taxRate) }; }, fixture: 'cart-fixture' },",
+    "old_string": "  A06: { id: 'A06', role: 'Cart and pricing', stage: 'core', deterministic: true, verify() { return true; }, quoteCart(subtotalCents, promotionCents = 0) { const config = globalThis.FlashCart.config; const discounted = Math.max(0, subtotalCents - promotionCents); const shippingCents = discounted >= config.freeShippingCents ? 0 : config.standardShippingCents; return { discounted, shippingCents, taxCents: Math.round(discounted * config.taxRate), totalCents: discounted + shippingCents + Math.round(discounted * config.taxRate) }; } },"
+  }
+]

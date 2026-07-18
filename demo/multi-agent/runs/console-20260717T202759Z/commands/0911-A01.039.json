@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A01.039:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000318c32da955032e0f",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval 'import { readFile } from '\"'\"'node:fs/promises'\"'\"'; const [index, app, registry, tests] = await Promise.all(['\"'\"'index.html'\"'\"', '\"'\"'src/app.js'\"'\"', '\"'\"'src/registry.js'\"'\"', '\"'\"'tests/storefront.test.mjs'\"'\"'].map(function (path) { return readFile(path, '\"'\"'utf8'\"'\"'); })); const line = registry.split('\"'\"'\\n'\"'\"').find(function (value) { return value.trimStart().startsWith('\"'\"'A01:'\"'\"'); }); if (!index.includes('\"'\"'./src/registry.js'\"'\"') || !app.includes('\"'\"'FlashCart.features'\"'\"') || !line || !line.includes('\"'\"'schemaVersion: 1'\"'\"') || !tests.includes('\"'\"'A01 Foundation contribution is ready'\"'\"')) process.exit(1); console.log('\"'\"'A01 shared application contract verified'\"'\"');'"
+  ],
+  "cancelled": false,
+  "duration_ms": 65.022,
+  "kind": "public_cli_process",
+  "label": "A01.039",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.026192833,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "A01 shared application contract verified",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.026254125,
+    "workspace_session_id": "00000318c32da955032e0f"
+  },
+  "pid": 57252,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A01.039:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 911,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.026254125,\"command_total_time_seconds\":0.026192833,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":10,\"output\":\"A01 shared application contract verified\",\"workspace_session_id\":\"00000318c32da955032e0f\"}\n",
+  "timed_out": false
+}

@@ -1,5 +1,6 @@
-(function (root) {
-  root.FlashCart = root.FlashCart || {};
-  root.FlashCart.views = root.FlashCart.views || {};
-  root.FlashCart.views.A07 = function () { return '<section data-feature="A07"><h2>Wishlist</h2><p>persistent wishlist and recommendations</p></section>'; };
-})(globalThis);
+[
+  {
+    "new_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'view', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\"wishlist\"></section>' },",
+    "old_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'data', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture' },"
+  }
+]

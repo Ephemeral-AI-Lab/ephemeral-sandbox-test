@@ -1,0 +1,71 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "events",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--last-n",
+    "10000",
+    "--since-ms",
+    "1784320113809"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.004,
+  "kind": "public_cli_process",
+  "label": "events-checkpoint-conflict-retry",
+  "parse_error": null,
+  "parsed_json": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.acquired",
+        "parent": "d-1892",
+        "trace": "console-20260717T202759Z:A08.053:runtime",
+        "ts": 1784320113809
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.acquired",
+        "parent": "d-1904",
+        "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784320114068
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1909",
+        "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784320114128
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1922",
+        "trace": "console-20260717T202759Z:A08.053:runtime",
+        "ts": 1784320114493
+      }
+    ],
+    "view": "events"
+  },
+  "pid": 67339,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1186,
+  "stderr": "",
+  "stdout": "{\"view\":\"events\",\"events\":[{\"kind\":\"event\",\"ts\":1784320113809,\"trace\":\"console-20260717T202759Z:A08.053:runtime\",\"parent\":\"d-1892\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"kind\":\"event\",\"ts\":1784320114068,\"trace\":\"console-20260717T202759Z:ENGINE.shared.checkpoint.network-clean:runtime\",\"parent\":\"d-1904\",\"name\":\"lease.acquired\",\"attrs\":{\"revision\":13}},{\"kind\":\"event\",\"ts\":1784320114128,\"trace\":\"console-20260717T202759Z:ENGINE.shared.checkpoint.network-clean:runtime\",\"parent\":\"d-1909\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}},{\"kind\":\"event\",\"ts\":1784320114493,\"trace\":\"console-20260717T202759Z:A08.053:runtime\",\"parent\":\"d-1922\",\"name\":\"lease.released\",\"attrs\":{\"revision\":13}}]}\n",
+  "timed_out": false
+}

@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A09.046:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00001218c32db01aa19941",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval 'import { createServer } from '\"'\"'node:http'\"'\"'; const server = createServer(function (_, response) { response.end('\"'\"'ok'\"'\"'); }); server.once('\"'\"'error'\"'\"', function (error) { if (error.code === '\"'\"'EADDRINUSE'\"'\"') { console.log('\"'\"'PORT_COLLISION'\"'\"'); process.exit(0); } throw error; }); process.stdin.setEncoding('\"'\"'utf8'\"'\"'); process.stdin.on('\"'\"'data'\"'\"', function (value) { if (value.trim() === '\"'\"'stop'\"'\"') server.close(function () { process.exit(0); }); }); server.listen(4173, '\"'\"'0.0.0.0'\"'\"', function () { console.log('\"'\"'PORT_BOUND shared-two'\"'\"'); });'"
+  ],
+  "cancelled": false,
+  "duration_ms": 97.716,
+  "kind": "public_cli_process",
+  "label": "A09.046",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.05501625,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "PORT_COLLISION",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.055070209,
+    "workspace_session_id": "00001218c32db01aa19941"
+  },
+  "pid": 64420,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A09.046:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1107,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.055070209,\"command_total_time_seconds\":0.05501625,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":4,\"output\":\"PORT_COLLISION\",\"workspace_session_id\":\"00001218c32db01aa19941\"}\n",
+  "timed_out": false
+}

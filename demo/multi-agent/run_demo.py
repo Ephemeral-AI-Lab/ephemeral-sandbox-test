@@ -68,6 +68,31 @@ class DemoFailure(RuntimeError):
     """A plan assertion failed after its raw response was retained."""
 
 
+CGROUP_REQUIRED_METRICS = {
+    "cpu_usec", "mem_cur", "mem_max", "io_rbytes", "io_wbytes",
+}
+CGROUP_RING_PENDING_ERRORS = ["resource ring is not available yet"]
+
+
+def cgroup_metrics(sample: dict[str, Any]) -> dict[str, Any] | None:
+    """Return aggregate metrics, or None for the one documented startup state."""
+    series = sample.get("series")
+    if sample.get("view") != "cgroup" or not isinstance(series, list):
+        raise DemoFailure(f"invalid cgroup response: {sample}")
+    if not series:
+        if (
+            sample.get("availability") == "partial"
+            and sample.get("errors") == CGROUP_RING_PENDING_ERRORS
+        ):
+            return None
+        raise DemoFailure(f"empty cgroup response outside resource-ring startup: {sample}")
+    latest = series[-1]
+    metrics = latest.get("metrics") if isinstance(latest, dict) else None
+    if not isinstance(metrics, dict) or not CGROUP_REQUIRED_METRICS <= set(metrics):
+        raise DemoFailure(f"cgroup response lacks aggregate metrics: {sample}")
+    return metrics
+
+
 def canonical(value: Any) -> bytes:
     return (json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
@@ -279,7 +304,13 @@ def write_terminal_manifest(evidence: "ImmutableEvidence", runner: "Runner") -> 
         },
         "execution_verdict": runner.execution_verdict,
         "cleanup_verdict": runner.cleanup_verdict,
-        "overall_verdict": "PASS" if runner.execution_verdict == "passed" and runner.cleanup_verdict == "clean" else "FAIL",
+        "overall_verdict": (
+            "OPERATIONS_COMPLETE"
+            if runner.presentation_fast and runner.execution_verdict == "passed"
+            else "PASS"
+            if runner.execution_verdict == "passed" and runner.cleanup_verdict == "clean"
+            else "FAIL"
+        ),
     }
     return evidence.write_once("manifest.json", value)
 
@@ -410,14 +441,33 @@ def load_plans() -> dict[str, list[dict[str, Any]]]:
 class Runner:
     """Stateful executor for exactly one immutable FlashCart run."""
 
-    def __init__(self, evidence: ImmutableEvidence, *, keep_sandbox: bool = False):
+    def __init__(
+        self,
+        evidence: ImmutableEvidence,
+        *,
+        keep_sandbox: bool = False,
+        target_sandbox_id: str | None = None,
+        target_workspace_root: Path | None = None,
+        presentation_fast: bool = False,
+    ):
+        if (target_sandbox_id is None) != (target_workspace_root is None):
+            raise ValueError(
+                "target_sandbox_id and target_workspace_root must be provided together"
+            )
+        if keep_sandbox and target_sandbox_id is not None:
+            raise ValueError("an attached target sandbox is retained automatically")
+        if presentation_fast and target_sandbox_id is None:
+            raise ValueError("presentation_fast requires an attached target sandbox")
         self.evidence = evidence
         self.keep_sandbox = keep_sandbox
+        self.presentation_fast = presentation_fast
+        self.target_sandbox_id = target_sandbox_id
+        self.owns_sandbox = target_sandbox_id is None
         self.plans = load_plans()
         self.run_id = evidence.run_id
         self.cancel = threading.Event()
         self.processes = None
-        self.sandbox_id: str | None = None
+        self.sandbox_id: str | None = target_sandbox_id
         self.baseline: set[str] = set()
         self.workspace: dict[str, str] = {}
         self.command: dict[str, str] = {}
@@ -432,6 +482,7 @@ class Runner:
         # audience interval begins only after static preflight has passed and
         # immediately before this run owns a sandbox.
         self.started: float | None = None
+        self.operations_completed_at: float | None = None
         self.execution_terminal_at: float | None = None
         self._engine_count = 0
         self._agent_count = 0
@@ -461,7 +512,11 @@ class Runner:
         self._command_output_lock = asyncio.Lock()
         self.execution_verdict = "running"
         self.cleanup_verdict = "pending"
-        self.work_root = TEST_REPOSITORY / ".e2e-state" / "flashcart" / "workspaces" / self.run_id
+        self.work_root = (
+            target_workspace_root.expanduser().resolve()
+            if target_workspace_root is not None
+            else TEST_REPOSITORY / ".e2e-state" / "flashcart" / "workspaces" / self.run_id
+        )
 
     def event_for(self, name: str) -> asyncio.Event:
         if name not in self.events:
@@ -481,7 +536,16 @@ class Runner:
     def elapsed_ms(self) -> float:
         if self.started is None:
             return 0.0
-        end = self.execution_terminal_at if self.execution_terminal_at is not None else time.monotonic()
+        if self.presentation_fast and self.operations_completed_at is not None:
+            end = self.operations_completed_at
+        else:
+            end = self.execution_terminal_at if self.execution_terminal_at is not None else time.monotonic()
+        return round((end - self.started) * 1000, 3)
+
+    def operations_elapsed_ms(self) -> float:
+        if self.started is None:
+            return 0.0
+        end = self.operations_completed_at if self.operations_completed_at is not None else time.monotonic()
         return round((end - self.started) * 1000, 3)
 
     def mark_execution_start(self) -> None:
@@ -489,6 +553,20 @@ class Runner:
             raise DemoFailure("execution-start was emitted twice")
         self.started = time.monotonic()
         self.evidence.event({"at": utc_stamp(), "event": "execution-start"})
+
+    def mark_operations_complete(self) -> None:
+        if self.started is None:
+            raise DemoFailure("operations completed before execution-start")
+        if self.operations_completed_at is not None:
+            raise DemoFailure("operations-complete was emitted twice")
+        self.operations_completed_at = time.monotonic()
+        value = {
+            "operations_elapsed_ms": self.operations_elapsed_ms(),
+            "completed": len(self.completed),
+            "planned": sum(len(rows) for rows in self.plans.values()),
+        }
+        self.evidence.write_once("control/operations-timing.json", value)
+        self.evidence.event({"at": utc_stamp(), "event": "operations-complete", **value})
 
     def mark_execution_terminal(self) -> None:
         if self.started is None or self.execution_terminal_at is not None:
@@ -515,7 +593,9 @@ class Runner:
                 "status": state,
                 "title": "FlashCart: ten agents, one workspace",
                 "elapsed_ms": self.elapsed_ms(),
+                "operations_elapsed_ms": self.operations_elapsed_ms(),
                 "sandbox_id": self.sandbox_id,
+                "sandbox_mode": "owned" if self.owns_sandbox else "attached_target",
                 "calls": {
                     "completed": len(self.completed), "planned": sum(len(rows) for rows in self.plans.values()),
                     "agent": self._agent_count, "engine": self._engine_count,
@@ -606,7 +686,7 @@ class Runner:
         request_id = self.request_id(row_id)
         command = ["runtime", "--sandbox-id", self.sandbox_id, "--request-id", request_id, operation, *args]
         # Command-output windows are maintained by the runtime daemon, not by
-        # an individual workspace session. Keep all command lifecycle calls
+        # an individual workspace session. Keep command lifecycle calls
         # ordered while preserving genuinely parallel file operations in the
         # ten lanes. This prevents an unrelated command from consuming a
         # manifest's one-line result.
@@ -646,7 +726,7 @@ class Runner:
         return response
 
     async def prepare(self) -> None:
-        """Validate sealed inputs, record baseline, create one isolated demo sandbox."""
+        """Validate inputs, then create or attach to one isolated demo sandbox."""
         self.checkpoint("preflight")
         result = await asyncio.to_thread(validate_preflight)
         self.evidence.write_once("assertions/preflight.json", result)
@@ -654,24 +734,78 @@ class Runner:
             raise DemoFailure("preflight validation failed")
         listing = await self.manager("baseline-list", "list_sandboxes")
         self.baseline = {item["id"] for item in listing.get("sandboxes", []) if isinstance(item, dict) and isinstance(item.get("id"), str)}
-        self.work_root.parent.mkdir(parents=True, exist_ok=True)
-        self.work_root.mkdir()
         # This is the timing boundary defined by the specification: static
         # validation and baseline inspection are done, and sandbox ownership
-        # begins with the next public manager operation.
+        # or attachment begins with the next public manager operation.
         self.mark_execution_start()
-        created = await self.manager("create-sandbox", "create_sandbox", "--image", "node:24-bookworm-slim", "--workspace-bind-root", str(self.work_root))
-        self.sandbox_id = created.get("id")
-        if not isinstance(self.sandbox_id, str):
-            raise DemoFailure("create_sandbox response lacks id")
-        self.evidence.write_once("control/sandbox.json", {"baseline_ids": sorted(self.baseline), "created": created, "workspace_bind_root": str(self.work_root)})
+        if self.owns_sandbox:
+            self.work_root.parent.mkdir(parents=True, exist_ok=True)
+            self.work_root.mkdir()
+            created = await self.manager("create-sandbox", "create_sandbox", "--image", "node:24-bookworm-slim", "--workspace-bind-root", str(self.work_root))
+            self.sandbox_id = created.get("id")
+            if not isinstance(self.sandbox_id, str):
+                raise DemoFailure("create_sandbox response lacks id")
+            control = {
+                "baseline_ids": sorted(self.baseline),
+                "created": created,
+                "workspace_bind_root": str(self.work_root),
+                "ownership": "runner",
+            }
+        else:
+            if not self.work_root.is_dir() or any(self.work_root.iterdir()):
+                raise DemoFailure(
+                    f"attached target workspace must be an existing empty directory: {self.work_root}"
+                )
+            if self.sandbox_id not in self.baseline:
+                raise DemoFailure(f"attached target sandbox is not registered: {self.sandbox_id}")
+            attached = await self.manager(
+                "inspect-target-sandbox", "inspect_sandbox", "--sandbox-id", self.sandbox_id
+            )
+            if attached.get("id") != self.sandbox_id:
+                raise DemoFailure("inspect_sandbox returned another target")
+            control = {
+                "baseline_ids": sorted(self.baseline),
+                "attached": attached,
+                "workspace_bind_root": str(self.work_root),
+                "ownership": "external_target",
+            }
+        self.evidence.write_once("control/sandbox.json", control)
         await self.bootstrap()
         await self.capture_checkpoint("bootstrap", scene="fanout")
+        await self.wait_for_cgroup_ready()
         self.event_for("bootstrap-published").set()
         self.checkpoint("bootstrap-published")
 
+    async def wait_for_cgroup_ready(self, *, timeout_seconds: float = 10.0) -> None:
+        """Wait for the manager's first real aggregate sample before fan-out."""
+        if not self.sandbox_id:
+            raise DemoFailure("cgroup readiness check without sandbox")
+        deadline = time.monotonic() + timeout_seconds
+        attempt = 0
+        while True:
+            attempt += 1
+            sample = await self.observability(
+                f"cgroup-ready-{attempt:04d}", "cgroup", "--sandbox-id", self.sandbox_id,
+                "--scope", "sandbox", "--window-ms", "600000",
+            )
+            if cgroup_metrics(sample) is not None:
+                self.evidence.write_once("assertions/cgroup-ready.json", {
+                    "attempts": attempt,
+                    "condition": "first_real_aggregate_cgroup_sample",
+                    "response": sample,
+                })
+                return
+            if time.monotonic() >= deadline:
+                raise DemoFailure(
+                    f"resource ring did not produce an aggregate sample within {timeout_seconds:g}s"
+                )
+            # The manager's resource sampler is asynchronous. Poll the exact
+            # readiness condition; this interval limits CLI churn and is not
+            # used as a claim that the resource ring must be ready by then.
+            await asyncio.sleep(0.25)
+
     async def bootstrap(self) -> None:
-        """Publish only the three documented minimal bootstrap files via Node APIs."""
+        """Publish the compact application and its one shared test via Node APIs."""
         body = base64.b64encode(json.dumps(recipes.bootstrap_files(), sort_keys=True).encode("utf-8")).decode("ascii")
         command = (
             "node --input-type=module --eval \"import { mkdir, writeFile } from 'node:fs/promises'; "
@@ -1015,14 +1149,8 @@ class Runner:
                 f"observer-cgroup-{ordinal:04d}", "cgroup", "--sandbox-id", self.sandbox_id,
                 "--scope", "sandbox", "--window-ms", "600000",
             )
-            series = sample.get("series")
-            if sample.get("view") != "cgroup" or not isinstance(series, list) or not series:
-                raise DemoFailure(f"observer cgroup sample {ordinal} is invalid: {sample}")
-            latest = series[-1]
-            metrics = latest.get("metrics") if isinstance(latest, dict) else None
-            required = {"cpu_usec", "mem_cur", "mem_max", "io_rbytes", "io_wbytes"}
-            if not isinstance(metrics, dict) or not required <= set(metrics):
-                raise DemoFailure(f"observer cgroup sample {ordinal} lacks aggregate metrics")
+            if cgroup_metrics(sample) is None:
+                raise DemoFailure(f"observer cgroup readiness regressed at sample {ordinal}")
             value = {"ordinal": ordinal, "captured_at": utc_stamp(), "response": sample}
             self.evidence.write_once(f"observability/cgroup/{ordinal:04d}.json", value)
             self._cgroup_samples.append(value)
@@ -1147,19 +1275,92 @@ class Runner:
             rejected = await self.capture_checkpoint("conflict-rejected", scene="conflict")
             after = self._shared_heads["conflict-rejected"]
             config = await self.runtime("conflict-shared-config", "ENGINE.conflict.config", "file_read", "--path", "src/config.js", provenance="engine")
-            stale = await self.runtime("conflict-stale-absent", "ENGINE.conflict.stale", "file_read", "--path", "src/conflict/A08-stale-attempt.txt", provenance="engine")
             blame = await self.runtime("conflict-winner-blame", "ENGINE.conflict.blame", "file_blame", "--path", "src/config.js", provenance="engine")
-            owners = {entry.get("owner") for entry in blame.get("ranges", []) if isinstance(entry, dict)}
+            tests = await self.runtime("conflict-shared-test", "ENGINE.conflict.test", "file_read", "--path", "tests/storefront.test.mjs", provenance="engine")
+            test_blame = await self.runtime("conflict-test-winner-blame", "ENGINE.conflict.test-blame", "file_blame", "--path", "tests/storefront.test.mjs", provenance="engine")
+            config_owners = {entry.get("owner") for entry in blame.get("ranges", []) if isinstance(entry, dict)}
+            test_owners = {entry.get("owner") for entry in test_blame.get("ranges", []) if isinstance(entry, dict)}
             a06_owner = self.attempt_owners.get("A06.conflict")
             atomic = {
                 "winner": winner, "rejected": after, "rejection": response,
-                "config": config, "stale": stale, "blame": blame,
+                "config": config, "blame": blame,
+                "test": tests, "test_blame": test_blame,
+                "contentions": [
+                    {
+                        "key": "free_shipping_threshold",
+                        "label": "Free shipping threshold",
+                        "path": "src/config.js",
+                        "line_start": 3,
+                        "base": "freeShippingCents: 5000",
+                        "winner": "freeShippingCents: 6000",
+                        "rejected": "freeShippingCents: 7500",
+                    },
+                    {
+                        "key": "standard_shipping_price",
+                        "label": "Standard shipping price",
+                        "path": "src/config.js",
+                        "line_start": 4,
+                        "base": "standardShippingCents: 700",
+                        "winner": "standardShippingCents: 650",
+                        "rejected": "standardShippingCents: 900",
+                    },
+                    {
+                        "key": "tax_rate",
+                        "label": "Checkout tax rate",
+                        "path": "src/config.js",
+                        "line_start": 5,
+                        "base": "taxRate: 0.08",
+                        "winner": "taxRate: 0.075",
+                        "rejected": "taxRate: 0.095",
+                    },
+                    {
+                        "key": "test_free_shipping_threshold",
+                        "label": "Shared test free shipping expectation",
+                        "path": "tests/storefront.test.mjs",
+                        "line_start": recipes.shared_test_line("freeShippingCents:"),
+                        "base": "freeShippingCents: 5000",
+                        "winner": "freeShippingCents: 6000",
+                        "rejected": "freeShippingCents: 7500",
+                    },
+                    {
+                        "key": "test_standard_shipping_price",
+                        "label": "Shared test shipping expectation",
+                        "path": "tests/storefront.test.mjs",
+                        "line_start": recipes.shared_test_line("standardShippingCents:"),
+                        "base": "standardShippingCents: 700",
+                        "winner": "standardShippingCents: 650",
+                        "rejected": "standardShippingCents: 900",
+                    },
+                    {
+                        "key": "test_tax_rate",
+                        "label": "Shared test tax expectation",
+                        "path": "tests/storefront.test.mjs",
+                        "line_start": recipes.shared_test_line("taxRate:"),
+                        "base": "taxRate: 0.08",
+                        "winner": "taxRate: 0.075",
+                        "rejected": "taxRate: 0.095",
+                    },
+                ],
                 "checks": {
                     "same_revision": winner is not None and winner["revision"] == after["revision"],
                     "same_manifest": winner is not None and winner["manifest"] == after["manifest"],
-                    "winner_content": "freeShippingCents: 6000" in str(config.get("content", "")) and "7500" not in str(config.get("content", "")),
-                    "stale_absent": isinstance(stale.get("error"), dict) and stale["error"].get("kind") == "not_found",
-                    "winner_blame": a06_owner in owners,
+                    "winner_content": all(
+                        all(marker in str(sample.get("content", "")) for sample in (config, tests))
+                        for marker in (
+                            "freeShippingCents: 6000",
+                            "standardShippingCents: 650",
+                            "taxRate: 0.075",
+                        )
+                    ) and all(
+                        all(marker not in str(sample.get("content", "")) for sample in (config, tests))
+                        for marker in (
+                            "freeShippingCents: 7500",
+                            "standardShippingCents: 900",
+                            "taxRate: 0.095",
+                        )
+                    ),
+                    "retry_pending": all("checkoutRetry: 'pending'" in str(sample.get("content", "")) for sample in (config, tests)),
+                    "winner_blame": a06_owner in config_owners and a06_owner in test_owners,
                 },
             }
             self.evidence.write_once("assertions/conflict-atomic.json", atomic)
@@ -1358,11 +1559,30 @@ class Runner:
         missing = [agent.id for agent in recipes.AGENTS if f"{agent.id}: {{" not in content]
         blame = await self.runtime("primary-registry-blame", "ENGINE.primary.blame", "file_blame", "--path", "src/registry.js", provenance="engine")
         owners = {item.get("owner") for item in blame.get("ranges", []) if isinstance(item, dict)}
+        tests = await self.runtime("primary-shared-test-read", "ENGINE.primary.test", "file_read", "--path", "tests/storefront.test.mjs", provenance="engine")
+        test_content = str(tests.get("content", ""))
+        missing_tests = [agent.id for agent in recipes.AGENTS if f"{agent.id} {agent.role} contribution is ready" not in test_content]
+        test_blame = await self.runtime("primary-shared-test-blame", "ENGINE.primary.test-blame", "file_blame", "--path", "tests/storefront.test.mjs", provenance="engine")
+        test_ranges = [item for item in test_blame.get("ranges", []) if isinstance(item, dict)]
+
+        def owner_at(line: int) -> str | None:
+            for item in test_ranges:
+                start = item.get("start_line")
+                count = item.get("line_count")
+                if isinstance(start, int) and isinstance(count, int) and start <= line < start + count:
+                    return item.get("owner") if isinstance(item.get("owner"), str) else None
+            return None
+
         mapping = {agent.id: self.raw_owners.get(agent.id) for agent in recipes.AGENTS}
-        if missing or None in mapping.values() or len(set(mapping.values())) != 10 or set(mapping.values()) - owners:
-            raise DemoFailure(f"primary merge/blame proof failed: missing={missing}, mapping={mapping}, raw={sorted(owners)}")
+        test_line_owners = {
+            agent.id: owner_at(recipes.shared_test_line(f"{agent.id} contribution check"))
+            for agent in recipes.AGENTS
+        }
+        if missing or missing_tests or None in mapping.values() or len(set(mapping.values())) != 10 or set(mapping.values()) - owners or test_line_owners != mapping:
+            raise DemoFailure(f"primary merge/blame proof failed: registry_missing={missing}, test_missing={missing_tests}, mapping={mapping}, registry_raw={sorted(owners)}, test_lines={test_line_owners}")
         self.evidence.write_once("assertions/primary-merge.json", {
             "registry": registry, "blame": blame,
+            "test": tests, "test_blame": test_blame, "test_line_owners": test_line_owners,
             "raw_owner_to_agent": {raw: agent for agent, raw in sorted(mapping.items())},
             "display_mapping_provenance": "runner_join",
         })
@@ -1374,7 +1594,8 @@ class Runner:
         network: asyncio.Task[None] | None = None
         try:
             await self.prepare()
-            self._observer_task = asyncio.create_task(self.observer(), name="observer")
+            if not self.presentation_fast:
+                self._observer_task = asyncio.create_task(self.observer(), name="observer")
             lanes = [asyncio.create_task(self.run_lane(agent.id), name=agent.id) for agent in recipes.AGENTS]
             for lane in lanes:
                 lane.add_done_callback(self.supervise_lane)
@@ -1402,10 +1623,15 @@ class Runner:
             await self.capture_checkpoint("network-clean", scene="network")
             self.event_for("network-experiment-clean").set()
             await asyncio.gather(*lanes)
-            await self.require_observability_window()
+            self.mark_operations_complete()
             self.verify_call_budget()
-            await self.verify_final()
+            if not self.presentation_fast:
+                await self.require_observability_window()
+                await self.verify_final()
             self.execution_verdict = "passed"
+            if self.presentation_fast:
+                self.cleanup_verdict = "not_run_presentation"
+                self.mark_execution_terminal()
             self.checkpoint("passed")
             return self._projection("passed")
         except BaseException as exc:
@@ -1430,7 +1656,8 @@ class Runner:
             # live commands and remove the sandbox, so it must not inherit the
             # cancellation token used to interrupt the execution graph.
             self.cancel.clear()
-            await self.cleanup()
+            if not (self.presentation_fast and self.execution_verdict == "passed"):
+                await self.cleanup()
 
     async def cleanup_network(self) -> None:
         for ref in ["A09.network.shared1.workspace", "A09.network.shared2.workspace", "A09.network.isolated1.workspace", "A09.network.isolated2.workspace"]:
@@ -1486,6 +1713,40 @@ class Runner:
             raise DemoFailure(
                 f"primary registry entry blame did not retain the ten mapped owners: lines={entry_owners}, owners={unique}"
             )
+        tests = await self.runtime("final-shared-test-blame", "ENGINE.final.test", "file_blame", "--path", "tests/storefront.test.mjs", provenance="engine")
+        test_ranges = [item for item in tests.get("ranges", []) if isinstance(item, dict)]
+
+        def test_owner_at(line: int) -> str | None:
+            for item in test_ranges:
+                start = item.get("start_line")
+                count = item.get("line_count")
+                if isinstance(start, int) and isinstance(count, int) and start <= line < start + count:
+                    return item.get("owner") if isinstance(item.get("owner"), str) else None
+            return None
+
+        test_entry_owners = {
+            agent.id: test_owner_at(recipes.shared_test_line(f"{agent.id} contribution check"))
+            for agent in recipes.AGENTS
+        }
+        expected_test_owners = {agent.id: self.raw_owners[agent.id] for agent in recipes.AGENTS}
+        policy_owners = {
+            "freeShippingCents": test_owner_at(recipes.shared_test_line("freeShippingCents:")),
+            "standardShippingCents": test_owner_at(recipes.shared_test_line("standardShippingCents:")),
+            "taxRate": test_owner_at(recipes.shared_test_line("taxRate:")),
+            "checkoutRetry": test_owner_at(recipes.shared_test_line("checkoutRetry:")),
+        }
+        if test_entry_owners != expected_test_owners:
+            raise DemoFailure(f"shared test did not retain every primary agent owner: {test_entry_owners}")
+        a06_conflict_owner = self.attempt_owners.get("A06.conflict")
+        a08_retry_owner = self.attempt_owners.get("A08.retry")
+        expected_policy_owners = {
+            "freeShippingCents": a06_conflict_owner,
+            "standardShippingCents": a06_conflict_owner,
+            "taxRate": a06_conflict_owner,
+            "checkoutRetry": a08_retry_owner,
+        }
+        if None in expected_policy_owners.values() or policy_owners != expected_policy_owners:
+            raise DemoFailure(f"shared test policy ownership did not retain conflict and retry owners: {policy_owners}")
         self.evidence.write_once("preview/verified-tree.json", {"files": actual, "sha256": digest(canonical(actual))})
         self._preview = {
             "state": "verified_retained_tree", "path": "preview/site/index.html",
@@ -1495,6 +1756,7 @@ class Runner:
         self.evidence.write_once("assertions/final-tree.json", {
             "expected": expected, "actual": actual, "shared_manifest": actual_manifest,
             "registry_blame": registry, "primary_entry_lines": entry_owners,
+            "test_blame": tests, "test_entry_owners": test_entry_owners, "test_policy_owners": policy_owners,
             "raw_owners": unique, "runner_owner_mapping": self.raw_owners,
             "owner_mapping_provenance": "runner_join_primary_publications_only",
         })
@@ -1606,7 +1868,7 @@ class Runner:
                     raise DemoFailure("trusted cleanup destroy returned another workspace")
             except BaseException as exc:
                 cleanup_errors.append(f"{ref}: {type(exc).__name__}: {exc}")
-        if self.sandbox_id and not self.keep_sandbox:
+        if self.sandbox_id and self.owns_sandbox and not self.keep_sandbox:
             try:
                 await self.manager("destroy-sandbox", "destroy_sandbox", "--sandbox-id", self.sandbox_id)
                 final = await self.manager("cleanup-list", "list_sandboxes")
@@ -1618,7 +1880,7 @@ class Runner:
                 self.cleanup_verdict = "clean"
             finally:
                 self.sandbox_id = None
-        if not self.keep_sandbox:
+        if self.owns_sandbox and not self.keep_sandbox:
             try:
                 if self.work_root.exists():
                     shutil.rmtree(self.work_root)
@@ -1629,12 +1891,25 @@ class Runner:
             except BaseException:
                 # The top-level failure evidence must retain the original cleanup fault.
                 raise
+        if not self.owns_sandbox:
+            self.evidence.write_once("control/cleanup.json", {
+                "baseline_ids": sorted(self.baseline),
+                "target_sandbox": self.sandbox_id,
+                "ownership": "external_target",
+                "retained": True,
+                "clean": not cleanup_errors,
+                "errors": cleanup_errors,
+            })
         if cleanup_errors:
             self.cleanup_verdict = "failed"
             self.mark_execution_terminal()
             raise DemoFailure("; ".join(cleanup_errors))
         if self.cleanup_verdict == "pending":
-            self.cleanup_verdict = "clean" if not self.keep_sandbox else "retained-debug"
+            self.cleanup_verdict = (
+                "clean"
+                if not self.keep_sandbox
+                else "retained-debug"
+            )
         self.mark_execution_terminal()
         self.checkpoint("passed" if self.execution_verdict == "passed" and self.cleanup_verdict == "clean" else "failed")
 
@@ -1662,7 +1937,13 @@ def configure_harness() -> None:
 async def run_command(args: argparse.Namespace) -> int:
     configure_harness()
     evidence = ImmutableEvidence(safe_run_id(args.run_id), create=True)
-    runner = Runner(evidence, keep_sandbox=args.keep_sandbox)
+    runner = Runner(
+        evidence,
+        keep_sandbox=args.keep_sandbox,
+        target_sandbox_id=args.target_sandbox_id,
+        target_workspace_root=args.target_workspace_root,
+        presentation_fast=args.presentation_fast,
+    )
     try:
         freeze_run_inputs(evidence)
         await runner.run()
@@ -1674,10 +1955,11 @@ async def run_command(args: argparse.Namespace) -> int:
         write_terminal_manifest(evidence, runner)
         evidence.checksums()
         raise
-    evidence.write_once("verdict.json", {"status": "PASS", "run_id": evidence.run_id, "result": result})
+    status = "OPERATIONS_COMPLETE" if runner.presentation_fast else "PASS"
+    evidence.write_once("verdict.json", {"status": status, "run_id": evidence.run_id, "result": result})
     write_terminal_manifest(evidence, runner)
     evidence.checksums()
-    print(json.dumps({"run_id": evidence.run_id, "status": "PASS", "path": str(evidence.root)}, sort_keys=True))
+    print(json.dumps({"run_id": evidence.run_id, "status": status, "path": str(evidence.root)}, sort_keys=True))
     return 0
 
 
@@ -1772,6 +2054,20 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     run = sub.add_parser("run", help="run the live FlashCart plan")
     run.add_argument("--run-id")
     run.add_argument("--keep-sandbox", action="store_true", help="debug-only: retain the owned sandbox")
+    run.add_argument(
+        "--presentation-fast",
+        action="store_true",
+        help="end at operation 482 without the resource window, final verification, or cleanup",
+    )
+    run.add_argument(
+        "--target-sandbox-id",
+        help="attach the 482 authored operations to an existing sandbox and retain it",
+    )
+    run.add_argument(
+        "--target-workspace-root",
+        type=Path,
+        help="empty host workspace already bound to --target-sandbox-id",
+    )
     export = sub.add_parser("export", help="install a redacted recorded package from a terminal clean run")
     export.add_argument("--run-id", required=True)
     verify = sub.add_parser("verify-export", help="rehash a recorded package")
@@ -1780,7 +2076,18 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     serve.add_argument("--run-id", required=True)
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8765)
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.command == "run":
+        attached = args.target_sandbox_id is not None or args.target_workspace_root is not None
+        if (args.target_sandbox_id is None) != (args.target_workspace_root is None):
+            parser.error(
+                "--target-sandbox-id and --target-workspace-root must be provided together"
+            )
+        if attached and args.keep_sandbox:
+            parser.error("--keep-sandbox cannot be combined with an attached target")
+        if args.presentation_fast and not attached:
+            parser.error("--presentation-fast requires an attached target")
+    return args
 
 
 def main(argv: list[str] | None = None) -> int:

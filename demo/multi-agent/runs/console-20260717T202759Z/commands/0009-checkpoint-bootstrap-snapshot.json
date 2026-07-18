@@ -1,0 +1,51 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "snapshot",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216"
+  ],
+  "cancelled": false,
+  "duration_ms": 589.598,
+  "kind": "public_cli_process",
+  "label": "checkpoint-bootstrap-snapshot",
+  "parse_error": null,
+  "parsed_json": {
+    "availability": "available",
+    "daemon": {
+      "daemon_pid": 7,
+      "event_store": {
+        "dropped_oversized": 0,
+        "dropped_storage": 0,
+        "truncated_records": 0
+      },
+      "runtime_dir": "/eos/runtime/daemon"
+    },
+    "errors": [],
+    "lifecycle_state": "ready",
+    "resources": {
+      "history": [],
+      "latest": null
+    },
+    "sampled_at_unix_ms": 1784320082365,
+    "sandbox_id": "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "stack": {
+      "active_leases": 0,
+      "layer_count": 2,
+      "layers_allocated_bytes": null,
+      "layers_bytes": null,
+      "staging_entry_count": 0,
+      "storage_allocated_bytes": 86016
+    },
+    "workspaces": []
+  },
+  "pid": 36360,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 9,
+  "stderr": "",
+  "stdout": "{\"sandbox_id\":\"eos-cb44de6a-0587-42bb-8c6d-bafad6473216\",\"lifecycle_state\":\"ready\",\"availability\":\"available\",\"sampled_at_unix_ms\":1784320082365,\"errors\":[],\"daemon\":{\"daemon_pid\":7,\"runtime_dir\":\"/eos/runtime/daemon\",\"event_store\":{\"dropped_storage\":0,\"dropped_oversized\":0,\"truncated_records\":0}},\"resources\":{\"latest\":null,\"history\":[]},\"workspaces\":[],\"stack\":{\"layer_count\":2,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_allocated_bytes\":86016,\"staging_entry_count\":0,\"active_leases\":0}}\n",
+  "timed_out": false
+}

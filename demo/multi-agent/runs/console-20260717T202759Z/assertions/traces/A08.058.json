@@ -1,0 +1,26 @@
+{
+  "request_id": "console-20260717T202759Z:A08.058:runtime",
+  "row": "A08.058",
+  "trace": {
+    "spans": [
+      {
+        "children": [],
+        "events": [],
+        "offset_ms": 0.0,
+        "span": {
+          "attrs": {
+            "op": "file_read"
+          },
+          "dur_ms": 0.0,
+          "name": "daemon.dispatch",
+          "span": "d-1932",
+          "status": "completed",
+          "trace": "console-20260717T202759Z:A08.058:runtime",
+          "ts": 1784320114813
+        }
+      }
+    ],
+    "trace": "console-20260717T202759Z:A08.058:runtime",
+    "view": "trace"
+  }
+}

@@ -1,5 +1,6 @@
-(function (root) {
-  root.FlashCart = root.FlashCart || {};
-  root.FlashCart.features = root.FlashCart.features || {};
-  root.FlashCart.features.A05 = { id: 'A05', verify() { return false; }, implementation: 'broken A05' };
-})(globalThis);
+[
+  {
+    "new_string": "  A05: { id: 'A05', role: 'Search and facets', stage: 'broken', deterministic: false, verify() { return false; } },",
+    "old_string": "  A05: null,"
+  }
+]

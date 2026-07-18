@@ -1,6 +1,6 @@
 [
   {
-    "new_string": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A07 = {\n    id: 'A07',\n    label: 'Wishlist',\n    deterministic: true,\n    verify() { return true; },\n    toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }\n  };\n})(globalThis);\n",
-    "old_string": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A07 = { id: 'A07', verify() { return false; }, implementation: 'broken A07' };\n})(globalThis);\n"
+    "new_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'core', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); } },",
+    "old_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'broken', deterministic: false, verify() { return false; } },"
   }
 ]

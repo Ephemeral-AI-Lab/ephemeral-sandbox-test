@@ -1,0 +1,122 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "layerstack",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--window-ms",
+    "600000"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.709,
+  "kind": "public_cli_process",
+  "label": "checkpoint-primary-publications-layerstack",
+  "parse_error": null,
+  "parsed_json": {
+    "active_lease_count": 0,
+    "layers": [
+      {
+        "allocated_bytes": 24576,
+        "booked_by": [],
+        "bytes": 6407,
+        "layer_id": "L000012-00000035",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 24576,
+        "booked_by": [],
+        "bytes": 5911,
+        "layer_id": "L000011-00000031",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 5364,
+        "layer_id": "L000010-0000002d",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 4839,
+        "layer_id": "L000009-00000029",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 4357,
+        "layer_id": "L000008-00000025",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 3575,
+        "layer_id": "L000007-00000021",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 3064,
+        "layer_id": "L000006-0000001d",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 2599,
+        "layer_id": "L000005-00000019",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 2073,
+        "layer_id": "L000004-00000015",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 20480,
+        "booked_by": [],
+        "bytes": 1617,
+        "layer_id": "L000003-00000011",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": 40960,
+        "booked_by": [],
+        "bytes": 15631,
+        "layer_id": "L000002-00000001",
+        "leased_by_workspaces": 0
+      },
+      {
+        "allocated_bytes": null,
+        "booked_by": [],
+        "bytes": null,
+        "layer_id": "B000001-base",
+        "leased_by_workspaces": 0
+      }
+    ],
+    "manifest_version": 12,
+    "root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+    "staging_entry_count": 0,
+    "storage_allocated_bytes": 380928,
+    "storage_logical_bytes": 57558,
+    "total_allocated_bytes": null,
+    "total_bytes": null,
+    "trend": [],
+    "view": "layerstack"
+  },
+  "pid": 63396,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1080,
+  "stderr": "",
+  "stdout": "{\"view\":\"layerstack\",\"manifest_version\":12,\"root_hash\":\"085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75\",\"active_lease_count\":0,\"total_bytes\":null,\"total_allocated_bytes\":null,\"storage_logical_bytes\":57558,\"storage_allocated_bytes\":380928,\"staging_entry_count\":0,\"layers\":[{\"layer_id\":\"L000012-00000035\",\"bytes\":6407,\"allocated_bytes\":24576,\"leased_by_workspaces\":0,\"booked_by\":[]},{\"layer_id\":\"L000011-00000031\",\"bytes\":5911,\"allocated_bytes\":24576,\"leased_by_workspaces\":0,\"booked_by\":[]},{\"layer_id\":\"L000010-0000002d\",\"bytes\":5364,\"allocated_bytes\":20480,\"leased_by_workspaces\":0,\"booked_by\":[]},{\"layer_id\":\"L000009-00000029\",\"bytes\":4839,\"allocated_bytes\":20480,\"leased_by_workspaces\":0,\"booked_by\":[]},{\"layer_id\":\"L000008-00000025\",\"bytes\":4357,\"allocated_bytes\":20480,\"leased_by_workspaces\":0,\"booked_by\":[]},{\"layer_id\":\"L000007-00000021\",\"bytes\":3575,\"allocated_bytes\":20480,\"leased_by_workspaces\":0,\"booked_by\":[]},{\"layer_id\":\"L000006-0000001d\",\"bytes\":3064,\"allocated_bytes\":20480,\"leased_by_workspaces\":0,\"booked_by\":[]},{\"layer_id\":\"L000005-00000019\",\"bytes\":2599,\"allocated_bytes\":20480,\"leased_by_workspaces\":0,\"booked_by\":[]},{\"layer_id\":\"L000004-00000015\",\"bytes\":2073,\"allocated_bytes\":20480,\"leased_by_workspaces\":0,\"booked_by\":[]},{\"layer_id\":\"L000003-00000011\",\"bytes\":1617,\"allocated_bytes\":20480,\"leased_by_workspaces\":0,\"booked_by\":[]},{\"layer_id\":\"L000002-00000001\",\"bytes\":15631,\"allocated_bytes\":40960,\"leased_by_workspaces\":0,\"booked_by\":[]},{\"layer_id\":\"B000001-base\",\"bytes\":null,\"allocated_bytes\":null,\"leased_by_workspaces\":0,\"booked_by\":[]}],\"trend\":[]}\n",
+  "timed_out": false
+}

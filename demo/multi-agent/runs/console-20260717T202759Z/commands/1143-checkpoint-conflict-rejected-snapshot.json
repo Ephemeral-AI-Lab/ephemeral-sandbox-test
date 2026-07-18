@@ -1,0 +1,137 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-observability-cli",
+    "snapshot",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216"
+  ],
+  "cancelled": false,
+  "duration_ms": 40.511,
+  "kind": "public_cli_process",
+  "label": "checkpoint-conflict-rejected-snapshot",
+  "parse_error": null,
+  "parsed_json": {
+    "availability": "available",
+    "daemon": {
+      "daemon_pid": 7,
+      "event_store": {
+        "dropped_oversized": 0,
+        "dropped_storage": 0,
+        "truncated_records": 0
+      },
+      "runtime_dir": "/eos/runtime/daemon"
+    },
+    "errors": [],
+    "lifecycle_state": "ready",
+    "resources": {
+      "history": [],
+      "latest": null
+    },
+    "sampled_at_unix_ms": 1784320113149,
+    "sandbox_id": "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "stack": {
+      "active_leases": 4,
+      "layer_count": 13,
+      "layers_allocated_bytes": null,
+      "layers_bytes": null,
+      "staging_entry_count": 0,
+      "storage_allocated_bytes": 409600
+    },
+    "workspaces": [
+      {
+        "active_namespace_executions": [
+          {
+            "command": "node --input-type=module --eval 'import { createServer } from '\"'\"'node:http'\"'\"'; const server = createServer(function (_, response) { response.end('\"'\"'ok'\"'\"'); }); server.once('\"'\"'error'\"'\"', function (error) { if (error.code === '\"'\"'EADDRINUSE'\"'\"') { console.log('\"'\"'PORT_COLLISION'\"'\"'); process.exit(0); } throw error; }); process.stdin.setEncoding('\"'\"'utf8'\"'\"'); process.stdin.on('\"'\"'data'\"'\"', function (value) { if (value.trim() === '\"'\"'stop'\"'\"') server.close(function () { process.exit(0); }); }); server.listen(4173, '\"'\"'0.0.0.0'\"'\"', function () { console.log('\"'\"'PORT_BOUND shared-one'\"'\"'); });'",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_350",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "no_op",
+        "layers": {
+          "base_root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+          "layer_count": 12
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00001018c32db0169d9685"
+      },
+      {
+        "active_namespace_executions": [],
+        "finalize_policy": "no_op",
+        "layers": {
+          "base_root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+          "layer_count": 12
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 3,
+        "network_profile": "shared",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00001218c32db01aa19941"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "command": "node --input-type=module --eval 'import { createServer } from '\"'\"'node:http'\"'\"'; const server = createServer(function (_, response) { response.end('\"'\"'ok'\"'\"'); }); server.once('\"'\"'error'\"'\"', function (error) { if (error.code === '\"'\"'EADDRINUSE'\"'\"') { console.log('\"'\"'PORT_COLLISION'\"'\"'); process.exit(0); } throw error; }); process.stdin.setEncoding('\"'\"'utf8'\"'\"'); process.stdin.on('\"'\"'data'\"'\"', function (value) { if (value.trim() === '\"'\"'stop'\"'\"') server.close(function () { process.exit(0); }); }); server.listen(4173, '\"'\"'0.0.0.0'\"'\"', function () { console.log('\"'\"'PORT_BOUND isolated-one'\"'\"'); });'",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_356",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "no_op",
+        "layers": {
+          "base_root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+          "layer_count": 12
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 4,
+        "network_profile": "isolated",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00001318c32db01eca99e1"
+      },
+      {
+        "active_namespace_executions": [
+          {
+            "command": "node --input-type=module --eval 'import { createServer } from '\"'\"'node:http'\"'\"'; const server = createServer(function (_, response) { response.end('\"'\"'ok'\"'\"'); }); server.once('\"'\"'error'\"'\"', function (error) { if (error.code === '\"'\"'EADDRINUSE'\"'\"') { console.log('\"'\"'PORT_COLLISION'\"'\"'); process.exit(0); } throw error; }); process.stdin.setEncoding('\"'\"'utf8'\"'\"'); process.stdin.on('\"'\"'data'\"'\"', function (value) { if (value.trim() === '\"'\"'stop'\"'\"') server.close(function () { process.exit(0); }); }); server.listen(4173, '\"'\"'0.0.0.0'\"'\"', function () { console.log('\"'\"'PORT_BOUND isolated-two'\"'\"'); });'",
+            "lifecycle_state": "running",
+            "namespace_execution_id": "namespace_execution_357",
+            "operation": "exec_command"
+          }
+        ],
+        "finalize_policy": "no_op",
+        "layers": {
+          "base_root_hash": "085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75",
+          "layer_count": 12
+        },
+        "lifecycle_state": "active",
+        "namespace_fd_count": 4,
+        "network_profile": "isolated",
+        "resources": {
+          "history": [],
+          "latest": null
+        },
+        "workspace_id": "00001418c32db023a5d2db"
+      }
+    ]
+  },
+  "pid": 65602,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1143,
+  "stderr": "",
+  "stdout": "{\"sandbox_id\":\"eos-cb44de6a-0587-42bb-8c6d-bafad6473216\",\"lifecycle_state\":\"ready\",\"availability\":\"available\",\"sampled_at_unix_ms\":1784320113149,\"errors\":[],\"daemon\":{\"daemon_pid\":7,\"runtime_dir\":\"/eos/runtime/daemon\",\"event_store\":{\"dropped_storage\":0,\"dropped_oversized\":0,\"truncated_records\":0}},\"resources\":{\"latest\":null,\"history\":[]},\"workspaces\":[{\"workspace_id\":\"00001018c32db0169d9685\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"no_op\",\"layers\":{\"base_root_hash\":\"085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75\",\"layer_count\":12},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_350\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"node --input-type=module --eval 'import { createServer } from '\\\"'\\\"'node:http'\\\"'\\\"'; const server = createServer(function (_, response) { response.end('\\\"'\\\"'ok'\\\"'\\\"'); }); server.once('\\\"'\\\"'error'\\\"'\\\"', function (error) { if (error.code === '\\\"'\\\"'EADDRINUSE'\\\"'\\\"') { console.log('\\\"'\\\"'PORT_COLLISION'\\\"'\\\"'); process.exit(0); } throw error; }); process.stdin.setEncoding('\\\"'\\\"'utf8'\\\"'\\\"'); process.stdin.on('\\\"'\\\"'data'\\\"'\\\"', function (value) { if (value.trim() === '\\\"'\\\"'stop'\\\"'\\\"') server.close(function () { process.exit(0); }); }); server.listen(4173, '\\\"'\\\"'0.0.0.0'\\\"'\\\"', function () { console.log('\\\"'\\\"'PORT_BOUND shared-one'\\\"'\\\"'); });'\"}]},{\"workspace_id\":\"00001218c32db01aa19941\",\"lifecycle_state\":\"active\",\"network_profile\":\"shared\",\"finalize_policy\":\"no_op\",\"layers\":{\"base_root_hash\":\"085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75\",\"layer_count\":12},\"namespace_fd_count\":3,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[]},{\"workspace_id\":\"00001318c32db01eca99e1\",\"lifecycle_state\":\"active\",\"network_profile\":\"isolated\",\"finalize_policy\":\"no_op\",\"layers\":{\"base_root_hash\":\"085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75\",\"layer_count\":12},\"namespace_fd_count\":4,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_356\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"node --input-type=module --eval 'import { createServer } from '\\\"'\\\"'node:http'\\\"'\\\"'; const server = createServer(function (_, response) { response.end('\\\"'\\\"'ok'\\\"'\\\"'); }); server.once('\\\"'\\\"'error'\\\"'\\\"', function (error) { if (error.code === '\\\"'\\\"'EADDRINUSE'\\\"'\\\"') { console.log('\\\"'\\\"'PORT_COLLISION'\\\"'\\\"'); process.exit(0); } throw error; }); process.stdin.setEncoding('\\\"'\\\"'utf8'\\\"'\\\"'); process.stdin.on('\\\"'\\\"'data'\\\"'\\\"', function (value) { if (value.trim() === '\\\"'\\\"'stop'\\\"'\\\"') server.close(function () { process.exit(0); }); }); server.listen(4173, '\\\"'\\\"'0.0.0.0'\\\"'\\\"', function () { console.log('\\\"'\\\"'PORT_BOUND isolated-one'\\\"'\\\"'); });'\"}]},{\"workspace_id\":\"00001418c32db023a5d2db\",\"lifecycle_state\":\"active\",\"network_profile\":\"isolated\",\"finalize_policy\":\"no_op\",\"layers\":{\"base_root_hash\":\"085b651a2ac8ba211f1a2a0224e575dde355c5c5777ed739541dc3aa39836c75\",\"layer_count\":12},\"namespace_fd_count\":4,\"resources\":{\"latest\":null,\"history\":[]},\"active_namespace_executions\":[{\"namespace_execution_id\":\"namespace_execution_357\",\"operation\":\"exec_command\",\"lifecycle_state\":\"running\",\"command\":\"node --input-type=module --eval 'import { createServer } from '\\\"'\\\"'node:http'\\\"'\\\"'; const server = createServer(function (_, response) { response.end('\\\"'\\\"'ok'\\\"'\\\"'); }); server.once('\\\"'\\\"'error'\\\"'\\\"', function (error) { if (error.code === '\\\"'\\\"'EADDRINUSE'\\\"'\\\"') { console.log('\\\"'\\\"'PORT_COLLISION'\\\"'\\\"'); process.exit(0); } throw error; }); process.stdin.setEncoding('\\\"'\\\"'utf8'\\\"'\\\"'); process.stdin.on('\\\"'\\\"'data'\\\"'\\\"', function (value) { if (value.trim() === '\\\"'\\\"'stop'\\\"'\\\"') server.close(function () { process.exit(0); }); }); server.listen(4173, '\\\"'\\\"'0.0.0.0'\\\"'\\\"', function () { console.log('\\\"'\\\"'PORT_BOUND isolated-two'\\\"'\\\"'); });'\"}]}],\"stack\":{\"layer_count\":13,\"layers_bytes\":null,\"layers_allocated_bytes\":null,\"storage_allocated_bytes\":409600,\"staging_entry_count\":0,\"active_leases\":4}}\n",
+  "timed_out": false
+}

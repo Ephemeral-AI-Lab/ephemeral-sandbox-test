@@ -1,1 +1,6 @@
-.feature-a10 { border-inline-start: 4px solid #175b50; } .feature-a10 :focus-visible { outline: 3px solid #124ea0; }
+[
+  {
+    "new_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'style', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }, fixture: 'qa-fixture', view: '<section data-domain=\"qa\"></section>', focusVisible: true },",
+    "old_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'view', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }, fixture: 'qa-fixture', view: '<section data-domain=\"qa\"></section>' },"
+  }
+]

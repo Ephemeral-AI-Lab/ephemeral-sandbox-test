@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-manager-cli",
+    "inspect_sandbox",
+    "--sandbox-id",
+    "eos-d04792bd-1c27-4eec-9af0-f2bac0f1f2ae"
+  ],
+  "cancelled": false,
+  "duration_ms": 32.79,
+  "kind": "public_cli_process",
+  "label": "inspect-target-sandbox",
+  "parse_error": null,
+  "parsed_json": {
+    "activity_revision": 0,
+    "daemon": {
+      "host": "127.0.0.1",
+      "port": 57222
+    },
+    "daemon_http": {
+      "host": "127.0.0.1",
+      "port": 57223
+    },
+    "id": "eos-d04792bd-1c27-4eec-9af0-f2bac0f1f2ae",
+    "shared_base": {
+      "readonly": true,
+      "root_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "<host-path>",
+      "target": "/eos/layer-stack/base"
+    },
+    "state": "ready",
+    "workspace_root": "<host-path>"
+  },
+  "pid": 68035,
+  "provenance": "engine",
+  "request_id": null,
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 2,
+  "stderr": "",
+  "stdout": "{\"id\":\"eos-d04792bd-1c27-4eec-9af0-f2bac0f1f2ae\",\"workspace_root\":\"<host-path>\",\"state\":\"ready\",\"activity_revision\":0,\"daemon\":{\"host\":\"127.0.0.1\",\"port\":57222},\"daemon_http\":{\"host\":\"127.0.0.1\",\"port\":57223},\"shared_base\":{\"source\":\"<host-path>\",\"target\":\"/eos/layer-stack/base\",\"root_hash\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"readonly\":true}}\n",
+  "timed_out": false
+}

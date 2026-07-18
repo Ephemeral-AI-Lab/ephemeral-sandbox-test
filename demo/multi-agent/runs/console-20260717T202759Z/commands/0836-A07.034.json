@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A07.034:runtime",
+    "file_read",
+    "--path",
+    "src/registry.js",
+    "--workspace-session-id",
+    "00000918c32da9678a6ffd"
+  ],
+  "cancelled": false,
+  "duration_ms": 41.967,
+  "kind": "public_cli_process",
+  "label": "A07.034",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 652,
+    "content": "window.FlashCart = window.FlashCart || {};\nwindow.FlashCart.features = {\n  A01: null,\n  A02: null,\n  A03: null,\n  A04: null,\n  A05: null,\n  A06: null,\n  A07: { id: 'A07', role: 'Wishlist', stage: 'manifest', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\"wishlist\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A07', schemaVersion: 1 },\n  A08: null,\n  A09: null,\n  A10: null,\n};\nwindow.FlashCart.registry = window.FlashCart.features;",
+    "next_offset": null,
+    "num_lines": 14,
+    "path": "src/registry.js",
+    "start_line": 1,
+    "total_bytes": 653,
+    "total_lines": 14,
+    "truncated": false
+  },
+  "pid": 55166,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A07.034:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 836,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/registry.js\",\"content\":\"window.FlashCart = window.FlashCart || {};\\nwindow.FlashCart.features = {\\n  A01: null,\\n  A02: null,\\n  A03: null,\\n  A04: null,\\n  A05: null,\\n  A06: null,\\n  A07: { id: 'A07', role: 'Wishlist', stage: 'manifest', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\\\"wishlist\\\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A07', schemaVersion: 1 },\\n  A08: null,\\n  A09: null,\\n  A10: null,\\n};\\nwindow.FlashCart.registry = window.FlashCart.features;\",\"start_line\":1,\"num_lines\":14,\"total_lines\":14,\"bytes_read\":652,\"total_bytes\":653,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

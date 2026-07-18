@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:ENGINE.effects.before.A10.020:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000c18c32da971429264",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { createHash } from 'node:crypto'; import { readdir, readFile } from 'node:fs/promises'; const walk=async(d='.')=>{const out=[];for(const e of await readdir(d,{withFileTypes:true})){const p=(d==='.'?'':d+'/')+e.name;if(p==='.git'||p.startsWith('.git/')||p==='node_modules'||p.startsWith('node_modules/'))continue;if(e.isDirectory())out.push(...await walk(p));else if(e.isFile())out.push([p,createHash('sha256').update(await readFile(p)).digest('hex')]);}return out};console.log(JSON.stringify(Object.fromEntries((await walk()).sort((a,b)=>a[0].localeCompare(b[0])))));\""
+  ],
+  "cancelled": false,
+  "duration_ms": 75.166,
+  "kind": "public_cli_process",
+  "label": "effects-before-A10.020",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.037001125,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "{\"index.html\":\"47ce8816d87ce313502b3d0512aa65225d6861700e20737dfc7dd9d85d0b4c0b\",\"src/app.js\":\"67ebc7f26e5ea4d544e1d519a5ebf530b2168d9e14b758f736e0956394974834\",\"src/config.js\":\"89d064c346d482f9c302748d0a026251e60364c0e51f256b9310f95237d02787\",\"src/registry.js\":\"eee8aeadc29725eedc5e07b9729bb148affab9650c668fcccf7b4a8541290a94\",\"tests/storefront.test.mjs\":\"2cae8fdaf37b153ebc24bc9a18dd6098985863f2316231e54daf621f9cac5bb7\"}",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.037064083,
+    "workspace_session_id": "00000c18c32da971429264"
+  },
+  "pid": 45789,
+  "provenance": "engine",
+  "request_id": "console-20260717T202759Z:ENGINE.effects.before.A10.020:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 519,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.037064083,\"command_total_time_seconds\":0.037001125,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":106,\"output\":\"{\\\"index.html\\\":\\\"47ce8816d87ce313502b3d0512aa65225d6861700e20737dfc7dd9d85d0b4c0b\\\",\\\"src/app.js\\\":\\\"67ebc7f26e5ea4d544e1d519a5ebf530b2168d9e14b758f736e0956394974834\\\",\\\"src/config.js\\\":\\\"89d064c346d482f9c302748d0a026251e60364c0e51f256b9310f95237d02787\\\",\\\"src/registry.js\\\":\\\"eee8aeadc29725eedc5e07b9729bb148affab9650c668fcccf7b4a8541290a94\\\",\\\"tests/storefront.test.mjs\\\":\\\"2cae8fdaf37b153ebc24bc9a18dd6098985863f2316231e54daf621f9cac5bb7\\\"}\",\"workspace_session_id\":\"00000c18c32da971429264\"}\n",
+  "timed_out": false
+}

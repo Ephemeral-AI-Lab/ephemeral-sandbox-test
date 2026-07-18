@@ -62,8 +62,8 @@ class Phase1Tests(unittest.TestCase):
             "category": lambda root: self._change(root, "A01", 2, lambda row: row.__setitem__("category", "patch")),
             "provenance": lambda root: self._change(root, "A01", 2, lambda row: row.__setitem__("provenance", "host")),
             "padding": lambda root: self._change(root, "A01", 11, lambda row: row["args"].__setitem__("command", "sleep 1")),
-            "wrong_red": lambda root: self._change(root, "A01", 8, lambda row: row["expect"]["failing_subtests"][0].__setitem__("id", "wrong red")),
-            "infra_red": lambda root: self._change(root, "A01", 8, lambda row: row["expect"].__setitem__("forbid_output_contains", [])),
+            "wrong_red": lambda root: self._change(root, "A01", 7, lambda row: row["expect"]["failing_subtests"][0].__setitem__("id", "wrong red")),
+            "infra_red": lambda root: self._change(root, "A01", 7, lambda row: row["expect"].__setitem__("forbid_output_contains", [])),
             "compiled": lambda root: self._change_compiled(root, "image", "node:wrong"),
         }
         for name, mutate in cases.items():
@@ -107,13 +107,51 @@ class Phase1Tests(unittest.TestCase):
         errors = self.mutated(lambda root: self._rewrite_first_edit_payload(root))
         self.assertTrue(errors)
 
-    def test_quality_contract_is_written_before_its_review_read(self) -> None:
+    def test_published_application_has_five_compact_shared_files(self) -> None:
+        tree = validate.recipes.materialized_tree()
+        self.assertEqual(
+            sorted(tree),
+            ["index.html", "src/app.js", "src/config.js", "src/registry.js", "tests/storefront.test.mjs"],
+        )
+        self.assertEqual(len(tree), 5)
+        self.assertEqual([path for path in tree if path.startswith("tests/")], ["tests/storefront.test.mjs"])
+        self.assertFalse(any(path.startswith("src/features/") for path in tree))
+        self.assertFalse(any(any(agent.id in part for agent in validate.recipes.AGENTS) for part in tree))
         for agent in (entry.id for entry in validate.recipes.AGENTS):
             _, rows = self.plan(DEMO, agent)
-            quality = f"tests/{agent}-quality.test.mjs"
-            write = next(index for index, row in enumerate(rows) if row["op"] == "file_write" and row["args"].get("path") == quality)
-            review = next(index for index, row in enumerate(rows) if row["op"] == "file_read" and row["args"].get("path") == quality)
-            self.assertLess(write, review, agent)
+            self.assertFalse(any(row["op"] == "file_write" for row in rows), agent)
+            self.assertEqual(rows[37]["args"]["path"], "tests/storefront.test.mjs")
+            self.assertEqual(rows[41]["args"]["path"], "src/registry.js")
+            self.assertEqual(rows[42]["test_cycle"], f"{agent}.quality")
+        for row_id in ("A06.047", "A08.047", "A08.055"):
+            agent = row_id.split(".", 1)[0]
+            _, rows = self.plan(DEMO, agent)
+            row = next(value for value in rows if value["id"] == row_id)
+            self.assertEqual(
+                row["effects"]["paths"],
+                ["src/config.js", "tests/storefront.test.mjs"],
+            )
+
+    def test_materialized_registry_executes_with_the_browser_global(self) -> None:
+        """The consolidated registry must execute, not merely parse as JavaScript."""
+        with tempfile.TemporaryDirectory() as temp_name:
+            root = Path(temp_name)
+            materialize.materialize(root)
+            script = (
+                "import { readFile } from 'node:fs/promises'; "
+                "globalThis.window = globalThis; "
+                "globalThis.eval(await readFile('src/config.js', 'utf8')); "
+                "globalThis.eval(await readFile('src/registry.js', 'utf8')); "
+                "const quote = globalThis.FlashCart.features.A06.quoteCart(1000); "
+                "if (quote.shippingCents !== 650 || quote.taxCents !== 75 || quote.totalCents !== 1725) process.exit(1);"
+            )
+            completed = subprocess.run(
+                ["node", "--input-type=module", "--eval", script],
+                cwd=root,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
 
     def test_terminal_shared_port_collision_does_not_bind_a_command_session(self) -> None:
         _, rows = self.plan(DEMO, "A09")
@@ -188,6 +226,9 @@ class Phase1Tests(unittest.TestCase):
     def test_phase1_seal_order_writes_manifest_before_validation(self) -> None:
         labels = seal_phase1.command_labels()
         self.assertLess(labels.index("manifest.json before validate_phase1_evidence.py --run-root RUN_ROOT"), labels.index("validate_phase1_evidence.py --run-root RUN_ROOT --require-checksums"))
+        self.assertNotIn("node --check scripts/serve.mjs", labels)
+        self.assertIn("node --check src/config.js", labels)
+        self.assertIn("node --check src/registry.js", labels)
         self.assertIn("run_storefront_browser.mjs --tree OFFLINE_FINAL --output BROWSER_RESULT", labels)
         browser_runner = (DEMO / "run_storefront_browser.mjs").read_text("utf-8")
         self.assertIn("error_sha256", browser_runner)

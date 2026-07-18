@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A02.014:runtime",
+    "file_read",
+    "--path",
+    "src/registry.js",
+    "--workspace-session-id",
+    "00000418c32da9581d8c22"
+  ],
+  "cancelled": false,
+  "duration_ms": 46.369,
+  "kind": "public_cli_process",
+  "label": "A02.014",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_read": 471,
+    "content": "window.FlashCart = window.FlashCart || {};\nwindow.FlashCart.features = {\n  A01: null,\n  A02: { id: 'A02', role: 'Design system', stage: 'data', deterministic: true, verify() { return true; }, tokens() { return { accent: '#175b50', surface: '#fffdf8', focus: '#124ea0' }; }, fixture: 'design-system-fixture' },\n  A03: null,\n  A04: null,\n  A05: null,\n  A06: null,\n  A07: null,\n  A08: null,\n  A09: null,\n  A10: null,\n};\nwindow.FlashCart.registry = window.FlashCart.features;",
+    "next_offset": null,
+    "num_lines": 14,
+    "path": "src/registry.js",
+    "start_line": 1,
+    "total_bytes": 472,
+    "total_lines": 14,
+    "truncated": false
+  },
+  "pid": 41764,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A02.014:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 306,
+  "stderr": "",
+  "stdout": "{\"path\":\"src/registry.js\",\"content\":\"window.FlashCart = window.FlashCart || {};\\nwindow.FlashCart.features = {\\n  A01: null,\\n  A02: { id: 'A02', role: 'Design system', stage: 'data', deterministic: true, verify() { return true; }, tokens() { return { accent: '#175b50', surface: '#fffdf8', focus: '#124ea0' }; }, fixture: 'design-system-fixture' },\\n  A03: null,\\n  A04: null,\\n  A05: null,\\n  A06: null,\\n  A07: null,\\n  A08: null,\\n  A09: null,\\n  A10: null,\\n};\\nwindow.FlashCart.registry = window.FlashCart.features;\",\"start_line\":1,\"num_lines\":14,\"total_lines\":14,\"bytes_read\":471,\"total_bytes\":472,\"next_offset\":null,\"truncated\":false}\n",
+  "timed_out": false
+}

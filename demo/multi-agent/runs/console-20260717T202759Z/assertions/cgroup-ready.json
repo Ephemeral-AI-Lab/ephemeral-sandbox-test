@@ -1,0 +1,34 @@
+{
+  "attempts": 1,
+  "condition": "first_real_aggregate_cgroup_sample",
+  "response": {
+    "availability": "available",
+    "errors": [],
+    "scope": "sandbox",
+    "series": [
+      {
+        "deltas": {},
+        "metrics": {
+          "cpu_usec": 56441,
+          "io_rbytes": 0,
+          "io_wbytes": 118784,
+          "mem_cur": 2576384,
+          "mem_max": 4109398016,
+          "metrics_source": "docker_engine"
+        },
+        "sample_delta_ms": null,
+        "ts": 1784320080773
+      }
+    ],
+    "topology": {
+      "available": false,
+      "error": "daemon topology is not queried by the manager resource route",
+      "schema_version": 2,
+      "source": null,
+      "truncated": false,
+      "warnings": [],
+      "workspaces": []
+    },
+    "view": "cgroup"
+  }
+}

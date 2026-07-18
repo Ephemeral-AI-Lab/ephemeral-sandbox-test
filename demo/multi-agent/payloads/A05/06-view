@@ -1,5 +1,6 @@
-(function (root) {
-  root.FlashCart = root.FlashCart || {};
-  root.FlashCart.views = root.FlashCart.views || {};
-  root.FlashCart.views.A05 = function () { return '<section data-feature="A05"><h2>Search and facets</h2><p>query, URL facets, sort, and empty states</p></section>'; };
-})(globalThis);
+[
+  {
+    "new_string": "  A05: { id: 'A05', role: 'Search and facets', stage: 'view', deterministic: true, verify() { return true; }, search(items, query) { const needle = String(query).toLowerCase(); return items.filter((item) => item.name.toLowerCase().includes(needle)); }, fixture: 'search-fixture', view: '<section data-domain=\"search\"></section>' },",
+    "old_string": "  A05: { id: 'A05', role: 'Search and facets', stage: 'data', deterministic: true, verify() { return true; }, search(items, query) { const needle = String(query).toLowerCase(); return items.filter((item) => item.name.toLowerCase().includes(needle)); }, fixture: 'search-fixture' },"
+  }
+]

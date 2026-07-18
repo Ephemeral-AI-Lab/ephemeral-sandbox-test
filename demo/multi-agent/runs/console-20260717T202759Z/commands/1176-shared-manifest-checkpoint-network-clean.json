@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:ENGINE.shared.checkpoint.network-clean:runtime",
+    "exec_command",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval \"import { createHash } from 'node:crypto'; import { readdir, readFile } from 'node:fs/promises'; const walk=async(d='.')=>{const out=[];for(const e of await readdir(d,{withFileTypes:true})){const p=(d==='.'?'':d+'/')+e.name;if(p==='.git'||p.startsWith('.git/')||p==='node_modules'||p.startsWith('node_modules/'))continue;if(e.isDirectory())out.push(...await walk(p));else if(e.isFile())out.push([p,createHash('sha256').update(await readFile(p)).digest('hex')]);}return out};console.log(JSON.stringify(Object.fromEntries((await walk()).sort((a,b)=>a[0].localeCompare(b[0])))));\""
+  ],
+  "cancelled": false,
+  "duration_ms": 104.924,
+  "kind": "public_cli_process",
+  "label": "shared-manifest-checkpoint-network-clean",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.043249209,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "{\"index.html\":\"47ce8816d87ce313502b3d0512aa65225d6861700e20737dfc7dd9d85d0b4c0b\",\"src/app.js\":\"67ebc7f26e5ea4d544e1d519a5ebf530b2168d9e14b758f736e0956394974834\",\"src/config.js\":\"4cb193e6492597f043334ec50ef6eca9b591951ce9b430ae620d003f0df0f636\",\"src/registry.js\":\"1f0c539e1349837cc46a45e5fdc61cecc95581f54a7448c7c7481136a71dfadb\",\"tests/storefront.test.mjs\":\"2a849b93b36a0b76a52d84aa26aea0f10e1c49954ffdfb931dc918eb4fd842ed\"}",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.060405834,
+    "workspace_session_id": "00001818c32db0a4484c31"
+  },
+  "pid": 66771,
+  "provenance": "engine",
+  "request_id": "console-20260717T202759Z:ENGINE.shared.checkpoint.network-clean:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1176,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.060405834,\"command_total_time_seconds\":0.043249209,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":106,\"output\":\"{\\\"index.html\\\":\\\"47ce8816d87ce313502b3d0512aa65225d6861700e20737dfc7dd9d85d0b4c0b\\\",\\\"src/app.js\\\":\\\"67ebc7f26e5ea4d544e1d519a5ebf530b2168d9e14b758f736e0956394974834\\\",\\\"src/config.js\\\":\\\"4cb193e6492597f043334ec50ef6eca9b591951ce9b430ae620d003f0df0f636\\\",\\\"src/registry.js\\\":\\\"1f0c539e1349837cc46a45e5fdc61cecc95581f54a7448c7c7481136a71dfadb\\\",\\\"tests/storefront.test.mjs\\\":\\\"2a849b93b36a0b76a52d84aa26aea0f10e1c49954ffdfb931dc918eb4fd842ed\\\"}\",\"workspace_session_id\":\"00001818c32db0a4484c31\"}\n",
+  "timed_out": false
+}

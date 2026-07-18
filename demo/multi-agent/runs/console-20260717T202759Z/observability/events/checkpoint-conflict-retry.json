@@ -1,0 +1,81 @@
+{
+  "label": "checkpoint-conflict-retry",
+  "new_events": [
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "kind": "event",
+      "name": "lease.acquired",
+      "parent": "d-1904",
+      "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.network-clean:runtime",
+      "ts": 1784320114068
+    },
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1909",
+      "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.network-clean:runtime",
+      "ts": 1784320114128
+    },
+    {
+      "attrs": {
+        "revision": 13
+      },
+      "kind": "event",
+      "name": "lease.released",
+      "parent": "d-1922",
+      "trace": "console-20260717T202759Z:A08.053:runtime",
+      "ts": 1784320114493
+    }
+  ],
+  "response": {
+    "events": [
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.acquired",
+        "parent": "d-1892",
+        "trace": "console-20260717T202759Z:A08.053:runtime",
+        "ts": 1784320113809
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.acquired",
+        "parent": "d-1904",
+        "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784320114068
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1909",
+        "trace": "console-20260717T202759Z:ENGINE.shared.checkpoint.network-clean:runtime",
+        "ts": 1784320114128
+      },
+      {
+        "attrs": {
+          "revision": 13
+        },
+        "kind": "event",
+        "name": "lease.released",
+        "parent": "d-1922",
+        "trace": "console-20260717T202759Z:A08.053:runtime",
+        "ts": 1784320114493
+      }
+    ],
+    "view": "events"
+  },
+  "watermark_ms": 1784320114493
+}

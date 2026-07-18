@@ -1,0 +1,35 @@
+{
+  "after": {
+    "index.html": "47ce8816d87ce313502b3d0512aa65225d6861700e20737dfc7dd9d85d0b4c0b",
+    "src/app.js": "67ebc7f26e5ea4d544e1d519a5ebf530b2168d9e14b758f736e0956394974834",
+    "src/config.js": "0e97d272be998e6e10644759c968aa748e2b12f6f584bec4d912514b3b98190e",
+    "src/registry.js": "1f0c539e1349837cc46a45e5fdc61cecc95581f54a7448c7c7481136a71dfadb",
+    "tests/storefront.test.mjs": "695d3f9ece216b945fc0d4bc56e1c359686508a9f0a4574b1f2d0ad02621baff"
+  },
+  "attempt_ref": "A08.conflict",
+  "before": {
+    "index.html": "47ce8816d87ce313502b3d0512aa65225d6861700e20737dfc7dd9d85d0b4c0b",
+    "src/app.js": "67ebc7f26e5ea4d544e1d519a5ebf530b2168d9e14b758f736e0956394974834",
+    "src/config.js": "89d064c346d482f9c302748d0a026251e60364c0e51f256b9310f95237d02787",
+    "src/registry.js": "1f0c539e1349837cc46a45e5fdc61cecc95581f54a7448c7c7481136a71dfadb",
+    "tests/storefront.test.mjs": "74e5051a268a569ed3f429ac1664ecd8f4c61dbc416201604c4bc0aeec8cb338"
+  },
+  "changed_paths": [
+    "src/config.js",
+    "tests/storefront.test.mjs"
+  ],
+  "cumulative_changed_paths": [
+    "src/config.js",
+    "tests/storefront.test.mjs"
+  ],
+  "cumulative_declared_paths": [
+    "src/config.js",
+    "tests/storefront.test.mjs"
+  ],
+  "declared_paths": [
+    "src/config.js",
+    "tests/storefront.test.mjs"
+  ],
+  "response_sha256": "28607995cbd9c1c634f7a15a7315bedb41b0f73b97e30fe2d47d8a41907cd338",
+  "row": "A08.047"
+}

@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A07.042:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A07: { id: 'A07', role: 'Wishlist', stage: 'ready', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\\\"wishlist\\\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A07', schemaVersion: 1, status: 'ready' },\",\n    \"old_string\": \"  A07: { id: 'A07', role: 'Wishlist', stage: 'manifest', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\\\"wishlist\\\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A07', schemaVersion: 1 },\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000918c32da9678a6ffd"
+  ],
+  "cancelled": false,
+  "duration_ms": 47.363,
+  "kind": "public_cli_process",
+  "label": "A07.042",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 667,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 60745,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A07.042:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 1016,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":667}\n",
+  "timed_out": false
+}

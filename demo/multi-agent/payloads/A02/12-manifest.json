@@ -1,13 +1,6 @@
-{
-  "owner": "A02",
-  "paths": {
-    "a11y": "src/features/A02-design-system-a11y.js",
-    "core": "src/features/A02-design-system.js",
-    "data": "src/features/A02-design-system-data.js",
-    "manifest": "src/features/A02-design-system.json",
-    "style": "src/features/A02-design-system.css",
-    "view": "src/features/A02-design-system-view.js"
-  },
-  "role": "Design system",
-  "schema_version": 1
-}
+[
+  {
+    "new_string": "  A02: { id: 'A02', role: 'Design system', stage: 'manifest', deterministic: true, verify() { return true; }, tokens() { return { accent: '#175b50', surface: '#fffdf8', focus: '#124ea0' }; }, fixture: 'design-system-fixture', view: '<section data-domain=\"design-system\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A02', schemaVersion: 1 },",
+    "old_string": "  A02: { id: 'A02', role: 'Design system', stage: 'accessibility', deterministic: true, verify() { return true; }, tokens() { return { accent: '#175b50', surface: '#fffdf8', focus: '#124ea0' }; }, fixture: 'design-system-fixture', view: '<section data-domain=\"design-system\"></section>', focusVisible: true, keyboard: true, reducedMotion: true },"
+  }
+]

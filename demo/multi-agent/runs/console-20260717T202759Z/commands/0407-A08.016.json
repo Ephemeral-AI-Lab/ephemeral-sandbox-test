@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A08.016:runtime",
+    "file_edit",
+    "--path",
+    "src/registry.js",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"  A08: { id: 'A08', role: 'Checkout', stage: 'view', deterministic: true, verify() { return true; }, validateCheckout(form) { const missing = ['email', 'address', 'postal'].filter((key) => !String(form[key] || '').trim()); return { ok: missing.length === 0, missing }; }, fixture: 'checkout-fixture', view: '<section data-domain=\\\"checkout\\\"></section>' },\",\n    \"old_string\": \"  A08: { id: 'A08', role: 'Checkout', stage: 'data', deterministic: true, verify() { return true; }, validateCheckout(form) { const missing = ['email', 'address', 'postal'].filter((key) => !String(form[key] || '').trim()); return { ok: missing.length === 0, missing }; }, fixture: 'checkout-fixture' },\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000a18c32da96a704a60"
+  ],
+  "cancelled": false,
+  "duration_ms": 47.823,
+  "kind": "public_cli_process",
+  "label": "A08.016",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 603,
+    "edits_applied": 1,
+    "path": "src/registry.js",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 43609,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A08.016:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 407,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"src/registry.js\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":603}\n",
+  "timed_out": false
+}

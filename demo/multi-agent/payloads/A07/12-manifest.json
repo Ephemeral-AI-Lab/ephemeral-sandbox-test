@@ -1,13 +1,6 @@
-{
-  "owner": "A07",
-  "paths": {
-    "a11y": "src/features/A07-wishlist-a11y.js",
-    "core": "src/features/A07-wishlist.js",
-    "data": "src/features/A07-wishlist-data.js",
-    "manifest": "src/features/A07-wishlist.json",
-    "style": "src/features/A07-wishlist.css",
-    "view": "src/features/A07-wishlist-view.js"
-  },
-  "role": "Wishlist",
-  "schema_version": 1
-}
+[
+  {
+    "new_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'manifest', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\"wishlist\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A07', schemaVersion: 1 },",
+    "old_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'accessibility', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\"wishlist\"></section>', focusVisible: true, keyboard: true, reducedMotion: true },"
+  }
+]

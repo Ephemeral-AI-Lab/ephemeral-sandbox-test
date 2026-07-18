@@ -1,6 +1,6 @@
 [
   {
-    "new_string": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A10 = {\n    id: 'A10',\n    label: 'Integration QA',\n    deterministic: true,\n    verify() { return true; },\n    status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }\n  };\n})(globalThis);\n",
-    "old_string": "(function (root) {\n  root.FlashCart = root.FlashCart || {};\n  root.FlashCart.features = root.FlashCart.features || {};\n  root.FlashCart.features.A10 = { id: 'A10', verify() { return false; }, implementation: 'broken A10' };\n})(globalThis);\n"
+    "new_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'core', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; } },",
+    "old_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'broken', deterministic: false, verify() { return false; } },"
   }
 ]

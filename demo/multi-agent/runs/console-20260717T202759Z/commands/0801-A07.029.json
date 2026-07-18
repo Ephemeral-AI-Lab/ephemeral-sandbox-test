@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A07.029:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000918c32da9678a6ffd",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval 'import { readFile } from '\"'\"'node:fs/promises'\"'\"'; const source = await readFile('\"'\"'src/registry.js'\"'\"', '\"'\"'utf8'\"'\"'); const line = source.split('\"'\"'\\n'\"'\"').find(function (value) { return value.trimStart().startsWith('\"'\"'A07:'\"'\"'); }); if (!line || !line.includes(\"owner: '\"'\"'A07'\"'\"'\")) { console.error(\"A07 manifest names its owner\"); console.error(\"A07 shared registry is missing manifest evidence\"); process.exit(1); } console.log(\"A07 manifest names its owner\");'"
+  ],
+  "cancelled": false,
+  "duration_ms": 73.13,
+  "kind": "public_cli_process",
+  "label": "A07.029",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.032015375,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "A07 manifest names its owner",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.032072209,
+    "workspace_session_id": "00000918c32da9678a6ffd"
+  },
+  "pid": 54186,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A07.029:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 801,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.032072209,\"command_total_time_seconds\":0.032015375,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":7,\"output\":\"A07 manifest names its owner\",\"workspace_session_id\":\"00000918c32da9678a6ffd\"}\n",
+  "timed_out": false
+}

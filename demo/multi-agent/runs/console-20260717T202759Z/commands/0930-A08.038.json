@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A08.038:runtime",
+    "file_edit",
+    "--path",
+    "tests/storefront.test.mjs",
+    "--edits",
+    "[\n  {\n    \"new_string\": \"test('A08 Checkout contribution is ready', () => assert.match(registry, /A08: \\\\{.*status: 'ready'/));\",\n    \"old_string\": \"// A08 contribution check\"\n  }\n]\n",
+    "--workspace-session-id",
+    "00000a18c32da96a704a60"
+  ],
+  "cancelled": false,
+  "duration_ms": 43.026,
+  "kind": "public_cli_process",
+  "label": "A08.038",
+  "parse_error": null,
+  "parsed_json": {
+    "bytes_written": 974,
+    "edits_applied": 1,
+    "path": "tests/storefront.test.mjs",
+    "replacements": 1,
+    "type": "edit"
+  },
+  "pid": 57851,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A08.038:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 930,
+  "stderr": "",
+  "stdout": "{\"type\":\"edit\",\"path\":\"tests/storefront.test.mjs\",\"edits_applied\":1,\"replacements\":1,\"bytes_written\":974}\n",
+  "timed_out": false
+}

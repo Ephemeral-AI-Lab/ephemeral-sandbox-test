@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "<product-root>/bin/sandbox-runtime-cli",
+    "--sandbox-id",
+    "eos-cb44de6a-0587-42bb-8c6d-bafad6473216",
+    "--request-id",
+    "console-20260717T202759Z:A02.026:runtime",
+    "exec_command",
+    "--workspace-session-id",
+    "00000418c32da9581d8c22",
+    "--timeout-ms",
+    "60000",
+    "--yield-time-ms",
+    "30000",
+    "node --input-type=module --eval 'import { readFile } from '\"'\"'node:fs/promises'\"'\"'; const source = await readFile('\"'\"'src/registry.js'\"'\"', '\"'\"'utf8'\"'\"'); const line = source.split('\"'\"'\\n'\"'\"').find(function (value) { return value.trimStart().startsWith('\"'\"'A02:'\"'\"'); }); if (!line || !line.includes(\"reducedMotion: true\")) { console.error(\"A02 honors reduced motion\"); console.error(\"A02 shared registry is missing a11y evidence\"); process.exit(1); } console.log(\"A02 honors reduced motion\");'"
+  ],
+  "cancelled": false,
+  "duration_ms": 68.708,
+  "kind": "public_cli_process",
+  "label": "A02.026",
+  "parse_error": null,
+  "parsed_json": {
+    "command_total_time_seconds": 0.031083916,
+    "end_offset": 1,
+    "exit_code": 0,
+    "original_token_count": "[REDACTED]",
+    "output": "A02 honors reduced motion",
+    "start_offset": 0,
+    "status": "ok",
+    "total_lines": 1,
+    "wall_time_seconds": 0.031163791,
+    "workspace_session_id": "00000418c32da9581d8c22"
+  },
+  "pid": 47218,
+  "provenance": "agent",
+  "request_id": "console-20260717T202759Z:A02.026:runtime",
+  "return_code": 0,
+  "schema_version": 1,
+  "sequence": 595,
+  "stderr": "",
+  "stdout": "{\"status\":\"ok\",\"exit_code\":0,\"wall_time_seconds\":0.031163791,\"command_total_time_seconds\":0.031083916,\"start_offset\":0,\"end_offset\":1,\"total_lines\":1,\"original_token_count\":7,\"output\":\"A02 honors reduced motion\",\"workspace_session_id\":\"00000418c32da9581d8c22\"}\n",
+  "timed_out": false
+}
