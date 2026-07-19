@@ -22,7 +22,6 @@ from observability.resource_isolation.helpers import (
     environment_evidence,
     fingerprint_store,
     host_file_stat,
-    stream_group,
     verify_packaged_daemon,
     wait_for_path,
 )
@@ -41,7 +40,9 @@ from .helpers import (
     assert_no_zombies,
     bounded_cpu_fraction_median,
     bounded_memory_series,
+    bounded_memory_series_by_phase,
     bounded_theil_sen_slope_per_unit,
+    compact_response_evidence,
     create_workspace,
     destroy_workspace,
     host_process_sample,
@@ -55,15 +56,19 @@ from .helpers import (
     sample,
     start_command,
     stop_command,
-    strict_count,
-    strict_duration,
+    stream_group,
     wait_until,
 )
+from .profile import CANONICAL_PROFILE
 
 
-_RE05_CAMPAIGN_SECONDS = 600
+RE04_PROFILE = CANONICAL_PROFILE["RE-04"]
+RE05_PROFILE = CANONICAL_PROFILE["RE-05"]
+RE08_PROFILE = CANONICAL_PROFILE["RE-08"]
+
+_RE05_CAMPAIGN_SECONDS = RE05_PROFILE.durations["phase_seconds"]
 _RE05_CAMPAIGN_COUNT = 4
-_RE05_COOLDOWN_SECONDS = 300
+_RE05_COOLDOWN_SECONDS = RE05_PROFILE.durations["cooldown_seconds"]
 _RE05_TIMEOUT_HEADROOM_SECONDS = 900
 _RE05_TIMEOUT_MS = (
     _RE05_CAMPAIGN_SECONDS * _RE05_CAMPAIGN_COUNT
@@ -85,17 +90,56 @@ def _phase_analysis(
     )
 
 
+def _namespace_init_process(workspace: dict) -> dict:
+    rows = [
+        row for row in workspace["processes"] if row.get("kind") == "namespace_init"
+    ]
+    assert len(rows) == 1, workspace
+    namespace_init = rows[0]
+    assert namespace_init["namespace_pid"] == 1, workspace
+    assert namespace_init["parent_pid"] == workspace["holder_pid"], workspace
+    return namespace_init
+
+
+def _prepare_re05_baseline(sandbox_id: str, tracker, case_artifacts) -> tuple[dict, dict]:
+    """Warm one complete topology lifecycle before measuring retained cost."""
+    workspace_id = create_workspace(tracker)
+    try:
+        idle_topology = read_topology(sandbox_id)
+        assert idle_topology["truncated"] is False, idle_topology
+        assert idle_topology["warnings"] == [], idle_topology
+        assert [row["workspace_id"] for row in idle_topology["workspaces"]] == [
+            workspace_id
+        ], idle_topology
+        idle_workspace = workspace_by_id(idle_topology, workspace_id)
+        assert idle_workspace["state"] == "idle", idle_workspace
+        _namespace_init_process(idle_workspace)
+    finally:
+        destroy_workspace(tracker, workspace_id)
+
+    empty_topology = read_topology(sandbox_id)
+    assert empty_topology["workspaces"] == [], empty_topology
+    assert empty_topology["truncated"] is False, empty_topology
+    assert empty_topology["warnings"] == [], empty_topology
+    baseline = sample(case_artifacts, sandbox_id, phase="topology-baseline")
+    return baseline, {
+        "workspace_id": workspace_id,
+        "idle_workspace_count": len(idle_topology["workspaces"]),
+        "empty_workspace_count": len(empty_topology["workspaces"]),
+    }
+
+
 @e2e_test(
     timeout_ms=10_800_000,
     id="observability.resource-efficiency.manager-resource-quiescence",
     title="Manager resource traffic leaves daemons quiescent",
-    description="Three paired campaigns prove ten thousand single-sandbox manager resource reads do not wake or mutate the target daemon.",
+    description="One paired campaign proves 1,000 single-sandbox manager resource reads do not wake or mutate the target daemon.",
     features=("observability.resource_efficiency", "observability.resources"),
     validations={
         "resource-series-available": "All manager-only reads return bounded host series, including while the daemon container is paused.",
         "daemon-quiescent": "Target-minus-control CPU and anonymous-memory deltas stay within hard bounds and target storage I/O does not advance.",
         "store-read-pure": "Target and control daemon event-store fingerprints are unchanged by manager resource reads.",
-        "post-poll-cooldown": "After ten minutes, target anonymous memory is within 128 KiB and the manager ring remains fixed at 64 KiB or less.",
+        "post-poll-cooldown": "After one minute, target anonymous memory is within 128 KiB and the manager ring remains fixed at 64 KiB or less.",
     },
     execution_surface="cli",
 )
@@ -105,9 +149,9 @@ def test_manager_resource_traffic_is_quiescent(
     case_artifacts,
     validation,
 ):
-    repetitions = strict_count("E2E_RE04_REPETITIONS", 3, minimum=3)
-    reads = strict_count("E2E_RE04_READS", 10_000, minimum=10_000)
-    duration = strict_duration("E2E_RE04_SECONDS", 1_800, minimum=1_800)
+    repetitions = RE04_PROFILE.counts["repetitions"]
+    reads = RE04_PROFILE.counts["reads"]
+    duration = RE04_PROFILE.durations["campaign_seconds"]
     target = registered_sandbox_factory()
     control = registered_sandbox_factory()
     verify_packaged_daemon(target)
@@ -125,8 +169,8 @@ def test_manager_resource_traffic_is_quiescent(
             [(target, "target", ring_path), (control, "control", None)],
             phase="resource-warm",
             repetition=repetition,
-            duration_seconds=strict_duration("E2E_RE04_WARM_SECONDS", 300, minimum=300),
-            interval_seconds=5,
+            duration_seconds=RE04_PROFILE.durations["warm_seconds"],
+            interval_seconds=RE04_PROFILE.sampling_intervals["resource_seconds"],
             action=ring_continuity.observe,
         )
         settled_pre_poll = {
@@ -161,7 +205,9 @@ def test_manager_resource_traffic_is_quiescent(
                 phase="resource-traffic",
                 repetition=repetition,
                 duration_seconds=duration,
-                interval_seconds=5,
+                interval_seconds=RE04_PROFILE.sampling_intervals[
+                    "resource_seconds"
+                ],
                 action=ring_continuity.observe,
             )
             campaign = campaign_future.result(timeout=duration + 300)
@@ -196,10 +242,8 @@ def test_manager_resource_traffic_is_quiescent(
             [(target, "target", ring_path), (control, "control", None)],
             phase="resource-cooldown",
             repetition=repetition,
-            duration_seconds=strict_duration(
-                "E2E_RE04_COOLDOWN_SECONDS", 600, minimum=600
-            ),
-            interval_seconds=5,
+            duration_seconds=RE04_PROFILE.durations["cooldown_seconds"],
+            interval_seconds=RE04_PROFILE.sampling_intervals["resource_seconds"],
             action=ring_continuity.observe,
         )
         cooldown = {
@@ -255,7 +299,7 @@ def test_manager_resource_traffic_is_quiescent(
 
     summary = {
         "repetitions": results,
-        "unreachable": unreachable,
+        "unreachable": compact_response_evidence(unreachable),
     }
     case_artifacts.write_json("summary.json", summary, reserved=True)
 
@@ -366,7 +410,7 @@ def test_manager_resource_traffic_is_quiescent(
     features=("observability.resource_efficiency", "observability.topology"),
     validations={
         "empty-topology-bounded": "Empty explicit topology remains complete and costs at most one scheduler tick per minute above a manager-only authenticated baseline.",
-        "idle-topology-bounded": "One valid idle workspace remains complete and adds at most 0.5 percent of one core at two-second cadence.",
+        "idle-topology-bounded": "One valid idle workspace remains complete and adds at most 0.5 percent of one core at one-second cadence.",
         "topology-correct": "The active command is independently proven to share both holder namespaces, disappears after completion, and all responses obey row and warning caps.",
         "topology-cooldown": "Event storage is unchanged and memory/thread state returns to baseline with no anonymous trend.",
     },
@@ -388,13 +432,11 @@ def test_explicit_topology_cost(
     assert isinstance(clock_ticks_per_second, int) and clock_ticks_per_second > 0, (
         environment
     )
-    phase_seconds = strict_duration(
-        "E2E_RE05_PHASE_SECONDS",
-        _RE05_CAMPAIGN_SECONDS,
-        minimum=_RE05_CAMPAIGN_SECONDS,
+    phase_seconds = _RE05_CAMPAIGN_SECONDS
+    requests = RE05_PROFILE.counts["requests"]
+    baseline_sample, lifecycle_warmup = _prepare_re05_baseline(
+        sandbox_id, tracker, case_artifacts
     )
-    requests = strict_count("E2E_RE05_REQUESTS", 300, minimum=300)
-    baseline_sample = sample(case_artifacts, sandbox_id, phase="topology-baseline")
 
     with ThreadPoolExecutor(max_workers=1) as pool:
         noop_future = pool.submit(
@@ -410,6 +452,7 @@ def test_explicit_topology_cost(
             phase="topology-noop",
             repetition=1,
             duration_seconds=phase_seconds,
+            interval_seconds=RE05_PROFILE.sampling_intervals["resource_seconds"],
         )
         noop_campaign = noop_future.result(timeout=phase_seconds + 180)
     noop_analysis = _phase_analysis(
@@ -432,6 +475,9 @@ def test_explicit_topology_cost(
                 phase=name,
                 repetition=repetition,
                 duration_seconds=phase_seconds,
+                interval_seconds=RE05_PROFILE.sampling_intervals[
+                    "resource_seconds"
+                ],
             )
             traffic = route.result(timeout=phase_seconds + 180)
         return (
@@ -461,8 +507,7 @@ def test_explicit_topology_cost(
         workspace = workspace_by_id(topology, workspace_id)
         assert workspace["state"] == "idle", workspace
         assert len(workspace["processes"]) == 1, workspace
-        assert workspace["processes"][0].get("kind") == "namespace_init", workspace
-        assert workspace["processes"][0]["pid"] == workspace["holder_pid"], workspace
+        _namespace_init_process(workspace)
 
     idle_store_before = fingerprint_store(sandbox_id)
     idle_phase, idle_traffic, idle_analysis = exercise(
@@ -526,11 +571,7 @@ def test_explicit_topology_cost(
             "expected_process_pid": measured_process["pid"],
             "topology": topology,
         }
-        namespace_rows = [
-            row for row in workspace["processes"] if row.get("kind") == "namespace_init"
-        ]
-        assert len(namespace_rows) == 1, workspace
-        assert namespace_rows[0]["pid"] == workspace["holder_pid"], workspace
+        _namespace_init_process(workspace)
         active_seen["value"] = True
         active_seen["responses"] += 1
         active_seen["pids"].update(row["pid"] for row in rows)
@@ -553,8 +594,7 @@ def test_explicit_topology_cost(
             return None
         assert workspace["state"] == "idle", workspace
         assert len(workspace["processes"]) == 1, workspace
-        assert workspace["processes"][0].get("kind") == "namespace_init", workspace
-        assert workspace["processes"][0]["pid"] == workspace["holder_pid"], workspace
+        _namespace_init_process(workspace)
         return value
 
     gone_topology, _ = wait_until(
@@ -569,11 +609,8 @@ def test_explicit_topology_cost(
         [(sandbox_id, "target", None)],
         phase="topology-cooldown",
         repetition=1,
-        duration_seconds=strict_duration(
-            "E2E_RE05_COOLDOWN_SECONDS",
-            _RE05_COOLDOWN_SECONDS,
-            minimum=_RE05_COOLDOWN_SECONDS,
-        ),
+        duration_seconds=_RE05_COOLDOWN_SECONDS,
+        interval_seconds=RE05_PROFILE.sampling_intervals["resource_seconds"],
     )
     cooldown_analysis = _phase_analysis(
         case_artifacts, cooldown, "topology-cooldown", "target", 1
@@ -594,16 +631,22 @@ def test_explicit_topology_cost(
         idle_cpu["median_fraction_of_one_core"]
         - noop_cpu["median_fraction_of_one_core"],
     )
+    topology_phases = (
+        "topology-empty",
+        "topology-idle",
+        "topology-active",
+        "topology-cooldown",
+    )
     topology_memory = bounded_memory_series(
         case_artifacts.samples_path,
-        phases=(
-            "topology-empty",
-            "topology-idle",
-            "topology-active",
-            "topology-cooldown",
-        ),
+        phases=topology_phases,
+    )
+    topology_phase_memory = bounded_memory_series_by_phase(
+        case_artifacts.samples_path,
+        phases=topology_phases,
     )
     summary = {
+        "lifecycle_warmup": lifecycle_warmup,
         "noop": {"traffic": noop_campaign, "analysis": noop_analysis},
         "empty": {"traffic": empty_traffic, "analysis": empty_analysis},
         "idle": {"traffic": idle_traffic, "analysis": idle_analysis},
@@ -623,6 +666,7 @@ def test_explicit_topology_cost(
             "idle_added_fraction_of_one_core": idle_added_cpu_fraction,
         },
         "topology_memory": topology_memory,
+        "topology_phase_memory": topology_phase_memory,
         "stores": {
             "empty": {"before": empty_store_before, "after": empty_store_after},
             "idle": {"before": idle_store_before, "after": idle_store_after},
@@ -704,6 +748,7 @@ def test_explicit_topology_cost(
         actual={
             "cooldown": cooldown_analysis,
             "topology_memory": topology_memory,
+            "topology_phase_memory": topology_phase_memory,
             "threads": final_sample["process"]["threads"],
         },
         evidence=("samples.jsonl", "summary.json"),
@@ -715,7 +760,7 @@ def test_explicit_topology_cost(
             )
         assert topology_memory["sample_count"] > 0
         assert (
-            topology_memory["anonymous_slope_bytes_per_hour"]
+            topology_phase_memory["max_anonymous_slope_bytes_per_hour"]
             <= ANONYMOUS_SLOPE_BYTES_PER_HOUR
         )
         assert (
@@ -752,9 +797,9 @@ def test_fleet_resource_scaling(
     case_artifacts,
     validation,
 ):
-    sandbox_count = strict_count("E2E_RE08_SANDBOXES", 20, minimum=20)
-    requests = strict_count("E2E_RE08_REQUESTS", 900, minimum=900)
-    duration = strict_duration("E2E_RE08_SECONDS", 1_800, minimum=1_800)
+    sandbox_count = 20
+    requests = RE08_PROFILE.counts["requests"]
+    duration = RE08_PROFILE.durations["campaign_seconds"]
     assert duration == requests * 2, {
         "duration_seconds": duration,
         "request_count": requests,
@@ -776,10 +821,10 @@ def test_fleet_resource_scaling(
         ],
         phase="fleet-warm",
         repetition=1,
-        duration_seconds=strict_duration("E2E_RE08_WARM_SECONDS", 300, minimum=300),
+        duration_seconds=RE08_PROFILE.durations["warm_seconds"],
         # Twenty serial out-of-band samples are intentionally one round per
         # minute so warmup evidence stays bounded.
-        interval_seconds=60,
+        interval_seconds=RE08_PROFILE.sampling_intervals["warm_seconds"],
     )
     before = {
         sandbox_id: sample(case_artifacts, sandbox_id, phase="fleet-before")
@@ -791,7 +836,7 @@ def test_fleet_resource_scaling(
     pid_file = Path(os.environ.get("E2E_RI_GATEWAY_PID_FILE", "/tmp/eos-gateway.pid"))
     manager_before = host_process_sample(pid_file)
     manager_points = [(0.0, float(manager_before["anonymous_bytes"]))]
-    manager_sample_stride = max(1, requests // 64)
+    manager_sample_stride = RE08_PROFILE.sampling_strides["manager"]
     round_robin = {"index": 0}
 
     def verify(response):

@@ -15,6 +15,28 @@ set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T162950+0800-obs
 
 ---
 
+### Iteration 19 - daemon disk polling specification and admission-test validation
+
+**Command**
+```bash
+PYTHONPATH=e2e .venv/bin/python -m pytest \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py \
+  --collect-only -q \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+```
+
+**Good** - Pending: validate the two stable declarations, fixture generator,
+direct 120-second test guards, and 220-second aggregate declared budget.
+
+**Defect** - The current manager-ring implementation does not yet implement the
+proposed `source: daemon_disk` route or daemon `resource_stats` configuration.
+
+**Fix** - Keep the admission test strict and red on architecture mismatch; do
+not mark it xfail or accept manager-owned resource series.
+
+---
+
 ### Iteration 12 - focused resource estimate result and final family plan
 
 **Focused result** - `observability.cgroup.workspace-resource-estimates` passed (1/1, 3.36s) on newly created sandbox `eos-de66a259-e85d-471e-aef0-97576c5c6687`; fixture teardown destroyed it. Public RSS was positive, cumulative CPU advanced, and start identity agreed with the later read-only procfs measurement. Artifact: `e2e/.artifacts/20260717T173855+0800-observability-cgroup-estimates/pytest.log`.
@@ -283,5 +305,718 @@ set -o pipefail; CGROUP_E2E_ARTIFACT_DIR=e2e/.artifacts/20260717T184000+0800-obs
 **Defect** - The before-fix reproduction grew from 7,284KiB after warm-up to 10,144KiB after 2,000 calls, then 22,168KiB after another 1,000 calls as the append-only log grew. This isolated `Reader::samples()` materializing unrelated persisted records, not topology or per-process estimate retention.
 
 **Fix** - Stream rotated and primary logs with one reusable line buffer and retain only matching in-window samples before sorting/delta calculation. The console keeps only the current topology, previous successful topology, and current estimate map; no background sampler or resource history was added.
+
+---
+
+### Iteration 20 - daemon disk polling static and fixture validation
+
+**Command**
+```bash
+.venv/bin/python -m py_compile \
+  e2e/observability/resource_isolation/daemon_disk_polling_helpers.py \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py
+PYTHONPATH=e2e .venv/bin/python fixture-size-probe.py \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+```
+
+**Good** - Pending: compile both modules and stream-generate the small,
+near-rotation, and exact-segment-cap fixtures with no oversized line.
+
+**Defect** - None known in the test implementation.
+
+**Fix** - Correct only the new helper or test files if a static or fixture
+invariant fails; preserve unrelated resource-efficiency work.
+
+---
+
+### Iteration 21 - final daemon disk polling collection gate
+
+**Command**
+```bash
+.venv/bin/python -m py_compile \
+  e2e/observability/resource_isolation/daemon_disk_polling_helpers.py \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py
+PYTHONPATH=e2e .venv/bin/python -m pytest \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py \
+  --collect-only -q \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+```
+
+**Good** - Pending: revalidate compilation and both catalog declarations after
+separating strict size checks from the stable post-append parseability gate.
+
+**Defect** - Product conformance remains intentionally unclaimed until v3
+daemon resource files and routing are implemented.
+
+**Fix** - Report collection success separately from the expected current-main
+live architecture gap.
+
+---
+
+### Iteration 22 - focused live daemon disk polling admission run
+
+**Command**
+```bash
+E2E_REBUILD_BINARY=0 PYTHONPATH=e2e .venv/bin/python -m pytest \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py -q \
+  --timeout=120 --session-timeout=600 \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+```
+
+**Good** - Pending: exercise both load-bearing cases through the public CLI and
+verify exact-ID teardown plus baseline gateway restoration.
+
+**Defect** - Expected on current main: the proposed daemon-owned
+`resource_stats` store and `source: daemon_disk` response are not implemented.
+
+**Fix** - Preserve the first architecture-boundary failure as evidence; do not
+weaken the admission oracle.
+
+---
+
+### Iteration 23 - resource-route spec and admission collection gate
+
+**Command**
+```bash
+.venv/bin/python -m py_compile \
+  e2e/observability/resource_isolation/daemon_disk_polling_helpers.py \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py
+PYTHONPATH=e2e .venv/bin/python -m pytest \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py \
+  --collect-only -q \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+```
+
+**Good** - Both load-bearing daemon-disk cases compiled and collected through
+the repository's observability catalog (2 tests collected in 0.03s). The
+pytest-timeout plugin is active, and the module-level declarations keep both
+110-second case budgets below the 120-second per-test and 600-second session
+limits.
+
+**Defect** - None in static compilation or collection. Product conformance is
+not claimed because current main still serves sandbox resources from the
+manager ring and does not implement the daemon resource store.
+
+**Fix** - Implement the coordinated config, resource store, daemon sampler,
+query handler, sandbox route, and console contract before running the focused
+live admission suite.
+
+---
+
+### Iteration 24 - focused daemon resource implementation checks
+
+**Command**
+```bash
+cargo test -p sandbox-config --test unit configs::observability
+cargo test -p sandbox-observability-telemetry --test collect cgroup_read
+cargo test -p sandbox-observability-telemetry --test sink strict_append_drops_oversized_samples_without_a_marker_or_write
+cargo test -p sandbox-observability-telemetry --test sink boundary_append_rotates_before_write
+cargo test -p sandbox-observability-telemetry --test reader resource_samples_stream_rotated_then_active_without_mutating_either_segment
+cargo test -p sandbox-operation-catalog --tests
+cargo test -p sandbox-observability-query --test query resources_read_only_the_dedicated_daemon_store_and_preserve_unknown_metrics
+cargo test -p sandbox-manager --test manager_router resources
+cargo test -p sandbox-daemon --features jemalloc --lib resources::tests
+npm test -- ResourcesPolling.test.tsx
+```
+
+**Good** - Pending: validate the new configuration bounds, strict two-segment
+store, partial cgroup parsing, bounded read-only query, split route ownership,
+manager pass-through, cgroup target resolution, and console polling lifecycle.
+
+**Defect** - None known after focused compilation; live product behavior remains
+unclaimed until the packaged daemon is rebuilt and both Docker cases pass.
+
+**Fix** - Correct only failures in the new resource path, preserve unrelated
+dirty E2E work, and record exact focused counts and timings before live proof.
+
+---
+
+### Iteration 25 - corrected focused selectors and supported Node runtime
+
+**Command**
+```bash
+cargo test -p sandbox-config --test unit observability_tests
+cargo test -p sandbox-operation-catalog --all-features --tests
+cargo test -p sandbox-manager --test manager_router daemon_quiescent
+PATH=/Users/yifanxu/.nvm/versions/node/v22.22.0/bin:$PATH npm test -- ResourcesPolling.test.tsx
+```
+
+**Good** - The Iteration 24 telemetry collector checks passed 4/4; strict
+oversize, boundary rotation, pure reader, daemon-disk query, and missing-daemon
+manager route checks each passed 1/1; daemon cgroup target resolution passed
+3/3. Rust build/test wall times were respectively 2.32s, 0.50s, 0.06s,
+0.52s, 3.82s, 6.64s, and 16.57s (including compilation and lock waits).
+
+**Defect** - The original sandbox-config selector and featureless operation
+catalog command each selected zero tests. The console worker also failed before
+collection under the shell's Node 22.7.0 because a CommonJS jsdom dependency
+attempted to require an ESM-only module.
+
+**Fix** - Select the real `observability_tests` module, enable every catalog
+feature, explicitly exercise the 10,000-read quiescence case, and rerun Vitest
+with the installed supported Node 22.22.0 runtime without changing product or
+test dependencies.
+
+---
+
+### Iteration 26 - console visibility simulation correction
+
+**Command**
+```bash
+PATH=/Users/yifanxu/.nvm/versions/node/v22.22.0/bin:$PATH npm test -- ResourcesPolling.test.tsx
+```
+
+**Good** - Configuration validation passed 7/7 in 0.01s; the all-feature
+catalog suites passed 12/12 in 4.29s; the 10,000-iteration manager quiescence
+case passed in 1.00s. The supported Node runtime collected all three resource
+polling tests, and the one-in-flight/unmount-abort case passed.
+
+**Defect** - Two console assertions failed. The new test used jest-dom's
+`toBeInTheDocument` although this repository intentionally installs no
+jest-dom matcher. Its hidden-tab helper also changed `document.hidden` but not
+`document.visibilityState`; TanStack's focus manager reads the latter, treated
+the synthetic event as a focus event, and initiated a second fetch.
+
+**Fix** - Use the repository's native truthy DOM assertion and make the test's
+visibility simulation internally consistent by changing both standard document
+properties before dispatching `visibilitychange`.
+
+---
+
+### Iteration 27 - console focus-event and resolved-fetch flush correction
+
+**Command**
+```bash
+PATH=/Users/yifanxu/.nvm/versions/node/v22.22.0/bin:$PATH npm test -- ResourcesPolling.test.tsx
+```
+
+**Good** - The consistent hidden state now prevents every scheduled background
+fetch, confirming the polling implementation honors tab visibility. The
+one-in-flight/unmount case remains green.
+
+**Defect** - The synthetic `visibilitychange` was dispatched on `document`,
+while the installed TanStack focus manager subscribes on `window`, so the
+visible transition did not trigger catch-up. The immediately resolved third
+mock fetch was invoked, but its React render completed after the timer callback
+because that callback does not return the internal fetch promise.
+
+**Fix** - Dispatch the visibility event at the focus manager's actual listener
+boundary and flush the resolved query microtask/render once after advancing the
+poll timer.
+
+---
+
+### Iteration 28 - deterministic recovered-response settlement
+
+**Command**
+```bash
+PATH=/Users/yifanxu/.nvm/versions/node/v22.22.0/bin:$PATH npm test -- ResourcesPolling.test.tsx
+```
+
+**Good** - Hidden polling and visible catch-up now pass together, as does the
+one-in-flight/unmount-abort case.
+
+**Defect** - The third request was invoked exactly once, but an immediate mock
+resolution still settled outside React's `act` boundary because TanStack's
+interval callback starts rather than returns the fetch promise; another zero-ms
+timer advance did not establish a settlement boundary.
+
+**Fix** - Model the recovered request as an explicit deferred promise, assert
+that it is the third and only request, then resolve it inside the test and flush
+the resulting state transition deterministically.
+
+---
+
+### Iteration 29 - final contract-audit focused checks
+
+**Command**
+```bash
+cargo test -p sandbox-observability-query --test query resources
+cargo test -p sandbox-observability-telemetry --test reader resource
+cargo test -p sandbox-daemon --features jemalloc --lib observability::resources::tests
+PATH=/Users/yifanxu/.nvm/versions/node/v22.22.0/bin:$PATH npm test -- ResourcesPolling.test.tsx
+```
+
+**Good** - Pending: verify bounded partial responses for empty and partially
+collected stores, a stressed whole-response cap, concurrent reads during real
+rotation, sampler storage-failure isolation and joined shutdown, plus the
+previously green three-case console lifecycle.
+
+**Defect** - The final spec audit found that empty resource storage was labeled
+`unavailable` instead of the required `partial`. It also found that partial
+controller reads were not elevated into the response error list, and that the
+focused suite lacked direct concurrent read/write, response-stress,
+storage-failure, and sampler-shutdown proofs.
+
+**Fix** - Use the stable `available|partial` daemon-disk contract, surface the
+latest bounded cgroup error, and add direct coverage without changing the
+sampler cadence, store budget, routing, or console polling architecture.
+
+---
+
+### Iteration 30 - corrected console package directory
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-console/web
+PATH=/Users/yifanxu/.nvm/versions/node/v22.22.0/bin:$PATH npm test -- ResourcesPolling.test.tsx
+```
+
+**Good** - The Iteration 29 Rust checks passed: daemon resource queries 4/4 in
+0.14s, resource reader cases 2/2 in 1.04s, and daemon sampler/path cases 5/5 in
+0.01s. These include the stressed 256 KiB/500-record response, concurrent
+rotation, empty/partial semantics, storage failure isolation, and joined
+sampler shutdown.
+
+**Defect** - The console command was launched from the console repository root,
+which has no `package.json`; npm returned ENOENT before test collection.
+
+**Fix** - Rerun the unchanged command from the repository's `web` package using
+the same supported Node 22.22.0 runtime.
+
+---
+
+### Iteration 31 - affected-package and collection gate
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+cargo clippy --all-targets --features sandbox-daemon/jemalloc
+cargo test \
+  -p sandbox-config \
+  -p sandbox-operation-catalog \
+  -p sandbox-manager \
+  -p sandbox-observability-telemetry \
+  -p sandbox-observability-query \
+  -p sandbox-daemon \
+  --features sandbox-daemon/jemalloc
+
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-console/web
+PATH=/Users/yifanxu/.nvm/versions/node/v22.22.0/bin:$PATH npm test
+PATH=/Users/yifanxu/.nvm/versions/node/v22.22.0/bin:$PATH npm run build
+
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test
+.venv/bin/python -m py_compile \
+  e2e/observability/resource_isolation/daemon_disk_polling_helpers.py \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py
+PYTHONPATH=e2e .venv/bin/python -m pytest \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py \
+  --collect-only -q \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+```
+
+**Good** - The corrected focused console run passed 3/3 in 1.55s after asset
+verification. Pending: lint every workspace target with the daemon allocator
+feature used by its tests, run all tests in the six affected Rust packages,
+run the complete console suite and production build, and recollect exactly the
+two budgeted live cases.
+
+**Defect** - None known in the implementation after the focused audit gate.
+
+**Fix** - Correct any affected-package or collection regression before the
+repository-required packaged-daemon gateway rebuild.
+
+---
+
+### Iteration 32 - sampler lifecycle tracker isolation
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+cargo test -p sandbox-daemon --features jemalloc --test unit \
+  observability_tests::daemon_connection_task_tracker_increments_and_returns_to_idle
+cargo test \
+  -p sandbox-config \
+  -p sandbox-operation-catalog \
+  -p sandbox-manager \
+  -p sandbox-observability-telemetry \
+  -p sandbox-observability-query \
+  -p sandbox-daemon \
+  --features sandbox-daemon/jemalloc
+```
+
+**Good** - Workspace all-target clippy passed in 7.93s with only two existing
+layerstack dead-code warnings. In the first broad test command, all 79 config
+tests and the daemon library's 5 sampler tests passed; 98/99 daemon integration
+tests passed.
+
+**Defect** - `daemon_connection_task_tracker_increments_and_returns_to_idle`
+timed out because the new long-lived sampler occupied the established RPC/HTTP
+connection tracker. This changed an observable connection-count invariant even
+though the sampler itself was healthy.
+
+**Fix** - Give the sampler a dedicated lifecycle tracker local to the listener
+serve phase, cancel and join it during the same shutdown boundary, and leave the
+existing tracker exclusively responsible for connection metrics. Recheck the
+exact regression before restarting the complete affected-package command.
+
+---
+
+### Iteration 33 - manager pass-through matrix expectation
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+cargo test -p sandbox-manager --test manager_router \
+  manager_router_forwards_every_sandbox_observability_route
+cargo test \
+  -p sandbox-config \
+  -p sandbox-operation-catalog \
+  -p sandbox-manager \
+  -p sandbox-observability-telemetry \
+  -p sandbox-observability-query \
+  -p sandbox-daemon \
+  --features sandbox-daemon/jemalloc
+```
+
+**Good** - The exact connection-tracker regression passed 1/1 in 0.05s. The
+restarted broad gate then passed config 79/79, daemon library 5/5, daemon
+integration 99/99, manager core 18/18, and manager export 31/31. The manager
+router reached 20/21 green, including the new daemon-only resource route and
+10,000-read quiescence checks.
+
+**Defect** - The generic "forward every sandbox observability route" test still
+expected every fake daemon response to carry a legacy `forwarded: true` marker.
+The dedicated `resources` fixture intentionally returns the stable
+`source: daemon_disk` payload unchanged, so that marker is correctly absent.
+
+**Fix** - Keep invocation-count and scope assertions for the entire matrix; for
+`resources`, assert the daemon source and fixture metric survive intact and
+that the manager adds no forwarding marker. Then restart the complete gate.
+
+---
+
+### Iteration 34 - final static and packaging qualification
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+cargo fmt --all -- --check
+cargo clippy --all-targets --features sandbox-daemon/jemalloc
+git diff --check
+bin/start-sandbox-docker-gateway --rebuild-binary
+```
+
+**Good** - The repaired complete affected-Rust gate passed 377/377 tests in
+about 46s, including strict rotation under a 100,000-record concurrent writer.
+The complete console gate passed 101/101 tests across 31 files in 4.99s and its
+production build completed in 4.45s. Python compilation succeeded and exact
+live collection selected only DP-01 and DP-02 (2/2 collected in 0.02s).
+
+**Defect** - None known after the complete affected-package, console, build,
+and collection gates. This iteration qualifies the final source tree and
+rebuilds the exact daemon artifact that the live gateway will serve.
+
+**Fix** - If formatting, all-target linting, patch hygiene, or packaging fails,
+repair that root cause before spending either live-test budget.
+
+---
+
+### Iteration 35 - packaged daemon live qualification
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test
+E2E_RUN_ID=daemon-disk-polling-final-20260719T221413 \
+E2E_REBUILD_BINARY=0 \
+PYTHONPATH=e2e \
+.venv/bin/python -m pytest \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py \
+  -q --durations=0 \
+  --timeout=120 \
+  --session-timeout=600 \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+```
+
+**Good** - Final formatting, all-target clippy, and `git diff --check` passed.
+The repository-required rebuild produced a stripped static ARM64 daemon of
+6,601,000 bytes with SHA-256
+`ef613452dbb0e681ca02d95b5635a953beab94e9c6b741534be7574cc174be8c`.
+The gateway restarted as PID 17430 and is listening on `127.0.0.1:7878` with
+`config/prd.yml`, whose configured daemon path is that ARM64 artifact.
+
+**Defect** - None known before live execution. The two exact cases now qualify
+read-only high-concurrency polling and strict rotation against the rebuilt,
+packaged daemon rather than a host development binary.
+
+**Fix** - On any failure, preserve the bounded case evidence, diagnose the
+product or harness root cause, append a new iteration, and do not weaken the
+declared budgets or assertions.
+
+---
+
+### Iteration 36 - allocator THP policy before main
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+cargo test -p sandbox-daemon --features jemalloc --test unit \
+  observability_tests::selected_allocator_is_bounded_and_reports_native_process_totals
+bin/start-sandbox-docker-gateway --rebuild-binary
+
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test
+E2E_RUN_ID=daemon-disk-polling-final-retry1-20260719T221413 \
+E2E_REBUILD_BINARY=0 \
+PYTHONPATH=e2e \
+.venv/bin/python -m pytest \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py \
+  -q --durations=0 \
+  --timeout=120 \
+  --session-timeout=600 \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+```
+
+**Good** - In the first live attempt, DP-02 passed in 7.88s: rotation completed
+in 1.419s, every retained line was parseable, disk peaked at 1,048,512 logical
+bytes, and all four active polls stayed daemon-disk-backed. DP-01 completed all
+24 warmups and 192 measured polls in 3.707s; the store was byte-identical,
+responses peaked at 64 records / 12,509 bytes, and anonymous memory moved only
+237,568 bytes. Both exact run-owned sandbox IDs were destroyed and the baseline
+gateway was restored.
+
+**Defect** - DP-01 observed one 2-MiB anonymous huge page both in
+`smaps_rollup` and cgroup `memory.stat`, violating the THP-free gate. The daemon
+calls `PR_SET_THP_DISABLE` at the start of `main`, but the selected global
+jemalloc initializes before `main`; with its default `thp` mode it can therefore
+create a huge mapping before the process-wide policy is applied.
+
+**Fix** - Set jemalloc's compile-time `thp:never` option so every allocator
+mapping receives `MADV_NOHUGEPAGE` from allocator initialization onward, retain
+the existing process-wide THP disable for non-allocator mappings, assert the
+exact allocator configuration, rebuild the packaged daemon, and rerun the
+unchanged two-case live suite.
+
+---
+
+### Iteration 37 - inherited THP policy before allocator startup
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+cargo test -p sandbox-daemon --features jemalloc --test unit \
+  observability_tests::selected_allocator_is_bounded_and_reports_native_process_totals
+bin/start-sandbox-docker-gateway --rebuild-binary
+```
+
+**Good** - The first retry kept DP-02 green in 7.74s and completed DP-01's
+24 warmups plus 192 measured polls in 3.888s. Poll responses remained bounded
+at 64 records / 12,509 bytes, the resource store stayed byte-identical, and
+peak, final, and later-median anonymous-memory deltas all fell to only 8,192
+bytes. Run-owned cleanup passed with zero failures and the baseline gateway was
+restored.
+
+**Defect** - The unchanged THP gate still saw one 2-MiB mapping. Direct
+inspection showed the daemon's post-start policy was disabled (`THP_enabled: 0`)
+but the mapping had already been created without `MADV_NOHUGEPAGE`. The
+allocator option controls its later mappings but cannot move the process-policy
+boundary ahead of Rust runtime/global-allocator initialization.
+
+**Fix** - On Linux `serve`, read the inherited THP policy; when it is still
+enabled, disable it and re-exec the same daemon and original arguments once.
+The kernel policy survives exec, so the replacement process starts all runtime
+and allocator initialization THP-disabled while keeping the exact executable,
+PID, CLI, and workload-child restoration contract. Rebuild and inspect a live
+daemon mapping before rerunning the exact suite.
+
+---
+
+### Iteration 38 - Linux cross-target result coercion
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+bin/start-sandbox-docker-gateway --rebuild-binary
+```
+
+**Good** - Native formatting and the focused allocator contract passed 1/1.
+The packaging workflow then compiled the new startup path for the actual ARM64
+Linux target, exercising code excluded from the macOS host build.
+
+**Defect** - The new THP policy getter returned rustix's `Errno` result
+directly while declaring `std::io::Result`; the Linux cross-target correctly
+rejected the mismatched error type before producing or installing an artifact.
+
+**Fix** - Propagate the rustix result with `?` and wrap the boolean in `Ok`,
+using the existing conversion into `std::io::Error`. Restart the repository
+packaging command, then inspect the live daemon before qualification.
+
+---
+
+### Iteration 39 - re-exec THP live qualification
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test
+E2E_RUN_ID=daemon-disk-polling-final-retry2-20260719T221413 \
+E2E_REBUILD_BINARY=0 \
+PYTHONPATH=e2e \
+.venv/bin/python -m pytest \
+  e2e/observability/resource_isolation/test_daemon_disk_polling.py \
+  -q --durations=0 --tb=short --log-cli-level=WARNING --show-capture=no \
+  --timeout=120 \
+  --session-timeout=600 \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+```
+
+**Good** - The corrected ARM64 Linux package completed with SHA-256
+`24346009febf515fb97ca023a4a7a6ec9f0f11fb22c82ec42ed460c08681f1f6`.
+A disposable packaged sandbox then reported PID 7, PPID 1, executable
+`/eos/bin/sandbox-daemon`, `THP_enabled: 0`, 560 KiB anonymous memory, zero
+`AnonHugePages`, and zero cgroup `anon_thp`; exact-ID cleanup succeeded.
+
+**Defect** - None known after the live-process policy and identity inspection.
+
+**Fix** - Run the unchanged DP-01 and DP-02 assertions against this exact
+artifact, preserve both bounded summaries, and verify run-owned cleanup plus
+baseline restoration.
+
+---
+
+### Iteration 40 - final live result and source qualification
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+cargo fmt --all -- --check
+cargo clippy --all-targets --features sandbox-daemon/jemalloc
+cargo test \
+  -p sandbox-config \
+  -p sandbox-operation-catalog \
+  -p sandbox-manager \
+  -p sandbox-observability-telemetry \
+  -p sandbox-observability-query \
+  -p sandbox-daemon \
+  --features sandbox-daemon/jemalloc
+git diff --check
+```
+
+**Good** - DP-01 and DP-02 passed unchanged in 18.23s. DP-01 completed all 24
+warmups and 192 measured polls in 3.662s; all 192 used `daemon_disk`, responses
+peaked at 64 records / 12,509 bytes, the 11,328-byte store remained
+byte-identical, and every anonymous-memory delta plus both THP measures was
+zero. DP-02 rotated in 1.423s during four daemon-disk polls; storage peaked at
+1,048,512 logical / 1,048,576 allocated bytes with every line complete,
+bounded, and parseable. Both test sandboxes were destroyed with zero cleanup
+failures, and the baseline gateway was restored.
+
+**Defect** - The two disposable manual diagnostics initially remained because
+their guarded cleanup used `--sandbox` instead of the catalogued
+`--sandbox-id`. This did not affect either run-owned E2E cleanup result.
+
+**Fix** - Destroy only the two known diagnostic IDs with the correct flag and
+verify the sandbox inventory returns exactly to the seven pre-existing IDs.
+Run the final formatting, lint, affected-package, and patch-hygiene gates on
+the source that produced the green live behavior.
+
+---
+
+### Iteration 41 - final console regression gate
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-console
+npm test
+npm run build
+```
+
+**Good** - Final core formatting and `git diff --check` passed. All-target
+clippy passed with only the two existing layerstack dead-code warnings, and the
+complete affected Rust gate passed 377/377 tests, including 10,000-read routing
+quiescence, 10,000-read daemon purity, bounded reader allocation, concurrent
+rotation, sampler shutdown, and storage-failure isolation. The exact two live
+test IDs passed, all four run-owned/diagnostic sandbox IDs were destroyed, and
+inventory returned to the same seven pre-existing IDs.
+
+**Defect** - None known after final core and live qualification.
+
+**Fix** - Re-run the complete console unit gate and production build so the
+single-in-flight polling implementation is qualified on the same final source
+handoff.
+
+---
+
+### Iteration 42 - console workspace correction
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-console/web
+npm test
+npm run build
+```
+
+**Good** - The final console source remained unchanged after its earlier
+101/101 unit pass and successful production build.
+
+**Defect** - Iteration 41 invoked npm at the console repository root, which has
+no `package.json`; npm exited immediately with `ENOENT` before running a test or
+build command.
+
+**Fix** - Run the same commands from the repository's `web` package directory
+and preserve the exact test-file, test-case, duration, and build result.
+
+---
+
+### Iteration 43 - declared Node 24 console gate
+
+**Command**
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-console/web
+PATH=/Users/yifanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH \
+  npm test
+PATH=/Users/yifanxu/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH \
+  npm run build
+```
+
+**Good** - Dependency inspection found a clean lockfile installation and the
+repository explicitly declares `engines.node: 24.x`.
+
+**Defect** - The default shell resolved Node 22.7.0; jsdom 29's dependency
+graph fails to initialize there with `ERR_REQUIRE_ESM`, so Vitest started zero
+tests and the guarded build did not run. This is a runtime mismatch, not an
+application assertion or source failure.
+
+**Fix** - Put the workspace's bundled Node 24.14.0 first on `PATH` for both npm
+commands, matching the repository contract without modifying dependencies or
+lockfiles.
+
+---
+
+### Iteration 44 - final qualification result
+
+**Result** - With the declared Node 24.14.0 runtime, all 31 console test files
+and all 101 test cases passed in 4.55s. The production build transformed 2,733
+modules and completed in 477ms; asset verification passed before tests, before
+build, and after build. The only build diagnostic was the existing advisory
+for a JavaScript chunk larger than 500 KiB.
+
+**Defect** - None known in the requested implementation after focused, broad,
+packaged-live, cleanup, console, formatting, lint, build, and patch-hygiene
+qualification. No tests were skipped, xfailed, or weakened.
+
+**Fix** - None required.
+
+---
+
+### Iteration 45 - baseline gateway custody verification
+
+**Result** - The final probe found the prior baseline restore had lost its PID
+file after a transient address-in-use race. No gateway was listening, and all
+four run-owned/diagnostic Docker container IDs were already absent. Restarting
+the checked-in baseline configuration succeeded as PID 26915; the manager then
+reported exactly the same seven pre-existing sandbox IDs and no test-owned ID.
+
+**Defect** - None remains. The transient gateway custody race occurred after
+the green suite and did not change its persisted case or cleanup evidence.
+
+**Fix** - Baseline gateway service and inventory were restored without a
+binary rebuild or any sandbox mutation.
 
 ---

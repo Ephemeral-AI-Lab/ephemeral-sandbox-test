@@ -30,7 +30,6 @@ from observability.resource_isolation.helpers import (
     collect_sample,
     compact_json_bytes,
     docker,
-    env_int,
     iter_capped_binary_lines,
 )
 from observability.resource_isolation.helpers import stream_group as _stream_group
@@ -76,14 +75,7 @@ FLEET_RELEASE_MANAGER_CPU_FRACTION = 0.005
 FLEET_MANAGER_ANONYMOUS_SLOPE_BYTES_PER_POLL = 0.0
 STANDARD_INFRASTRUCTURE_THREAD_ALLOWANCE = 4
 
-
-def strict_duration(name: str, default: int, *, minimum: int) -> int:
-    """Quantitative release gates cannot be shortened by an environment knob."""
-    return env_int(name, default, minimum=minimum)
-
-
-def strict_count(name: str, default: int, *, minimum: int) -> int:
-    return env_int(name, default, minimum=minimum)
+stream_group = _stream_group
 
 
 def assert_ok(response: Any, *, route: str) -> dict[str, Any]:
@@ -102,6 +94,15 @@ def assert_ok(response: Any, *, route: str) -> dict[str, Any]:
 
 def response_sha256(response: Mapping[str, Any]) -> str:
     return hashlib.sha256(compact_json_bytes(response)).hexdigest()
+
+
+def compact_response_evidence(response: Mapping[str, Any]) -> dict[str, Any]:
+    encoded = compact_json_bytes(response)
+    return {
+        "availability": response.get("availability"),
+        "response_bytes": len(encoded),
+        "response_sha256": hashlib.sha256(encoded).hexdigest(),
+    }
 
 
 def read_snapshot(sandbox_id: str) -> dict[str, Any]:
@@ -1460,6 +1461,39 @@ def bounded_memory_series(
         "zombie_observations": zombies,
         "anon_huge_pages_peak_bytes": huge_peak,
         "cgroup_anon_thp_peak_bytes": cgroup_huge_peak,
+    }
+
+
+def bounded_memory_series_by_phase(
+    samples_path: Path,
+    *,
+    phases: Iterable[str],
+    capacity: int = 2_048,
+) -> dict[str, Any]:
+    """Analyze trends within semantic phases without pooling level shifts."""
+    phase_names = tuple(dict.fromkeys(phases))
+    assert phase_names, "at least one phase is required"
+    summaries = {
+        phase: bounded_memory_series(
+            samples_path,
+            phases=(phase,),
+            capacity=capacity,
+        )
+        for phase in phase_names
+    }
+    slopes: dict[str, float] = {}
+    for phase, summary in summaries.items():
+        slope = summary["anonymous_slope_bytes_per_hour"]
+        assert summary["sample_count"] >= 2 and isinstance(slope, (int, float)), {
+            "phase": phase,
+            "summary": summary,
+        }
+        slopes[phase] = float(slope)
+    return {
+        "sample_count": sum(summary["sample_count"] for summary in summaries.values()),
+        "phase_count": len(summaries),
+        "anonymous_slope_bytes_per_hour_by_phase": slopes,
+        "max_anonymous_slope_bytes_per_hour": max(slopes.values()),
     }
 
 

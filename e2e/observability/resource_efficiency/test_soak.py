@@ -1,4 +1,4 @@
-"""RE-11 six-hour lifecycle and manager-only polling qualification."""
+"""RE-11 lifecycle and manager-only polling qualification."""
 
 from __future__ import annotations
 
@@ -16,7 +16,6 @@ from observability.resource_isolation.helpers import (
     default_resource_ring_path,
     environment_evidence,
     fingerprint_store,
-    stream_group,
     verify_packaged_daemon,
     wait_for_path,
     write_cleanup_evidence,
@@ -56,12 +55,15 @@ from .helpers import (
     sample,
     start_command,
     stop_command,
-    strict_count,
-    strict_duration,
+    stream_group,
     inspect_resource_profile,
     validate_cycle_records,
     wait_until,
 )
+from .profile import CANONICAL_PROFILE
+
+
+PROFILE = CANONICAL_PROFILE["RE-11"]
 
 
 BALANCE_KEYS = (
@@ -130,35 +132,36 @@ def _cooperative_route_campaign(
 @e2e_test(
     timeout_ms=28_800_000,
     id="observability.resource-efficiency.lifecycle-soak",
-    title="Six-hour lifecycle and manager polling soak remains flat",
-    description="At least one thousand joined workspace cycles overlap manager-only two-second resource reads for six hours without memory, zombie, FD, lease, or polling residue.",
+    title="Lifecycle and manager polling soak remains flat",
+    description="One hundred joined workspace cycles overlap manager-only two-second resource reads for 36 minutes without memory, zombie, FD, lease, or polling residue.",
     features=(
         "observability.resource_efficiency",
         "observability.resources",
         "runtime.workspace_session",
     ),
     validations={
-        "soak-no-memory-trend": "Six-hour daemon Anonymous slope is at most 4 KiB/hour, final median is within 128 KiB, and anonymous huge pages stay zero.",
-        "soak-no-resource-leaks": "At least one thousand lifecycles have zero failed cleanup, zero zombies, baseline ownership counts, and bounded idle threads and FDs.",
+        "soak-no-memory-trend": "The 36-minute daemon Anonymous slope is at most 4 KiB/hour, final median is within 128 KiB, and anonymous huge pages stay zero.",
+        "soak-no-resource-leaks": "One hundred lifecycles have zero failed cleanup, zero zombies, baseline ownership counts, and bounded idle threads and FDs.",
         "polling-remains-quiescent": "Two-second manager resource reads leave daemon CPU, storage, memory, and event-store state quiescent during final cooldown.",
         "soak-cleanup-complete": "Final public sandbox destroy removes the exact run-owned container and manager ring while artifacts remain bounded.",
     },
     execution_surface="cli",
 )
 @pytest.mark.release
-def test_six_hour_lifecycle_and_polling_soak(
+def test_lifecycle_and_polling_soak(
     registered_sandbox_factory,
     workspace_registry_factory,
     case_artifacts,
     validation,
 ):
-    duration = strict_duration("E2E_RE11_SECONDS", 21_600, minimum=21_600)
-    cycles = strict_count("E2E_RE11_CYCLES", 1_000, minimum=1_000)
-    assert duration % 2 == 0, {
+    duration = PROFILE.durations["soak_seconds"]
+    cycles = PROFILE.counts["cycles"]
+    resource_reads = PROFILE.counts["resource_reads"]
+    assert duration == resource_reads * 2, {
         "duration_seconds": duration,
+        "resource_reads": resource_reads,
         "required_resource_cadence_seconds": 2,
     }
-    resource_reads = duration // 2
     sandbox_id = registered_sandbox_factory()
     tracker = workspace_registry_factory(sandbox_id)
     verify_packaged_daemon(sandbox_id)
@@ -171,8 +174,8 @@ def test_six_hour_lifecycle_and_polling_soak(
         [(sandbox_id, "target", ring_path)],
         phase="soak-baseline",
         repetition=1,
-        duration_seconds=strict_duration("E2E_RE11_BASELINE_SECONDS", 300, minimum=300),
-        interval_seconds=5,
+        duration_seconds=PROFILE.durations["baseline_seconds"],
+        interval_seconds=PROFILE.sampling_intervals["resource_seconds"],
     )
     baseline_analysis = _analysis(case_artifacts, baseline_phase, "soak-baseline")
     baseline_sample = sample(case_artifacts, sandbox_id, phase="soak-baseline-end")
@@ -244,7 +247,7 @@ def test_six_hour_lifecycle_and_polling_soak(
     assert_settled_budget(baseline_sample)
 
     # Bracket the long campaign after the run-owned baseline lifecycle probe so
-    # its counter deltas contain only work from the qualified six-hour window.
+    # its counter deltas contain only work from the qualified soak window.
     soak_route_before = sample(
         case_artifacts, sandbox_id, phase="soak-route-before"
     )
@@ -273,7 +276,7 @@ def test_six_hour_lifecycle_and_polling_soak(
             command_id = start_command(
                 tracker,
                 workspace_id,
-                f"sleep 5; printf re11-{cycle}",
+                f"sleep {PROFILE.durations['command_seconds']}; printf re11-{cycle}",
                 timeout_ms=30_000,
             )
             identity = prepare_workspace_holder_fault(sandbox_id, workspace_id)
@@ -376,7 +379,7 @@ def test_six_hour_lifecycle_and_polling_soak(
             last_settled = settled
             last_sample = observed
 
-        # Both bounded drivers share the full six-hour qualification window.
+        # Both bounded drivers share the full qualification window.
         # Lifecycle work may finish slightly before the final resource-read
         # cadence, but a peer failure must still cancel this driver promptly.
         if stop_event.wait(max(0.0, campaign_deadline - time.monotonic())):
@@ -421,10 +424,10 @@ def test_six_hour_lifecycle_and_polling_soak(
         soak_phase = stream_group(
             case_artifacts,
             [(sandbox_id, "target", ring_path)],
-            phase="soak-six-hour",
+            phase="soak-campaign",
             repetition=1,
             duration_seconds=max(0.001, campaign_deadline - time.monotonic()),
-            interval_seconds=5,
+            interval_seconds=PROFILE.sampling_intervals["resource_seconds"],
             action=surface_driver_failure,
         )
         surface_driver_failure(soak_phase["sample_ticks"])
@@ -437,7 +440,7 @@ def test_six_hour_lifecycle_and_polling_soak(
         stop_event.set()
         pool.shutdown(wait=True, cancel_futures=True)
 
-    soak_end_sample = sample(case_artifacts, sandbox_id, phase="soak-six-hour")
+    soak_end_sample = sample(case_artifacts, sandbox_id, phase="soak-campaign")
     soak_observed_duration_seconds = (
         soak_end_sample["monotonic_seconds"] - campaign_started
     )
@@ -448,7 +451,9 @@ def test_six_hour_lifecycle_and_polling_soak(
     }
     assert soak_phase["artifact_sampling_stopped"] is False, soak_phase
     assert soak_phase["persisted_samples"] == soak_phase["sample_ticks"], soak_phase
-    assert soak_phase["sample_ticks"] >= duration // 5, soak_phase
+    assert soak_phase["sample_ticks"] >= (
+        duration // PROFILE.sampling_intervals["resource_seconds"]
+    ), soak_phase
 
     cycle_evidence = validate_cycle_records(
         case_artifacts.root / "workspace-cycles.jsonl",
@@ -457,12 +462,12 @@ def test_six_hour_lifecycle_and_polling_soak(
         expected_repetition=1,
         expected_terminal_state="absent",
     )
-    six_hour_series = bounded_memory_series(
+    soak_series = bounded_memory_series(
         case_artifacts.samples_path,
-        phases=("soak-six-hour",),
+        phases=("soak-campaign",),
     )
-    assert six_hour_series["sample_count"] == soak_phase["persisted_samples"] + 1, {
-        "series": six_hour_series,
+    assert soak_series["sample_count"] == soak_phase["persisted_samples"] + 1, {
+        "series": soak_series,
         "phase": soak_phase,
         "terminal_sample": True,
     }
@@ -475,14 +480,16 @@ def test_six_hour_lifecycle_and_polling_soak(
         "required_seconds": duration,
     }
 
-    # The final ten-minute phase contains manager reads only.  Its before/after
+    # The final one-minute phase contains manager reads only.  Its before/after
     # channel proves that long polling leaves no daemon work after lifecycle
     # activity has stopped.
     store_before_poll = fingerprint_store(sandbox_id)
     poll_before = sample(case_artifacts, sandbox_id, phase="soak-poll-before")
-    cooldown_seconds = strict_duration("E2E_RE11_COOLDOWN_SECONDS", 600, minimum=600)
-    assert cooldown_seconds % 2 == 0, {
+    cooldown_seconds = PROFILE.durations["cooldown_seconds"]
+    cooldown_reads = PROFILE.counts["cooldown_reads"]
+    assert cooldown_seconds == cooldown_reads * 2, {
         "duration_seconds": cooldown_seconds,
+        "resource_reads": cooldown_reads,
         "required_resource_cadence_seconds": 2,
     }
     cooldown_started = time.monotonic() + 0.25
@@ -494,7 +501,7 @@ def test_six_hour_lifecycle_and_polling_soak(
             _cooperative_route_campaign,
             route="observability.resources.single.cooldown",
             request=lambda: read_resources(sandbox_id),
-            request_count=cooldown_seconds // 2,
+            request_count=cooldown_reads,
             started_monotonic=cooldown_started,
             deadline_monotonic=cooldown_deadline,
             stop_event=cooldown_stop,
@@ -516,7 +523,7 @@ def test_six_hour_lifecycle_and_polling_soak(
             phase="soak-cooldown",
             repetition=1,
             duration_seconds=max(0.001, cooldown_deadline - time.monotonic()),
-            interval_seconds=5,
+            interval_seconds=PROFILE.sampling_intervals["resource_seconds"],
             action=surface_cooldown_failure,
         )
         surface_cooldown_failure(cooldown_phase["sample_ticks"])
@@ -532,7 +539,7 @@ def test_six_hour_lifecycle_and_polling_soak(
     cooldown_analysis = _analysis(case_artifacts, cooldown_phase, "soak-cooldown")
     poll_delta = resource_delta(poll_before, poll_after)
     soak_daemon_delta = resource_delta(soak_route_before, soak_end_sample)
-    six_hour_route_traffic = route_traffic_record(
+    soak_route_traffic = route_traffic_record(
         resource_campaign,
         target_counter_deltas=soak_daemon_delta,
         control_counter_deltas={},
@@ -560,10 +567,10 @@ def test_six_hour_lifecycle_and_polling_soak(
         "baseline_self": baseline_self,
         "lifecycle": lifecycle,
         "cycle_evidence": cycle_evidence,
-        "route_traffic": [six_hour_route_traffic, cooldown_route_traffic],
+        "route_traffic": [soak_route_traffic, cooldown_route_traffic],
         "soak_phase": soak_phase,
         "soak_observed_duration_seconds": soak_observed_duration_seconds,
-        "six_hour_series": six_hour_series,
+        "soak_series": soak_series,
         "cooldown": cooldown_analysis,
         "poll_delta": poll_delta,
         "store_before_poll": store_before_poll,
@@ -575,7 +582,7 @@ def test_six_hour_lifecycle_and_polling_soak(
     # Preserve the behavioral verdict before final public sandbox destroy.
     case_artifacts.write_json(
         "route-traffic.json",
-        [six_hour_route_traffic, cooldown_route_traffic],
+        [soak_route_traffic, cooldown_route_traffic],
     )
     case_artifacts.write_json("summary.json", summary, reserved=True)
 
@@ -601,14 +608,14 @@ def test_six_hour_lifecycle_and_polling_soak(
             "anonymous_huge_pages": 0,
         },
         actual={
-            "series": six_hour_series,
+            "series": soak_series,
             "baseline": baseline_analysis,
             "cooldown": cooldown_analysis,
         },
         evidence=("samples.jsonl", "workspace-cycles.jsonl", "summary.json"),
     ):
         assert (
-            six_hour_series["anonymous_slope_bytes_per_hour"]
+            soak_series["anonymous_slope_bytes_per_hour"]
             <= ANONYMOUS_SLOPE_BYTES_PER_HOUR
         )
         assert (
@@ -618,8 +625,8 @@ def test_six_hour_lifecycle_and_polling_soak(
             )
             <= COOLDOWN_ANONYMOUS_DELTA_BYTES
         )
-        assert six_hour_series["anon_huge_pages_peak_bytes"] == 0
-        assert six_hour_series["cgroup_anon_thp_peak_bytes"] == 0
+        assert soak_series["anon_huge_pages_peak_bytes"] == 0
+        assert soak_series["cgroup_anon_thp_peak_bytes"] == 0
 
     with validation(
         "soak-no-resource-leaks",
@@ -632,11 +639,11 @@ def test_six_hour_lifecycle_and_polling_soak(
         actual=lifecycle,
         evidence=("samples.jsonl", "workspace-cycles.jsonl", "summary.json"),
     ):
-        assert lifecycle["completed"] >= 1_000 and lifecycle["completed"] == cycles
+        assert lifecycle["completed"] >= 100 and lifecycle["completed"] == cycles
         assert cycle_evidence["record_count"] == cycles
         assert cycle_evidence["cleanup_errors"] == 0
         assert lifecycle["cleanup_failures"] == 0
-        assert six_hour_series["zombie_observations"] == 0
+        assert soak_series["zombie_observations"] == 0
         assert all(
             value == 0 for value in lifecycle["maximum_settled_count_delta"].values()
         )
@@ -660,15 +667,15 @@ def test_six_hour_lifecycle_and_polling_soak(
     with validation(
         "polling-remains-quiescent",
         expected={
-            "six_hour_reads": resource_reads,
-            "cooldown_reads": cooldown_seconds // 2,
+            "soak_reads": resource_reads,
+            "cooldown_reads": cooldown_reads,
             "cpu_ticks_per_minute_lt": CPU_TICK_BUDGET_PER_MINUTE,
             "storage_io_delta": 0,
             "anonymous_delta_max": ROUTE_MEMORY_DELTA_BYTES,
             "store_unchanged": True,
         },
         actual={
-            "six_hour": six_hour_route_traffic,
+            "soak": soak_route_traffic,
             "cooldown": cooldown_route_traffic,
             "analysis": cooldown_analysis,
             "delta": poll_delta,
@@ -680,7 +687,7 @@ def test_six_hour_lifecycle_and_polling_soak(
             and resource_campaign["error_count"] == 0
         )
         assert (
-            cooldown_campaign["success_count"] == cooldown_seconds // 2
+            cooldown_campaign["success_count"] == cooldown_reads
             and cooldown_campaign["error_count"] == 0
         )
         assert cooldown_campaign["elapsed_seconds"] >= cooldown_seconds

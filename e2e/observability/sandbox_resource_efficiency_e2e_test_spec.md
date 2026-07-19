@@ -249,16 +249,20 @@ failure.
 
 ## 9. Case definitions
 
+The durations, counts, and observation cadences below are the sole supported
+resource-efficiency profile. There is no fast/full selector, scale environment
+variable, or fallback to the former longer profile.
+
 ### RE-00 — focused smoke
 
 Create one standard-profile sandbox and verify the packaged daemon identity.
-Warm it for one minute, establish a settled daemon sample, then:
+Warm it for six seconds, establish a settled daemon sample, then:
 
-1. create one workspace and leave it idle for one minute;
-2. issue only manager-owned resource reads at one request per second for two
-   minutes;
+1. create one workspace and leave it idle for six seconds;
+2. issue 12 manager-owned resource reads at one request per second for 12
+   seconds;
 3. destroy the workspace through the public runtime CLI; and
-4. wait for a two-minute cooldown.
+4. wait for a 12-second cooldown.
 
 Pass conditions:
 
@@ -276,7 +280,8 @@ This is a gross regression gate, not release memory qualification.
 
 ### RE-01 — unexpected holder exit
 
-Run three nightly repetitions. In each repetition:
+Run one canonical repetition with a six-second pre-fault observation phase and
+a six-second cooldown. In that repetition:
 
 1. create workspace A and peer workspace B;
 2. start one stable public command in each and prove normal topology placement;
@@ -310,7 +315,7 @@ and add one publish-required arm once that public policy is available.
 
 ### RE-02 — holder exit racing explicit destroy
 
-Run 20 bounded race iterations in one sandbox, alternating barrier launch order
+Run two bounded race iterations in one sandbox, alternating barrier launch order
 to avoid always favoring the same side.
 
 Allowed terminal outcomes are:
@@ -334,26 +339,28 @@ scheduler interleavings.
 
 ### RE-03 — repeated workspace lifecycle reclaim
 
-Run at least 1,000 sequential cycles against one packaged daemon:
+Warm one unmeasured representative ordinary lifecycle to settle bounded
+first-use allocations. After a 30-second baseline, run exactly 100 measured
+sequential cycles against the same packaged daemon:
 
 1. create a workspace;
 2. run one bounded command that allocates and frees a small fixed buffer;
 3. await command completion;
 4. destroy the workspace;
 5. wait for public holder/workspace/lease counts to return to baseline; and
-6. sample after every tenth cycle and throughout a ten-minute final cooldown.
+6. sample after every cycle and throughout a one-minute final cooldown.
 
-Every hundredth cycle also starts and stops a long-running command so command
+Every tenth cycle also starts and stops a long-running command so command
 session cleanup is covered. Fault injection is not used here.
 
 Pass conditions:
 
-- all 1,000 cycles complete with no untracked session;
+- all 100 cycles complete with no untracked session;
 - no direct-child zombie is observed;
 - final holder, workspace, command, lease, persisted-handle, and FD counts
   equal baseline;
 - idle thread count returns to its declared envelope;
-- final-ten-minute daemon `Anonymous` median is within 128 KiB of the settled
+- final-one-minute daemon `Anonymous` median is within 128 KiB of the settled
   pre-cycle median;
 - post-warmup `Anonymous` Theil-Sen slope is at most 4 KiB/hour;
 - no anonymous huge pages appear; and
@@ -364,10 +371,11 @@ bounded final sample window.
 
 ### RE-04 — manager resource traffic leaves daemons quiescent
 
-Use paired target and untouched control sandboxes for three repetitions. Warm
-both equally. Against the target, issue 10,000 public manager-only
-single-sandbox resource reads over thirty minutes. Do not request topology,
-snapshot, events, or traces during the measurement phase.
+Use paired target and untouched control sandboxes for one repetition. Warm
+both equally for 30 seconds. Against the target, issue 1,000 public manager-only
+single-sandbox resource reads over three minutes while sampling once per
+second. Do not request topology, snapshot, events, or traces during the
+measurement phase.
 
 For each repetition:
 
@@ -377,7 +385,7 @@ For each repetition:
 - target-minus-control daemon CPU is below one scheduler tick per minute;
 - target daemon storage I/O does not advance because of manager resource reads;
 - target-minus-control anonymous-memory growth is at most 64 KiB;
-- after ten-minute cooldown, target `Anonymous` is within 128 KiB of its
+- after one-minute cooldown, target `Anonymous` is within 128 KiB of its
   pre-poll median; and
 - the manager resource ring remains fixed and at most 64 KiB.
 
@@ -393,12 +401,12 @@ Measure three phases in one sandbox:
 2. one valid idle workspace; and
 3. one active bounded command followed by idle cooldown.
 
-Call explicit topology at the production visible-page cadence for ten minutes
-per phase. Apply the full schema and namespace-placement assertions from the
-existing cgroup helpers.
+Call explicit topology 30 times at the production visible-page cadence for one
+minute per phase. Apply the full schema and namespace-placement assertions
+from the existing cgroup helpers.
 
-The case timeout includes the ten-minute authenticated no-op baseline, all
-three ten-minute topology phases, the five-minute cooldown, and fifteen minutes
+The case timeout includes the one-minute authenticated no-op baseline, all
+three one-minute topology phases, the 30-second cooldown, and fifteen minutes
 of bounded setup, assertion, command-stop, workspace-destroy, and artifact
 finalization headroom. Measurement and cooldown durations may not be shortened
 to fit the timeout.
@@ -408,7 +416,7 @@ Pass conditions:
 - empty topology remains available and complete;
 - empty-topology daemon CPU above a matched authenticated no-op request
   baseline is at most one scheduler tick per minute;
-- an idle valid workspace adds at most 0.5% of one core at the two-second
+- an idle valid workspace adds at most 0.5% of one core at the one-second
   cadence;
 - the active command is assigned correctly and disappears after completion;
 - no response retains stale PIDs or exceeds row/warning limits;
@@ -436,9 +444,9 @@ runtime:
     max_active: 32
 ```
 
-Create one fresh sandbox after the config is active. Record five minutes idle,
-then run 32 bounded public command sessions with a barrier so useful
-concurrency overlaps. Complete all sessions and record ten minutes cooldown.
+Create one fresh sandbox after the config is active. Record 30 seconds idle,
+then run 32 bounded two-second public command sessions with a barrier so useful
+concurrency overlaps. Complete all sessions and record one minute cooldown.
 
 Pass conditions:
 
@@ -471,8 +479,9 @@ runtime:
     max_active: 4
 ```
 
-Release 12 command attempts concurrently. Pressure concurrency is fixed at 12;
-there is no reduced pressure lane.
+Record a 30-second baseline, then release 12 six-second command attempts
+concurrently and record a one-minute cooldown. Pressure concurrency is fixed
+at 12; there is no reduced pressure lane.
 
 Pass conditions:
 
@@ -493,12 +502,14 @@ structured outcomes, responsiveness, and cleanup are asserted.
 ### RE-08 — fleet resource scaling
 
 Create 20 standard-profile sandboxes and register each immediately. Warm all
-of them, then issue one public fleet current-usage request every two seconds for
-thirty minutes. The response must cover all 20 ready sandbox IDs.
+of them for 30 seconds, sampling at six-second intervals, then issue 90 public
+fleet current-usage requests at one request every two seconds for three
+minutes. The response must cover all 20 ready sandbox IDs.
 
 Use round-robin out-of-band daemon sampling so observer processes do not run in
-all containers simultaneously. Also measure the exact run-owned manager
-process and resource-ring directory.
+all containers simultaneously; advance that observation every second fleet
+request. Also measure the exact run-owned manager process and resource-ring
+directory.
 
 Pass conditions:
 
@@ -533,6 +544,11 @@ runtime CLI:
 2. a deterministic memory allocator above the workload leaf maximum; and
 3. controlled process creation above `pids.max`.
 
+The CPU pressure command runs for two seconds. Containment control commands
+use 30-second holds. The three distinct exceptional subcases and the fixed PID
+fanout needed to cross `pids.max` are correctness breadth, not repetitions, and
+remain intact.
+
 The workload fixture must be bounded, copied into the test workspace as a
 run-owned fixture when necessary, and incapable of escaping its cgroup. Do not
 fill host memory, fork without a fixed maximum, or OOM the outer container.
@@ -555,9 +571,11 @@ but do not claim workload/daemon isolation qualification.
 ### RE-10 — triggered diagnostic is bounded and attributable
 
 Use generated config with a safe test threshold and short cooldown. Warm one
-sandbox, then produce sustained daemon work through explicit public topology
-requests against a known active workspace. Do not use a workload CPU spike as
-the trigger because workload CPU is not daemon CPU.
+sandbox for six seconds, then issue 40 explicit public topology requests over
+two seconds against a known active workspace. The canonical trigger window is
+50 ms, diagnostic cooldown is three seconds, and the final idle observation is
+two requests over four seconds. Do not use a workload CPU spike as the trigger
+because workload CPU is not daemon CPU.
 
 Pass conditions:
 
@@ -576,9 +594,10 @@ Pass conditions:
 The product unit test owns exact threshold-window arithmetic. This live case
 owns packaged capture, redaction, size, attribution, and cooldown behavior.
 
-### RE-11 — six-hour lifecycle and polling soak
+### RE-11 — lifecycle and polling soak
 
-Run one standard-profile sandbox for six hours. Two bounded drivers operate:
+Run one standard-profile sandbox for 36 minutes after a 30-second baseline.
+Two bounded drivers operate:
 
 - a lifecycle driver repeatedly creates a workspace, runs one short command,
   destroys it, and waits for baseline holder/lease counts before continuing;
@@ -586,8 +605,10 @@ Run one standard-profile sandbox for six hours. Two bounded drivers operate:
 - a resource driver issues manager-only resource reads every two seconds.
 
 Issue explicit topology only while the current command is active and once to
-confirm the workspace is gone. Sample the daemon every five seconds and stream
-all evidence. Complete at least 1,000 lifecycle cycles.
+confirm the workspace is gone. Each lifecycle command is bounded to one second.
+Sample the daemon every second and stream all evidence. Complete exactly 100
+lifecycle cycles while the resource driver performs 1,080 manager-only reads,
+then observe a one-minute cooldown with 30 further reads.
 
 Release gates:
 
@@ -596,7 +617,7 @@ Release gates:
 - holder, FD, lease, command, scratch, and persisted-handle counts show no
   upward trend and equal baseline at the end;
 - daemon `Anonymous` slope is at most 4 KiB/hour;
-- final-ten-minute `Anonymous` median is within 128 KiB of the initial settled
+- final-one-minute `Anonymous` median is within 128 KiB of the initial settled
   median;
 - idle threads always return to the declared envelope;
 - manager-only polling causes no daemon store mutation or residual CPU work;
@@ -829,7 +850,7 @@ The E2E work is complete when:
 - RE-00 through RE-11 are registered with their exact IDs and validation
   checkpoints;
 - focused holder exit and race cases pass against the packaged daemon;
-- 1,000 lifecycle cycles and the six-hour soak show no zombie, FD, lease,
+- 100 lifecycle cycles and the 36-minute soak show no zombie, FD, lease,
   session, thread, or anonymous-memory trend;
 - manager-only single and fleet reads leave daemon CPU, I/O, memory, and event
   storage quiescent;

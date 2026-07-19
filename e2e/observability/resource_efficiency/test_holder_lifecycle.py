@@ -18,7 +18,6 @@ from observability.cgroup.helpers import (
 from observability.resource_isolation.helpers import (
     analyze_phase,
     environment_evidence,
-    stream_group,
     verify_packaged_daemon,
 )
 from runtime.workspace_session.helpers import (
@@ -52,12 +51,16 @@ from .helpers import (
     signal_validated_holder,
     start_command,
     stop_command,
-    strict_count,
-    strict_duration,
+    stream_group,
     wait_until,
     wait_self_counts,
     wait_workspace_gone,
 )
+from .profile import CANONICAL_PROFILE
+
+
+RE01_PROFILE = CANONICAL_PROFILE["RE-01"]
+RE02_PROFILE = CANONICAL_PROFILE["RE-02"]
 
 
 BALANCED_KEYS = (
@@ -289,7 +292,7 @@ def test_unexpected_holder_exit(
     case_artifacts,
     validation,
 ):
-    repetitions = strict_count("E2E_RE01_REPETITIONS", 3, minimum=3)
+    repetitions = RE01_PROFILE.counts["repetitions"]
     sandbox_id = registered_sandbox_factory()
     tracker = workspace_registry_factory(sandbox_id)
     verify_packaged_daemon(sandbox_id)
@@ -315,9 +318,7 @@ def test_unexpected_holder_exit(
             [(sandbox_id, "target", None)],
             phase="holder-pre-a",
             repetition=repetition,
-            duration_seconds=strict_duration(
-                "E2E_RE01_BASELINE_SECONDS", 60, minimum=60
-            ),
+            duration_seconds=RE01_PROFILE.durations["baseline_seconds"],
         )
         pre_analysis = _analysis(case_artifacts, pre_phase, "holder-pre-a", repetition)
         baseline = daemon_self_counts(read_daemon_self(sandbox_id))
@@ -405,9 +406,7 @@ def test_unexpected_holder_exit(
             [(sandbox_id, "target", None)],
             phase="holder-cooldown",
             repetition=repetition,
-            duration_seconds=strict_duration(
-                "E2E_RE01_COOLDOWN_SECONDS", 60, minimum=60
-            ),
+            duration_seconds=RE01_PROFILE.durations["cooldown_seconds"],
         )
         cooldown_analysis = _analysis(
             case_artifacts, cooldown_phase, "holder-cooldown", repetition
@@ -775,7 +774,7 @@ def test_holder_exit_destroy_race(
     case_artifacts,
     validation,
 ):
-    iterations = strict_count("E2E_RE02_ITERATIONS", 20, minimum=20)
+    iterations = RE02_PROFILE.counts["iterations"]
     sandbox_id = registered_sandbox_factory()
     tracker = workspace_registry_factory(sandbox_id)
     verify_packaged_daemon(sandbox_id)
@@ -797,7 +796,7 @@ def test_holder_exit_destroy_race(
         [(sandbox_id, "target", None)],
         phase="race-warmup",
         repetition=1,
-        duration_seconds=strict_duration("E2E_RE02_WARM_SECONDS", 10, minimum=10),
+        duration_seconds=RE02_PROFILE.durations["warm_seconds"],
     )
     initial_counts = daemon_self_counts(read_daemon_self(sandbox_id))
     initial_sample = sample(case_artifacts, sandbox_id, phase="race-initial")
@@ -910,9 +909,7 @@ def test_holder_exit_destroy_race(
         [(sandbox_id, "target", None)],
         phase="race-cooldown",
         repetition=1,
-        duration_seconds=strict_duration(
-            "E2E_RE02_COOLDOWN_SECONDS", 10, minimum=10
-        ),
+        duration_seconds=RE02_PROFILE.durations["cooldown_seconds"],
     )
     final_counts = daemon_self_counts(read_daemon_self(sandbox_id))
     final_sample = sample(case_artifacts, sandbox_id, phase="race-final")

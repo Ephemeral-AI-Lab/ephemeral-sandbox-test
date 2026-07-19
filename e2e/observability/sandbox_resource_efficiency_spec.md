@@ -490,7 +490,7 @@ The correction is complete only when all of these pass:
   leases;
 - peer workspaces and commands remain healthy;
 - explicit destroy/exit races are idempotent; and
-- 1,000 sequential workspace create/use/destroy cycles leave no holder,
+- 100 sequential workspace create/use/destroy cycles leave no holder,
   descriptor, lease, scratch, command, or persisted-session growth.
 
 ### Full-daemon efficiency

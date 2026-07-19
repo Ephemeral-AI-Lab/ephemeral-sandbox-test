@@ -41,9 +41,11 @@ from .helpers import (
     stop_command,
     wait_until,
 )
+from .profile import CANONICAL_PROFILE
 
 
 PROFILE_NAME = "resource-efficiency-test"
+PROFILE = CANONICAL_PROFILE["RE-09"]
 NANO_CPUS = 500_000_000
 WORKLOAD_MEMORY_BYTES = 64 * 1024 * 1024
 OUTER_MEMORY_BYTES = 256 * 1024 * 1024
@@ -237,7 +239,7 @@ def test_resource_profile_containment(
         control_command = start_command(
             control_tracker,
             control_workspace,
-            "while :; do sleep 300; done",
+            f"while :; do sleep {PROFILE.durations['command_hold_seconds']}; done",
             timeout_ms=600_000,
         )
         control_initial = probe_public_control(
@@ -354,7 +356,8 @@ def test_resource_profile_containment(
             cpu_command = start_command(
                 tracker,
                 cpu_workspace,
-                'end=$(($(date +%s)+20)); while [ "$(date +%s)" -lt "$end" ]; do :; done',
+                f'end=$(($(date +%s)+{PROFILE.durations["cpu_pressure_seconds"]})); '
+                'while [ "$(date +%s)" -lt "$end" ]; do :; done',
                 timeout_ms=60_000,
             )
             pressure_control_evidence.append(
@@ -550,7 +553,7 @@ def test_resource_profile_containment(
             survivor_command = start_command(
                 tracker,
                 pid_workspace,
-                "while :; do sleep 300; done",
+                f"while :; do sleep {PROFILE.durations['command_hold_seconds']}; done",
                 timeout_ms=180_000,
             )
             pid_command = start_command(
@@ -559,7 +562,7 @@ def test_resource_profile_containment(
                 (
                     "pids=(); exhausted=0; attempted=0; "
                     "for ((attempt=1; attempt<=96; attempt++)); do "
-                    "sleep 300 & launch_status=$?; "
+                    f"sleep {PROFILE.durations['command_hold_seconds']} & launch_status=$?; "
                     "if ((launch_status != 0)); then "
                     "printf 'PID_LIMIT_EXHAUSTED attempt=%s launch_status=%s\\n' "
                     '"$attempt" "$launch_status"; exhausted=1; break; fi; '

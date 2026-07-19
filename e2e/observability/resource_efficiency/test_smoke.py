@@ -10,7 +10,6 @@ from observability.resource_isolation.helpers import (
     analyze_phase,
     environment_evidence,
     fingerprint_store,
-    stream_group,
     verify_packaged_daemon,
 )
 
@@ -28,8 +27,12 @@ from .helpers import (
     route_traffic_record,
     run_route_campaign,
     sample,
-    strict_duration,
+    stream_group,
 )
+from .profile import CANONICAL_PROFILE
+
+
+PROFILE = CANONICAL_PROFILE["RE-00"]
 
 
 @e2e_test(
@@ -63,7 +66,7 @@ def test_resource_efficiency_smoke(
         [(sandbox_id, "target", None)],
         phase="warmup",
         repetition=1,
-        duration_seconds=strict_duration("E2E_RE00_WARM_SECONDS", 60, minimum=60),
+        duration_seconds=PROFILE.durations["warm_seconds"],
     )
     baseline_sample = sample(case_artifacts, sandbox_id, phase="settled-before")
     baseline_self = daemon_self_counts(read_daemon_self(sandbox_id))
@@ -74,7 +77,7 @@ def test_resource_efficiency_smoke(
         [(sandbox_id, "target", None)],
         phase="workspace-idle",
         repetition=1,
-        duration_seconds=strict_duration("E2E_RE00_IDLE_SECONDS", 60, minimum=60),
+        duration_seconds=PROFILE.durations["idle_seconds"],
     )
     idle_result = analyze_phase(
         case_artifacts.samples_path,
@@ -109,8 +112,8 @@ def test_resource_efficiency_smoke(
     campaign = run_route_campaign(
         route="observability.resources.single",
         request=lambda: read_resources(sandbox_id),
-        request_count=strict_duration("E2E_RE00_RESOURCE_READS", 120, minimum=120),
-        duration_seconds=strict_duration("E2E_RE00_RESOURCE_SECONDS", 120, minimum=120),
+        request_count=PROFILE.counts["resource_reads"],
+        duration_seconds=PROFILE.durations["campaign_seconds"],
     )
     route_sample_after = sample(
         case_artifacts, sandbox_id, phase="resource-route-after"
@@ -130,7 +133,7 @@ def test_resource_efficiency_smoke(
         [(sandbox_id, "target", None)],
         phase="cooldown",
         repetition=1,
-        duration_seconds=strict_duration("E2E_RE00_COOLDOWN_SECONDS", 120, minimum=120),
+        duration_seconds=PROFILE.durations["cooldown_seconds"],
     )
     cooldown_sample = sample(case_artifacts, sandbox_id, phase="cooldown-end")
     cooldown_self = daemon_self_counts(read_daemon_self(sandbox_id))

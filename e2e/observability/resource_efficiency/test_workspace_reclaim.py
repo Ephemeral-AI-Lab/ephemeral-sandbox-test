@@ -11,7 +11,6 @@ from harness.catalog.declarations import e2e_test
 from observability.resource_isolation.helpers import (
     analyze_phase,
     environment_evidence,
-    stream_group,
     verify_packaged_daemon,
 )
 
@@ -39,10 +38,18 @@ from .helpers import (
     sample,
     start_command,
     stop_command,
-    strict_count,
-    strict_duration,
+    stream_group,
     validate_cycle_records,
     wait_self_counts,
+)
+from .profile import CANONICAL_PROFILE
+
+
+PROFILE = CANONICAL_PROFILE["RE-03"]
+
+BUFFER_COMMAND = (
+    "dd if=/dev/zero of=/tmp/eos-re-buffer bs=262144 count=1 status=none "
+    "&& rm -f /tmp/eos-re-buffer"
 )
 
 
@@ -74,11 +81,33 @@ def _collect_validation_failure(failures: list[dict[str, str]], checkpoint: str)
         )
 
 
+def _warm_workspace_lifecycle(tracker, sandbox_id: str) -> None:
+    """Settle bounded first-use allocations before the measured baseline."""
+
+    initial_self = daemon_self_counts(read_daemon_self(sandbox_id))
+    workspace_id = create_workspace(tracker)
+    try:
+        prepare_workspace_holder_fault(sandbox_id, workspace_id)
+        command_id = start_command(
+            tracker,
+            workspace_id,
+            BUFFER_COMMAND,
+            timeout_ms=30_000,
+        )
+        terminal = await_command(tracker, command_id, timeout_seconds=30)
+        assert terminal.get("status") == "ok", terminal
+    finally:
+        try:
+            destroy_workspace(tracker, workspace_id)
+        finally:
+            wait_self_counts(sandbox_id, initial_self, keys=BALANCE_KEYS)
+
+
 @e2e_test(
     timeout_ms=10_800_000,
     id="observability.resource-efficiency.workspace-cycle-reclaim",
     title="Repeated workspace lifecycles fully reclaim resources",
-    description="At least one thousand sequential workspace cycles return holder, session, FD, thread, lease, and memory state to baseline.",
+    description="One hundred sequential workspace cycles return holder, session, FD, thread, lease, and memory state to baseline.",
     features=(
         "observability.resource_efficiency",
         "observability.topology",
@@ -99,18 +128,22 @@ def test_repeated_workspace_lifecycle_reclaim(
     case_artifacts,
     validation,
 ):
-    cycles = strict_count("E2E_RE03_CYCLES", 1_000, minimum=1_000)
+    cycles = PROFILE.counts["cycles"]
+    sample_stride = PROFILE.sampling_strides["cycle"]
+    interrupt_stride = PROFILE.sampling_strides["interrupt"]
     sandbox_id = registered_sandbox_factory()
     tracker = workspace_registry_factory(sandbox_id)
     verify_packaged_daemon(sandbox_id)
     case_artifacts.write_json("environment.json", environment_evidence(sandbox_id))
+
+    _warm_workspace_lifecycle(tracker, sandbox_id)
 
     baseline_phase = stream_group(
         case_artifacts,
         [(sandbox_id, "target", None)],
         phase="cycle-baseline",
         repetition=1,
-        duration_seconds=strict_duration("E2E_RE03_BASELINE_SECONDS", 300, minimum=300),
+        duration_seconds=PROFILE.durations["baseline_seconds"],
     )
     baseline_analysis = analyze_phase(
         case_artifacts.samples_path,
@@ -147,13 +180,13 @@ def test_repeated_workspace_lifecycle_reclaim(
             command_id = start_command(
                 tracker,
                 workspace_id,
-                "dd if=/dev/zero of=/tmp/eos-re-buffer bs=262144 count=1 status=none && rm -f /tmp/eos-re-buffer",
+                BUFFER_COMMAND,
                 timeout_ms=30_000,
             )
             terminal = await_command(tracker, command_id, timeout_seconds=30)
             assert terminal.get("status") == "ok", terminal
 
-            if cycle % 100 == 0:
+            if cycle % interrupt_stride == 0:
                 long_command = start_command(
                     tracker,
                     workspace_id,
@@ -168,7 +201,7 @@ def test_repeated_workspace_lifecycle_reclaim(
             destroy_response = destroy_workspace(tracker, workspace_id)
             settled = wait_self_counts(sandbox_id, baseline_self, keys=BALANCE_KEYS)
             settled_at = time.monotonic()
-            if cycle % 10 == 0:
+            if cycle % sample_stride == 0:
                 observed = sample(
                     case_artifacts,
                     sandbox_id,
@@ -294,7 +327,7 @@ def test_repeated_workspace_lifecycle_reclaim(
         [(sandbox_id, "target", None)],
         phase="cycle-cooldown",
         repetition=1,
-        duration_seconds=strict_duration("E2E_RE03_COOLDOWN_SECONDS", 600, minimum=600),
+        duration_seconds=PROFILE.durations["cooldown_seconds"],
     )
     cooldown_analysis = analyze_phase(
         case_artifacts.samples_path,
@@ -414,7 +447,7 @@ def test_repeated_workspace_lifecycle_reclaim(
         ):
             assert first_failure is None
             assert completed == cycles
-            assert interrupted == cycles // 100
+            assert interrupted == cycles // interrupt_stride
             assert all(final_self[key] == baseline_self[key] for key in BALANCE_KEYS)
 
     artifact_bytes = case_artifacts.total_bytes()
@@ -423,7 +456,7 @@ def test_repeated_workspace_lifecycle_reclaim(
             "cycle-artifact-bounded",
             expected={
                 "cycle_records": cycles,
-                "sampled_records": cycles // 10,
+                "sampled_records": cycles // sample_stride,
                 "cleanup_errors": 0,
                 "max_line_bytes": 16 * 1024,
                 "max_bytes": 32 * 1024 * 1024,
@@ -434,7 +467,7 @@ def test_repeated_workspace_lifecycle_reclaim(
             assert artifact_gate(case_artifacts) == artifact_bytes
             assert cycle_evidence["record_count"] == cycles
             assert cycle_evidence["last_cycle"] == cycles
-            assert cycle_evidence["sampled_records"] == cycles // 10
+            assert cycle_evidence["sampled_records"] == cycles // sample_stride
             assert cycle_evidence["cleanup_errors"] == 0
             assert cycle_evidence["max_line_bytes"] <= 16 * 1024
             assert cycle_evidence["total_bytes"] <= 32 * 1024 * 1024

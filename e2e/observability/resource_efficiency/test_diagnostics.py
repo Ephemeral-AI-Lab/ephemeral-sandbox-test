@@ -11,7 +11,6 @@ from harness.runner.cli import is_error
 from observability.cgroup.helpers import workspace_by_id
 from observability.resource_isolation.helpers import (
     environment_evidence,
-    stream_group,
     verify_packaged_daemon,
 )
 from runtime.workspace_session.helpers import file_write
@@ -30,8 +29,12 @@ from .helpers import (
     run_route_campaign,
     start_command,
     stop_command,
-    strict_duration,
+    stream_group,
 )
+from .profile import CANONICAL_PROFILE
+
+
+PROFILE = CANONICAL_PROFILE["RE-10"]
 
 
 @e2e_test(
@@ -59,13 +62,17 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
     case_artifacts,
     validation,
 ):
-    diagnostic_cooldown_seconds = 30
+    diagnostic_cooldown_seconds = PROFILE.durations[
+        "diagnostic_cooldown_seconds"
+    ]
     diagnostic_cooldown_ms = diagnostic_cooldown_seconds * 1_000
     # Keep the final pressure sample strictly inside the public cooldown.  At
     # expiry, a still-high window is entitled to capture again; the live gate
     # instead proves pressure persisted to a bounded near-expiry point.
-    cooldown_final_margin_ms = 250
-    cooldown_final_remaining_ms_max = 500
+    cooldown_final_margin_ms = PROFILE.durations["cooldown_final_margin_ms"]
+    cooldown_final_remaining_ms_max = PROFILE.durations[
+        "cooldown_final_remaining_ms_max"
+    ]
     summary = {}
     with generated_gateway(
         daemon_overrides={
@@ -74,7 +81,9 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
                     "enabled": True,
                     "cpu_threshold_percent": 0.5,
                     "anonymous_memory_threshold_bytes": 1 << 50,
-                    "sustained_window_ms": 500,
+                    "sustained_window_ms": PROFILE.durations[
+                        "sustained_window_ms"
+                    ],
                     "cooldown_ms": diagnostic_cooldown_ms,
                     "max_artifact_bytes": MAX_DIAGNOSTIC_BYTES,
                 }
@@ -95,8 +104,8 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
             [(sandbox_id, "target", None)],
             phase="diagnostic-warm",
             repetition=1,
-            duration_seconds=strict_duration("E2E_RE10_WARM_SECONDS", 60, minimum=60),
-            interval_seconds=5,
+            duration_seconds=PROFILE.durations["warm_seconds"],
+            interval_seconds=PROFILE.sampling_intervals["warm_seconds"],
         )
         initial = daemon_diagnostics(read_daemon_self(sandbox_id))
         assert initial.get("enabled") is True, initial
@@ -129,8 +138,8 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
         trigger_campaign = run_route_campaign(
             route="observability.topology",
             request=lambda: {"topology": read_topology(sandbox_id)},
-            request_count=400,
-            duration_seconds=20,
+            request_count=PROFILE.counts["trigger_requests"],
+            duration_seconds=PROFILE.durations["trigger_seconds"],
         )
         triggered_daemon = read_daemon_self(sandbox_id)
         triggered = daemon_diagnostics(triggered_daemon)
@@ -267,13 +276,13 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
         # Calls are intentionally spaced well below the CPU trigger threshold.
         # They advance the request-driven state beyond cooldown without an idle
         # loop or daemon-private endpoint.
-        idle_seconds = strict_duration("E2E_RE10_IDLE_SECONDS", 40, minimum=40)
+        idle_seconds = PROFILE.durations["idle_seconds"]
         with ThreadPoolExecutor(max_workers=1) as pool:
             idle_future = pool.submit(
                 run_route_campaign,
                 route="observability.topology.idle",
                 request=lambda: {"topology": read_topology(sandbox_id)},
-                request_count=20,
+                request_count=PROFILE.counts["idle_requests"],
                 duration_seconds=idle_seconds,
             )
             idle_phase = stream_group(
@@ -282,7 +291,7 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
                 phase="diagnostic-idle",
                 repetition=1,
                 duration_seconds=idle_seconds,
-                interval_seconds=1,
+                interval_seconds=PROFILE.sampling_intervals["idle_seconds"],
             )
             idle_campaign = idle_future.result(timeout=idle_seconds + 120)
         idle_cpu = bounded_cpu_fraction_median(

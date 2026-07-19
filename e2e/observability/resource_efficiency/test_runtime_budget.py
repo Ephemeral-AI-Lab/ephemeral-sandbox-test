@@ -12,7 +12,6 @@ from harness.runner.cli import is_error
 from observability.resource_isolation.helpers import (
     analyze_phase,
     environment_evidence,
-    stream_group,
     verify_packaged_daemon,
 )
 from runtime.workspace_session.helpers import exec_in, read_command_lines
@@ -37,9 +36,14 @@ from .helpers import (
     sample,
     start_command,
     stop_command,
-    strict_duration,
+    stream_group,
     wait_until,
 )
+from .profile import CANONICAL_PROFILE
+
+
+RE06_PROFILE = CANONICAL_PROFILE["RE-06"]
+RE07_PROFILE = CANONICAL_PROFILE["RE-07"]
 
 
 def _analysis(case_artifacts, phase: dict, name: str) -> dict:
@@ -63,7 +67,7 @@ def _analysis(case_artifacts, phase: dict, name: str) -> dict:
         "idle-thread-envelope": "Public self config is exact and settled idle threads are at most worker threads plus the declared infrastructure allowance.",
         "pressure-thread-envelope": "Overlapping command pressure stays below workers plus blocking threads plus six.",
         "concurrency-functional": "All thirty-two admitted commands complete and snapshot, interrupt, and destroy remain responsive.",
-        "cooldown-reclaimed": "After keepalive and ten-minute cooldown, threads and anonymous memory return to their hard bounds.",
+        "cooldown-reclaimed": "After keepalive and one-minute cooldown, threads and anonymous memory return to their hard bounds.",
         "config-restored": "The generated gateway is restored after all run-owned resources are destroyed.",
     },
     execution_surface="cli",
@@ -112,7 +116,8 @@ def test_runtime_thread_budget(
             [(sandbox_id, "target", None)],
             phase="runtime-idle",
             repetition=1,
-            duration_seconds=strict_duration("E2E_RE06_IDLE_SECONDS", 300, minimum=300),
+            duration_seconds=RE06_PROFILE.durations["idle_seconds"],
+            interval_seconds=RE06_PROFILE.sampling_intervals["resource_seconds"],
         )
         idle_analysis = _analysis(case_artifacts, idle, "runtime-idle")
         idle_cpu = bounded_cpu_fraction_median(
@@ -139,13 +144,11 @@ def test_runtime_thread_budget(
             return start_command(
                 tracker,
                 workspace_id,
-                f"sleep 20; printf re06-{index}",
+                f"sleep {RE06_PROFILE.durations['command_seconds']}; printf re06-{index}",
                 timeout_ms=120_000,
             )
 
-        pressure_seconds = strict_duration(
-            "E2E_RE06_PRESSURE_SECONDS", 10, minimum=10
-        )
+        pressure_seconds = RE06_PROFILE.durations["pressure_seconds"]
         with ThreadPoolExecutor(max_workers=1) as sample_pool:
             pressure_future = sample_pool.submit(
                 stream_group,
@@ -154,6 +157,9 @@ def test_runtime_thread_budget(
                 phase="runtime-pressure",
                 repetition=1,
                 duration_seconds=pressure_seconds,
+                interval_seconds=RE06_PROFILE.sampling_intervals[
+                    "resource_seconds"
+                ],
                 action=lambda _tick: pressure_sampling_started.set(),
             )
             assert pressure_sampling_started.wait(timeout=30), (
@@ -207,9 +213,8 @@ def test_runtime_thread_budget(
             [(sandbox_id, "target", None)],
             phase="runtime-cooldown",
             repetition=1,
-            duration_seconds=strict_duration(
-                "E2E_RE06_COOLDOWN_SECONDS", 600, minimum=600
-            ),
+            duration_seconds=RE06_PROFILE.durations["cooldown_seconds"],
+            interval_seconds=RE06_PROFILE.sampling_intervals["resource_seconds"],
         )
         cooldown_analysis = _analysis(case_artifacts, cooldown, "runtime-cooldown")
         final_sample = sample(case_artifacts, sandbox_id, phase="runtime-final")
@@ -383,9 +388,8 @@ def test_admission_pressure(
             [(sandbox_id, "target", None)],
             phase="admission-baseline",
             repetition=1,
-            duration_seconds=strict_duration(
-                "E2E_RE07_BASELINE_SECONDS", 300, minimum=300
-            ),
+            duration_seconds=RE07_PROFILE.durations["baseline_seconds"],
+            interval_seconds=RE07_PROFILE.sampling_intervals["resource_seconds"],
         )
         baseline_analysis = _analysis(
             case_artifacts, baseline_phase, "admission-baseline"
@@ -525,7 +529,7 @@ def test_admission_pressure(
                 return exec_in(
                     sandbox_id,
                     workspace_id,
-                    f"sleep 60; printf re07-{index}",
+                    f"sleep {RE07_PROFILE.durations['command_seconds']}; printf re07-{index}",
                     timeout_ms=120_000,
                     yield_time_ms=0,
                     timeout=30,
@@ -609,9 +613,8 @@ def test_admission_pressure(
             [(sandbox_id, "target", None)],
             phase="admission-cooldown",
             repetition=1,
-            duration_seconds=strict_duration(
-                "E2E_RE07_COOLDOWN_SECONDS", 600, minimum=600
-            ),
+            duration_seconds=RE07_PROFILE.durations["cooldown_seconds"],
+            interval_seconds=RE07_PROFILE.sampling_intervals["resource_seconds"],
         )
         cooldown_analysis = _analysis(case_artifacts, cooldown, "admission-cooldown")
         final_self = daemon_self_counts(read_daemon_self(sandbox_id))

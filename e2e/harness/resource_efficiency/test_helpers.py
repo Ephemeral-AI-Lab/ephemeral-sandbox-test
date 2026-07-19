@@ -393,6 +393,22 @@ def test_response_sha256_is_canonical_and_returns_hex_digest():
     assert helpers.response_sha256({"b": 2, "a": 1}) == expected
 
 
+def test_compact_response_evidence_omits_bulk_but_preserves_identity():
+    response = {
+        "availability": "available",
+        "series": [{"payload": "x" * 100_000}],
+    }
+    evidence = helpers.compact_response_evidence(response)
+
+    assert evidence == {
+        "availability": "available",
+        "response_bytes": len(helpers.compact_json_bytes(response)),
+        "response_sha256": helpers.response_sha256(response),
+    }
+    assert len(helpers.compact_json_bytes(evidence)) < 256
+    assert "series" not in evidence
+
+
 @e2e_test(
     timeout_ms=1_000,
     id="harness.resource-efficiency.proc-parsers",
