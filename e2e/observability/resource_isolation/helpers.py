@@ -569,9 +569,7 @@ def resource_ring_header(path: Path) -> dict[str, int | str]:
         next_index,
         count,
         sequence,
-    ) = struct.unpack(
-        "<8sIIIIIIQ", header[:40]
-    )
+    ) = struct.unpack("<8sIIIIIIQ", header[:40])
     fields = {
         "path": str(path),
         "magic": magic.rstrip(b"\0").decode("ascii", "replace"),

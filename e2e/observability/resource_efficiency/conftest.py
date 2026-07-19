@@ -15,7 +15,7 @@ from runtime.workspace_session.helpers import WorkspaceTracker
 
 
 @pytest.fixture
-def workspace_registry_factory():
+def workspace_registry_factory(registered_sandbox_factory):
     trackers: list[WorkspaceTracker] = []
 
     def make(sandbox_id: str) -> WorkspaceTracker:
@@ -28,4 +28,10 @@ def workspace_registry_factory():
     # Cleanup is public and exact-ID only.  Sandbox cleanup remains the outer
     # fixture's responsibility and runs after these workspace joins.
     for tracker in reversed(trackers):
-        tracker.cleanup()
+        try:
+            tracker.cleanup()
+        except Exception as error:
+            registered_sandbox_factory.record_cleanup_failure(
+                tracker.sandbox_id,
+                error,
+            )

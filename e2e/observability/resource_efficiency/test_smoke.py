@@ -67,7 +67,6 @@ def test_resource_efficiency_smoke(
     )
     baseline_sample = sample(case_artifacts, sandbox_id, phase="settled-before")
     baseline_self = daemon_self_counts(read_daemon_self(sandbox_id))
-    store_before = fingerprint_store(sandbox_id)
 
     workspace_id = create_workspace(tracker)
     idle = stream_group(
@@ -106,6 +105,7 @@ def test_resource_efficiency_smoke(
     route_sample_before = sample(
         case_artifacts, sandbox_id, phase="resource-route-before"
     )
+    store_before = fingerprint_store(sandbox_id)
     campaign = run_route_campaign(
         route="observability.resources.single",
         request=lambda: read_resources(sandbox_id),
@@ -170,6 +170,7 @@ def test_resource_efficiency_smoke(
         assert idle_topology_evidence["workload_process_count"] == 0
         assert idle_sample["process"]["threads"] <= baseline_sample["process"]["threads"] + 2
         assert idle_result["anon_huge_pages_peak_bytes"] == 0
+        assert idle_result["cgroup_anon_thp_peak_bytes"] == 0
 
     with validation(
         "resource-route-quiescent",

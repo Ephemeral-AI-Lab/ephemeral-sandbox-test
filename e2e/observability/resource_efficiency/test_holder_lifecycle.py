@@ -34,6 +34,7 @@ from .helpers import (
     artifact_gate,
     assert_dead_workspace_rejected,
     assert_no_zombies,
+    classify_holder_destroy_race,
     create_workspace,
     daemon_self_counts,
     destroy_session,
@@ -833,6 +834,9 @@ def test_holder_exit_destroy_race(
         destroy_outcome = _assert_allowed_race_destroy(
             destroy, workspace_id, fault_result=fault["result"]
         )
+        race_winner = classify_holder_destroy_race(
+            fault["result"], destroy_outcome
+        )
         wait_workspace_gone(sandbox_id, workspace_id)
         tracker.untrack_workspace(workspace_id)
         settled = wait_self_counts(sandbox_id, baseline, keys=BALANCED_KEYS)
@@ -866,6 +870,7 @@ def test_holder_exit_destroy_race(
                 if is_error(destroy)
                 else None,
                 "destroy_outcome": destroy_outcome,
+                "race_winner": race_winner,
                 "settled_counts": settled,
                 "cleanup_terminal_delta": cleanup_delta,
                 "holder_exit_delta": holder_exit_delta,
@@ -904,10 +909,15 @@ def test_holder_exit_destroy_race(
         actual={
             "records": len(records),
             "fault_results": [record["fault"]["result"] for record in records],
+            "race_winners": [record["race_winner"] for record in records],
         },
         evidence=("holder-fault.json", "summary.json"),
     ):
         assert len(records) == iterations
+        assert all(
+            record["race_winner"] in {"exit", "destroy", "concurrent"}
+            for record in records
+        )
         assert all(record["fault"]["signal_attempts"] in {0, 1} for record in records)
         assert all(
             record["peer_identity_unchanged"]

@@ -576,6 +576,33 @@ def assert_teardown_clean(rec, sandbox_id, tracker):
     assert not leaked, {"leaked": leaked, "snapshot": snap}
 
 
+class WorkspaceCleanupError(AssertionError):
+    """Bounded exact-ID cleanup failures retained for the run checkpoint."""
+
+    def __init__(self, sandbox_id, failures, *, failure_count=None):
+        bounded = tuple(dict(failure) for failure in failures[:32])
+        self.sandbox_id = sandbox_id
+        self.failures = bounded
+        self.failure_count = max(len(bounded), failure_count or 0)
+        omitted = self.failure_count - len(bounded)
+        super().__init__(
+            "workspace cleanup failed for "
+            f"sandbox {sandbox_id}: {json.dumps(bounded, sort_keys=True)}"
+            + (f" ({omitted} additional failure(s) omitted)" if omitted else "")
+        )
+
+
+def _cleanup_result_error(result):
+    error = result.get("error", {}) if isinstance(result, dict) else {}
+    message = error.get("message") if isinstance(error, dict) else None
+    if isinstance(message, str) and message:
+        return message[:1_000]
+    kind = error.get("kind") if isinstance(error, dict) else None
+    if isinstance(kind, str) and kind:
+        return kind[:1_000]
+    return "cleanup operation returned an error"
+
+
 class WorkspaceTracker:
     def __init__(self, sandbox_id):
         self.sandbox_id = sandbox_id
@@ -647,18 +674,60 @@ class WorkspaceTracker:
 
     def cleanup(self):
         with self._lock:
-            command_ids = list(self.command_ids)
-            workspace_ids = list(self.workspace_ids)
+            command_ids = sorted(self.command_ids)
+            workspace_ids = sorted(self.workspace_ids)
+        failures = []
+        failure_count = 0
+
+        def record(resource_type, resource_id, operation, error):
+            nonlocal failure_count
+            failure_count += 1
+            if len(failures) < 32:
+                failures.append(
+                    {
+                        "resource_type": resource_type,
+                        "resource_id": str(resource_id)[:512],
+                        "operation": operation,
+                        "error": str(error)[:1_000],
+                    }
+                )
+
         for command_session_id in command_ids:
             try:
-                interrupt(self.sandbox_id, command_session_id)
-            except Exception:
-                pass
+                result = interrupt(self.sandbox_id, command_session_id)
+            except Exception as error:
+                record("command", command_session_id, "interrupt", error)
+                continue
+            if is_error(result):
+                record(
+                    "command",
+                    command_session_id,
+                    "interrupt",
+                    _cleanup_result_error(result),
+                )
+            else:
+                self.untrack_command(command_session_id)
         for workspace_session_id in workspace_ids:
             try:
-                self._destroy_with_interrupts(workspace_session_id)
-            except Exception:
-                pass
+                result = self._destroy_with_interrupts(workspace_session_id)
+            except Exception as error:
+                record("workspace", workspace_session_id, "destroy", error)
+                continue
+            if is_error(result) and not is_workspace_not_found(
+                result, workspace_session_id
+            ):
+                record(
+                    "workspace",
+                    workspace_session_id,
+                    "destroy",
+                    _cleanup_result_error(result),
+                )
+        if failure_count:
+            raise WorkspaceCleanupError(
+                self.sandbox_id,
+                failures,
+                failure_count=failure_count,
+            )
 
     def _destroy_with_interrupts(self, workspace_session_id):
         deadline = time.monotonic() + 10
@@ -683,11 +752,9 @@ class WorkspaceTracker:
             if not owned_active:
                 return result
             for command_session_id in owned_active:
-                try:
-                    interrupt(self.sandbox_id, command_session_id)
-                except Exception:
-                    pass
-                self.untrack_command(command_session_id)
+                interrupted = interrupt(self.sandbox_id, command_session_id)
+                if not is_error(interrupted):
+                    self.untrack_command(command_session_id)
             time.sleep(0.2)
             result = destroy_session(self.sandbox_id, workspace_session_id, grace_s=1)
         if not is_error(result):

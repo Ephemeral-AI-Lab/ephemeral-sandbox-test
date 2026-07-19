@@ -234,7 +234,7 @@ never loses the final verdict or cleanup evidence.
 | RE-02 | `observability.resource-efficiency.holder-destroy-race` | `nightly` | 30 min | `exit-destroy-idempotent`, `single-cleanup-result`, `resource-counts-balanced`, `race-artifact-bounded` |
 | RE-03 | `observability.resource-efficiency.workspace-cycle-reclaim` | `nightly` | 3 h | `lifecycle-memory-plateau`, `fd-thread-plateau`, `lease-session-zero`, `cycle-artifact-bounded` |
 | RE-04 | `observability.resource-efficiency.manager-resource-quiescence` | `nightly` | 3 h | `resource-series-available`, `daemon-quiescent`, `store-read-pure`, `post-poll-cooldown` |
-| RE-05 | `observability.resource-efficiency.topology-cost` | `nightly` | 45 min | `empty-topology-bounded`, `idle-topology-bounded`, `topology-correct`, `topology-cooldown` |
+| RE-05 | `observability.resource-efficiency.topology-cost` | `nightly` | 60 min | `empty-topology-bounded`, `idle-topology-bounded`, `topology-correct`, `topology-cooldown` |
 | RE-06 | `observability.resource-efficiency.runtime-thread-budget` | `nightly observability_config` | 90 min | `idle-thread-envelope`, `pressure-thread-envelope`, `concurrency-functional`, `cooldown-reclaimed`, `config-restored` |
 | RE-07 | `observability.resource-efficiency.admission-pressure` | `release observability_config` | 90 min | `admission-bounded`, `structured-overload`, `control-plane-responsive`, `post-pressure-clean`, `config-restored` |
 | RE-08 | `observability.resource-efficiency.fleet-scaling` | `release` | 4 h | `fleet-batch-complete`, `all-daemons-quiescent`, `manager-scaling-bounded`, `fleet-cleanup-complete` |
@@ -396,6 +396,12 @@ Measure three phases in one sandbox:
 Call explicit topology at the production visible-page cadence for ten minutes
 per phase. Apply the full schema and namespace-placement assertions from the
 existing cgroup helpers.
+
+The case timeout includes the ten-minute authenticated no-op baseline, all
+three ten-minute topology phases, the five-minute cooldown, and fifteen minutes
+of bounded setup, assertion, command-stop, workspace-destroy, and artifact
+finalization headroom. Measurement and cooldown durations may not be shortened
+to fit the timeout.
 
 Pass conditions:
 

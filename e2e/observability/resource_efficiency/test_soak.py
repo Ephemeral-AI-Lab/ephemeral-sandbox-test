@@ -32,6 +32,7 @@ from .helpers import (
     COOLDOWN_ANONYMOUS_DELTA_BYTES,
     CPU_TICK_BUDGET_PER_MINUTE,
     ROUTE_MEMORY_DELTA_BYTES,
+    RouteTraffic,
     append_cycle_record,
     artifact_gate,
     assert_no_zombies,
@@ -44,16 +45,17 @@ from .helpers import (
     daemon_runtime_config,
     daemon_self_counts,
     daemon_self_from_topology,
+    destroy_workspace,
     prepare_workspace_holder_fault,
     public_resource_profile,
-    read_daemon_self,
     read_resources,
     read_snapshot,
     read_topology,
     resource_delta,
-    RouteTraffic,
+    route_traffic_record,
     sample,
     start_command,
+    stop_command,
     strict_count,
     strict_duration,
     inspect_resource_profile,
@@ -100,18 +102,28 @@ def _cooperative_route_campaign(
     assert request_count > 0 and deadline_monotonic > started_monotonic
     traffic = RouteTraffic(route)
     interval = (deadline_monotonic - started_monotonic) / request_count
+    maximum_lateness = min(max(interval * 0.25, 0.010), 0.250)
     for index in range(request_count):
-        scheduled = started_monotonic + index * interval
+        scheduled = started_monotonic + (index + 1) * interval
         if stop_event.wait(max(0.0, scheduled - time.monotonic())):
             raise RuntimeError({"campaign_cancelled": route, "completed": index})
         request_started = time.monotonic()
+        assert request_started - scheduled <= maximum_lateness, {
+            "route": route,
+            "request_index": index + 1,
+            "request_count": request_count,
+            "interval_seconds": interval,
+            "start_lateness_seconds": request_started - scheduled,
+            "maximum_lateness_seconds": maximum_lateness,
+            "failure": "route cadence missed; catch-up requests are forbidden",
+        }
         response = request()
         traffic.add(response, time.monotonic() - request_started)
-    if stop_event.wait(max(0.0, deadline_monotonic - time.monotonic())):
+    if stop_event.is_set():
         raise RuntimeError({"campaign_cancelled": route, "completed": request_count})
     result = traffic.result()
     result["elapsed_seconds"] = time.monotonic() - started_monotonic
-    result["deadline_monotonic"] = deadline_monotonic
+    assert result["elapsed_seconds"] >= deadline_monotonic - started_monotonic, result
     return result
 
 
@@ -142,6 +154,10 @@ def test_six_hour_lifecycle_and_polling_soak(
 ):
     duration = strict_duration("E2E_RE11_SECONDS", 21_600, minimum=21_600)
     cycles = strict_count("E2E_RE11_CYCLES", 1_000, minimum=1_000)
+    assert duration % 2 == 0, {
+        "duration_seconds": duration,
+        "required_resource_cadence_seconds": 2,
+    }
     resource_reads = duration // 2
     sandbox_id = registered_sandbox_factory()
     tracker = workspace_registry_factory(sandbox_id)
@@ -160,9 +176,52 @@ def test_six_hour_lifecycle_and_polling_soak(
     )
     baseline_analysis = _analysis(case_artifacts, baseline_phase, "soak-baseline")
     baseline_sample = sample(case_artifacts, sandbox_id, phase="soak-baseline-end")
-    baseline_daemon = read_daemon_self(sandbox_id)
+
+    # Establish the ownership baseline through the same bounded lifecycle shape
+    # used by the soak.  That keeps every explicit topology request either
+    # paired with a live command or the one post-destroy confirmation for its
+    # workspace; there is no free-standing idle topology probe.
+    baseline_workspace_id = create_workspace(tracker)
+    baseline_command_id = start_command(
+        tracker,
+        baseline_workspace_id,
+        "while :; do sleep 1; done",
+        timeout_ms=60_000,
+    )
+    baseline_running = read_command_lines(
+        sandbox_id,
+        baseline_command_id,
+        start_offset=0,
+        limit=1,
+        timeout=10,
+    )
+    assert baseline_running.get("status") == "running", baseline_running
+    baseline_identity = prepare_workspace_holder_fault(
+        sandbox_id, baseline_workspace_id
+    )
+    baseline_terminal = stop_command(tracker, baseline_command_id)
+    assert baseline_terminal.get("status") == "cancelled", baseline_terminal
+    baseline_destroy = destroy_workspace(tracker, baseline_workspace_id)
+    baseline_topology = read_topology(sandbox_id)
+    assert baseline_topology.get("workspaces") == [], baseline_topology
+    baseline_daemon = daemon_self_from_topology(baseline_topology)
     baseline_self = daemon_self_counts(baseline_daemon)
+    assert all(baseline_self[key] == 0 for key in BALANCE_KEYS), {
+        "baseline_self": baseline_self,
+        "required_zero_keys": BALANCE_KEYS,
+    }
     runtime_config = daemon_runtime_config(baseline_daemon)
+    baseline_lifecycle_probe = {
+        "workspace_id": baseline_workspace_id,
+        "holder_pid": baseline_identity.pid,
+        "holder_identity_digest": baseline_identity.digest,
+        "command_terminal": {
+            "status": baseline_terminal.get("status"),
+            "exit_code": baseline_terminal.get("exit_code"),
+        },
+        "cleanup_response_digest": response_digest(baseline_destroy),
+        "terminal_lifecycle_state": "absent",
+    }
     public_profile = public_resource_profile(sandbox_id)
     docker_profile = inspect_resource_profile(sandbox_id)
     expected_standard_runtime = {
@@ -171,6 +230,7 @@ def test_six_hour_lifecycle_and_polling_soak(
         "blocking_thread_keep_alive_s": 5.0,
         "max_concurrent_connections": 64,
         "max_active_commands": 32,
+        "infrastructure_thread_allowance": 4,
     }
     assert public_profile["name"] == "standard", public_profile
     assert public_profile["daemon_runtime_profile"] == "standard", public_profile
@@ -183,6 +243,11 @@ def test_six_hour_lifecycle_and_polling_soak(
     }
     assert_settled_budget(baseline_sample)
 
+    # Bracket the long campaign after the run-owned baseline lifecycle probe so
+    # its counter deltas contain only work from the qualified six-hour window.
+    soak_route_before = sample(
+        case_artifacts, sandbox_id, phase="soak-route-before"
+    )
     campaign_started = time.monotonic() + 0.25
     campaign_deadline = campaign_started + duration
     stop_event = threading.Event()
@@ -415,8 +480,11 @@ def test_six_hour_lifecycle_and_polling_soak(
     # activity has stopped.
     store_before_poll = fingerprint_store(sandbox_id)
     poll_before = sample(case_artifacts, sandbox_id, phase="soak-poll-before")
-    poll_self_before = daemon_self_counts(read_daemon_self(sandbox_id))
     cooldown_seconds = strict_duration("E2E_RE11_COOLDOWN_SECONDS", 600, minimum=600)
+    assert cooldown_seconds % 2 == 0, {
+        "duration_seconds": cooldown_seconds,
+        "required_resource_cadence_seconds": 2,
+    }
     cooldown_started = time.monotonic() + 0.25
     cooldown_deadline = cooldown_started + cooldown_seconds
     cooldown_stop = threading.Event()
@@ -460,11 +528,20 @@ def test_six_hour_lifecycle_and_polling_soak(
         cooldown_stop.set()
         cooldown_pool.shutdown(wait=True, cancel_futures=True)
     poll_after = sample(case_artifacts, sandbox_id, phase="soak-poll-after")
-    poll_self_after = daemon_self_counts(read_daemon_self(sandbox_id))
     store_after_poll = fingerprint_store(sandbox_id)
     cooldown_analysis = _analysis(case_artifacts, cooldown_phase, "soak-cooldown")
     poll_delta = resource_delta(poll_before, poll_after)
-    poll_self_delta = count_delta(poll_self_before, poll_self_after)
+    soak_daemon_delta = resource_delta(soak_route_before, soak_end_sample)
+    six_hour_route_traffic = route_traffic_record(
+        resource_campaign,
+        target_counter_deltas=soak_daemon_delta,
+        control_counter_deltas={},
+    )
+    cooldown_route_traffic = route_traffic_record(
+        cooldown_campaign,
+        target_counter_deltas=poll_delta,
+        control_counter_deltas={},
+    )
     final_self = lifecycle["last_settled"]
     final_sample = poll_after
     assert_settled_budget(final_sample)
@@ -473,6 +550,7 @@ def test_six_hour_lifecycle_and_polling_soak(
         "duration_seconds": duration,
         "cycles_requested": cycles,
         "baseline": baseline_analysis,
+        "baseline_lifecycle_probe": baseline_lifecycle_probe,
         "runtime_config": runtime_config,
         "resource_profile": {
             "public": public_profile,
@@ -482,14 +560,12 @@ def test_six_hour_lifecycle_and_polling_soak(
         "baseline_self": baseline_self,
         "lifecycle": lifecycle,
         "cycle_evidence": cycle_evidence,
-        "resource_campaign": resource_campaign,
+        "route_traffic": [six_hour_route_traffic, cooldown_route_traffic],
         "soak_phase": soak_phase,
         "soak_observed_duration_seconds": soak_observed_duration_seconds,
         "six_hour_series": six_hour_series,
-        "cooldown_campaign": cooldown_campaign,
         "cooldown": cooldown_analysis,
         "poll_delta": poll_delta,
-        "poll_self_delta": poll_self_delta,
         "store_before_poll": store_before_poll,
         "store_after_poll": store_after_poll,
         "final_self": final_self,
@@ -499,17 +575,7 @@ def test_six_hour_lifecycle_and_polling_soak(
     # Preserve the behavioral verdict before final public sandbox destroy.
     case_artifacts.write_json(
         "route-traffic.json",
-        {
-            "six_hour": resource_campaign,
-            "cooldown": cooldown_campaign,
-            "daemon_counter_deltas": {
-                "target": poll_self_delta,
-                "control": {
-                    "applicable": False,
-                    "reason": "RE-11 specifies exactly one standard-profile sandbox",
-                },
-            },
-        },
+        [six_hour_route_traffic, cooldown_route_traffic],
     )
     case_artifacts.write_json("summary.json", summary, reserved=True)
 
@@ -602,8 +668,8 @@ def test_six_hour_lifecycle_and_polling_soak(
             "store_unchanged": True,
         },
         actual={
-            "six_hour": resource_campaign,
-            "cooldown": cooldown_campaign,
+            "six_hour": six_hour_route_traffic,
+            "cooldown": cooldown_route_traffic,
             "analysis": cooldown_analysis,
             "delta": poll_delta,
         },
@@ -621,7 +687,6 @@ def test_six_hour_lifecycle_and_polling_soak(
         assert cooldown_analysis["cpu_ticks_per_minute"] < CPU_TICK_BUDGET_PER_MINUTE
         assert poll_delta["read_bytes"] == 0 and poll_delta["write_bytes"] == 0
         assert abs(poll_delta["anonymous_bytes"]) <= ROUTE_MEMORY_DELTA_BYTES
-        assert all(value == 0 for value in poll_self_delta.values())
         assert_store_unchanged(store_before_poll, store_after_poll)
 
     artifact_bytes = artifact_gate(case_artifacts)

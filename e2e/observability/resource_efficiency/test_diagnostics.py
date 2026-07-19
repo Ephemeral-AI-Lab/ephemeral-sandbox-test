@@ -306,7 +306,6 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
         )
         assert idle_artifact == artifact
 
-        registered_sandbox_factory.destroy(sandbox_id)
         summary = {
             "warm": warm,
             "initial": initial,
@@ -333,7 +332,14 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
             "idle_diagnostic": idle_fingerprint,
             "expected_workspace_id": workspace_id,
             "expected_holder_pid": holder_pid,
+            "cleanup": {"sandbox_destroyed": False},
         }
+        case_artifacts.write_json("summary.json", summary, reserved=True)
+        registered_sandbox_factory.destroy(sandbox_id)
+        summary["cleanup"] = {
+            "sandbox_destroyed": sandbox_id in registered_sandbox_factory.destroyed,
+        }
+        case_artifacts.write_json("summary.json", summary, reserved=True)
     restored = gateway.restored
     summary["config_restored"] = restored
     case_artifacts.write_json("summary.json", summary, reserved=True)
@@ -491,9 +497,10 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
 
     with validation(
         "config-restored",
-        expected=True,
-        actual=restored,
+        expected={"config_restored": True, "sandbox_destroyed": True},
+        actual={"config_restored": restored, "cleanup": summary["cleanup"]},
         evidence=("summary.json", "cleanup.json"),
     ):
+        assert summary["cleanup"]["sandbox_destroyed"] is True
         assert restored
         artifact_gate(case_artifacts)

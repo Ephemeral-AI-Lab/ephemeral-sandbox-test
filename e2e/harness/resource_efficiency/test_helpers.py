@@ -36,7 +36,6 @@ def _identity() -> helpers.HolderIdentity:
 
 def _topology(identity: helpers.HolderIdentity) -> dict:
     return {
-        "sandbox_id": identity.sandbox_id,
         "topology": {
             "workspaces": [
                 {
@@ -46,6 +45,216 @@ def _topology(identity: helpers.HolderIdentity) -> dict:
             ]
         },
     }
+
+
+def _daemon_self() -> dict:
+    return {
+        "available": True,
+        "error": None,
+        "sampled_at_unix_ms": 1,
+        "pid": 123,
+        "resident_memory_bytes": 4_096,
+        "proportional_set_size_bytes": 3_072,
+        "anonymous_memory_bytes": 2_048,
+        "private_dirty_bytes": 1_024,
+        "anonymous_huge_pages_bytes": 0,
+        "thread_count": 6,
+        "file_descriptor_count": 8,
+        "runtime_config": {},
+        "runtime_usage": {},
+        "ownership": {},
+        "lifecycle": {"last_cleanup_duration_ms": None},
+        "allocator": {
+            "supported": False,
+            "active_bytes": None,
+            "resident_bytes": None,
+        },
+        "diagnostics": {},
+    }
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.topology-envelope",
+    title="Explicit topology accepts the public daemon envelope",
+    description="The helper validates the documented explicit topology envelope without inventing a sandbox identity field.",
+    validations={
+        "public-envelope": "View, scope, and bounded schema-v2 topology are sufficient."
+    },
+)
+def test_explicit_topology_helper_matches_public_envelope(monkeypatch):
+    response = {
+        "view": "topology",
+        "scope": "sandbox",
+        "topology": {
+            "schema_version": 2,
+            "available": True,
+            "source": "proc_namespaces",
+            "error": None,
+            "truncated": False,
+            "warnings": [],
+            "workspaces": [],
+        },
+    }
+    monkeypatch.setattr(helpers, "cli", lambda *args, **kwargs: response)
+    assert helpers.read_topology_response("eos-test") is response
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.daemon-thp-field",
+    title="Daemon self metrics use the serialized THP field",
+    description="The helper requires the public anonymous_huge_pages_bytes spelling emitted by daemon telemetry.",
+    validations={
+        "thp-field": "The canonical telemetry key is mandatory and the stale alias is rejected."
+    },
+)
+def test_daemon_self_helper_requires_serialized_thp_field():
+    daemon = _daemon_self()
+    assert helpers.daemon_self_from_topology({"daemon": daemon}) is daemon
+
+    stale = dict(daemon)
+    stale["anon_huge_pages_bytes"] = stale.pop("anonymous_huge_pages_bytes")
+    with pytest.raises(AssertionError, match="anonymous_huge_pages_bytes"):
+        helpers.daemon_self_from_topology({"daemon": stale})
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.daemon-self-route",
+    title="Daemon self metrics use the dedicated public operation",
+    description="The helper reads the bounded daemon payload without requesting process topology.",
+    validations={
+        "dedicated-route": "The exact daemon operation returns no topology envelope."
+    },
+)
+def test_daemon_self_helper_uses_dedicated_public_route(monkeypatch):
+    calls = []
+    daemon = _daemon_self()
+    response = {"view": "daemon", "scope": "sandbox", "daemon": daemon}
+
+    def fake_cli(*args, **kwargs):
+        calls.append((args, kwargs))
+        return response
+
+    monkeypatch.setattr(helpers, "cli", fake_cli)
+
+    assert helpers.read_daemon_self("eos-test") is daemon
+    assert calls == [
+        (
+            ("observability", "daemon", "--sandbox-id", "eos-test"),
+            {"timeout": 30},
+        )
+    ]
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.daemon-self-rp4-schema",
+    title="Daemon self validates the complete RP4 metric schema",
+    description="The bounded public payload requires memory, thread, FD, allocator, and cleanup-latency fields with their Rust serialization semantics.",
+    validations={
+        "rp4-schema": "Missing or invalid RP4 fields fail, while unsupported allocator values remain explicit nulls."
+    },
+)
+@pytest.mark.parametrize(
+    ("section", "field"),
+    (
+        (None, "resident_memory_bytes"),
+        (None, "proportional_set_size_bytes"),
+        (None, "anonymous_memory_bytes"),
+        (None, "private_dirty_bytes"),
+        (None, "thread_count"),
+        (None, "file_descriptor_count"),
+        ("allocator", "active_bytes"),
+        ("allocator", "resident_bytes"),
+        ("lifecycle", "last_cleanup_duration_ms"),
+    ),
+)
+def test_daemon_self_helper_rejects_missing_rp4_fields(section, field):
+    daemon = _daemon_self()
+    target = daemon if section is None else daemon[section]
+    target.pop(field)
+
+    with pytest.raises(AssertionError, match=field):
+        helpers.daemon_self_from_topology({"daemon": daemon})
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.daemon-self-allocator-semantics",
+    title="Supported allocator metrics cannot be null",
+    description="Allocator active and resident bytes are optional only when the Rust metric reports allocator support is unavailable.",
+    validations={
+        "allocator-semantics": "Supported allocators expose nonnegative active and resident byte counts."
+    },
+)
+def test_daemon_self_helper_requires_supported_allocator_values():
+    unsupported = _daemon_self()
+    assert helpers.daemon_self_from_topology({"daemon": unsupported}) is unsupported
+
+    supported = _daemon_self()
+    supported["allocator"]["supported"] = True
+    with pytest.raises(AssertionError, match="active_bytes"):
+        helpers.daemon_self_from_topology({"daemon": supported})
+
+    supported["allocator"].update({"active_bytes": 512, "resident_bytes": 1_024})
+    assert helpers.daemon_self_from_topology({"daemon": supported}) is supported
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.race-winner",
+    title="Holder-destroy races retain a deterministic winner",
+    description="The exact fault result and validated public destroy disposition map to one stable Exit, Destroy, or Concurrent classification.",
+    validations={
+        "winner": "Every allowed outcome has exactly one recorded race winner."
+    },
+)
+@pytest.mark.parametrize(
+    ("fault_result", "destroy_outcome", "expected"),
+    (
+        ("signal_sent", "workspace_terminal", "exit"),
+        ("target_already_exited", "success", "destroy"),
+        ("signal_sent", "success", "concurrent"),
+    ),
+)
+def test_holder_destroy_race_winner_is_deterministic(
+    fault_result, destroy_outcome, expected
+):
+    assert (
+        helpers.classify_holder_destroy_race(fault_result, destroy_outcome)
+        == expected
+    )
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.standard-thread-allowance",
+    title="Standard runtime allowance is fixed at four threads",
+    description="The E2E helper rejects an unqualified daemon-advertised alternative instead of learning a wider idle envelope.",
+    validations={
+        "fixed-allowance": "Only the qualified standard infrastructure allowance of four is accepted."
+    },
+)
+def test_daemon_runtime_config_rejects_unqualified_thread_allowance():
+    runtime_config = {
+        "worker_threads": 2,
+        "max_blocking_threads": 8,
+        "blocking_thread_keep_alive_s": 5.0,
+        "max_concurrent_connections": 64,
+        "max_active_commands": 32,
+        "max_blocking_queue_depth": 0,
+        "max_command_queue_depth": 0,
+        "infrastructure_thread_allowance": 4,
+    }
+    assert helpers.daemon_runtime_config({"runtime_config": runtime_config})[
+        "infrastructure_thread_allowance"
+    ] == 4
+
+    runtime_config["infrastructure_thread_allowance"] = 5
+    with pytest.raises(AssertionError, match="infrastructure_thread_allowance"):
+        helpers.daemon_runtime_config({"runtime_config": runtime_config})
 
 
 def _cycle_record(cycle: int, *, sampled: bool = True) -> dict:
@@ -1022,16 +1231,7 @@ def test_public_control_evidence_is_exact_and_rejects_identity_drift(monkeypatch
     topology = {
         "schema_version": 2,
         "source": "proc_namespaces",
-        "daemon": {
-            "private_dirty_bytes": 0,
-            "anon_huge_pages_bytes": 0,
-            "runtime_config": {},
-            "runtime_usage": {},
-            "ownership": {},
-            "lifecycle": {},
-            "allocator": {},
-            "diagnostics": {},
-        },
+        "daemon": _daemon_self(),
         "workspaces": [
             {
                 "workspace_id": workspace_id,

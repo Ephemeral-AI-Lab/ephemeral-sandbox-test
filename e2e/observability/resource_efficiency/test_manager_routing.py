@@ -61,6 +61,17 @@ from .helpers import (
 )
 
 
+_RE05_CAMPAIGN_SECONDS = 600
+_RE05_CAMPAIGN_COUNT = 4
+_RE05_COOLDOWN_SECONDS = 300
+_RE05_TIMEOUT_HEADROOM_SECONDS = 900
+_RE05_TIMEOUT_MS = (
+    _RE05_CAMPAIGN_SECONDS * _RE05_CAMPAIGN_COUNT
+    + _RE05_COOLDOWN_SECONDS
+    + _RE05_TIMEOUT_HEADROOM_SECONDS
+) * 1_000
+
+
 def _phase_analysis(
     case_artifacts, phase: dict, name: str, arm: str, repetition: int
 ) -> dict:
@@ -348,7 +359,7 @@ def test_manager_resource_traffic_is_quiescent(
 
 
 @e2e_test(
-    timeout_ms=2_700_000,
+    timeout_ms=_RE05_TIMEOUT_MS,
     id="observability.resource-efficiency.topology-cost",
     title="Explicit topology remains correct and bounded",
     description="Visible-page cadence across empty, idle, and active phases preserves topology correctness without retained CPU, memory, rows, warnings, or PIDs.",
@@ -377,7 +388,11 @@ def test_explicit_topology_cost(
     assert isinstance(clock_ticks_per_second, int) and clock_ticks_per_second > 0, (
         environment
     )
-    phase_seconds = strict_duration("E2E_RE05_PHASE_SECONDS", 600, minimum=600)
+    phase_seconds = strict_duration(
+        "E2E_RE05_PHASE_SECONDS",
+        _RE05_CAMPAIGN_SECONDS,
+        minimum=_RE05_CAMPAIGN_SECONDS,
+    )
     requests = strict_count("E2E_RE05_REQUESTS", 300, minimum=300)
     baseline_sample = sample(case_artifacts, sandbox_id, phase="topology-baseline")
 
@@ -554,7 +569,11 @@ def test_explicit_topology_cost(
         [(sandbox_id, "target", None)],
         phase="topology-cooldown",
         repetition=1,
-        duration_seconds=strict_duration("E2E_RE05_COOLDOWN_SECONDS", 300, minimum=300),
+        duration_seconds=strict_duration(
+            "E2E_RE05_COOLDOWN_SECONDS",
+            _RE05_COOLDOWN_SECONDS,
+            minimum=_RE05_COOLDOWN_SECONDS,
+        ),
     )
     cooldown_analysis = _phase_analysis(
         case_artifacts, cooldown, "topology-cooldown", "target", 1
@@ -736,6 +755,11 @@ def test_fleet_resource_scaling(
     sandbox_count = strict_count("E2E_RE08_SANDBOXES", 20, minimum=20)
     requests = strict_count("E2E_RE08_REQUESTS", 900, minimum=900)
     duration = strict_duration("E2E_RE08_SECONDS", 1_800, minimum=1_800)
+    assert duration == requests * 2, {
+        "duration_seconds": duration,
+        "request_count": requests,
+        "required_cadence_seconds": 2,
+    }
     sandboxes = [registered_sandbox_factory() for _ in range(sandbox_count)]
     for sandbox_id in sandboxes:
         verify_packaged_daemon(sandbox_id)
@@ -885,6 +909,30 @@ def test_fleet_resource_scaling(
         },
     )
     case_artifacts.write_json("route-traffic.json", route_traffic)
+    cleanup = {sandbox_id: False for sandbox_id in sandboxes}
+    summary = {
+        "warm": warm,
+        "route_traffic": route_traffic,
+        "manager_before": manager_before,
+        "manager_after": manager_after,
+        "manager_delta": manager_delta,
+        "manager_cpu_fraction": manager_cpu_fraction,
+        "manager_anonymous_slope_bytes_per_poll": manager_anonymous_slope,
+        "manager_poll_samples": manager_points,
+        "release_baselines": {
+            "p99_ms": FLEET_RELEASE_P99_MS,
+            "manager_cpu_fraction": FLEET_RELEASE_MANAGER_CPU_FRACTION,
+            "manager_anonymous_slope_bytes_per_poll": FLEET_MANAGER_ANONYMOUS_SLOPE_BYTES_PER_POLL,
+        },
+        "daemon_deltas": daemon_deltas,
+        "untouched_measurement_control_id": untouched_measurement_control_id,
+        "untouched_measurement_control_basis": "manager fleet resources makes zero daemon calls",
+        "daemon_minus_control": daemon_minus_control,
+        "docker_creation_guard": fleet_creation_guard,
+        "rings": ring_stats,
+        "cleanup": cleanup,
+    }
+    case_artifacts.write_json("summary.json", summary, reserved=True)
 
     with validation(
         "fleet-batch-complete",
@@ -893,6 +941,7 @@ def test_fleet_resource_scaling(
         evidence=("route-traffic.json",),
     ):
         assert campaign["success_count"] == requests and campaign["error_count"] == 0
+        assert campaign["elapsed_seconds"] >= duration
         assert round_robin["index"] == requests
 
     with validation(
@@ -914,7 +963,7 @@ def test_fleet_resource_scaling(
             assert delta["read_bytes"] == 0 and delta["write_bytes"] == 0, {
                 sandbox_id: delta
             }
-            assert delta["anonymous_bytes"] <= ROUTE_MEMORY_DELTA_BYTES, {
+            assert abs(delta["anonymous_bytes"]) <= ROUTE_MEMORY_DELTA_BYTES, {
                 sandbox_id: delta
             }
             difference = daemon_minus_control[sandbox_id]
@@ -950,7 +999,7 @@ def test_fleet_resource_scaling(
             "manager_cpu_fraction": manager_cpu_fraction,
             "manager_anonymous_slope_bytes_per_poll": manager_anonymous_slope,
             "manager_points": manager_points,
-            "traffic": campaign,
+            "traffic": route_traffic,
             "rings": ring_stats,
             "docker_creation_guard": fleet_creation_guard,
         },
@@ -976,29 +1025,7 @@ def test_fleet_resource_scaling(
         registered_sandbox_factory.destroy(sandbox_id)
         wait_for_path(rings[sandbox_id], exists=False, timeout=120)
     cleanup = {sandbox_id: not rings[sandbox_id].exists() for sandbox_id in sandboxes}
-    summary = {
-        "warm": warm,
-        "campaign": campaign,
-        "route_traffic": route_traffic,
-        "manager_before": manager_before,
-        "manager_after": manager_after,
-        "manager_delta": manager_delta,
-        "manager_cpu_fraction": manager_cpu_fraction,
-        "manager_anonymous_slope_bytes_per_poll": manager_anonymous_slope,
-        "manager_poll_samples": manager_points,
-        "release_baselines": {
-            "p99_ms": FLEET_RELEASE_P99_MS,
-            "manager_cpu_fraction": FLEET_RELEASE_MANAGER_CPU_FRACTION,
-            "manager_anonymous_slope_bytes_per_poll": FLEET_MANAGER_ANONYMOUS_SLOPE_BYTES_PER_POLL,
-        },
-        "daemon_deltas": daemon_deltas,
-        "untouched_measurement_control_id": untouched_measurement_control_id,
-        "untouched_measurement_control_basis": "manager fleet resources makes zero daemon calls",
-        "daemon_minus_control": daemon_minus_control,
-        "docker_creation_guard": fleet_creation_guard,
-        "rings": ring_stats,
-        "cleanup": cleanup,
-    }
+    summary["cleanup"] = cleanup
     case_artifacts.write_json("summary.json", summary, reserved=True)
 
     with validation(

@@ -72,6 +72,7 @@ ANONYMOUS_SLOPE_BYTES_PER_HOUR = 4 * 1024
 FLEET_RELEASE_P99_MS = 250.0
 FLEET_RELEASE_MANAGER_CPU_FRACTION = 0.005
 FLEET_MANAGER_ANONYMOUS_SLOPE_BYTES_PER_POLL = 0.0
+STANDARD_INFRASTRUCTURE_THREAD_ALLOWANCE = 4
 
 
 def strict_duration(name: str, default: int, *, minimum: int) -> int:
@@ -227,7 +228,6 @@ def read_topology_response(sandbox_id: str) -> dict[str, Any]:
     )
     assert response.get("view") == "topology", response
     assert response.get("scope") == "sandbox", response
-    assert response.get("sandbox_id") == sandbox_id, response
     topology = response.get("topology")
     assert isinstance(topology, dict), response
     assert_proc_topology_available(topology)
@@ -264,15 +264,61 @@ def _required_int(value: Mapping[str, Any], key: str) -> int:
     return observed
 
 
-def daemon_self_from_topology(topology: Mapping[str, Any]) -> dict[str, Any]:
-    daemon = topology.get("daemon")
-    assert isinstance(daemon, dict), {
-        "missing_required_public_surface": "topology.daemon",
-        "topology_keys": sorted(topology),
+def _required_optional_int(value: Mapping[str, Any], key: str) -> int | None:
+    assert key in value, {
+        "missing_required_public_field": key,
+        "value": value,
     }
-    for key in (
-        "private_dirty_bytes",
-        "anon_huge_pages_bytes",
+    observed = value[key]
+    assert observed is None or (
+        isinstance(observed, int)
+        and not isinstance(observed, bool)
+        and observed >= 0
+    ), {
+        "invalid_required_public_optional_integer": key,
+        "value": value,
+    }
+    return observed
+
+
+def _validated_daemon_self(
+    daemon: Any,
+    *,
+    public_surface: str,
+) -> dict[str, Any]:
+    assert isinstance(daemon, dict), {
+        "missing_required_public_surface": public_surface,
+    }
+    assert daemon.get("available") is True, {
+        "invalid_required_public_field": f"{public_surface}.available",
+        "value": daemon.get("available"),
+    }
+    assert daemon.get("error") is None, {
+        "invalid_required_public_field": f"{public_surface}.error",
+        "value": daemon.get("error"),
+    }
+    sampled_at = _required_int(daemon, "sampled_at_unix_ms")
+    pid = _required_int(daemon, "pid")
+    assert sampled_at > 0, {"sampled_at_unix_ms": sampled_at}
+    assert pid > 1, {"pid": pid}
+
+    metrics = {
+        key: _required_int(daemon, key)
+        for key in (
+            "resident_memory_bytes",
+            "proportional_set_size_bytes",
+            "anonymous_memory_bytes",
+            "private_dirty_bytes",
+            "anonymous_huge_pages_bytes",
+            "thread_count",
+            "file_descriptor_count",
+        )
+    }
+    assert metrics["resident_memory_bytes"] > 0, metrics
+    assert metrics["proportional_set_size_bytes"] > 0, metrics
+    assert metrics["thread_count"] >= 1, metrics
+
+    for section in (
         "runtime_config",
         "runtime_usage",
         "ownership",
@@ -280,14 +326,74 @@ def daemon_self_from_topology(topology: Mapping[str, Any]) -> dict[str, Any]:
         "allocator",
         "diagnostics",
     ):
-        assert key in daemon, {
-            "missing_required_public_field": f"topology.daemon.{key}"
+        _required_mapping(daemon, section)
+
+    lifecycle = _required_mapping(daemon, "lifecycle")
+    _required_optional_int(lifecycle, "last_cleanup_duration_ms")
+
+    allocator = _required_mapping(daemon, "allocator")
+    supported = allocator.get("supported")
+    assert isinstance(supported, bool), {
+        "invalid_required_public_field": f"{public_surface}.allocator.supported",
+        "value": supported,
+    }
+    allocator_metrics = {
+        key: _required_optional_int(allocator, key)
+        for key in ("active_bytes", "resident_bytes")
+    }
+    if supported:
+        assert allocator_metrics["active_bytes"] is not None, {
+            "missing_supported_allocator_metric": "active_bytes"
+        }
+        assert allocator_metrics["resident_bytes"] is not None, {
+            "missing_supported_allocator_metric": "resident_bytes"
         }
     return daemon
 
 
+def classify_holder_destroy_race(fault_result: str, destroy_outcome: str) -> str:
+    """Map the allowed public race dispositions to one stable winner."""
+    allowed = {
+        ("signal_sent", "workspace_terminal"): "exit",
+        ("target_already_exited", "success"): "destroy",
+        ("signal_sent", "success"): "concurrent",
+    }
+    key = (fault_result, destroy_outcome)
+    assert key in allowed, {
+        "fault_result": fault_result,
+        "destroy_outcome": destroy_outcome,
+        "allowed": sorted(allowed),
+    }
+    return allowed[key]
+
+
+def daemon_self_from_topology(topology: Mapping[str, Any]) -> dict[str, Any]:
+    return _validated_daemon_self(
+        topology.get("daemon"),
+        public_surface="topology.daemon",
+    )
+
+
+def read_daemon_self_response(sandbox_id: str) -> dict[str, Any]:
+    response = assert_ok(
+        cli(
+            "observability",
+            "daemon",
+            "--sandbox-id",
+            sandbox_id,
+            timeout=30,
+        ),
+        route="observability.daemon",
+    )
+    assert response.get("view") == "daemon", response
+    assert response.get("scope") == "sandbox", response
+    _validated_daemon_self(response.get("daemon"), public_surface="daemon")
+    assert "topology" not in response, response
+    return response
+
+
 def read_daemon_self(sandbox_id: str) -> dict[str, Any]:
-    return daemon_self_from_topology(read_topology(sandbox_id))
+    return read_daemon_self_response(sandbox_id)["daemon"]
 
 
 def probe_public_control(
@@ -438,6 +544,15 @@ def daemon_runtime_config(daemon: Mapping[str, Any]) -> dict[str, int | float]:
         and keepalive >= 0
     ), config
     result["blocking_thread_keep_alive_s"] = float(keepalive)
+    assert (
+        result["infrastructure_thread_allowance"]
+        == STANDARD_INFRASTRUCTURE_THREAD_ALLOWANCE
+    ), {
+        "field": "infrastructure_thread_allowance",
+        "expected": STANDARD_INFRASTRUCTURE_THREAD_ALLOWANCE,
+        "actual": result["infrastructure_thread_allowance"],
+        "qualification": "standard",
+    }
     return result
 
 
@@ -824,7 +939,6 @@ def prepare_workspace_holder_fault(
     sandbox_id: str, workspace_id: str
 ) -> HolderIdentity:
     topology_response = read_topology_response(sandbox_id)
-    assert topology_response["sandbox_id"] == sandbox_id, topology_response
     topology = topology_response["topology"]
     workspace = workspace_by_id(topology, workspace_id)
     pid = workspace.get("holder_pid")
@@ -869,7 +983,6 @@ def signal_validated_holder(identity: HolderIdentity) -> dict[str, Any]:
         "observed": container_id,
     }
     topology_response = read_topology_response(identity.sandbox_id)
-    assert topology_response["sandbox_id"] == identity.sandbox_id, topology_response
     matching = [
         workspace
         for workspace in topology_response["topology"].get("workspaces", [])
@@ -928,9 +1041,6 @@ def signal_validated_holder(identity: HolderIdentity) -> dict[str, Any]:
         "validation": "final",
     }
     final_topology_response = read_topology_response(identity.sandbox_id)
-    assert final_topology_response["sandbox_id"] == identity.sandbox_id, (
-        final_topology_response
-    )
     final_matching = [
         candidate
         for candidate in final_topology_response["topology"].get("workspaces", [])

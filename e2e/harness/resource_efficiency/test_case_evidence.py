@@ -2,13 +2,45 @@
 
 from __future__ import annotations
 
+import inspect
+
 import pytest
 
 from harness.catalog.declarations import e2e_test
+from observability.resource_efficiency import test_smoke
 from observability.resource_efficiency.test_holder_lifecycle import (
     _peer_namespace_evidence,
     _placement_evidence,
 )
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.re00-store-window",
+    title="RE-00 fingerprints only the manager-read window",
+    description="Workspace lifecycle writes happen before the event-store baseline used to prove that manager-only resource reads are quiescent.",
+    validations={
+        "route-window": "The before/after fingerprints tightly bracket the resource campaign and exclude workspace create and destroy."
+    },
+)
+def test_re00_store_fingerprint_brackets_only_the_resource_campaign():
+    source = inspect.getsource(test_smoke.test_resource_efficiency_smoke)
+    positions = {
+        "create": source.find("workspace_id = create_workspace(tracker)"),
+        "store_before": source.find("store_before = fingerprint_store(sandbox_id)"),
+        "campaign": source.find("campaign = run_route_campaign("),
+        "store_after": source.find("store_after_reads = fingerprint_store(sandbox_id)"),
+        "destroy": source.find("destroy_workspace(tracker, workspace_id)"),
+    }
+
+    assert all(position >= 0 for position in positions.values()), positions
+    assert (
+        positions["create"]
+        < positions["store_before"]
+        < positions["campaign"]
+        < positions["store_after"]
+        < positions["destroy"]
+    ), positions
 
 
 @e2e_test(

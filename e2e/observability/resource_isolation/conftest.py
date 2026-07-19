@@ -92,7 +92,7 @@ def _ensure_summary_before_cleanup(
             current = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             current = None
-        if isinstance(current, dict) and current.get("evidence_state") == "early_failure":
+        if isinstance(current, dict):
             current["pytest_verdict"] = dict(pytest_verdict)
             artifacts.write_json("summary.json", current, reserved=True)
         return
@@ -147,11 +147,6 @@ def case_artifacts(request: pytest.FixtureRequest) -> Iterator[ArtifactDirectory
     config = getattr(request, "config", None)
     plugin_manager = getattr(config, "pluginmanager", None)
     report_capture = _ReportCapture(request.node, plugin_manager)
-    if plugin_manager is not None:
-        plugin_manager.register(
-            report_capture,
-            name=f"resource-isolation-report-{id(request.node):x}",
-        )
     declaration = explicit_declaration(request.node)
     assert declaration is not None
     case = _SAFE.sub("-", declaration.id)
@@ -159,6 +154,11 @@ def case_artifacts(request: pytest.FixtureRequest) -> Iterator[ArtifactDirectory
     artifacts = ArtifactDirectory(root)
     report_capture.artifacts = artifacts
     artifacts.write_json("environment.json", initial_environment_evidence())
+    if plugin_manager is not None:
+        plugin_manager.register(
+            report_capture,
+            name=f"resource-isolation-report-{id(request.node):x}",
+        )
     try:
         yield artifacts
     finally:
@@ -206,7 +206,18 @@ def registered_sandbox_factory(
 
     def preserve_before_destroy(pytest_verdict: Mapping[str, str]) -> None:
         _ensure_summary_before_cleanup(case_artifacts, pytest_verdict)
-        write_evidence("pending", pytest_verdict)
+        write_evidence("failed" if failure_count else "pending", pytest_verdict)
+
+    def record_cleanup_failure(sandbox_id: str, error: BaseException) -> None:
+        if sandbox_id not in registered:
+            raise AssertionError(
+                "refusing to attribute cleanup failure to unregistered sandbox: "
+                f"{sandbox_id[:96]}"
+            )
+        record_failure(sandbox_id, error)
+        pytest_verdict = _pytest_verdict(request.node)
+        _ensure_summary_before_cleanup(case_artifacts, pytest_verdict)
+        write_evidence("failed", pytest_verdict)
 
     def destroy_one(sandbox_id: str) -> None:
         if sandbox_id in destroyed:
@@ -293,6 +304,7 @@ def registered_sandbox_factory(
     create.registered = registered
     create.destroyed = destroyed
     create.failures = failures
+    create.record_cleanup_failure = record_cleanup_failure
     try:
         yield create
     finally:

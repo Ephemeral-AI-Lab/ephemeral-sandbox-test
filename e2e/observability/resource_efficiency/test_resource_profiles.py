@@ -58,7 +58,10 @@ AGGREGATE_LIMITS = {
     "cpu.weight": WORKLOAD_CPU_WEIGHT,
     "memory.high": str(WORKLOAD_MEMORY_BYTES),
     "memory.max": str(WORKLOAD_MEMORY_BYTES),
-    "memory.oom.group": "1",
+    # The shared ancestor bounds aggregate workload memory but must not turn
+    # every peer workspace below it into one OOM kill unit.  Each workspace
+    # leaf owns memory.oom.group=1 instead.
+    "memory.oom.group": "0",
     "pids.max": str(WORKLOAD_PIDS),
 }
 

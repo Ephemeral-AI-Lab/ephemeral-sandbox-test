@@ -197,6 +197,57 @@ def test_cleanup_failure_fails_the_checkpoint_after_behavior_passes(
 
 @e2e_test(
     timeout_ms=1_000,
+    id="harness.resource-isolation.workspace-cleanup-checkpoint",
+    title="Workspace cleanup failure fails the run checkpoint",
+    description="An exact command or workspace teardown failure is retained while outer exact-sandbox cleanup still runs.",
+    validations={
+        "workspace-cleanup-checkpoint": "The bounded cleanup artifact attributes the failure and a passing call becomes a teardown failure."
+    },
+)
+def test_workspace_cleanup_failure_is_recorded_before_exact_sandbox_cleanup(
+    monkeypatch, tmp_path
+):
+    artifacts = ArtifactDirectory(tmp_path / "artifacts")
+    destroy_calls = []
+    monkeypatch.setattr(
+        isolation_conftest.management,
+        "create_sandbox",
+        lambda **_kwargs: {"id": "eos-owned"},
+    )
+    monkeypatch.setattr(
+        isolation_conftest.management,
+        "destroy_sandbox",
+        lambda sandbox_id: destroy_calls.append(sandbox_id) or {"ok": True},
+    )
+    generator = isolation_conftest.registered_sandbox_factory.__wrapped__(
+        artifacts, _request("passed")
+    )
+    factory = next(generator)
+    assert factory() == "eos-owned"
+    factory.record_cleanup_failure(
+        "eos-owned",
+        AssertionError("workspace workspace-owned destroy failed"),
+    )
+
+    with pytest.raises(pytest.fail.Exception, match="cleanup checkpoint failed"):
+        next(generator)
+
+    cleanup = json.loads((artifacts.root / "cleanup.json").read_text())
+    assert destroy_calls == ["eos-owned"]
+    assert cleanup["destroyed_sandbox_ids"] == ["eos-owned"]
+    assert cleanup["failure_count"] == 1
+    assert cleanup["failures"] == [
+        {
+            "sandbox_id": "eos-owned",
+            "error": "workspace workspace-owned destroy failed",
+        }
+    ]
+    assert cleanup["validation_checkpoint"]["state"] == "failed"
+    artifacts.finalize_summary()
+
+
+@e2e_test(
+    timeout_ms=1_000,
     id="harness.resource-isolation.cleanup-exact-ownership",
     title="Cleanup rejects unregistered sandbox IDs",
     description="The cleanup API cannot turn an arbitrary identifier into a manager destroy call.",
@@ -271,6 +322,7 @@ def test_case_artifact_fixture_retains_required_files_on_early_failure(
     artifacts = next(generator)
     report_capture, plugin_name = plugin_manager.registered
     assert plugin_name.startswith("resource-isolation-report-")
+    artifacts.write_json("summary.json", {"behavior": "retained"}, reserved=True)
     failed_report = SimpleNamespace(
         nodeid=request.node.nodeid,
         failed=True,
@@ -300,6 +352,9 @@ def test_case_artifact_fixture_retains_required_files_on_early_failure(
         "cleanup.json",
     }
     cleanup = json.loads((artifacts.root / "cleanup.json").read_text())
+    summary = json.loads((artifacts.root / "summary.json").read_text())
     assert cleanup["cleanup_complete"] is True
     assert cleanup["pytest_verdict"] == {"phase": "call", "state": "failed"}
+    assert summary["behavior"] == "retained"
+    assert summary["pytest_verdict"] == {"phase": "call", "state": "failed"}
     assert plugin_manager.unregistered is report_capture
