@@ -16,7 +16,6 @@ from observability.resource_isolation.helpers import (
     default_resource_ring_path,
     environment_evidence,
     fingerprint_store,
-    response_digest,
     stream_group,
     verify_packaged_daemon,
     wait_for_path,
@@ -52,6 +51,7 @@ from .helpers import (
     read_snapshot,
     read_topology,
     resource_delta,
+    response_sha256,
     route_traffic_record,
     sample,
     start_command,
@@ -219,7 +219,7 @@ def test_six_hour_lifecycle_and_polling_soak(
             "status": baseline_terminal.get("status"),
             "exit_code": baseline_terminal.get("exit_code"),
         },
-        "cleanup_response_digest": response_digest(baseline_destroy),
+        "cleanup_response_digest": response_sha256(baseline_destroy),
         "terminal_lifecycle_state": "absent",
     }
     public_profile = public_resource_profile(sandbox_id)
@@ -369,7 +369,7 @@ def test_six_hour_lifecycle_and_polling_soak(
                         + observed["cpu"]["system_ticks"],
                     },
                     "cleanup_error": None,
-                    "cleanup_response_digest": response_digest(destroy_response),
+                    "cleanup_response_digest": response_sha256(destroy_response),
                 },
             )
             completed += 1

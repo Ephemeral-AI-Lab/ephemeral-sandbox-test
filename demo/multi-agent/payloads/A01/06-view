@@ -1,6 +1,0 @@
-[
-  {
-    "new_string": "  A01: { id: 'A01', role: 'Foundation', stage: 'view', deterministic: true, verify() { return true; }, routeFor(path) { return ['/', '/catalog', '/checkout'].includes(path) ? path : '/not-found'; }, fixture: 'foundation-fixture', view: '<section data-domain=\"foundation\"></section>' },",
-    "old_string": "  A01: { id: 'A01', role: 'Foundation', stage: 'data', deterministic: true, verify() { return true; }, routeFor(path) { return ['/', '/catalog', '/checkout'].includes(path) ? path : '/not-found'; }, fixture: 'foundation-fixture' },"
-  }
-]

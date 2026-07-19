@@ -1,6 +1,0 @@
-[
-  {
-    "new_string": "  A01: { id: 'A01', role: 'Foundation', stage: 'core', deterministic: true, verify() { return true; }, routeFor(path) { return ['/', '/catalog', '/checkout'].includes(path) ? path : '/not-found'; } },",
-    "old_string": "  A01: { id: 'A01', role: 'Foundation', stage: 'broken', deterministic: false, verify() { return false; } },"
-  }
-]

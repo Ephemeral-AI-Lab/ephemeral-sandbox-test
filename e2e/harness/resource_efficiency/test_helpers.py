@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import struct
 import time
@@ -9,8 +10,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from harness.catalog.declarations import e2e_test
+from harness.catalog.declarations import ValidationReporter, e2e_test
 from observability.resource_efficiency import helpers
+from observability.resource_efficiency.test_workspace_reclaim import (
+    _collect_validation_failure,
+)
 from observability.resource_isolation import helpers as isolation_helpers
 from observability.resource_isolation.helpers import _direct_children, _proc_status
 
@@ -66,11 +70,47 @@ def _daemon_self() -> dict:
         "lifecycle": {"last_cleanup_duration_ms": None},
         "allocator": {
             "supported": False,
+            "allocated_bytes": None,
             "active_bytes": None,
+            "mapped_bytes": None,
             "resident_bytes": None,
         },
         "diagnostics": {},
     }
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.complete-terminal-validation-reporting",
+    title="A failed RE-03 checkpoint does not hide later terminal reports",
+    description="RE-03 records all declared terminal checkpoint outcomes before surfacing an aggregate failure.",
+    validations={
+        "complete-reporting": "One failed checkpoint and three passing checkpoints produce four terminal reports and one aggregate failure."
+    },
+)
+def test_re03_validation_failure_does_not_hide_later_terminal_reports():
+    checkpoints = ("memory", "threads", "owners", "artifacts")
+    reporter = ValidationReporter({name: name for name in checkpoints})
+    failures: list[dict[str, str]] = []
+
+    with _collect_validation_failure(failures, "memory"):
+        with reporter.report("memory", expected="pass", actual="failed"):
+            raise AssertionError("memory gate failed")
+    for checkpoint in checkpoints[1:]:
+        with _collect_validation_failure(failures, checkpoint):
+            with reporter.report(checkpoint, expected="pass", actual="pass"):
+                pass
+
+    reporter.assert_complete()
+    assert [record["state"] for record in reporter.records] == [
+        "failed",
+        "passed",
+        "passed",
+        "passed",
+    ]
+    assert failures == [
+        {"checkpoint": "memory", "error": "AssertionError: memory gate failed"}
+    ]
 
 
 @e2e_test(
@@ -166,7 +206,9 @@ def test_daemon_self_helper_uses_dedicated_public_route(monkeypatch):
         (None, "private_dirty_bytes"),
         (None, "thread_count"),
         (None, "file_descriptor_count"),
+        ("allocator", "allocated_bytes"),
         ("allocator", "active_bytes"),
+        ("allocator", "mapped_bytes"),
         ("allocator", "resident_bytes"),
         ("lifecycle", "last_cleanup_duration_ms"),
     ),
@@ -184,9 +226,9 @@ def test_daemon_self_helper_rejects_missing_rp4_fields(section, field):
     timeout_ms=1_000,
     id="harness.resource-efficiency.daemon-self-allocator-semantics",
     title="Supported allocator metrics cannot be null",
-    description="Allocator active and resident bytes are optional only when the Rust metric reports allocator support is unavailable.",
+    description="Allocator allocated, active, mapped, and resident bytes are optional only when the Rust metric reports allocator support is unavailable.",
     validations={
-        "allocator-semantics": "Supported allocators expose nonnegative active and resident byte counts."
+        "allocator-semantics": "Supported allocators expose nonnegative allocated, active, mapped, and resident byte counts."
     },
 )
 def test_daemon_self_helper_requires_supported_allocator_values():
@@ -195,11 +237,25 @@ def test_daemon_self_helper_requires_supported_allocator_values():
 
     supported = _daemon_self()
     supported["allocator"]["supported"] = True
+    supported["allocator"]["allocated_bytes"] = 256
     with pytest.raises(AssertionError, match="active_bytes"):
         helpers.daemon_self_from_topology({"daemon": supported})
 
-    supported["allocator"].update({"active_bytes": 512, "resident_bytes": 1_024})
+    supported["allocator"].update(
+        {
+            "active_bytes": 512,
+            "mapped_bytes": 2_048,
+            "resident_bytes": 1_024,
+        }
+    )
     assert helpers.daemon_self_from_topology({"daemon": supported}) is supported
+    assert helpers.daemon_allocator_metrics(supported) == {
+        "supported": True,
+        "allocated_bytes": 256,
+        "active_bytes": 512,
+        "mapped_bytes": 2_048,
+        "resident_bytes": 1_024,
+    }
 
 
 @e2e_test(
@@ -225,6 +281,42 @@ def test_holder_destroy_race_winner_is_deterministic(
     assert (
         helpers.classify_holder_destroy_race(fault_result, destroy_outcome)
         == expected
+    )
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.race-lifecycle-delta",
+    title="Holder-destroy lifecycle evidence follows the teardown owner",
+    description="Holder-only counters remain paired and distinguish an observed holder exit from a normal explicit destroy winner.",
+    validations={
+        "lifecycle-owner": "Exit ownership emits one paired event, destroy ownership emits none, and a concurrent winner allows either exact owner."
+    },
+)
+@pytest.mark.parametrize(
+    ("winner", "holder_delta", "cleanup_delta", "expected"),
+    (
+        ("exit", 1, 1, True),
+        ("destroy", 0, 0, True),
+        ("concurrent", 0, 0, True),
+        ("concurrent", 1, 1, True),
+        ("exit", 0, 0, False),
+        ("destroy", 1, 1, False),
+        ("concurrent", 1, 0, False),
+        ("concurrent", 0, 1, False),
+        ("concurrent", 2, 2, False),
+    ),
+)
+def test_holder_destroy_lifecycle_delta_follows_owner(
+    winner, holder_delta, cleanup_delta, expected
+):
+    assert (
+        helpers.holder_destroy_lifecycle_delta_allowed(
+            winner,
+            holder_exit_delta=holder_delta,
+            cleanup_terminal_delta=cleanup_delta,
+        )
+        is expected
     )
 
 
@@ -294,6 +386,11 @@ def _cycle_record(cycle: int, *, sampled: bool = True) -> dict:
         "cleanup_error": None,
         "cleanup_response_digest": "b" * 64,
     }
+
+
+def test_response_sha256_is_canonical_and_returns_hex_digest():
+    expected = hashlib.sha256(b'{"a":1,"b":2}').hexdigest()
+    assert helpers.response_sha256({"b": 2, "a": 1}) == expected
 
 
 @e2e_test(
@@ -533,6 +630,77 @@ def test_final_holder_proc_identity_reads_stat_last(monkeypatch):
         ("exec", "a" * 64, "cat", "/proc/321/status"),
         ("exec", "a" * 64, "cat", "/proc/321/stat"),
     ]
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.recovery-artifact-discovery",
+    title="Recovery lookup selects the generation-safe manifest",
+    description="The helper discovers bounded recovery manifests and selects the exact workspace instead of deriving a workspace-only artifact name.",
+    validations={
+        "generation-safe-id": "The selected directory may differ from SHA-256(workspace_session_id)."
+    },
+)
+def test_recovery_artifact_lookup_uses_manifest_workspace_identity(monkeypatch):
+    sandbox_id = "eos-test"
+    workspace_id = "workspace-test"
+    marker = b"bounded-recovery-marker\n"
+    legacy_digest = hashlib.sha256(workspace_id.encode()).hexdigest()
+    generation_safe_digest = "f" * 64
+    assert generation_safe_digest != legacy_digest
+
+    manifests = {
+        legacy_digest: {
+            "workspace_session_id": "another-workspace",
+            "finalization_state": "finalization_failed",
+            "artifact_max_bytes": helpers.RECOVERY_ARTIFACT_MAX_BYTES,
+            "content_max_bytes": 4_096,
+            "copied_bytes": 0,
+            "truncated": False,
+        },
+        generation_safe_digest: {
+            "workspace_session_id": workspace_id,
+            "finalization_state": "finalization_failed",
+            "artifact_max_bytes": helpers.RECOVERY_ARTIFACT_MAX_BYTES,
+            "content_max_bytes": 4_096,
+            "copied_bytes": len(marker),
+            "truncated": False,
+        },
+    }
+    calls: list[tuple] = []
+
+    def completed(stdout: bytes = b""):
+        return SimpleNamespace(returncode=0, stdout=stdout, stderr=b"")
+
+    def fake_docker(*args, **_kwargs):
+        calls.append(args)
+        if args[2:4] == ("sh", "-c"):
+            return completed(f"{legacy_digest}\n{generation_safe_digest}\n".encode())
+        if args[2:4] == ("head", "-c") and args[-1].endswith(
+            "/manifest.json"
+        ):
+            digest = args[-1].split("/")[-2]
+            return completed(json.dumps(manifests[digest]).encode())
+        if args[2:4] == ("du", "-sb"):
+            assert args[-1].endswith(generation_safe_digest)
+            return completed(b"1024\t/eos/storage/workspace_recovery/artifact\n")
+        if args[2:4] == ("head", "-c"):
+            assert f"/{generation_safe_digest}/files/" in args[-1]
+            return completed(marker)
+        raise AssertionError(args)
+
+    monkeypatch.setattr(helpers, "docker", fake_docker)
+
+    result = helpers.read_workspace_recovery_artifact(
+        sandbox_id,
+        workspace_id,
+        expected_relative_file="recovery/marker.txt",
+        expected_content=marker,
+    )
+
+    assert result["artifact_digest"] == generation_safe_digest
+    assert calls[0][2:4] == ("sh", "-c")
+    assert calls[0][-1] == str(helpers.MAX_PROC_FILE_BYTES + 1)
 
 
 @e2e_test(

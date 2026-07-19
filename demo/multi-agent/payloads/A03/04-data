@@ -1,6 +1,0 @@
-[
-  {
-    "new_string": "  A03: { id: 'A03', role: 'Product data', stage: 'data', deterministic: true, verify() { return true; }, products() { return [{ id: 'trail-pack', name: 'Trail Pack', cents: 7400, inventory: 8 }, { id: 'studio-mug', name: 'Studio Mug', cents: 2600, inventory: 11 }]; }, fixture: 'products-fixture' },",
-    "old_string": "  A03: { id: 'A03', role: 'Product data', stage: 'core', deterministic: true, verify() { return true; }, products() { return [{ id: 'trail-pack', name: 'Trail Pack', cents: 7400, inventory: 8 }, { id: 'studio-mug', name: 'Studio Mug', cents: 2600, inventory: 11 }]; } },"
-  }
-]

@@ -1,9 +1,0 @@
-{"at": "20260717T173327Z", "completed": 0, "event": "checkpoint", "sequence": 1, "state": "preflight"}
-{"at": "20260717T173327Z", "event": "execution-start", "sequence": 2}
-{"at": "20260717T173328Z", "completed": 0, "event": "checkpoint", "sequence": 3, "state": "running"}
-{"at": "20260717T173328Z", "completed": 0, "event": "checkpoint", "sequence": 4, "state": "bootstrap-published"}
-{"at": "20260717T173328Z", "event": "row-complete", "row": "A01.001", "scene": "fanout", "sequence": 5}
-{"at": "20260717T173328Z", "completed": 1, "event": "checkpoint", "sequence": 6, "state": "running"}
-{"at": "20260717T173328Z", "completed": 1, "event": "checkpoint", "sequence": 7, "state": "failed"}
-{"at": "20260717T173328Z", "cgroup_samples": 0, "cleanup_verdict": "clean", "elapsed_ms": 689.357, "event": "execution-terminal", "execution_start_emitted": true, "execution_terminal_emitted": true, "execution_verdict": "running", "sequence": 8}
-{"at": "20260717T173328Z", "completed": 1, "event": "checkpoint", "sequence": 9, "state": "failed"}

@@ -58,6 +58,7 @@ DIAGNOSTIC_ARTIFACT_PATH = "/eos/runtime/daemon/observability/daemon-diagnostic.
 RECOVERY_ARTIFACT_ROOT = "/eos/storage/workspace_recovery"
 RECOVERY_MANIFEST_MAX_BYTES = 16 * 1024
 RECOVERY_ARTIFACT_MAX_BYTES = 1024 * 1024
+RECOVERY_ARTIFACT_MAX_COUNT = 64
 HOLDER_DETECTION_SECONDS = 1.0
 POLL_SECONDS = 0.025
 CPU_TICK_BUDGET_PER_MINUTE = 1.0
@@ -96,6 +97,10 @@ def assert_ok(response: Any, *, route: str) -> dict[str, Any]:
         "limit_bytes": MAX_TOPOLOGY_BYTES,
     }
     return response
+
+
+def response_sha256(response: Mapping[str, Any]) -> str:
+    return hashlib.sha256(compact_json_bytes(response)).hexdigest()
 
 
 def read_snapshot(sandbox_id: str) -> dict[str, Any]:
@@ -331,24 +336,34 @@ def _validated_daemon_self(
     lifecycle = _required_mapping(daemon, "lifecycle")
     _required_optional_int(lifecycle, "last_cleanup_duration_ms")
 
+    daemon_allocator_metrics(daemon, public_surface=public_surface)
+    return daemon
+
+
+def daemon_allocator_metrics(
+    daemon: Mapping[str, Any],
+    *,
+    public_surface: str = "daemon",
+) -> dict[str, bool | int | None]:
     allocator = _required_mapping(daemon, "allocator")
     supported = allocator.get("supported")
     assert isinstance(supported, bool), {
         "invalid_required_public_field": f"{public_surface}.allocator.supported",
         "value": supported,
     }
-    allocator_metrics = {
+    metrics = {
         key: _required_optional_int(allocator, key)
-        for key in ("active_bytes", "resident_bytes")
+        for key in (
+            "allocated_bytes",
+            "active_bytes",
+            "mapped_bytes",
+            "resident_bytes",
+        )
     }
     if supported:
-        assert allocator_metrics["active_bytes"] is not None, {
-            "missing_supported_allocator_metric": "active_bytes"
-        }
-        assert allocator_metrics["resident_bytes"] is not None, {
-            "missing_supported_allocator_metric": "resident_bytes"
-        }
-    return daemon
+        for key, value in metrics.items():
+            assert value is not None, {"missing_supported_allocator_metric": key}
+    return {"supported": supported, **metrics}
 
 
 def classify_holder_destroy_race(fault_result: str, destroy_outcome: str) -> str:
@@ -365,6 +380,25 @@ def classify_holder_destroy_race(fault_result: str, destroy_outcome: str) -> str
         "allowed": sorted(allowed),
     }
     return allowed[key]
+
+
+def holder_destroy_lifecycle_delta_allowed(
+    race_winner: str,
+    *,
+    holder_exit_delta: int,
+    cleanup_terminal_delta: int,
+) -> bool:
+    """Validate holder-only lifecycle counters for one destroy race."""
+    assert race_winner in {"exit", "destroy", "concurrent"}, race_winner
+    assert isinstance(holder_exit_delta, int) and holder_exit_delta >= 0
+    assert isinstance(cleanup_terminal_delta, int) and cleanup_terminal_delta >= 0
+    observed = (holder_exit_delta, cleanup_terminal_delta)
+    allowed = {
+        "exit": {(1, 1)},
+        "destroy": {(0, 0)},
+        "concurrent": {(0, 0), (1, 1)},
+    }
+    return observed in allowed[race_winner]
 
 
 def daemon_self_from_topology(topology: Mapping[str, Any]) -> dict[str, Any]:
@@ -2347,28 +2381,82 @@ def read_workspace_recovery_artifact(
     assert expected_relative_file and not expected_relative_file.startswith("/")
     assert ".." not in expected_relative_file.split("/"), expected_relative_file
     assert 0 < len(expected_content) <= MAX_PROC_FILE_BYTES
-    digest = hashlib.sha256(workspace_id.encode("utf-8")).hexdigest()
-    artifact_path = f"{RECOVERY_ARTIFACT_ROOT}/{digest}"
 
-    manifest_result = docker(
+    artifact_list = docker(
         "exec",
         sandbox_id,
-        "head",
+        "sh",
         "-c",
-        str(RECOVERY_MANIFEST_MAX_BYTES + 1),
-        f"{artifact_path}/manifest.json",
+        'find "$1" -mindepth 1 -maxdepth 1 -type d -printf "%f\\n" '
+        '| head -c "$2"',
+        "recovery-artifact-list",
+        RECOVERY_ARTIFACT_ROOT,
+        str(MAX_PROC_FILE_BYTES + 1),
         check=False,
     )
-    assert manifest_result.returncode == 0, {
-        "recovery_artifact_digest": digest,
-        "stderr": manifest_result.stderr.decode("utf-8", "replace")[-1_000:],
+    assert artifact_list.returncode == 0, {
+        "recovery_artifact_root": RECOVERY_ARTIFACT_ROOT,
+        "stderr": artifact_list.stderr.decode("utf-8", "replace")[-1_000:],
     }
-    assert 0 < len(manifest_result.stdout) <= RECOVERY_MANIFEST_MAX_BYTES, {
-        "manifest_bytes": len(manifest_result.stdout),
-        "limit_bytes": RECOVERY_MANIFEST_MAX_BYTES,
+    assert not artifact_list.stderr, {
+        "recovery_artifact_root": RECOVERY_ARTIFACT_ROOT,
+        "stderr": artifact_list.stderr.decode("utf-8", "replace")[-1_000:],
     }
-    manifest = json.loads(manifest_result.stdout)
-    assert isinstance(manifest, dict), type(manifest).__name__
+    assert len(artifact_list.stdout) <= MAX_PROC_FILE_BYTES, {
+        "artifact_list_bytes": len(artifact_list.stdout),
+        "limit_bytes": MAX_PROC_FILE_BYTES,
+    }
+    artifact_digests = sorted(
+        line
+        for line in artifact_list.stdout.decode("ascii", "strict").splitlines()
+        if line
+    )
+    assert 0 < len(artifact_digests) <= RECOVERY_ARTIFACT_MAX_COUNT, {
+        "artifact_count": len(artifact_digests),
+        "limit": RECOVERY_ARTIFACT_MAX_COUNT,
+    }
+    assert all(re.fullmatch(r"[0-9a-f]{64}", digest) for digest in artifact_digests), {
+        "invalid_artifact_directory_count": sum(
+            not bool(re.fullmatch(r"[0-9a-f]{64}", digest))
+            for digest in artifact_digests
+        )
+    }
+
+    matches: list[tuple[str, bytes, dict[str, Any]]] = []
+    for candidate_digest in artifact_digests:
+        candidate_path = f"{RECOVERY_ARTIFACT_ROOT}/{candidate_digest}"
+        candidate_result = docker(
+            "exec",
+            sandbox_id,
+            "head",
+            "-c",
+            str(RECOVERY_MANIFEST_MAX_BYTES + 1),
+            f"{candidate_path}/manifest.json",
+            check=False,
+        )
+        assert candidate_result.returncode == 0, {
+            "recovery_artifact_digest": candidate_digest,
+            "stderr": candidate_result.stderr.decode("utf-8", "replace")[-1_000:],
+        }
+        assert 0 < len(candidate_result.stdout) <= RECOVERY_MANIFEST_MAX_BYTES, {
+            "recovery_artifact_digest": candidate_digest,
+            "manifest_bytes": len(candidate_result.stdout),
+            "limit_bytes": RECOVERY_MANIFEST_MAX_BYTES,
+        }
+        candidate_manifest = json.loads(candidate_result.stdout)
+        assert isinstance(candidate_manifest, dict), type(candidate_manifest).__name__
+        if candidate_manifest.get("workspace_session_id") == workspace_id:
+            matches.append(
+                (candidate_digest, candidate_result.stdout, candidate_manifest)
+            )
+
+    assert len(matches) == 1, {
+        "workspace_id": workspace_id,
+        "matching_artifact_count": len(matches),
+        "artifact_count": len(artifact_digests),
+    }
+    digest, manifest_bytes, manifest = matches[0]
+    artifact_path = f"{RECOVERY_ARTIFACT_ROOT}/{digest}"
     assert manifest.get("workspace_session_id") == workspace_id, manifest
     assert manifest.get("finalization_state") == "finalization_failed", manifest
     assert manifest.get("artifact_max_bytes") == RECOVERY_ARTIFACT_MAX_BYTES, manifest
@@ -2416,8 +2504,8 @@ def read_workspace_recovery_artifact(
     return {
         "artifact_digest": digest,
         "artifact_bytes": artifact_bytes,
-        "manifest_bytes": len(manifest_result.stdout),
-        "manifest_sha256": hashlib.sha256(manifest_result.stdout).hexdigest(),
+        "manifest_bytes": len(manifest_bytes),
+        "manifest_sha256": hashlib.sha256(manifest_bytes).hexdigest(),
         "marker_sha256": hashlib.sha256(marker_result.stdout).hexdigest(),
         "finalization_state": manifest["finalization_state"],
         "copied_bytes": copied_bytes,

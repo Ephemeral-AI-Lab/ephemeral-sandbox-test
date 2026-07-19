@@ -1,6 +1,0 @@
-[
-  {
-    "new_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'view', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\"wishlist\"></section>' },",
-    "old_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'data', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture' },"
-  }
-]

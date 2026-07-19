@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import contextmanager
 import time
 
 import pytest
@@ -10,7 +11,6 @@ from harness.catalog.declarations import e2e_test
 from observability.resource_isolation.helpers import (
     analyze_phase,
     environment_evidence,
-    response_digest,
     stream_group,
     verify_packaged_daemon,
 )
@@ -29,11 +29,13 @@ from .helpers import (
     await_command,
     bounded_memory_series,
     create_workspace,
+    daemon_allocator_metrics,
     daemon_runtime_config,
     daemon_self_counts,
     destroy_workspace,
     prepare_workspace_holder_fault,
     read_daemon_self,
+    response_sha256,
     sample,
     start_command,
     stop_command,
@@ -55,6 +57,21 @@ BALANCE_KEYS = (
     "scratch_resources",
     "persisted_handles",
 )
+
+
+@contextmanager
+def _collect_validation_failure(failures: list[dict[str, str]], checkpoint: str):
+    """Let every terminal checkpoint report before failing the case."""
+
+    try:
+        yield
+    except Exception as error:
+        failures.append(
+            {
+                "checkpoint": checkpoint,
+                "error": f"{type(error).__name__}: {error}"[:2_000],
+            }
+        )
 
 
 @e2e_test(
@@ -104,8 +121,10 @@ def test_repeated_workspace_lifecycle_reclaim(
         ended_monotonic=baseline_phase["ended_monotonic"],
     )
     baseline_sample = sample(case_artifacts, sandbox_id, phase="cycle-baseline-end")
-    baseline_self = daemon_self_counts(read_daemon_self(sandbox_id))
-    runtime_config = daemon_runtime_config(read_daemon_self(sandbox_id))
+    baseline_daemon = read_daemon_self(sandbox_id)
+    baseline_self = daemon_self_counts(baseline_daemon)
+    baseline_allocator = daemon_allocator_metrics(baseline_daemon)
+    runtime_config = daemon_runtime_config(baseline_daemon)
 
     completed = 0
     attempted = 0
@@ -242,7 +261,7 @@ def test_repeated_workspace_lifecycle_reclaim(
                 ),
                 "cleanup_error": "; ".join(cycle_errors)[:1_000] or None,
                 "cleanup_response_digest": (
-                    response_digest(destroy_response)
+                    response_sha256(destroy_response)
                     if destroy_response is not None
                     else None
                 ),
@@ -290,7 +309,20 @@ def test_repeated_workspace_lifecycle_reclaim(
         phases=("workspace-cycle", "cycle-cooldown"),
     )
     final_sample = sample(case_artifacts, sandbox_id, phase="cycle-final")
-    final_self = daemon_self_counts(read_daemon_self(sandbox_id))
+    final_daemon = read_daemon_self(sandbox_id)
+    final_self = daemon_self_counts(final_daemon)
+    final_allocator = daemon_allocator_metrics(final_daemon)
+    allocator_delta = {
+        key: final_allocator[key] - baseline_allocator[key]
+        for key in (
+            "allocated_bytes",
+            "active_bytes",
+            "mapped_bytes",
+            "resident_bytes",
+        )
+        if isinstance(final_allocator[key], int)
+        and isinstance(baseline_allocator[key], int)
+    }
     summary = {
         "cycles": cycles,
         "attempted": attempted,
@@ -305,85 +337,110 @@ def test_repeated_workspace_lifecycle_reclaim(
         "runtime_config": runtime_config,
         "baseline_self": baseline_self,
         "final_self": final_self,
+        "baseline_allocator": baseline_allocator,
+        "final_allocator": final_allocator,
+        "allocator_delta": allocator_delta,
     }
     case_artifacts.write_json("summary.json", summary, reserved=True)
 
-    if first_failure is not None:
-        raise AssertionError({"first_correctness_leak": first_failure})
-
-    with validation(
-        "lifecycle-memory-plateau",
-        expected={
-            "slope_max_bytes_per_hour": ANONYMOUS_SLOPE_BYTES_PER_HOUR,
-            "final_delta_max_bytes": COOLDOWN_ANONYMOUS_DELTA_BYTES,
-        },
-        actual={
-            "series": series,
-            "baseline": baseline_analysis,
-            "cooldown": cooldown_analysis,
-        },
-        evidence=("samples.jsonl", "workspace-cycles.jsonl", "summary.json"),
+    validation_failures: list[dict[str, str]] = []
+    with _collect_validation_failure(
+        validation_failures, "lifecycle-memory-plateau"
     ):
-        assert (
-            series["anonymous_slope_bytes_per_hour"] <= ANONYMOUS_SLOPE_BYTES_PER_HOUR
-        )
-        assert abs(
-            cooldown_analysis["final_window_median_bytes"]
-            - baseline_analysis["final_window_median_bytes"]
-        ) <= COOLDOWN_ANONYMOUS_DELTA_BYTES
-        assert series["anon_huge_pages_peak_bytes"] == 0
-        assert series["cgroup_anon_thp_peak_bytes"] == 0
+        with validation(
+            "lifecycle-memory-plateau",
+            expected={
+                "slope_max_bytes_per_hour": ANONYMOUS_SLOPE_BYTES_PER_HOUR,
+                "final_delta_max_bytes": COOLDOWN_ANONYMOUS_DELTA_BYTES,
+            },
+            actual={
+                "series": series,
+                "baseline": baseline_analysis,
+                "cooldown": cooldown_analysis,
+                "allocator": {
+                    "baseline": baseline_allocator,
+                    "final": final_allocator,
+                    "delta": allocator_delta,
+                },
+            },
+            evidence=("samples.jsonl", "workspace-cycles.jsonl", "summary.json"),
+        ):
+            assert (
+                series["anonymous_slope_bytes_per_hour"]
+                <= ANONYMOUS_SLOPE_BYTES_PER_HOUR
+            )
+            assert abs(
+                cooldown_analysis["final_window_median_bytes"]
+                - baseline_analysis["final_window_median_bytes"]
+            ) <= COOLDOWN_ANONYMOUS_DELTA_BYTES
+            assert series["anon_huge_pages_peak_bytes"] == 0
+            assert series["cgroup_anon_thp_peak_bytes"] == 0
 
-    with validation(
-        "fd-thread-plateau",
-        expected={
-            "zombies": 0,
-            "final_open_fds": baseline_sample["process"]["actual_open_fds"],
-            "threads_max": runtime_config["worker_threads"] + 4,
-        },
-        actual={"series": series, "final_process": final_sample["process"]},
-        evidence=("samples.jsonl", "summary.json"),
-    ):
-        assert series["zombie_observations"] == 0
-        assert (
-            final_sample["process"]["actual_open_fds"]
-            == baseline_sample["process"]["actual_open_fds"]
-        )
-        assert (
-            final_sample["process"]["threads"] <= runtime_config["worker_threads"] + 4
-        )
-        assert_no_zombies(final_sample)
+    with _collect_validation_failure(validation_failures, "fd-thread-plateau"):
+        with validation(
+            "fd-thread-plateau",
+            expected={
+                "zombies": 0,
+                "final_open_fds": baseline_sample["process"]["actual_open_fds"],
+                "threads_max": runtime_config["worker_threads"] + 4,
+            },
+            actual={"series": series, "final_process": final_sample["process"]},
+            evidence=("samples.jsonl", "summary.json"),
+        ):
+            assert series["zombie_observations"] == 0
+            assert (
+                final_sample["process"]["actual_open_fds"]
+                == baseline_sample["process"]["actual_open_fds"]
+            )
+            assert (
+                final_sample["process"]["threads"]
+                <= runtime_config["worker_threads"] + 4
+            )
+            assert_no_zombies(final_sample)
 
-    with validation(
-        "lease-session-zero",
-        expected={
-            "completed": cycles,
-            "counts": {key: baseline_self[key] for key in BALANCE_KEYS},
-        },
-        actual={"completed": completed, "counts": final_self},
-        evidence=("workspace-cycles.jsonl", "summary.json"),
-    ):
-        assert completed == cycles
-        assert interrupted == cycles // 100
-        assert all(final_self[key] == baseline_self[key] for key in BALANCE_KEYS)
+    with _collect_validation_failure(validation_failures, "lease-session-zero"):
+        with validation(
+            "lease-session-zero",
+            expected={
+                "completed": cycles,
+                "counts": {key: baseline_self[key] for key in BALANCE_KEYS},
+            },
+            actual={
+                "completed": completed,
+                "counts": final_self,
+                "first_failure": first_failure,
+            },
+            evidence=("workspace-cycles.jsonl", "summary.json"),
+        ):
+            assert first_failure is None
+            assert completed == cycles
+            assert interrupted == cycles // 100
+            assert all(final_self[key] == baseline_self[key] for key in BALANCE_KEYS)
 
-    artifact_bytes = artifact_gate(case_artifacts)
-    with validation(
-        "cycle-artifact-bounded",
-        expected={
-            "cycle_records": cycles,
-            "sampled_records": cycles // 10,
-            "cleanup_errors": 0,
-            "max_line_bytes": 16 * 1024,
-            "max_bytes": 32 * 1024 * 1024,
-        },
-        actual={"cycle_evidence": cycle_evidence, "artifact_bytes": artifact_bytes},
-        evidence=("workspace-cycles.jsonl", "summary.json"),
-    ):
-        assert cycle_evidence["record_count"] == cycles
-        assert cycle_evidence["last_cycle"] == cycles
-        assert cycle_evidence["sampled_records"] == cycles // 10
-        assert cycle_evidence["cleanup_errors"] == 0
-        assert cycle_evidence["max_line_bytes"] <= 16 * 1024
-        assert cycle_evidence["total_bytes"] <= 32 * 1024 * 1024
-        assert artifact_bytes <= 32 * 1024 * 1024
+    artifact_bytes = case_artifacts.total_bytes()
+    with _collect_validation_failure(validation_failures, "cycle-artifact-bounded"):
+        with validation(
+            "cycle-artifact-bounded",
+            expected={
+                "cycle_records": cycles,
+                "sampled_records": cycles // 10,
+                "cleanup_errors": 0,
+                "max_line_bytes": 16 * 1024,
+                "max_bytes": 32 * 1024 * 1024,
+            },
+            actual={"cycle_evidence": cycle_evidence, "artifact_bytes": artifact_bytes},
+            evidence=("workspace-cycles.jsonl", "summary.json"),
+        ):
+            assert artifact_gate(case_artifacts) == artifact_bytes
+            assert cycle_evidence["record_count"] == cycles
+            assert cycle_evidence["last_cycle"] == cycles
+            assert cycle_evidence["sampled_records"] == cycles // 10
+            assert cycle_evidence["cleanup_errors"] == 0
+            assert cycle_evidence["max_line_bytes"] <= 16 * 1024
+            assert cycle_evidence["total_bytes"] <= 32 * 1024 * 1024
+            assert artifact_bytes <= 32 * 1024 * 1024
+
+    assert not validation_failures, {
+        "validation_failures": validation_failures,
+        "first_correctness_leak": first_failure,
+    }

@@ -1,6 +1,0 @@
-[
-  {
-    "new_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'ready', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }, fixture: 'qa-fixture', view: '<section data-domain=\"qa\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A10', schemaVersion: 1, status: 'ready' },",
-    "old_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'manifest', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; }, fixture: 'qa-fixture', view: '<section data-domain=\"qa\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A10', schemaVersion: 1 },"
-  }
-]

@@ -1,6 +1,0 @@
-[
-  {
-    "new_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'manifest', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\"wishlist\"></section>', focusVisible: true, keyboard: true, reducedMotion: true, owner: 'A07', schemaVersion: 1 },",
-    "old_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'accessibility', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); }, fixture: 'wishlist-fixture', view: '<section data-domain=\"wishlist\"></section>', focusVisible: true, keyboard: true, reducedMotion: true },"
-  }
-]

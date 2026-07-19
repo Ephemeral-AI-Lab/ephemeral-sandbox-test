@@ -1,6 +1,0 @@
-[
-  {
-    "new_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'core', deterministic: true, verify() { return true; }, toggleWishlist(ids, id) { const next = new Set(ids); next.has(id) ? next.delete(id) : next.add(id); return [...next].sort(); } },",
-    "old_string": "  A07: { id: 'A07', role: 'Wishlist', stage: 'broken', deterministic: false, verify() { return false; } },"
-  }
-]

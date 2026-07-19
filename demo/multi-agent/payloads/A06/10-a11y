@@ -1,6 +1,0 @@
-[
-  {
-    "new_string": "  A06: { id: 'A06', role: 'Cart and pricing', stage: 'accessibility', deterministic: true, verify() { return true; }, quoteCart(subtotalCents, promotionCents = 0) { const config = globalThis.FlashCart.config; const discounted = Math.max(0, subtotalCents - promotionCents); const shippingCents = discounted >= config.freeShippingCents ? 0 : config.standardShippingCents; return { discounted, shippingCents, taxCents: Math.round(discounted * config.taxRate), totalCents: discounted + shippingCents + Math.round(discounted * config.taxRate) }; }, fixture: 'cart-fixture', view: '<section data-domain=\"cart\"></section>', focusVisible: true, keyboard: true, reducedMotion: true },",
-    "old_string": "  A06: { id: 'A06', role: 'Cart and pricing', stage: 'style', deterministic: true, verify() { return true; }, quoteCart(subtotalCents, promotionCents = 0) { const config = globalThis.FlashCart.config; const discounted = Math.max(0, subtotalCents - promotionCents); const shippingCents = discounted >= config.freeShippingCents ? 0 : config.standardShippingCents; return { discounted, shippingCents, taxCents: Math.round(discounted * config.taxRate), totalCents: discounted + shippingCents + Math.round(discounted * config.taxRate) }; }, fixture: 'cart-fixture', view: '<section data-domain=\"cart\"></section>', focusVisible: true },"
-  }
-]

@@ -1,6 +1,0 @@
-[
-  {
-    "new_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'core', deterministic: true, verify() { return true; }, status(registry) { return { ready: Object.values(registry).every(Boolean), featureCount: Object.values(registry).filter(Boolean).length }; } },",
-    "old_string": "  A10: { id: 'A10', role: 'Integration QA', stage: 'broken', deterministic: false, verify() { return false; } },"
-  }
-]

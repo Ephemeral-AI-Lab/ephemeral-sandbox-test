@@ -1,6 +1,0 @@
-[
-  {
-    "new_string": "  A04: { id: 'A04', role: 'Catalog and PDP', stage: 'core', deterministic: true, verify() { return true; }, selectVariant(product, variant) { return { ...product, variant, selectable: Boolean(variant) }; } },",
-    "old_string": "  A04: { id: 'A04', role: 'Catalog and PDP', stage: 'broken', deterministic: false, verify() { return false; } },"
-  }
-]

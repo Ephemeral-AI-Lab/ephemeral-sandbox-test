@@ -39,6 +39,7 @@ from .helpers import (
     daemon_self_counts,
     destroy_session,
     destroy_workspace,
+    holder_destroy_lifecycle_delta_allowed,
     kill_workspace_holder,
     observe_holder_exit_with_public_state,
     prepare_workspace_holder_fault,
@@ -761,7 +762,7 @@ def test_unexpected_holder_exit(
     ),
     validations={
         "exit-destroy-idempotent": "Every allowed race outcome converges without timeout or unrelated signal.",
-        "single-cleanup-result": "Each iteration contributes exactly one terminal cleanup result.",
+        "single-cleanup-result": "Each iteration has one public teardown result and at most one paired holder-cleanup terminal event.",
         "resource-counts-balanced": "Holder, FD, thread, lease, command, and handle counts equal baseline after every iteration.",
         "race-artifact-bounded": "Race evidence remains bounded and exact-target only.",
     },
@@ -779,6 +780,25 @@ def test_holder_exit_destroy_race(
     tracker = workspace_registry_factory(sandbox_id)
     verify_packaged_daemon(sandbox_id)
     case_artifacts.write_json("environment.json", environment_evidence(sandbox_id))
+
+    pre_warm_counts = daemon_self_counts(read_daemon_self(sandbox_id))
+    warm_workspace_id = create_workspace(tracker)
+    warm_command_id = start_command(
+        tracker,
+        warm_workspace_id,
+        "while :; do sleep 1; done",
+    )
+    warm_terminal = stop_command(tracker, warm_command_id)
+    assert warm_terminal.get("status") == "cancelled", warm_terminal
+    destroy_workspace(tracker, warm_workspace_id)
+    wait_self_counts(sandbox_id, pre_warm_counts, keys=BALANCED_KEYS)
+    warmup = stream_group(
+        case_artifacts,
+        [(sandbox_id, "target", None)],
+        phase="race-warmup",
+        repetition=1,
+        duration_seconds=strict_duration("E2E_RE02_WARM_SECONDS", 10, minimum=10),
+    )
     initial_counts = daemon_self_counts(read_daemon_self(sandbox_id))
     initial_sample = sample(case_artifacts, sandbox_id, phase="race-initial")
     peer_id = create_workspace(tracker)
@@ -885,6 +905,15 @@ def test_holder_exit_destroy_race(
     assert peer_terminal.get("status") == "cancelled", peer_terminal
     destroy_workspace(tracker, peer_id)
     wait_self_counts(sandbox_id, initial_counts, keys=BALANCED_KEYS)
+    cooldown = stream_group(
+        case_artifacts,
+        [(sandbox_id, "target", None)],
+        phase="race-cooldown",
+        repetition=1,
+        duration_seconds=strict_duration(
+            "E2E_RE02_COOLDOWN_SECONDS", 10, minimum=10
+        ),
+    )
     final_counts = daemon_self_counts(read_daemon_self(sandbox_id))
     final_sample = sample(case_artifacts, sandbox_id, phase="race-final")
     lifecycle_delta = {
@@ -894,6 +923,8 @@ def test_holder_exit_destroy_race(
     final_delta = resource_delta(initial_sample, final_sample)
     summary = {
         "iterations": iterations,
+        "warmup": warmup,
+        "cooldown": cooldown,
         "records": records,
         "lifecycle_delta": lifecycle_delta,
         "final_delta": final_delta,
@@ -927,12 +958,37 @@ def test_holder_exit_destroy_race(
 
     with validation(
         "single-cleanup-result",
-        expected={"cleanup_terminal_delta_per_iteration": 1},
-        actual=[record["cleanup_terminal_delta"] for record in records],
+        expected={
+            "public_destroy_results": iterations,
+            "holder_lifecycle_by_winner": {
+                "exit": [[1, 1]],
+                "destroy": [[0, 0]],
+                "concurrent": [[0, 0], [1, 1]],
+            },
+        },
+        actual=[
+            {
+                "race_winner": record["race_winner"],
+                "destroy_outcome": record["destroy_outcome"],
+                "holder_exit_delta": record["holder_exit_delta"],
+                "cleanup_terminal_delta": record["cleanup_terminal_delta"],
+            }
+            for record in records
+        ],
         evidence=("summary.json",),
     ):
-        assert all(record["cleanup_terminal_delta"] == 1 for record in records)
-        assert all(record["holder_exit_delta"] in {0, 1} for record in records)
+        assert all(
+            record["destroy_outcome"] in {"success", "workspace_terminal"}
+            for record in records
+        )
+        assert all(
+            holder_destroy_lifecycle_delta_allowed(
+                record["race_winner"],
+                holder_exit_delta=record["holder_exit_delta"],
+                cleanup_terminal_delta=record["cleanup_terminal_delta"],
+            )
+            for record in records
+        )
 
     with validation(
         "resource-counts-balanced",

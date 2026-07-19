@@ -1,6 +1,0 @@
-[
-  {
-    "new_string": "  A04: { id: 'A04', role: 'Catalog and PDP', stage: 'view', deterministic: true, verify() { return true; }, selectVariant(product, variant) { return { ...product, variant, selectable: Boolean(variant) }; }, fixture: 'catalog-fixture', view: '<section data-domain=\"catalog\"></section>' },",
-    "old_string": "  A04: { id: 'A04', role: 'Catalog and PDP', stage: 'data', deterministic: true, verify() { return true; }, selectVariant(product, variant) { return { ...product, variant, selectable: Boolean(variant) }; }, fixture: 'catalog-fixture' },"
-  }
-]
