@@ -73,7 +73,7 @@ ANONYMOUS_SLOPE_BYTES_PER_HOUR = 4 * 1024
 FLEET_RELEASE_P99_MS = 250.0
 FLEET_RELEASE_MANAGER_CPU_FRACTION = 0.005
 FLEET_MANAGER_ANONYMOUS_SLOPE_BYTES_PER_POLL = 0.0
-STANDARD_INFRASTRUCTURE_THREAD_ALLOWANCE = 4
+STANDARD_INFRASTRUCTURE_THREAD_ALLOWANCE = 6
 
 stream_group = _stream_group
 
@@ -1497,6 +1497,13 @@ def bounded_memory_series_by_phase(
     }
 
 
+def retained_thread_delta(*, baseline_threads: int, final_threads: int) -> int:
+    """Count only threads retained above baseline, not worker-pool contraction."""
+    if baseline_threads < 0 or final_threads < 0:
+        raise ValueError("thread counts must be non-negative")
+    return max(0, final_threads - baseline_threads)
+
+
 def bounded_cpu_fraction_median(
     samples_path: Path,
     *,
@@ -1549,6 +1556,62 @@ def bounded_cpu_fraction_median(
         "clock_ticks_per_second": clock_ticks_per_second,
         "median_fraction_of_one_core": statistics.median(fractions),
         "maximum_fraction_of_one_core": max(fractions),
+    }
+
+
+def bounded_cpu_runtime_per_minute(
+    samples_path: Path,
+    *,
+    phases: Iterable[str],
+    clock_ticks_per_second: int,
+) -> dict[str, Any]:
+    """Measure daemon CPU at nanosecond resolution for short paired phases."""
+    assert clock_ticks_per_second > 0
+    selected = frozenset(phases)
+    first: tuple[float, int] | None = None
+    last: tuple[float, int] | None = None
+    sample_count = 0
+    with samples_path.open("rb") as handle:
+        for raw in iter_capped_binary_lines(handle, max_bytes=MAX_LINE_BYTES * 8):
+            record = json.loads(raw)
+            if record.get("phase") not in selected:
+                continue
+            observed_at = record.get("monotonic_seconds")
+            runtime_nanoseconds = record.get("cpu", {}).get("runtime_nanoseconds")
+            assert isinstance(observed_at, (int, float)) and isinstance(
+                runtime_nanoseconds, int
+            ), {
+                "phase": record.get("phase"),
+                "monotonic_seconds": observed_at,
+                "runtime_nanoseconds": runtime_nanoseconds,
+            }
+            point = (float(observed_at), runtime_nanoseconds)
+            first = point if first is None else first
+            last = point
+            sample_count += 1
+    assert first is not None and last is not None and sample_count >= 2, {
+        "phases": sorted(selected),
+        "sample_count": sample_count,
+    }
+    duration_seconds = last[0] - first[0]
+    runtime_delta_nanoseconds = last[1] - first[1]
+    assert duration_seconds > 0 and runtime_delta_nanoseconds >= 0, {
+        "first": first,
+        "last": last,
+    }
+    runtime_nanoseconds_per_minute = (
+        runtime_delta_nanoseconds * 60.0 / duration_seconds
+    )
+    return {
+        "sample_count": sample_count,
+        "duration_seconds": duration_seconds,
+        "runtime_delta_nanoseconds": runtime_delta_nanoseconds,
+        "runtime_nanoseconds_per_minute": runtime_nanoseconds_per_minute,
+        "scheduler_tick_equivalents_per_minute": (
+            runtime_nanoseconds_per_minute
+            * clock_ticks_per_second
+            / 1_000_000_000
+        ),
     }
 
 

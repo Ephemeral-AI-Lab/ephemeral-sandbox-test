@@ -39,6 +39,7 @@ from .helpers import (
     artifact_gate,
     assert_no_zombies,
     bounded_cpu_fraction_median,
+    bounded_cpu_runtime_per_minute,
     bounded_memory_series,
     bounded_memory_series_by_phase,
     bounded_theil_sen_slope_per_unit,
@@ -50,6 +51,7 @@ from .helpers import (
     read_resources,
     read_snapshot,
     read_topology,
+    retained_thread_delta,
     resource_delta,
     route_traffic_record,
     run_route_campaign,
@@ -631,6 +633,20 @@ def test_explicit_topology_cost(
         idle_cpu["median_fraction_of_one_core"]
         - noop_cpu["median_fraction_of_one_core"],
     )
+    noop_runtime = bounded_cpu_runtime_per_minute(
+        case_artifacts.samples_path,
+        phases=("topology-noop",),
+        clock_ticks_per_second=clock_ticks_per_second,
+    )
+    empty_runtime = bounded_cpu_runtime_per_minute(
+        case_artifacts.samples_path,
+        phases=("topology-empty",),
+        clock_ticks_per_second=clock_ticks_per_second,
+    )
+    empty_added_cpu_ticks_per_minute = (
+        empty_runtime["scheduler_tick_equivalents_per_minute"]
+        - noop_runtime["scheduler_tick_equivalents_per_minute"]
+    )
     topology_phases = (
         "topology-empty",
         "topology-idle",
@@ -644,6 +660,14 @@ def test_explicit_topology_cost(
     topology_phase_memory = bounded_memory_series_by_phase(
         case_artifacts.samples_path,
         phases=topology_phases,
+    )
+    thread_evidence = {
+        "baseline": baseline_sample["process"]["threads"],
+        "final": final_sample["process"]["threads"],
+    }
+    thread_evidence["retained_delta"] = retained_thread_delta(
+        baseline_threads=thread_evidence["baseline"],
+        final_threads=thread_evidence["final"],
     )
     summary = {
         "lifecycle_warmup": lifecycle_warmup,
@@ -664,9 +688,15 @@ def test_explicit_topology_cost(
             "noop": noop_cpu,
             "idle": idle_cpu,
             "idle_added_fraction_of_one_core": idle_added_cpu_fraction,
+            "noop_high_resolution": noop_runtime,
+            "empty_high_resolution": empty_runtime,
+            "empty_added_scheduler_tick_equivalents_per_minute": (
+                empty_added_cpu_ticks_per_minute
+            ),
         },
         "topology_memory": topology_memory,
         "topology_phase_memory": topology_phase_memory,
+        "threads": thread_evidence,
         "stores": {
             "empty": {"before": empty_store_before, "after": empty_store_after},
             "idle": {"before": idle_store_before, "after": idle_store_after},
@@ -683,6 +713,7 @@ def test_explicit_topology_cost(
             "authenticated_noop_responses": requests,
             "matched_duration_seconds": phase_seconds,
             "extra_cpu_ticks_per_minute_max": 1,
+            "measurement": "proc_schedstat_runtime_nanoseconds",
         },
         actual={
             "empty": empty_analysis,
@@ -696,10 +727,8 @@ def test_explicit_topology_cost(
         assert empty_traffic["success_count"] == requests
         assert noop_phase["duration_seconds"] >= phase_seconds
         assert empty_phase["duration_seconds"] >= phase_seconds
-        assert (
-            empty_analysis["cpu_ticks_per_minute"]
-            - noop_analysis["cpu_ticks_per_minute"]
-            <= CPU_TICK_BUDGET_PER_MINUTE
+        assert empty_added_cpu_ticks_per_minute <= CPU_TICK_BUDGET_PER_MINUTE, (
+            summary["cpu"]
         )
 
     with validation(
@@ -744,12 +773,16 @@ def test_explicit_topology_cost(
 
     with validation(
         "topology-cooldown",
-        expected={"store_unchanged": True, "slope_max": ANONYMOUS_SLOPE_BYTES_PER_HOUR},
+        expected={
+            "store_unchanged": True,
+            "slope_max": ANONYMOUS_SLOPE_BYTES_PER_HOUR,
+            "retained_thread_delta_max": 0,
+        },
         actual={
             "cooldown": cooldown_analysis,
             "topology_memory": topology_memory,
             "topology_phase_memory": topology_phase_memory,
-            "threads": final_sample["process"]["threads"],
+            "threads": thread_evidence,
         },
         evidence=("samples.jsonl", "summary.json"),
     ):
@@ -763,9 +796,7 @@ def test_explicit_topology_cost(
             topology_phase_memory["max_anonymous_slope_bytes_per_hour"]
             <= ANONYMOUS_SLOPE_BYTES_PER_HOUR
         )
-        assert (
-            final_sample["process"]["threads"] == baseline_sample["process"]["threads"]
-        )
+        assert thread_evidence["retained_delta"] == 0, thread_evidence
         assert (
             abs(
                 final_sample["smaps"]["Anonymous"]

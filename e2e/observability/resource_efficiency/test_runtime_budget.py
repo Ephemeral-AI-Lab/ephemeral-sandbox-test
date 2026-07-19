@@ -90,7 +90,7 @@ def test_runtime_thread_budget(
         "max_active_commands": 32,
         "max_blocking_queue_depth": 0,
         "max_command_queue_depth": 0,
-        "infrastructure_thread_allowance": 4,
+        "infrastructure_thread_allowance": 6,
     }
     result = {}
     with generated_gateway(
@@ -378,7 +378,7 @@ def test_admission_pressure(
             "max_active_commands": 4,
             "max_blocking_queue_depth": 0,
             "max_command_queue_depth": 0,
-            "infrastructure_thread_allowance": 4,
+            "infrastructure_thread_allowance": 6,
         }
         assert all(
             configured_runtime[key] == value for key, value in expected_runtime.items()

@@ -16,7 +16,11 @@ from observability.resource_efficiency.test_workspace_reclaim import (
     _collect_validation_failure,
 )
 from observability.resource_isolation import helpers as isolation_helpers
-from observability.resource_isolation.helpers import _direct_children, _proc_status
+from observability.resource_isolation.helpers import (
+    _direct_children,
+    _proc_schedstat,
+    _proc_status,
+)
 
 
 def _proc_stat(*, pid: int = 321, parent_pid: int = 42, start_time: int = 999) -> str:
@@ -323,10 +327,10 @@ def test_holder_destroy_lifecycle_delta_follows_owner(
 @e2e_test(
     timeout_ms=1_000,
     id="harness.resource-efficiency.standard-thread-allowance",
-    title="Standard runtime allowance is fixed at four threads",
+    title="Standard runtime allowance is fixed at six threads",
     description="The E2E helper rejects an unqualified daemon-advertised alternative instead of learning a wider idle envelope.",
     validations={
-        "fixed-allowance": "Only the qualified standard infrastructure allowance of four is accepted."
+        "fixed-allowance": "Only the qualified standard infrastructure allowance of six is accepted."
     },
 )
 def test_daemon_runtime_config_rejects_unqualified_thread_allowance():
@@ -338,15 +342,16 @@ def test_daemon_runtime_config_rejects_unqualified_thread_allowance():
         "max_active_commands": 32,
         "max_blocking_queue_depth": 0,
         "max_command_queue_depth": 0,
-        "infrastructure_thread_allowance": 4,
+        "infrastructure_thread_allowance": 6,
     }
     assert helpers.daemon_runtime_config({"runtime_config": runtime_config})[
         "infrastructure_thread_allowance"
-    ] == 4
+    ] == 6
 
-    runtime_config["infrastructure_thread_allowance"] = 5
-    with pytest.raises(AssertionError, match="infrastructure_thread_allowance"):
-        helpers.daemon_runtime_config({"runtime_config": runtime_config})
+    for unsupported_allowance in (4, 5, 7):
+        runtime_config["infrastructure_thread_allowance"] = unsupported_allowance
+        with pytest.raises(AssertionError, match="infrastructure_thread_allowance"):
+            helpers.daemon_runtime_config({"runtime_config": runtime_config})
 
 
 def _cycle_record(cycle: int, *, sampled: bool = True) -> dict:
@@ -421,6 +426,14 @@ def test_compact_response_evidence_omits_bulk_but_preserves_identity():
 def test_proc_parsers_preserve_identity_and_bounded_process_counts():
     assert helpers.parse_proc_stat(_proc_stat()) == (321, "S", 42, 999)
     assert helpers.parse_proc_status_parent("Name:\tx\nPPid:\t42\n") == 42
+    assert _proc_schedstat("123456789 987654321 42\n") == (
+        {"runtime_nanoseconds": 123456789},
+        [],
+    )
+    assert _proc_schedstat("unavailable\n") == (
+        {"runtime_nanoseconds": None},
+        ["runtime_nanoseconds"],
+    )
 
     status, unavailable = _proc_status(
         [

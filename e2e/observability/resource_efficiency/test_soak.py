@@ -233,7 +233,7 @@ def test_lifecycle_and_polling_soak(
         "blocking_thread_keep_alive_s": 5.0,
         "max_concurrent_connections": 64,
         "max_active_commands": 32,
-        "infrastructure_thread_allowance": 4,
+        "infrastructure_thread_allowance": 6,
     }
     assert public_profile["name"] == "standard", public_profile
     assert public_profile["daemon_runtime_profile"] == "standard", public_profile

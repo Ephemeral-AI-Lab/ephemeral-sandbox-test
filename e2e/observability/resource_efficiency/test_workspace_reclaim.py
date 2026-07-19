@@ -415,7 +415,10 @@ def test_repeated_workspace_lifecycle_reclaim(
             expected={
                 "zombies": 0,
                 "final_open_fds": baseline_sample["process"]["actual_open_fds"],
-                "threads_max": runtime_config["worker_threads"] + 4,
+                "threads_max": (
+                    runtime_config["worker_threads"]
+                    + runtime_config["infrastructure_thread_allowance"]
+                ),
             },
             actual={"series": series, "final_process": final_sample["process"]},
             evidence=("samples.jsonl", "summary.json"),
@@ -427,7 +430,10 @@ def test_repeated_workspace_lifecycle_reclaim(
             )
             assert (
                 final_sample["process"]["threads"]
-                <= runtime_config["worker_threads"] + 4
+                <= (
+                    runtime_config["worker_threads"]
+                    + runtime_config["infrastructure_thread_allowance"]
+                )
             )
             assert_no_zombies(final_sample)
 

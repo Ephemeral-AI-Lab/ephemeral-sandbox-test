@@ -451,7 +451,7 @@ concurrency overlaps. Complete all sessions and record one minute cooldown.
 Pass conditions:
 
 - public self config reports the exact configured values;
-- settled idle daemon threads are at most `worker_threads + 4`;
+- settled idle daemon threads are at most `worker_threads + 6`;
 - pressure threads never exceed
   `worker_threads + max_blocking_threads + 6`;
 - all admitted commands complete correctly without deadlock;

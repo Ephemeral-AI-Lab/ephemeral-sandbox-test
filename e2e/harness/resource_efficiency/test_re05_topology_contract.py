@@ -6,8 +6,10 @@ import pytest
 
 from observability.resource_efficiency import test_manager_routing
 from observability.resource_efficiency.helpers import (
+    bounded_cpu_runtime_per_minute,
     bounded_memory_series,
     bounded_memory_series_by_phase,
+    retained_thread_delta,
 )
 from observability.resource_efficiency.test_manager_routing import (
     _namespace_init_process,
@@ -27,6 +29,24 @@ def _workspace(*, namespace_init_parent_pid: int) -> dict:
             }
         ],
     }
+
+
+def _write_cpu_samples(tmp_path, phases: list[tuple[str, list[int]]]):
+    samples_path = tmp_path / "cpu-samples.jsonl"
+    with samples_path.open("w", encoding="utf-8") as handle:
+        for phase, values in phases:
+            for second, runtime_nanoseconds in enumerate(values):
+                handle.write(
+                    json.dumps(
+                        {
+                            "phase": phase,
+                            "monotonic_seconds": second * 30,
+                            "cpu": {"runtime_nanoseconds": runtime_nanoseconds},
+                        }
+                    )
+                    + "\n"
+                )
+    return samples_path
 
 
 def _write_memory_samples(tmp_path, phases: list[tuple[str, list[int]]]):
@@ -195,3 +215,39 @@ def test_phase_aware_memory_series_detects_growth_inside_a_phase(tmp_path) -> No
 
     assert by_phase["anonymous_slope_bytes_per_hour_by_phase"]["empty"] > 0
     assert by_phase["max_anonymous_slope_bytes_per_hour"] > 0
+
+
+def test_high_resolution_cpu_runtime_preserves_one_tick_per_minute_gate(
+    tmp_path,
+) -> None:
+    samples_path = _write_cpu_samples(
+        tmp_path,
+        [
+            ("noop", [0, 2_500_000, 5_000_000]),
+            ("empty", [0, 7_500_000, 15_000_000]),
+        ],
+    )
+
+    noop = bounded_cpu_runtime_per_minute(
+        samples_path, phases=("noop",), clock_ticks_per_second=100
+    )
+    empty = bounded_cpu_runtime_per_minute(
+        samples_path, phases=("empty",), clock_ticks_per_second=100
+    )
+
+    assert noop["scheduler_tick_equivalents_per_minute"] == 0.5
+    assert empty["scheduler_tick_equivalents_per_minute"] == 1.5
+    assert (
+        empty["scheduler_tick_equivalents_per_minute"]
+        - noop["scheduler_tick_equivalents_per_minute"]
+        == 1.0
+    )
+
+
+def test_retained_thread_delta_accepts_contraction_and_rejects_growth() -> None:
+    assert retained_thread_delta(baseline_threads=10, final_threads=8) == 0
+    assert retained_thread_delta(baseline_threads=10, final_threads=10) == 0
+    assert retained_thread_delta(baseline_threads=10, final_threads=11) == 1
+
+    with pytest.raises(ValueError, match="non-negative"):
+        retained_thread_delta(baseline_threads=-1, final_threads=0)

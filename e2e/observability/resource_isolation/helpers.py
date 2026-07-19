@@ -334,6 +334,7 @@ printf '@DAEMON_PID\n%s\n' "$daemon_pid"
 printf '@EXE\n'; readlink "/proc/$daemon_pid/exe"
 printf '@SMAPS\n'; cat "/proc/$daemon_pid/smaps_rollup"
 printf '@STAT\n'; cat "/proc/$daemon_pid/stat"
+printf '@SCHEDSTAT\n'; cat "/proc/$daemon_pid/schedstat"
 printf '@STATUS\n'; cat "/proc/$daemon_pid/status"
 printf '@FD_COUNT\n'; find "/proc/$daemon_pid/fd" -mindepth 1 -maxdepth 1 -printf '.' 2>/dev/null | wc -c
 printf '@DIRECT_CHILDREN\n'
@@ -427,6 +428,18 @@ def _proc_stat(line: str) -> tuple[dict[str, int | None], list[str]]:
             values["system_ticks"] = int(fields[12])
         except (ValueError, IndexError):
             pass
+    return values, [name for name, value in values.items() if value is None]
+
+
+def _proc_schedstat(line: str) -> tuple[dict[str, int | None], list[str]]:
+    values: dict[str, int | None] = {"runtime_nanoseconds": None}
+    fields = line.split()
+    try:
+        runtime_nanoseconds = int(fields[0])
+        if runtime_nanoseconds >= 0:
+            values["runtime_nanoseconds"] = runtime_nanoseconds
+    except (ValueError, IndexError):
+        pass
     return values, [name for name, value in values.items() if value is None]
 
 
@@ -628,6 +641,10 @@ def collect_sample(
     smaps_keys = ("Rss", "Pss", "Anonymous", "Private_Dirty", "AnonHugePages")
     smaps, smaps_missing = _kilobytes(sections.get("SMAPS", []), smaps_keys)
     cpu, cpu_missing = _proc_stat("".join(sections.get("STAT", [])))
+    schedstat, schedstat_missing = _proc_schedstat(
+        "".join(sections.get("SCHEDSTAT", []))
+    )
+    cpu.update(schedstat)
     process_status, status_missing = _proc_status(sections.get("STATUS", []))
     actual_open_fds = None
     try:
@@ -685,6 +702,7 @@ def collect_sample(
     unavailable = []
     unavailable.extend(f"smaps.{name}" for name in smaps_missing)
     unavailable.extend(f"cpu.{name}" for name in cpu_missing)
+    unavailable.extend(f"cpu.{name}" for name in schedstat_missing)
     unavailable.extend(f"process.{name}" for name in status_missing)
     if actual_open_fds is None:
         unavailable.append("process.actual_open_fds")
