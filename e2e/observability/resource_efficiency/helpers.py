@@ -33,6 +33,7 @@ from observability.resource_isolation.helpers import (
     env_int,
     iter_capped_binary_lines,
 )
+from observability.resource_isolation.helpers import stream_group as _stream_group
 from runtime.workspace_session.helpers import (
     WorkspaceTracker,
     destroy_session as destroy_session,
