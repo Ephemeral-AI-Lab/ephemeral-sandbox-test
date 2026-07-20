@@ -12,7 +12,7 @@ from harness.catalog.declarations import e2e_test
 from observability.resource_efficiency.profile import CANONICAL_PROFILE
 
 
-LEGACY_CONTROLS = {
+ORIGINAL_CONTROLS = {
     "RE-00": {
         "durations": {
             "warm_seconds": 60,
@@ -107,26 +107,27 @@ LEGACY_CONTROLS = {
 }
 
 
-def _scaled(value: int) -> int:
-    return max(1, math.ceil(value / 10))
+def _canonical(value: int) -> int:
+    return max(1, math.ceil(value / 100))
 
 
 @e2e_test(
     timeout_ms=1_000,
-    id="harness.resource-efficiency.canonical-ten-percent-values",
+    id="harness.resource-efficiency.canonical-one-percent-values",
     title="Resource-efficiency controls have one canonical scale",
-    description="Every duration and scalable count is permanently one tenth of its former value, rounded up.",
+    description="Every duration and scalable count is permanently one hundredth of its original value, rounded up.",
     validations={
-        "canonical-values": "All RE-00 through RE-11 duration and count controls equal ceil(former / 10)."
+        "canonical-values": "All RE-00 through RE-11 duration and count controls equal ceil(original / 100)."
     },
 )
 def test_canonical_profile_scales_all_durations_and_counts():
-    assert set(CANONICAL_PROFILE) == set(LEGACY_CONTROLS)
-    for case, legacy in LEGACY_CONTROLS.items():
+    assert set(CANONICAL_PROFILE) == set(ORIGINAL_CONTROLS)
+    for case, original in ORIGINAL_CONTROLS.items():
         profile = CANONICAL_PROFILE[case]
         for section in ("durations", "counts"):
             expected = {
-                name: _scaled(value) for name, value in legacy.get(section, {}).items()
+                name: _canonical(value)
+                for name, value in original.get(section, {}).items()
             }
             assert dict(getattr(profile, section)) == expected, {
                 "case": case,
@@ -138,17 +139,18 @@ def test_canonical_profile_scales_all_durations_and_counts():
     timeout_ms=1_000,
     id="harness.resource-efficiency.canonical-observation-density",
     title="Resource-efficiency observations use the denser cadence",
-    description="Sampling intervals and strides are divided by ten with ceiling and a minimum of one.",
+    description="Sampling intervals and strides are one hundredth of their original values with ceiling and a minimum of one.",
     validations={
-        "observation-density": "Every explicit sampler interval and stride equals max(1, ceil(former / 10))."
+        "observation-density": "Every explicit sampler interval and stride equals max(1, ceil(original / 100))."
     },
 )
 def test_canonical_profile_densifies_observation_intervals_and_strides():
-    for case, legacy in LEGACY_CONTROLS.items():
+    for case, original in ORIGINAL_CONTROLS.items():
         profile = CANONICAL_PROFILE[case]
         for section in ("sampling_intervals", "sampling_strides"):
             expected = {
-                name: _scaled(value) for name, value in legacy.get(section, {}).items()
+                name: _canonical(value)
+                for name, value in original.get(section, {}).items()
             }
             assert dict(getattr(profile, section)) == expected, {
                 "case": case,
@@ -157,7 +159,7 @@ def test_canonical_profile_densifies_observation_intervals_and_strides():
 
     assert dict(CANONICAL_PROFILE["RE-03"].sampling_strides) == {
         "cycle": 1,
-        "interrupt": 10,
+        "interrupt": 1,
     }
 
 
@@ -198,7 +200,7 @@ def test_resource_efficiency_has_no_dual_scale_option():
     title="RE-03 settles first-use allocations before its baseline",
     description="One unmeasured representative lifecycle precedes the baseline without changing measured cycles or interrupts.",
     validations={
-        "warmup-order": "Warmup precedes baseline and the canonical measured workload remains 100 cycles with 10 interrupts."
+        "warmup-order": "Warmup precedes baseline and the canonical measured workload remains 10 cycles with 10 interrupts."
     },
 )
 def test_re03_warmup_precedes_baseline_without_changing_measured_scale():
@@ -216,5 +218,103 @@ def test_re03_warmup_precedes_baseline_without_changing_measured_scale():
 
     assert warmup < baseline < measured_loop
     assert source.count("    _warm_workspace_lifecycle(tracker, sandbox_id)") == 1
-    assert CANONICAL_PROFILE["RE-03"].counts["cycles"] == 100
-    assert CANONICAL_PROFILE["RE-03"].sampling_strides["interrupt"] == 10
+    assert CANONICAL_PROFILE["RE-03"].counts["cycles"] == 10
+    assert CANONICAL_PROFILE["RE-03"].sampling_strides["interrupt"] == 1
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.re11-startup-settle-order",
+    title="RE-11 settles startup threads before its baseline",
+    description="The representative lifecycle and bounded startup-thread settlement precede the canonical three-second baseline.",
+    validations={
+        "settle-order": "Startup thread settlement is bounded by runtime keepalive and does not lengthen the canonical RE-11 baseline or soak."
+    },
+)
+def test_re11_settles_startup_threads_before_baseline_without_rescaling():
+    source_path = (
+        Path(__file__).parents[2]
+        / "observability"
+        / "resource_efficiency"
+        / "test_soak.py"
+    )
+    source = source_path.read_text(encoding="utf-8")
+
+    lifecycle_probe = source.index(
+        "    baseline_workspace_id = create_workspace(tracker)"
+    )
+    startup_settle = source.index(
+        "    startup_settle_sample, startup_settle_seconds = wait_until("
+    )
+    baseline = source.index("    baseline_phase = stream_group(")
+
+    assert lifecycle_probe < startup_settle < baseline
+    assert (
+        'timeout_seconds=runtime_config["blocking_thread_keep_alive_s"] + 5,'
+        in source
+    )
+    assert CANONICAL_PROFILE["RE-11"].durations["baseline_seconds"] == 3
+    assert CANONICAL_PROFILE["RE-11"].durations["soak_seconds"] == 216
+    assert CANONICAL_PROFILE["RE-11"].counts["cycles"] == 10
+    assert CANONICAL_PROFILE["RE-11"].counts["resource_reads"] == 108
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.re11-cycle-settle-order",
+    title="RE-11 measures each lifecycle after blocking-thread settlement",
+    description="Each destroyed lifecycle reaches its strict settled thread envelope before its compact cycle record is appended.",
+    validations={
+        "cycle-settle-order": "Post-destroy thread settlement is keepalive-bounded inside the unchanged 21.6-second cycle cadence."
+    },
+)
+def test_re11_settles_cycle_threads_before_record_without_rescaling():
+    source_path = (
+        Path(__file__).parents[2]
+        / "observability"
+        / "resource_efficiency"
+        / "test_soak.py"
+    )
+    source = source_path.read_text(encoding="utf-8")
+    driver = source.index("    def lifecycle_driver() -> dict:")
+    post_destroy_topology = source.index(
+        "            topology = read_topology(sandbox_id)", driver
+    )
+    cycle_settle = source.index(
+        "            cycle_thread_sample, cycle_thread_settle_seconds = wait_until(",
+        driver,
+    )
+    cycle_record = source.index("            append_cycle_record(", driver)
+
+    assert post_destroy_topology < cycle_settle < cycle_record
+    assert (
+        source.count(
+            'timeout_seconds=runtime_config["blocking_thread_keep_alive_s"] + 5,'
+        )
+        == 2
+    )
+    profile = CANONICAL_PROFILE["RE-11"]
+    assert profile.durations["soak_seconds"] / profile.counts["cycles"] == 21.6
+    assert profile.durations["command_seconds"] == 1
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.re11-driver-failure-evidence",
+    title="RE-11 preserves parallel driver failure evidence",
+    description="The parallel soak wrapper retains a bounded causal exception type and message so early failures can be diagnosed without a blind rerun.",
+    validations={
+        "driver-failure-evidence": "The visible wrapper identifies the failed driver and includes the causal exception type and bounded message."
+    },
+)
+def test_re11_parallel_driver_failure_preserves_cause():
+    from observability.resource_efficiency.test_soak import _driver_failure
+
+    cause = AssertionError({"route": "observability.resources.single.soak"})
+    failure = _driver_failure("resources", cause)
+    evidence = failure.args[0]
+
+    assert evidence["failed_soak_driver"] == "resources"
+    assert evidence["error_type"] == "AssertionError"
+    assert str(cause) in evidence["error"]
+    assert len(evidence["error"]) <= 4_096

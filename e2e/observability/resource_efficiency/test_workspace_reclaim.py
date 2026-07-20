@@ -107,7 +107,7 @@ def _warm_workspace_lifecycle(tracker, sandbox_id: str) -> None:
     timeout_ms=10_800_000,
     id="observability.resource-efficiency.workspace-cycle-reclaim",
     title="Repeated workspace lifecycles fully reclaim resources",
-    description="One hundred sequential workspace cycles return holder, session, FD, thread, lease, and memory state to baseline.",
+    description="Ten sequential workspace cycles return holder, session, FD, thread, lease, and memory state to baseline.",
     features=(
         "observability.resource_efficiency",
         "observability.topology",

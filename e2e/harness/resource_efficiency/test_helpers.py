@@ -165,6 +165,74 @@ def test_daemon_self_helper_requires_serialized_thp_field():
 
 @e2e_test(
     timeout_ms=1_000,
+    id="harness.resource-efficiency.darwin-host-process-sample",
+    title="Darwin host process sampling is bounded and explicit",
+    description="The manager sampler derives identity, CPU, threads, RSS, and conservative anonymous memory from bounded Darwin tools while reporting unavailable I/O.",
+    validations={
+        "darwin-host-sample": "Darwin metrics are parsed without Linux procfs or fabricated I/O counters."
+    },
+)
+def test_host_process_sample_supports_darwin(monkeypatch, tmp_path, validation):
+    pid_file = tmp_path / "gateway.pid"
+    pid_file.write_text("4321\n", encoding="ascii")
+    commands = []
+
+    def bounded_command(command):
+        commands.append(command)
+        if command[:2] == ("/bin/ps", "-ww"):
+            return "4321 1 65536 1:02.50 /tmp/sandbox-gateway serve\n"
+        if command[:2] == ("/usr/bin/vmmap", "-summary"):
+            return """\
+Process: sandbox-gateway [4321]
+Launch Time: 2026-07-20 01:45:18.500 +0000
+TOTAL 1.0G 100.0M 40.0M 2.0M 0K 0K 0K 100
+TOTAL, minus reserved VM space 900.0M 100.0M 40.0M 2.0M 0K 0K 0K 100
+"""
+        if command[:2] == ("/bin/ps", "-M"):
+            return """\
+USER PID COMMAND
+tester 4321 /tmp/sandbox-gateway 4321
+       4321                    4321
+       4321                    4321
+"""
+        raise AssertionError(command)
+
+    monkeypatch.setattr(helpers.sys, "platform", "darwin")
+    monkeypatch.setattr(helpers.os, "sysconf", lambda _name: 100)
+    monkeypatch.setattr(helpers, "_bounded_host_process_command", bounded_command)
+    observed = helpers.host_process_sample(pid_file)
+
+    with validation(
+        "darwin-host-sample",
+        expected={
+            "pid": 4321,
+            "anonymous_bytes": 42 * 1024 * 1024,
+            "rss_bytes": 64 * 1024 * 1024,
+            "threads": 3,
+            "total_cpu_ticks": 6_250,
+            "unavailable": ["read_bytes", "write_bytes"],
+        },
+        actual=observed,
+    ):
+        assert observed["pid"] == 4321
+        assert observed["parent_pid"] == 1
+        assert observed["executable"] == "/tmp/sandbox-gateway"
+        assert observed["anonymous_bytes"] == 42 * 1024 * 1024
+        assert observed["rss_bytes"] == 64 * 1024 * 1024
+        assert observed["threads"] == 3
+        assert observed["user_ticks"] == 6_250
+        assert observed["system_ticks"] == 0
+        assert observed["read_bytes"] is None
+        assert observed["write_bytes"] is None
+        assert observed["memory_basis"] == "vmmap_total_dirty_plus_swapped"
+        assert observed["cpu_basis"] == "ps_total_cpu_ticks"
+        assert observed["unavailable"] == ["read_bytes", "write_bytes"]
+        assert isinstance(observed["start_time_ticks"], int)
+        assert len(commands) == 3
+
+
+@e2e_test(
+    timeout_ms=1_000,
     id="harness.resource-efficiency.daemon-self-route",
     title="Daemon self metrics use the dedicated public operation",
     description="The helper reads the bounded daemon payload without requesting process topology.",
@@ -489,6 +557,39 @@ def test_direct_sample_is_persisted_exactly_once(monkeypatch):
 
     assert helpers.sample(Artifacts(), "eos-test", phase="offline") is observed
     assert appended == [observed]
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.anonymous-mapping-evidence",
+    title="Anonymous mapping evidence is bounded and ordered",
+    description="RE-06 converts daemon smaps rows to bytes, retains the aggregate, and stores only the largest sixty-four mappings.",
+    validations={
+        "mapping-summary": "Sixty-five unordered mapping rows produce an exact aggregate and the largest sixty-four rows in descending order."
+    },
+)
+def test_daemon_anonymous_mapping_evidence_is_bounded(monkeypatch):
+    rows = [
+        f"{anonymous}\t{anonymous + 1}\t{anonymous}\t{anonymous + 8}\t{anonymous:08x}-{anonymous + 1:08x} rw-p"
+        for anonymous in range(1, 66)
+    ]
+    observed_scripts = []
+
+    def docker_exec(_sandbox_id, script):
+        observed_scripts.append(script)
+        return "\n".join(reversed(rows))
+
+    monkeypatch.setattr(helpers, "docker_exec", docker_exec)
+
+    evidence = helpers.daemon_anonymous_mappings("eos-test")
+
+    assert evidence["mapping_count"] == 65
+    assert evidence["anonymous_bytes"] == sum(range(1, 66)) * 1024
+    assert len(evidence["top_mappings"]) == 64
+    assert evidence["top_mappings"][0]["anonymous_bytes"] == 65 * 1024
+    assert evidence["top_mappings"][-1]["anonymous_bytes"] == 2 * 1024
+    assert "/eos/runtime/daemon/runtime.pid" in observed_scripts[0]
+    assert '"/proc/$daemon_pid/smaps"' in observed_scripts[0]
 
 
 @e2e_test(
@@ -1008,7 +1109,7 @@ def test_route_histogram_state_stays_fixed_for_ten_thousand_reads():
     validations={"hard-cadence": "All requests start on their fixed deadlines; excessive lateness fails before the request."},
 )
 def test_route_campaign_uses_hard_cadence_without_catch_up(monkeypatch):
-    clock = {"seconds": 0.0, "overshoot": 0.0}
+    clock = {"seconds": 0.0, "overshoot": 0.0, "request_duration": 0.001}
     starts = []
 
     monkeypatch.setattr(helpers.time, "monotonic", lambda: clock["seconds"])
@@ -1020,7 +1121,7 @@ def test_route_campaign_uses_hard_cadence_without_catch_up(monkeypatch):
 
     def request():
         starts.append(clock["seconds"])
-        clock["seconds"] += 0.001
+        clock["seconds"] += clock["request_duration"]
         return {"ok": True}
 
     campaign = helpers.run_route_campaign(
@@ -1033,6 +1134,18 @@ def test_route_campaign_uses_hard_cadence_without_catch_up(monkeypatch):
     assert campaign["request_count"] == 4
     assert campaign["elapsed_seconds"] >= 4.0
 
+    clock.update(seconds=0.0, overshoot=0.0, request_duration=0.2)
+    starts.clear()
+    campaign = helpers.run_route_campaign(
+        route="observability.topology",
+        request=request,
+        request_count=3,
+        duration_seconds=2.0,
+        start_immediately=True,
+    )
+    assert starts == [0.0, 1.0, 2.0]
+    assert campaign["elapsed_seconds"] == 2.2
+
     clock.update(seconds=0.0, overshoot=0.3)
     starts.clear()
     with pytest.raises(AssertionError, match="cadence missed"):
@@ -1043,6 +1156,29 @@ def test_route_campaign_uses_hard_cadence_without_catch_up(monkeypatch):
             duration_seconds=4.0,
         )
     assert starts == []
+
+    clock.update(seconds=0.0, overshoot=0.0, request_duration=1.5)
+    campaign = helpers.run_route_campaign(
+        route="manager.resources",
+        request=request,
+        request_count=3,
+        duration_seconds=3.0,
+    )
+    assert starts == [1.0, 2.5, 4.0]
+    assert campaign["request_count"] == 3
+    assert campaign["elapsed_seconds"] == 5.5
+
+
+def test_observation_aligned_campaign_duration_targets_sample_time():
+    duration_ms, lead_ms = helpers.observation_aligned_campaign_duration_ms(
+        initial_remaining_ms=1_004,
+        target_final_remaining_ms=25,
+        observed_sample_leads_ms=[38, 42, 40, 41],
+    )
+
+    assert lead_ms == 40
+    assert duration_ms == 939
+    assert 1_004 - duration_ms - lead_ms == 25
 
 
 @e2e_test(
@@ -1123,6 +1259,44 @@ def test_resource_routes_validate_every_record_and_current_freshness(monkeypatch
         helpers.read_resources("eos-test")
 
 
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.target-fleet-resource-route",
+    title="Target resource polling remains manager-owned",
+    description="The target helper uses the topology-free fleet route and rejects responses that omit the requested sandbox.",
+    validations={
+        "manager-route": "The CLI request has no sandbox selector and the fleet must contain the target."
+    },
+)
+def test_target_fleet_resources_uses_system_route_and_requires_target(monkeypatch):
+    calls = []
+    fleet = {
+        "view": "resources",
+        "scope": "fleet",
+        "availability": "available",
+        "sandboxes": {
+            "eos-test": {
+                "availability": "available",
+                "errors": [],
+                "current": _resource_record(),
+            }
+        },
+        "errors": [],
+    }
+
+    def fake_cli(*args, **kwargs):
+        calls.append((args, kwargs))
+        return fleet
+
+    monkeypatch.setattr(helpers, "cli", fake_cli)
+    assert helpers.read_target_fleet_resources("eos-test") is fleet
+    assert calls == [(("observability", "resources"), {"timeout": 30})]
+
+    fleet["sandboxes"] = {}
+    with pytest.raises(AssertionError, match="eos-test"):
+        helpers.read_target_fleet_resources("eos-test")
+
+
 def _ring_payload(*, sequence: int, marker: int = 0) -> bytes:
     size = helpers.MAX_RING_BYTES
     payload = bytearray(size)
@@ -1184,7 +1358,6 @@ def test_diagnostic_validation_is_attributable_bounded_and_redacted():
         "id": "diagnostic-1",
         "fingerprint": "b" * 64,
         "captured_at_unix_ms": 1,
-        "size_bytes": 512,
         "trigger": {"kind": "topology_pressure"},
         "activity_classes": ["topology"],
         "runtime_usage": {
@@ -1219,12 +1392,11 @@ def test_diagnostic_validation_is_attributable_bounded_and_redacted():
             "full_command_lines_excluded": True,
         },
     }
-    assert (
-        helpers.assert_redacted_diagnostic(value, forbidden_values=("secret-value",))[
-            "bundle_bytes"
-        ]
-        == 512
-    )
+    assert helpers.assert_redacted_diagnostic(
+        value,
+        forbidden_values=("secret-value",),
+        measured_size_bytes=512,
+    )["bundle_bytes"] == 512
 
     with pytest.raises(AssertionError, match="forbidden"):
         helpers.assert_redacted_diagnostic(
@@ -1402,6 +1574,28 @@ def test_cgroup_counter_parser_rejects_ambiguous_input():
         helpers.parse_cgroup_counter_file("max 3\nmax 4\n")
     with pytest.raises(AssertionError):
         helpers.parse_cgroup_counter_file("max nope\n")
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-efficiency.workspace-cgroup-siblings",
+    title="Workspace cgroups are direct siblings",
+    description="Every workspace leaf is an immediate child of the shared workload aggregate; workspace-under-workspace nesting is rejected.",
+    validations={
+        "direct-siblings": "The aggregate is a daemon sibling and each workspace is one direct child below it."
+    },
+)
+def test_workload_cgroup_hierarchy_requires_direct_sibling_leaves():
+    assert helpers.direct_workload_cgroup_paths(
+        daemon_path="/sandbox/_daemon",
+        workspace_path="/sandbox/_workloads/workspace-a",
+    ) == ("/sandbox/_workloads", "/sandbox/_workloads/workspace-a")
+
+    with pytest.raises(AssertionError, match="direct child"):
+        helpers.direct_workload_cgroup_paths(
+            daemon_path="/sandbox/_daemon",
+            workspace_path="/sandbox/_workloads/workspace-a/workspace-b",
+        )
 
 
 @e2e_test(

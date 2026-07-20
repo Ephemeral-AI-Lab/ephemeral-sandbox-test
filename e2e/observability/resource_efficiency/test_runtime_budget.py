@@ -28,6 +28,7 @@ from .helpers import (
     bounded_cpu_fraction_median,
     bounded_memory_series,
     create_workspace,
+    daemon_anonymous_mappings,
     daemon_runtime_config,
     daemon_self_counts,
     destroy_workspace,
@@ -67,7 +68,7 @@ def _analysis(case_artifacts, phase: dict, name: str) -> dict:
         "idle-thread-envelope": "Public self config is exact and settled idle threads are at most worker threads plus the declared infrastructure allowance.",
         "pressure-thread-envelope": "Overlapping command pressure stays below workers plus blocking threads plus six.",
         "concurrency-functional": "All thirty-two admitted commands complete and snapshot, interrupt, and destroy remain responsive.",
-        "cooldown-reclaimed": "After keepalive and one-minute cooldown, threads and anonymous memory return to their hard bounds.",
+        "cooldown-reclaimed": "After keepalive and a six-second cooldown, threads and anonymous memory return to their hard bounds.",
         "config-restored": "The generated gateway is restored after all run-owned resources are destroyed.",
     },
     execution_surface="cli",
@@ -82,6 +83,7 @@ def test_runtime_thread_budget(
     case_artifacts,
     validation,
 ):
+    pressure_width = 32
     expected_config = {
         "worker_threads": 2,
         "max_blocking_threads": 8,
@@ -111,6 +113,44 @@ def test_runtime_thread_budget(
         verify_packaged_daemon(sandbox_id)
         environment = environment_evidence(sandbox_id)
         case_artifacts.write_json("environment.json", environment)
+        config = daemon_runtime_config(read_daemon_self(sandbox_id))
+        for key, expected in expected_config.items():
+            assert config[key] == expected, {
+                "config": config,
+                "expected": expected_config,
+            }
+
+        # Establish a comparable warm-runtime baseline before measuring retained
+        # memory. A cold daemon has not faulted in the fixed Tokio workers' stack
+        # pages or initialized the command dispatch path, so comparing it with a
+        # post-pressure daemon would classify one-time initialization as a leak.
+        launch_width = expected_config["max_blocking_threads"]
+        warmup_workspace_id = create_workspace(tracker)
+        warmup_barrier = threading.Barrier(launch_width)
+
+        def launch_warmup(index: int) -> str:
+            warmup_barrier.wait(timeout=30)
+            return start_command(
+                tracker,
+                warmup_workspace_id,
+                f"sleep {RE06_PROFILE.durations['command_seconds']}; "
+                f"printf re06-warmup-{index}",
+                timeout_ms=120_000,
+            )
+
+        with ThreadPoolExecutor(max_workers=launch_width) as warmup_pool:
+            warmup_ids = list(
+                warmup_pool.map(launch_warmup, range(pressure_width), timeout=120)
+            )
+        warmup_terminals = [
+            await_command(tracker, command_id, timeout_seconds=60)
+            for command_id in warmup_ids
+        ]
+        assert all(terminal.get("status") == "ok" for terminal in warmup_terminals), (
+            warmup_terminals
+        )
+        destroy_workspace(tracker, warmup_workspace_id)
+
         idle = stream_group(
             case_artifacts,
             [(sandbox_id, "target", None)],
@@ -126,17 +166,12 @@ def test_runtime_thread_budget(
             clock_ticks_per_second=environment["measurement"]["clock_ticks_per_second"],
         )
         idle_sample = sample(case_artifacts, sandbox_id, phase="runtime-idle-end")
-        config = daemon_runtime_config(read_daemon_self(sandbox_id))
-        for key, expected in expected_config.items():
-            assert config[key] == expected, {
-                "config": config,
-                "expected": expected_config,
-            }
+        idle_mappings = daemon_anonymous_mappings(sandbox_id)
         assert_settled_budget(idle_sample)
 
         workspace_id = create_workspace(tracker)
 
-        barrier = threading.Barrier(32)
+        barrier = threading.Barrier(launch_width)
         pressure_sampling_started = threading.Event()
 
         def launch(index: int) -> str:
@@ -165,9 +200,9 @@ def test_runtime_thread_budget(
             assert pressure_sampling_started.wait(timeout=30), (
                 "pressure sampling did not begin before command release"
             )
-            with ThreadPoolExecutor(max_workers=32) as command_pool:
+            with ThreadPoolExecutor(max_workers=launch_width) as command_pool:
                 command_ids = list(
-                    command_pool.map(launch, range(32), timeout=120)
+                    command_pool.map(launch, range(pressure_width), timeout=120)
                 )
             pressure = pressure_future.result(timeout=pressure_seconds + 180)
         snapshot_during = read_snapshot(sandbox_id)
@@ -218,6 +253,9 @@ def test_runtime_thread_budget(
         )
         cooldown_analysis = _analysis(case_artifacts, cooldown, "runtime-cooldown")
         final_sample = sample(case_artifacts, sandbox_id, phase="runtime-final")
+        final_mappings = daemon_anonymous_mappings(sandbox_id)
+        mapping_evidence = {"idle": idle_mappings, "final": final_mappings}
+        case_artifacts.write_json("runtime-memory-mappings.json", mapping_evidence)
         pressure_series = bounded_memory_series(
             case_artifacts.samples_path, phases=("runtime-pressure",)
         )
@@ -227,6 +265,7 @@ def test_runtime_thread_budget(
             "idle": idle_analysis,
             "idle_cpu": idle_cpu,
             "idle_sample": idle_sample,
+            "warmup_terminal_count": len(warmup_terminals),
             "pressure_phase": pressure,
             "pressure": pressure_series,
             "terminal_count": len(terminals),
@@ -239,6 +278,10 @@ def test_runtime_thread_budget(
             },
             "cooldown": cooldown_analysis,
             "final_sample": final_sample,
+            "anonymous_mapping_totals": {
+                phase: evidence["anonymous_bytes"]
+                for phase, evidence in mapping_evidence.items()
+            },
         }
     restored = gateway.restored
     case_artifacts.write_json("summary.json", result, reserved=True)
@@ -301,7 +344,7 @@ def test_runtime_thread_budget(
             "cooldown": result["cooldown"],
             "threads": result["final_sample"]["process"]["threads"],
         },
-        evidence=("samples.jsonl", "summary.json"),
+        evidence=("samples.jsonl", "summary.json", "runtime-memory-mappings.json"),
     ):
         assert result["post_workspace_recovery"]["elapsed_seconds"] <= 60
         assert_settled_budget(
@@ -383,6 +426,37 @@ def test_admission_pressure(
         assert all(
             configured_runtime[key] == value for key, value in expected_runtime.items()
         ), {"expected": expected_runtime, "actual": configured_runtime}
+
+        # Compare post-pressure memory with a warm runtime. The measured phase
+        # admits four commands, so exercise that same admitted-command high-water
+        # once before the baseline without consuming any measured attempts.
+        warmup_width = expected_runtime["max_active_commands"]
+        warmup_workspace_id = create_workspace(tracker)
+        warmup_barrier = threading.Barrier(warmup_width)
+
+        def launch_warmup(index: int) -> str:
+            warmup_barrier.wait(timeout=30)
+            return start_command(
+                tracker,
+                warmup_workspace_id,
+                f"sleep {RE07_PROFILE.durations['command_seconds']}; "
+                f"printf re07-warmup-{index}",
+                timeout_ms=120_000,
+            )
+
+        with ThreadPoolExecutor(max_workers=warmup_width) as warmup_pool:
+            warmup_ids = list(
+                warmup_pool.map(launch_warmup, range(warmup_width), timeout=120)
+            )
+        warmup_terminals = [
+            await_command(tracker, command_id, timeout_seconds=60)
+            for command_id in warmup_ids
+        ]
+        assert all(terminal.get("status") == "ok" for terminal in warmup_terminals), (
+            warmup_terminals
+        )
+        destroy_workspace(tracker, warmup_workspace_id)
+
         baseline_phase = stream_group(
             case_artifacts,
             [(sandbox_id, "target", None)],
@@ -621,6 +695,7 @@ def test_admission_pressure(
         final_sample = sample(case_artifacts, sandbox_id, phase="admission-final")
         registered_sandbox_factory.destroy(sandbox_id)
         result = {
+            "warmup_terminal_count": len(warmup_terminals),
             "attempt_count": len(attempts),
             "admitted": admitted,
             "overloads": overloads,
@@ -655,6 +730,7 @@ def test_admission_pressure(
             "command_queue_max": 0,
             "connection_in_use_max": 8,
             "thread_peak_max": 12,
+            "warmup_completed": warmup_width,
             "sampled_during_attempts": True,
             "observer_errors": [],
             "runtime_config": {
@@ -667,6 +743,7 @@ def test_admission_pressure(
             },
         },
         actual={
+            "warmup_completed": result["warmup_terminal_count"],
             "admitted": len(result["admitted"]),
             "observation": result["pressure_observation"],
             "runtime_config": result["configured_runtime"],
@@ -675,6 +752,7 @@ def test_admission_pressure(
     ):
         observation = result["pressure_observation"]
         peaks = observation["peaks"]
+        assert result["warmup_terminal_count"] == warmup_width
         assert 1 <= len(result["admitted"]) <= 4
         assert observation["attempts_completed"] == pressure_width
         assert observation["errors"] == [], observation

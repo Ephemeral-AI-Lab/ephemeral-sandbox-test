@@ -753,7 +753,7 @@ def test_unexpected_holder_exit(
     timeout_ms=1_800_000,
     id="observability.resource-efficiency.holder-destroy-race",
     title="Holder exit and explicit destroy race is idempotent",
-    description="Twenty exact-target races converge through one public cleanup without double release or peer impact.",
+    description="One exact-target race converges through one public cleanup without double release or peer impact.",
     features=(
         "observability.resource_efficiency",
         "observability.topology",

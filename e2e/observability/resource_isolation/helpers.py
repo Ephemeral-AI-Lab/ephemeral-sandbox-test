@@ -29,6 +29,10 @@ EVENT_SEGMENTS = (
     f"{EVENT_DIRECTORY}/observability.ndjson",
     f"{EVENT_DIRECTORY}/observability.ndjson.1",
 )
+RESOURCE_SEGMENTS = (
+    f"{EVENT_DIRECTORY}/resources.ndjson",
+    f"{EVENT_DIRECTORY}/resources.ndjson.1",
+)
 MAX_LINE_BYTES = 16 * 1024
 MAX_RESPONSE_BYTES = 256 * 1024
 MAX_RESPONSE_RECORDS = 500
@@ -1512,9 +1516,42 @@ def _container_stat(sandbox_id: str, path: str) -> dict[str, Any]:
 def fingerprint_container_file(
     sandbox_id: str, path: str, *, timeout: float = 30
 ) -> dict[str, Any]:
-    stat = _container_stat(sandbox_id, path)
-    if stat["exists"] is False:
-        return stat
+    deadline = time.monotonic() + timeout
+    attempts = 0
+    while True:
+        before = _container_stat(sandbox_id, path)
+        if before["exists"] is False:
+            after = _container_stat(sandbox_id, path)
+            if after == before:
+                return before
+        else:
+            contents = _fingerprint_container_file_contents(
+                sandbox_id,
+                path,
+                timeout=max(0.001, deadline - time.monotonic()),
+            )
+            after = _container_stat(sandbox_id, path)
+            if (
+                after == before
+                and contents.pop("_content_bytes") == before["logical_bytes"]
+            ):
+                return {**before, **contents}
+
+        attempts += 1
+        if time.monotonic() >= deadline:
+            raise AssertionError(
+                {
+                    "unstable_container_file": path,
+                    "attempts": attempts,
+                    "before": before,
+                    "after": after,
+                }
+            )
+
+
+def _fingerprint_container_file_contents(
+    sandbox_id: str, path: str, *, timeout: float
+) -> dict[str, Any]:
     process = subprocess.Popen(
         ["docker", "exec", sandbox_id, "cat", path],
         stdout=subprocess.PIPE,
@@ -1525,6 +1562,7 @@ def fingerprint_container_file(
     digest = hashlib.sha256()
     line = bytearray()
     complete = parseable = malformed = oversized = 0
+    content_bytes = 0
     last_byte = None
     discarding = False
     try:
@@ -1533,6 +1571,7 @@ def fingerprint_container_file(
             chunk = process.stdout.read(FINGERPRINT_CHUNK_BYTES)
             if not chunk:
                 break
+            content_bytes += len(chunk)
             digest.update(chunk)
             last_byte = chunk[-1]
             for byte in chunk:
@@ -1560,7 +1599,7 @@ def fingerprint_container_file(
         timer.cancel()
     assert returncode == 0, stderr.decode("utf-8", "replace")[-2_000:]
     return {
-        **stat,
+        "_content_bytes": content_bytes,
         "sha256": digest.hexdigest(),
         "complete_lines": complete,
         "parseable_lines": parseable,
@@ -1570,10 +1609,10 @@ def fingerprint_container_file(
     }
 
 
-def fingerprint_store(sandbox_id: str) -> dict[str, Any]:
+def _fingerprint_segments(sandbox_id: str, paths: tuple[str, str]) -> dict[str, Any]:
     segments = {
         path.rsplit("/", 1)[-1]: fingerprint_container_file(sandbox_id, path)
-        for path in EVENT_SEGMENTS
+        for path in paths
     }
     return {
         "segments": segments,
@@ -1588,6 +1627,14 @@ def fingerprint_store(sandbox_id: str) -> dict[str, Any]:
             if value.get("exists") is True
         ),
     }
+
+
+def fingerprint_store(sandbox_id: str) -> dict[str, Any]:
+    return _fingerprint_segments(sandbox_id, EVENT_SEGMENTS)
+
+
+def fingerprint_resource_store(sandbox_id: str) -> dict[str, Any]:
+    return _fingerprint_segments(sandbox_id, RESOURCE_SEGMENTS)
 
 
 def rotation_renamed_active(

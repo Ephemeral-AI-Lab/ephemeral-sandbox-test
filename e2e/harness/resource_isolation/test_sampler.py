@@ -11,6 +11,7 @@ import tracemalloc
 import pytest
 
 from harness.catalog.declarations import e2e_test
+from observability.resource_isolation import helpers as resource_helpers
 from observability.resource_isolation.helpers import (
     _balanced_sample_order,
     _bootstrap_slope_ci,
@@ -293,6 +294,64 @@ def test_container_stat_parser_requires_real_tab_delimiters():
         "inode": 341738,
         "mtime_seconds": 1784279408,
         "mtime_ns": 1784279408630307011,
+    }
+
+
+@e2e_test(
+    timeout_ms=1_000,
+    id="harness.resource-isolation.container-fingerprint-stability",
+    title="Container fingerprint retries torn append snapshots",
+    description="An append between metadata and content probes is discarded until size, inode, mtime, and streamed bytes agree.",
+    validations={
+        "container-fingerprint-stable": "Only one internally consistent append-only file snapshot is returned."
+    },
+)
+def test_container_fingerprint_retries_append_between_stat_and_content(monkeypatch):
+    old_stat = {
+        "exists": True,
+        "logical_bytes": 324,
+        "allocated_bytes": 4_096,
+        "inode": 41,
+        "mtime_seconds": 1,
+        "mtime_ns": 1_000_000_000,
+    }
+    new_stat = {
+        **old_stat,
+        "logical_bytes": 647,
+        "mtime_seconds": 2,
+        "mtime_ns": 2_000_000_000,
+    }
+    stats = iter((old_stat, new_stat, new_stat, new_stat))
+    contents = iter(
+        (
+            {"_content_bytes": 647, "sha256": "torn", "complete_lines": 2},
+            {"_content_bytes": 647, "sha256": "stable", "complete_lines": 2},
+        )
+    )
+    content_calls = []
+    monkeypatch.setattr(
+        resource_helpers,
+        "_container_stat",
+        lambda sandbox_id, path: next(stats),
+    )
+
+    def read_contents(sandbox_id, path, *, timeout):
+        content_calls.append((sandbox_id, path, timeout))
+        return next(contents)
+
+    monkeypatch.setattr(
+        resource_helpers, "_fingerprint_container_file_contents", read_contents
+    )
+
+    fingerprint = resource_helpers.fingerprint_container_file(
+        "sandbox", "/resources.ndjson", timeout=1
+    )
+
+    assert len(content_calls) == 2
+    assert fingerprint == {
+        **new_stat,
+        "sha256": "stable",
+        "complete_lines": 2,
     }
 
 

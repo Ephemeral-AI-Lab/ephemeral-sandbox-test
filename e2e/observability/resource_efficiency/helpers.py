@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
+from datetime import datetime
 import hashlib
 import json
 import math
@@ -16,6 +17,8 @@ import os
 from pathlib import Path
 import re
 import statistics
+import subprocess
+import sys
 import time
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
@@ -30,6 +33,7 @@ from observability.resource_isolation.helpers import (
     collect_sample,
     compact_json_bytes,
     docker,
+    docker_exec,
     iter_capped_binary_lines,
 )
 from observability.resource_isolation.helpers import stream_group as _stream_group
@@ -69,6 +73,8 @@ IDLE_CPU_FRACTION = 0.001
 IDLE_THREAD_LIMIT = 8
 COOLDOWN_ANONYMOUS_DELTA_BYTES = 128 * 1024
 ROUTE_MEMORY_DELTA_BYTES = 64 * 1024
+PAIRED_STORAGE_IO_JITTER_BYTES = 4 * 1024
+RESOURCE_SAMPLE_BOUNDARY_MAX_BYTES = 16 * 1024
 ANONYMOUS_SLOPE_BYTES_PER_HOUR = 4 * 1024
 FLEET_RELEASE_P99_MS = 250.0
 FLEET_RELEASE_MANAGER_CPU_FRACTION = 0.005
@@ -163,6 +169,17 @@ def read_fleet_resources() -> dict[str, Any]:
         _validate_resource_record(entry.get("current"), require_fresh=True)
     assert isinstance(response.get("errors"), list), response
     assert "topology" not in response, response
+    return response
+
+
+def read_target_fleet_resources(sandbox_id: str) -> dict[str, Any]:
+    """Read the manager-owned fleet view and require the target to be present."""
+    response = read_fleet_resources()
+    sandboxes = response["sandboxes"]
+    assert sandbox_id in sandboxes, {
+        "sandbox_id": sandbox_id,
+        "available_sandbox_ids": sorted(sandboxes),
+    }
     return response
 
 
@@ -1324,9 +1341,172 @@ def sample(
     return observed
 
 
+def daemon_anonymous_mappings(sandbox_id: str) -> dict[str, Any]:
+    """Return bounded, mapping-level anonymous-memory evidence for one daemon."""
+    output = docker_exec(
+        sandbox_id,
+        r"""
+daemon_pid=$(sed -n '1p' /eos/runtime/daemon/runtime.pid)
+case "$daemon_pid" in ''|*[!0-9]*) exit 71;; esac
+case "$(readlink "/proc/$daemon_pid/exe")" in *sandbox-daemon*) ;; *) exit 72;; esac
+awk '
+function emit() {
+  if (header != "" && anonymous > 0) {
+    gsub(/\t/, " ", header)
+    printf "%d\t%d\t%d\t%d\t%s\n", anonymous, rss, private_dirty, size, header
+  }
+}
+/^[[:xdigit:]]+-[[:xdigit:]]+[[:space:]]/ {
+  emit()
+  header = $0
+  anonymous = 0
+  rss = 0
+  private_dirty = 0
+  size = 0
+  next
+}
+$1 == "Anonymous:" { anonymous = $2; next }
+$1 == "Rss:" { rss = $2; next }
+$1 == "Private_Dirty:" { private_dirty = $2; next }
+$1 == "Size:" { size = $2; next }
+END { emit() }
+' "/proc/$daemon_pid/smaps"
+""",
+    )
+    lines = output.splitlines()
+    assert len(lines) <= 2_048, {
+        "sandbox_id": sandbox_id,
+        "anonymous_mapping_lines": len(lines),
+    }
+    mappings = []
+    for line in lines:
+        fields = line.split("\t", 4)
+        assert len(fields) == 5 and all(value.isdecimal() for value in fields[:4]), {
+            "sandbox_id": sandbox_id,
+            "mapping_line": line[:512],
+        }
+        mappings.append(
+            {
+                "anonymous_bytes": int(fields[0]) * 1024,
+                "rss_bytes": int(fields[1]) * 1024,
+                "private_dirty_bytes": int(fields[2]) * 1024,
+                "size_bytes": int(fields[3]) * 1024,
+                "mapping": fields[4][:512],
+            }
+        )
+    mappings.sort(
+        key=lambda item: (item["anonymous_bytes"], item["rss_bytes"]), reverse=True
+    )
+    return {
+        "mapping_count": len(mappings),
+        "anonymous_bytes": sum(item["anonymous_bytes"] for item in mappings),
+        "top_mappings": mappings[:64],
+    }
+
+
 def assert_no_zombies(observed: Mapping[str, Any]) -> None:
     children = observed.get("process", {}).get("direct_children", {})
     assert children.get("zombies") == 0, observed
+
+
+def assert_paired_storage_io_quiescent(difference: Mapping[str, Any]) -> None:
+    storage_io = {
+        key: difference.get(key) for key in ("read_bytes", "write_bytes")
+    }
+    assert all(isinstance(value, int) for value in storage_io.values()), storage_io
+    assert all(
+        abs(value) <= PAIRED_STORAGE_IO_JITTER_BYTES
+        for value in storage_io.values()
+    ), {
+        "storage_io_difference": storage_io,
+        "absolute_jitter_max_bytes": PAIRED_STORAGE_IO_JITTER_BYTES,
+    }
+
+
+def assert_resource_sampler_storage_attributed(
+    before: Mapping[str, Any],
+    after: Mapping[str, Any],
+    *,
+    logical_write_bytes: int,
+    write_syscalls: int,
+    minimum_records: int,
+    maximum_records: int,
+) -> dict[str, int]:
+    """Attribute cooldown writes to bounded daemon resource samples.
+
+    The store checkpoints bracket the process-I/O checkpoints, so at most one
+    sampler record may land in each boundary gap. Physical ``write_bytes`` is
+    deliberately evidence-only because its allocation quantum belongs to the
+    host filesystem, not to the daemon's logical write behavior.
+    """
+    assert 0 <= minimum_records <= maximum_records
+    assert logical_write_bytes >= 0 and write_syscalls >= 0
+    before_segments = before["segments"]
+    after_segments = after["segments"]
+    assert set(before_segments) == {"resources.ndjson", "resources.ndjson.1"}
+    assert set(after_segments) == set(before_segments)
+    assert (
+        before_segments["resources.ndjson.1"] == after_segments["resources.ndjson.1"]
+    ), {"before": before, "after": after}
+
+    active_before = before_segments["resources.ndjson"]
+    active_after = after_segments["resources.ndjson"]
+    assert active_before.get("exists") is True
+    assert active_after.get("exists") is True
+    assert active_after.get("inode") == active_before.get("inode")
+    for snapshot in (active_before, active_after):
+        assert snapshot.get("malformed_complete_lines") == 0, snapshot
+        assert snapshot.get("oversized_complete_lines") == 0, snapshot
+        assert snapshot.get("partial_final_line") is False, snapshot
+        assert snapshot.get("complete_lines") == snapshot.get("parseable_lines"), (
+            snapshot
+        )
+
+    logical_growth = int(after["total_logical_bytes"]) - int(
+        before["total_logical_bytes"]
+    )
+    allocated_growth = int(after["total_allocated_bytes"]) - int(
+        before["total_allocated_bytes"]
+    )
+    record_growth = int(active_after["complete_lines"]) - int(
+        active_before["complete_lines"]
+    )
+    assert minimum_records <= record_growth <= maximum_records, {
+        "record_growth": record_growth,
+        "minimum_records": minimum_records,
+        "maximum_records": maximum_records,
+    }
+    assert logical_growth > 0 and allocated_growth >= 0, {
+        "logical_growth": logical_growth,
+        "allocated_growth": allocated_growth,
+    }
+
+    boundary_records = record_growth - write_syscalls
+    boundary_bytes = logical_growth - logical_write_bytes
+    assert 0 <= boundary_records <= 2, {
+        "resource_record_growth": record_growth,
+        "daemon_write_syscalls": write_syscalls,
+    }
+    assert (
+        0 <= boundary_bytes <= boundary_records * RESOURCE_SAMPLE_BOUNDARY_MAX_BYTES
+    ), {
+        "resource_logical_growth": logical_growth,
+        "daemon_logical_write_bytes": logical_write_bytes,
+        "boundary_records": boundary_records,
+    }
+    assert (boundary_records == 0) == (boundary_bytes == 0), {
+        "boundary_records": boundary_records,
+        "boundary_bytes": boundary_bytes,
+    }
+    return {
+        "logical_growth_bytes": logical_growth,
+        "allocated_growth_bytes": allocated_growth,
+        "record_growth": record_growth,
+        "process_logical_write_bytes": logical_write_bytes,
+        "process_write_syscalls": write_syscalls,
+        "boundary_records": boundary_records,
+        "boundary_bytes": boundary_bytes,
+    }
 
 
 def resource_delta(
@@ -1358,6 +1538,145 @@ def resource_delta(
     return result
 
 
+def _bounded_host_process_command(command: Sequence[str]) -> str:
+    completed = subprocess.run(
+        tuple(command),
+        check=False,
+        capture_output=True,
+        env={**os.environ, "LC_ALL": "C"},
+        timeout=10,
+    )
+    stdout = completed.stdout[: MAX_PROC_FILE_BYTES + 1]
+    stderr = completed.stderr[:513]
+    assert completed.returncode == 0, {
+        "command": tuple(command),
+        "returncode": completed.returncode,
+        "stderr": stderr.decode("utf-8", errors="replace"),
+    }
+    assert len(stdout) <= MAX_PROC_FILE_BYTES, {
+        "command": tuple(command),
+        "stdout_bytes_min": len(stdout),
+        "limit_bytes": MAX_PROC_FILE_BYTES,
+    }
+    return stdout.decode("utf-8")
+
+
+def _darwin_size_bytes(value: str) -> int:
+    match = re.fullmatch(r"(\d+(?:\.\d+)?)([KMGTP]?)", value)
+    assert match is not None, {"darwin_size": value}
+    multiplier = {
+        "": 1,
+        "K": 1024,
+        "M": 1024**2,
+        "G": 1024**3,
+        "T": 1024**4,
+        "P": 1024**5,
+    }[match.group(2)]
+    return round(float(match.group(1)) * multiplier)
+
+
+def _darwin_cpu_ticks(value: str) -> int:
+    day_count = 0
+    clock = value
+    if "-" in clock:
+        days, clock = clock.split("-", 1)
+        day_count = int(days)
+    parts = clock.split(":")
+    assert len(parts) in {2, 3}, {"darwin_cpu_time": value}
+    if len(parts) == 2:
+        hours = 0
+        minutes, seconds = parts
+    else:
+        hours, minutes, seconds = parts
+    elapsed_seconds = (
+        day_count * 86_400 + int(hours) * 3_600 + int(minutes) * 60 + float(seconds)
+    )
+    clock_ticks_per_second = os.sysconf("SC_CLK_TCK")
+    assert isinstance(clock_ticks_per_second, int) and clock_ticks_per_second > 0
+    return round(elapsed_seconds * clock_ticks_per_second)
+
+
+def _darwin_host_process_sample(pid: int) -> dict[str, Any]:
+    process_document = _bounded_host_process_command(
+        (
+            "/bin/ps",
+            "-ww",
+            "-p",
+            str(pid),
+            "-o",
+            "pid=",
+            "-o",
+            "ppid=",
+            "-o",
+            "rss=",
+            "-o",
+            "time=",
+            "-o",
+            "command=",
+        )
+    )
+    fields = process_document.strip().split(maxsplit=4)
+    assert len(fields) == 5, {"gateway_pid": pid, "ps": process_document[:512]}
+    observed_pid, parent_pid, rss_kib, cpu_time, command = fields
+    assert int(observed_pid) == pid, {
+        "gateway_pid": pid,
+        "observed_pid": observed_pid,
+    }
+    executable = command.split(maxsplit=1)[0]
+    assert "sandbox" in Path(executable).name or "gateway" in Path(executable).name, {
+        "gateway_pid": pid,
+        "executable": executable,
+    }
+
+    vmmap_document = _bounded_host_process_command(
+        ("/usr/bin/vmmap", "-summary", str(pid))
+    )
+    total_rows = [
+        line for line in vmmap_document.splitlines() if line.startswith("TOTAL ")
+    ]
+    assert len(total_rows) == 1, {
+        "gateway_pid": pid,
+        "vmmap_total_rows": total_rows[:4],
+    }
+    total_fields = total_rows[0].split()
+    assert len(total_fields) >= 5, {
+        "gateway_pid": pid,
+        "vmmap_total": total_rows[0][:512],
+    }
+    launch_match = re.search(r"^Launch Time:\s+(.+)$", vmmap_document, re.MULTILINE)
+    assert launch_match is not None, {"gateway_pid": pid, "missing": "Launch Time"}
+    launched = datetime.strptime(launch_match.group(1), "%Y-%m-%d %H:%M:%S.%f %z")
+
+    thread_document = _bounded_host_process_command(
+        ("/bin/ps", "-M", "-p", str(pid), "-o", "pid=")
+    )
+    threads = sum(
+        1
+        for line in thread_document.splitlines()
+        if line.split() and line.split()[-1] == str(pid)
+    )
+    assert threads > 0, {"gateway_pid": pid, "ps_threads": thread_document[:512]}
+
+    return {
+        "pid": pid,
+        "parent_pid": int(parent_pid),
+        "start_time_ticks": round(launched.timestamp() * 1_000_000),
+        "executable": executable,
+        "anonymous_bytes": _darwin_size_bytes(total_fields[3])
+        + _darwin_size_bytes(total_fields[4]),
+        "rss_bytes": int(rss_kib) * 1024,
+        "threads": threads,
+        "user_ticks": _darwin_cpu_ticks(cpu_time),
+        "system_ticks": 0,
+        "read_bytes": None,
+        "write_bytes": None,
+        "memory_basis": "vmmap_total_dirty_plus_swapped",
+        "cpu_basis": "ps_total_cpu_ticks",
+        "unavailable": ["read_bytes", "write_bytes"],
+        "monotonic_seconds": time.monotonic(),
+    }
+
+
 def host_process_sample(pid_file: Path) -> dict[str, Any]:
     """Measure the exact gateway process named by its configured PID file."""
     raw_pid = pid_file.read_text(encoding="ascii").strip()
@@ -1366,6 +1685,9 @@ def host_process_sample(pid_file: Path) -> dict[str, Any]:
         "value": raw_pid,
     }
     pid = int(raw_pid)
+    if sys.platform == "darwin":
+        return _darwin_host_process_sample(pid)
+
     root = Path("/proc") / str(pid)
     assert root.is_dir(), {"gateway_pid": pid, "state": "absent"}
     exe = os.readlink(root / "exe")
@@ -1398,6 +1720,9 @@ def host_process_sample(pid_file: Path) -> dict[str, Any]:
         "system_ticks": int(fields[12]),
         "read_bytes": value(process_io, "read_bytes"),
         "write_bytes": value(process_io, "write_bytes"),
+        "memory_basis": "proc_smaps_rollup_anonymous",
+        "cpu_basis": "proc_user_system_ticks",
+        "unavailable": [],
         "monotonic_seconds": time.monotonic(),
     }
 
@@ -1918,18 +2243,31 @@ def run_route_campaign(
     request_count: int,
     duration_seconds: float,
     verify: Callable[[dict[str, Any]], None] | None = None,
+    start_immediately: bool = False,
 ) -> dict[str, Any]:
     """Run a fixed-count hard-cadence campaign without catch-up bursts."""
     assert request_count > 0 and duration_seconds > 0
+    assert not start_immediately or request_count > 1
     traffic = RouteTraffic(route)
     started = time.monotonic()
-    interval = duration_seconds / request_count
+    interval = duration_seconds / (
+        request_count - 1 if start_immediately else request_count
+    )
+    previous_iteration_completed = started
     # Scheduler wake-up jitter is tolerated, but a caller may never compress
     # missed ticks into a catch-up burst.  The fixed bound is deliberately
     # smaller than half a cadence at every production interval used here.
     maximum_lateness = min(max(interval * 0.25, 0.010), 0.250)
     for index in range(request_count):
-        deadline = started + (index + 1) * interval
+        # A synchronous request or verifier can legitimately consume the next
+        # nominal slot.  Rebase that one deadline to completion so unavoidable
+        # service time is not mistaken for scheduler lateness; later nominal
+        # slots remain anchored to ``started`` and can never be caught up in a
+        # compressed burst.
+        deadline = max(
+            started + (index if start_immediately else index + 1) * interval,
+            previous_iteration_completed,
+        )
         remaining = deadline - time.monotonic()
         if remaining > 0:
             time.sleep(remaining)
@@ -1947,10 +2285,34 @@ def run_route_campaign(
         traffic.add(response, time.monotonic() - request_started)
         if verify is not None:
             verify(response)
+        previous_iteration_completed = time.monotonic()
     result = traffic.result()
     result["elapsed_seconds"] = time.monotonic() - started
     assert result["elapsed_seconds"] >= duration_seconds, result
     return result
+
+
+def observation_aligned_campaign_duration_ms(
+    *,
+    initial_remaining_ms: int,
+    target_final_remaining_ms: int,
+    observed_sample_leads_ms: list[int],
+) -> tuple[int, int]:
+    """Lead the last request so its internal sample lands at the target."""
+    assert initial_remaining_ms > 0
+    assert target_final_remaining_ms > 0
+    assert observed_sample_leads_ms and all(
+        lead >= 0 for lead in observed_sample_leads_ms
+    )
+    ordered_leads = sorted(observed_sample_leads_ms)
+    observed_sample_lead_ms = ordered_leads[(len(ordered_leads) - 1) // 2]
+    duration_ms = (
+        initial_remaining_ms
+        - target_final_remaining_ms
+        - observed_sample_lead_ms
+    )
+    assert duration_ms > 0
+    return duration_ms, observed_sample_lead_ms
 
 
 CYCLE_RECORD_FIELDS = frozenset(
@@ -2251,6 +2613,7 @@ def assert_redacted_diagnostic(
     value: Mapping[str, Any],
     *,
     forbidden_values: Iterable[str] = (),
+    measured_size_bytes: int | None = None,
 ) -> dict[str, Any]:
     encoded = compact_json_bytes(value)
     assert len(encoded) <= MAX_DIAGNOSTIC_BYTES, {
@@ -2289,7 +2652,6 @@ def assert_redacted_diagnostic(
         "id",
         "fingerprint",
         "captured_at_unix_ms",
-        "size_bytes",
         "trigger",
         "activity_classes",
         "runtime_usage",
@@ -2304,11 +2666,12 @@ def assert_redacted_diagnostic(
     assert all(key in value for key in required), {
         "missing_diagnostic_fields": [key for key in required if key not in value]
     }
+    bundle_bytes = len(encoded) if measured_size_bytes is None else measured_size_bytes
     assert (
-        isinstance(value["size_bytes"], int)
-        and not isinstance(value["size_bytes"], bool)
-        and 0 < value["size_bytes"] <= MAX_DIAGNOSTIC_BYTES
-    ), value
+        isinstance(bundle_bytes, int)
+        and not isinstance(bundle_bytes, bool)
+        and 0 < bundle_bytes <= MAX_DIAGNOSTIC_BYTES
+    ), bundle_bytes
     assert re.fullmatch(r"[0-9a-f]{64}", str(value["fingerprint"])), value
     assert isinstance(value["workspace_ids"], list) and value["workspace_ids"], value
     assert all(
@@ -2400,7 +2763,7 @@ def assert_redacted_diagnostic(
     }, redaction
     return {
         "diagnostic_id": value["id"],
-        "bundle_bytes": value["size_bytes"],
+        "bundle_bytes": bundle_bytes,
         "fingerprint": value["fingerprint"],
         "summary_sha256": hashlib.sha256(encoded).hexdigest(),
         "keys": sorted(value),
@@ -2453,7 +2816,11 @@ def read_diagnostic_artifact(
     }
     value = json.loads(result.stdout)
     assert isinstance(value, dict), type(value).__name__
-    fingerprint = assert_redacted_diagnostic(value, forbidden_values=forbidden_values)
+    fingerprint = assert_redacted_diagnostic(
+        value,
+        forbidden_values=forbidden_values,
+        measured_size_bytes=len(result.stdout),
+    )
     assert fingerprint["bundle_bytes"] == len(result.stdout), {
         "reported": fingerprint["bundle_bytes"],
         "measured": len(result.stdout),
@@ -2692,6 +3059,43 @@ def unified_cgroup_path(memberships: Iterable[str]) -> str:
             paths.append(path)
     assert len(paths) == 1, {"unified_cgroup_paths": paths, "memberships": memberships}
     return paths[0]
+
+
+def direct_workload_cgroup_paths(
+    *, daemon_path: str, workspace_path: str
+) -> tuple[str, str]:
+    """Validate that one workspace leaf is a direct child of ``_workloads``."""
+
+    assert daemon_path.startswith("/") and ".." not in daemon_path.split("/"), {
+        "daemon_path": daemon_path
+    }
+    assert workspace_path.startswith("/") and ".." not in workspace_path.split("/"), {
+        "workspace_path": workspace_path
+    }
+    daemon_parts = [part for part in daemon_path.split("/") if part]
+    workspace_parts = [part for part in workspace_path.split("/") if part]
+    assert daemon_parts and daemon_parts[-1] == "_daemon", daemon_path
+    workload_indexes = [
+        index for index, part in enumerate(workspace_parts) if part == "_workloads"
+    ]
+    assert len(workload_indexes) == 1, workspace_path
+    aggregate_parts = workspace_parts[: workload_indexes[0] + 1]
+    assert aggregate_parts[:-1] == daemon_parts[:-1], {
+        "daemon_path": daemon_path,
+        "workspace_path": workspace_path,
+        "aggregate_parts": aggregate_parts,
+    }
+    assert len(workspace_parts) == len(aggregate_parts) + 1, {
+        "reason": "workspace cgroup must be a direct child of _workloads",
+        "workspace_path": workspace_path,
+    }
+    assert (
+        workspace_parts[-1].startswith("workspace-")
+        and workspace_parts[-1] != "workspace-"
+    ), {"workspace_path": workspace_path}
+    aggregate_path = "/" + "/".join(aggregate_parts)
+    canonical_workspace_path = "/" + "/".join(workspace_parts)
+    return aggregate_path, canonical_workspace_path
 
 
 def read_cgroup_limit(sandbox_id: str, path: str, name: str) -> str:

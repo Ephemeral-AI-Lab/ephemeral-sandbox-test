@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
@@ -23,6 +24,7 @@ from .helpers import (
     daemon_diagnostics,
     daemon_self_from_topology,
     destroy_workspace,
+    observation_aligned_campaign_duration_ms,
     read_daemon_self,
     read_diagnostic_artifact,
     read_topology,
@@ -135,9 +137,26 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
         workspace = workspace_by_id(topology, workspace_id)
         holder_pid = workspace["holder_pid"]
 
+        trigger_sample_leads_ms = []
+
+        def trigger_topology_request():
+            request_started_unix_ms = time.time_ns() // 1_000_000
+            topology = read_topology(sandbox_id)
+            sampled_at_unix_ms = daemon_self_from_topology(topology).get(
+                "sampled_at_unix_ms"
+            )
+            assert isinstance(sampled_at_unix_ms, int), topology
+            sample_lead_ms = sampled_at_unix_ms - request_started_unix_ms
+            assert sample_lead_ms >= 0, {
+                "request_started_unix_ms": request_started_unix_ms,
+                "sampled_at_unix_ms": sampled_at_unix_ms,
+            }
+            trigger_sample_leads_ms.append(sample_lead_ms)
+            return {"topology": topology}
+
         trigger_campaign = run_route_campaign(
             route="observability.topology",
-            request=lambda: {"topology": read_topology(sandbox_id)},
+            request=trigger_topology_request,
             request_count=PROFILE.counts["trigger_requests"],
             duration_seconds=PROFILE.durations["trigger_seconds"],
         )
@@ -160,13 +179,20 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
         ), triggered
 
         cooldown_initial_remaining_ms = triggered["cooldown"]["remaining_ms"]
-        cooldown_campaign_duration_ms = (
+        cooldown_observation_window_ms = (
             cooldown_initial_remaining_ms - cooldown_final_margin_ms
         )
-        assert cooldown_campaign_duration_ms > 0, triggered
+        assert cooldown_observation_window_ms > 0, triggered
         cooldown_request_count = max(
             1,
-            (cooldown_campaign_duration_ms * 20 + 999) // 1_000,
+            (cooldown_observation_window_ms * 20 + 999) // 1_000,
+        )
+        cooldown_campaign_duration_ms, cooldown_observation_lead_ms = (
+            observation_aligned_campaign_duration_ms(
+                initial_remaining_ms=cooldown_initial_remaining_ms,
+                target_final_remaining_ms=cooldown_final_margin_ms,
+                observed_sample_leads_ms=trigger_sample_leads_ms,
+            )
         )
         cooldown_observations = {
             "count": 0,
@@ -203,6 +229,7 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
             request_count=cooldown_request_count,
             duration_seconds=cooldown_campaign_duration_ms / 1_000,
             verify=observe_cooldown,
+            start_immediately=True,
         )
         assert cooldown_observations["count"] == cooldown_request_count, (
             cooldown_observations
@@ -232,7 +259,7 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
             "artifact": artifact_fingerprint,
             "latest": latest,
         }
-        assert artifact["size_bytes"] == latest["size_bytes"], {
+        assert artifact_fingerprint["bundle_bytes"] == latest["size_bytes"], {
             "artifact": artifact_fingerprint,
             "latest": latest,
         }
@@ -324,6 +351,7 @@ def test_triggered_diagnostic_is_bounded_and_attributable(
             "configured_cooldown_seconds": diagnostic_cooldown_seconds,
             "configured_cooldown_ms": diagnostic_cooldown_ms,
             "cooldown_final_remaining_ms_max": cooldown_final_remaining_ms_max,
+            "cooldown_observation_lead_ms": cooldown_observation_lead_ms,
             "cooldown_pressure_coverage_ms": cooldown_pressure_coverage_ms,
             "cooldown_observations": cooldown_observations,
             "cooldown_request_count": cooldown_request_count,

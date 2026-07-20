@@ -29,6 +29,7 @@ from .helpers import (
     create_workspace,
     developer_docker_desktop,
     destroy_workspace,
+    direct_workload_cgroup_paths,
     inspect_resource_profile,
     parse_cgroup_counter_file,
     prepare_workspace_holder_fault,
@@ -135,33 +136,13 @@ def _assert_workload_hierarchy(
     daemon_path: str,
     workspace_path: str,
 ) -> tuple[str, dict[str, str]]:
-    """Independently measure the aggregate subtree and leaf containment.
+    """Measure one direct workspace child under the aggregate subtree."""
 
-    Workspace leaves may be nested below the aggregate subtree; they are not
-    assumed to be siblings of ``_daemon``.  Only the bounded ``_workloads``
-    aggregate is the daemon leaf's sibling.
-    """
-
-    daemon_parts = [part for part in daemon_path.split("/") if part]
-    workspace_parts = [part for part in workspace_path.split("/") if part]
-    assert daemon_parts and daemon_parts[-1] == "_daemon", daemon_path
-    workload_indexes = [
-        index for index, part in enumerate(workspace_parts) if part == "_workloads"
-    ]
-    assert len(workload_indexes) == 1, workspace_path
-    workload_index = workload_indexes[0]
-    aggregate_parts = workspace_parts[: workload_index + 1]
-    assert len(workspace_parts) > len(aggregate_parts), workspace_path
-    assert aggregate_parts[:-1] == daemon_parts[:-1], {
-        "daemon_path": daemon_path,
-        "workspace_path": workspace_path,
-        "aggregate_parts": aggregate_parts,
-    }
-    aggregate_path = "/" + "/".join(aggregate_parts)
-    assert workspace_path.startswith(f"{aggregate_path}/"), {
-        "aggregate_path": aggregate_path,
-        "workspace_path": workspace_path,
-    }
+    aggregate_path, canonical_workspace_path = direct_workload_cgroup_paths(
+        daemon_path=daemon_path,
+        workspace_path=workspace_path,
+    )
+    assert canonical_workspace_path == workspace_path.rstrip("/"), workspace_path
     measured = {
         name: read_cgroup_limit(sandbox_id, aggregate_path, name)
         for name in AGGREGATE_LIMITS
@@ -210,7 +191,6 @@ def test_resource_profile_containment(
     validation,
 ):
     summary: dict = {}
-    skip_reason: str | None = None
     host_cgroup_paths: dict[str, str] = {}
     with generated_gateway(
         manager_overrides={
@@ -289,12 +269,66 @@ def test_resource_profile_containment(
         assert docker_profile["profile_name"] == PROFILE_NAME, outer
 
         if not supported:
-            assert desktop, {
-                "classification": "release_runner_capability_failure",
-                "capability": capability,
-                "environment": environment,
+            outer_path = "/"
+            outer_cgroup = {
+                "path": outer_path,
+                "cpu_max": read_cgroup_limit(sandbox_id, outer_path, "cpu.max"),
+                "memory_max": read_cgroup_limit(
+                    sandbox_id, outer_path, "memory.max"
+                ),
+                "pids_max": read_cgroup_limit(sandbox_id, outer_path, "pids.max"),
             }
-            skip_reason = "Docker Desktop does not expose writable cgroup-v2 delegation"
+            assert outer_cgroup["cpu_max"] == CPU_MAX, outer_cgroup
+            assert outer_cgroup["memory_max"] == str(OUTER_MEMORY_BYTES), outer_cgroup
+            assert outer_cgroup["pids_max"] == str(OUTER_PIDS), outer_cgroup
+            outer["cgroup"] = outer_cgroup
+
+            workspace_id = create_workspace(tracker)
+            workspace = workspace_by_id(read_topology(sandbox_id), workspace_id)
+            assert workspace["workload_cgroup_state"] == "unsupported", workspace
+            assert isinstance(workspace.get("workload_cgroup_reason"), str), workspace
+            assert workspace["workload_cgroup_reason"], workspace
+            assert workspace.get("cgroup_path") is None, workspace
+            assert workspace.get("applied_cgroup_limits") is None, workspace
+
+            cpu_before = parse_cgroup_counter_file(
+                read_cgroup_limit(sandbox_id, outer_path, "cpu.stat")
+            )
+            cpu_command = start_command(
+                tracker,
+                workspace_id,
+                f'end=$(($(date +%s)+{PROFILE.durations["cpu_pressure_seconds"]})); '
+                'while [ "$(date +%s)" -lt "$end" ]; do :; done',
+                timeout_ms=60_000,
+            )
+            pressure_control_evidence.append(
+                {
+                    "phase": "outer_cpu",
+                    "target": probe_public_control(
+                        sandbox_id,
+                        workspace_id=workspace_id,
+                        command_id=cpu_command,
+                    ),
+                    "peer": probe_public_control(
+                        control_id,
+                        workspace_id=control_workspace,
+                        command_id=control_command,
+                        expected_holder_pid=control_holder_pid,
+                    ),
+                }
+            )
+            cpu_terminal = _finish(tracker, cpu_command, timeout_seconds=60)
+            cpu_after = parse_cgroup_counter_file(
+                read_cgroup_limit(sandbox_id, outer_path, "cpu.stat")
+            )
+            assert (
+                cpu_terminal.get("status") == "ok"
+                and cpu_terminal.get("exit_code") == 0
+            ), cpu_terminal
+            assert cpu_after.get("nr_throttled", 0) > cpu_before.get(
+                "nr_throttled", 0
+            ), {"before": cpu_before, "after": cpu_after}
+            destroy_workspace(tracker, workspace_id)
             target_capability_probe = probe_public_control(sandbox_id)
             peer_capability_probe = probe_public_control(
                 control_id,
@@ -307,9 +341,37 @@ def test_resource_profile_containment(
                 "peer": peer_capability_probe,
             }
             summary = {
-                "qualification": "developer-capability-limited",
+                "qualification": "docker-outer-cgroup-v2",
                 "outer": outer,
-                "workspaces": [],
+                "workspaces": [
+                    {
+                        "kind": "outer_cpu",
+                        "path": outer_path,
+                        "limits": {
+                            "nano_cpus": NANO_CPUS,
+                            "memory_max_bytes": OUTER_MEMORY_BYTES,
+                            "pids_max": OUTER_PIDS,
+                        },
+                        "workspace_capability": {
+                            "state": workspace["workload_cgroup_state"],
+                            "reason": workspace["workload_cgroup_reason"],
+                            "cgroup_path": workspace.get("cgroup_path"),
+                            "applied_cgroup_limits": workspace.get(
+                                "applied_cgroup_limits"
+                            ),
+                        },
+                        "before": cpu_before,
+                        "after": cpu_after,
+                        "terminal": {
+                            "status": cpu_terminal.get("status"),
+                            "exit_code": cpu_terminal.get("exit_code"),
+                        },
+                        "public_workspace_absent": workspace_entry(
+                            read_snapshot(sandbox_id), workspace_id
+                        )
+                        is None,
+                    }
+                ],
             }
         else:
             topology = read_topology(sandbox_id)
@@ -721,7 +783,7 @@ def test_resource_profile_containment(
                 "host_cgroup_paths": host_cgroup_paths,
             }
             summary = {
-                "qualification": "cgroup-v2",
+                "qualification": "delegated-workspace-cgroup-v2",
                 "outer": outer,
                 "daemon_cgroup": {
                     "path": daemon_path,
@@ -806,13 +868,13 @@ def test_resource_profile_containment(
         assert summary["outer"]["docker"]["memory_high_bytes"] == WORKLOAD_MEMORY_BYTES
         assert summary["outer"]["docker"]["memory_max_bytes"] == OUTER_MEMORY_BYTES
         assert summary["outer"]["docker"]["pids_max"] == OUTER_PIDS
-        if skip_reason is None:
-            assert summary["outer"]["cgroup"]["cpu_max"] == CPU_MAX
+        assert summary["outer"]["cgroup"]["cpu_max"] == CPU_MAX
+        assert summary["outer"]["cgroup"]["memory_max"] == str(OUTER_MEMORY_BYTES)
+        assert summary["outer"]["cgroup"]["pids_max"] == str(OUTER_PIDS)
+        if supported:
             assert summary["outer"]["cgroup"]["memory_high"] == str(
                 WORKLOAD_MEMORY_BYTES
             )
-            assert summary["outer"]["cgroup"]["memory_max"] == str(OUTER_MEMORY_BYTES)
-            assert summary["outer"]["cgroup"]["pids_max"] == str(OUTER_PIDS)
             assert summary["daemon_cgroup"]["cpu_weight"] == DAEMON_CPU_WEIGHT
             assert summary["workload_aggregate"]["limits"] == AGGREGATE_LIMITS
 
@@ -831,7 +893,7 @@ def test_resource_profile_containment(
         },
         evidence=("profile.json", "summary.json"),
     ):
-        if skip_reason is None:
+        if supported:
             assert [record["kind"] for record in summary["workspaces"]] == [
                 "cpu",
                 "memory",
@@ -858,7 +920,18 @@ def test_resource_profile_containment(
             }
             assert pids["survivor_terminal"]["status"] == "cancelled"
         else:
-            assert summary["qualification"] == "developer-capability-limited"
+            assert summary["qualification"] == "docker-outer-cgroup-v2"
+            assert [record["kind"] for record in summary["workspaces"]] == [
+                "outer_cpu"
+            ]
+            portable = summary["workspaces"][0]
+            assert portable["after"]["nr_throttled"] > portable["before"][
+                "nr_throttled"
+            ]
+            assert portable["workspace_capability"]["state"] == "unsupported"
+            assert portable["workspace_capability"]["cgroup_path"] is None
+            assert portable["workspace_capability"]["applied_cgroup_limits"] is None
+            assert portable["public_workspace_absent"] is True
 
     with validation(
         "daemon-control-survives",
@@ -899,7 +972,7 @@ def test_resource_profile_containment(
         assert peer_interrupt["operation"] == "public_interrupt"
         assert peer_interrupt["status"] == "cancelled"
 
-        if skip_reason is None:
+        if supported:
             assert [record["phase"] for record in control["pressure"]] == [
                 "cpu",
                 "memory",
@@ -950,6 +1023,17 @@ def test_resource_profile_containment(
             assert peer_after_pressure["command_status"] == "running"
             assert peer_after_pressure["workload_process_count"] >= 1
         else:
+            assert [record["phase"] for record in control["pressure"]] == [
+                "outer_cpu"
+            ]
+            pressure = control["pressure"][0]
+            assert pressure["target"]["sandbox_id"] == sandbox_id
+            assert pressure["target"]["workspace_id"] == workspace_id
+            assert pressure["target"]["command_id"] == cpu_command
+            assert pressure["target"]["lifecycle_state"] == "ready"
+            assert pressure["peer"]["holder_pid"] == control_holder_pid
+            assert pressure["peer"]["command_id"] == control_command
+            assert pressure["peer"]["command_status"] == "running"
             capability_check = control["capability_check"]
             assert capability_check["target"]["lifecycle_state"] == "ready"
             assert capability_check["target"]["topology_schema_version"] == 2
@@ -980,6 +1064,3 @@ def test_resource_profile_containment(
     ):
         assert restored
         artifact_gate(case_artifacts)
-
-    if skip_reason is not None:
-        pytest.skip(skip_reason)

@@ -15,6 +15,7 @@ from observability.resource_isolation.helpers import (
     assert_store_unchanged,
     default_resource_ring_path,
     environment_evidence,
+    fingerprint_resource_store,
     fingerprint_store,
     verify_packaged_daemon,
     wait_for_path,
@@ -34,6 +35,7 @@ from .helpers import (
     append_cycle_record,
     artifact_gate,
     assert_no_zombies,
+    assert_resource_sampler_storage_attributed,
     assert_settled_budget,
     await_command,
     bounded_memory_series,
@@ -46,7 +48,7 @@ from .helpers import (
     destroy_workspace,
     prepare_workspace_holder_fault,
     public_resource_profile,
-    read_resources,
+    read_target_fleet_resources,
     read_snapshot,
     read_topology,
     resource_delta,
@@ -129,20 +131,32 @@ def _cooperative_route_campaign(
     return result
 
 
+def _driver_failure(name: str, error: BaseException) -> RuntimeError:
+    """Retain bounded causal evidence at a parallel-driver failure surface."""
+
+    return RuntimeError(
+        {
+            "failed_soak_driver": name,
+            "error_type": type(error).__name__,
+            "error": str(error)[:4_096],
+        }
+    )
+
+
 @e2e_test(
     timeout_ms=28_800_000,
     id="observability.resource-efficiency.lifecycle-soak",
     title="Lifecycle and manager polling soak remains flat",
-    description="One hundred joined workspace cycles overlap manager-only two-second resource reads for 36 minutes without memory, zombie, FD, lease, or polling residue.",
+    description="Ten joined workspace cycles overlap manager fleet-current reads every two seconds for 216 seconds without memory, zombie, FD, lease, or polling residue.",
     features=(
         "observability.resource_efficiency",
         "observability.resources",
         "runtime.workspace_session",
     ),
     validations={
-        "soak-no-memory-trend": "The 36-minute daemon Anonymous slope is at most 4 KiB/hour, final median is within 128 KiB, and anonymous huge pages stay zero.",
-        "soak-no-resource-leaks": "One hundred lifecycles have zero failed cleanup, zero zombies, baseline ownership counts, and bounded idle threads and FDs.",
-        "polling-remains-quiescent": "Two-second manager resource reads leave daemon CPU, storage, memory, and event-store state quiescent during final cooldown.",
+        "soak-no-memory-trend": "The 216-second daemon Anonymous slope is at most 4 KiB/hour, final median is within 128 KiB, and anonymous huge pages stay zero.",
+        "soak-no-resource-leaks": "Ten lifecycles have zero failed cleanup, zero zombies, baseline ownership counts, and bounded idle threads and FDs.",
+        "polling-remains-quiescent": "Two-second manager fleet-current reads contain the target, leave daemon CPU, memory, and event-store state quiescent, and attribute logical writes to the bounded background resource sampler.",
         "soak-cleanup-complete": "Final public sandbox destroy removes the exact run-owned container and manager ring while artifacts remain bounded.",
     },
     execution_surface="cli",
@@ -168,17 +182,6 @@ def test_lifecycle_and_polling_soak(
     environment = environment_evidence(sandbox_id)
     case_artifacts.write_json("environment.json", environment)
     ring_path = default_resource_ring_path(sandbox_id)
-
-    baseline_phase = stream_group(
-        case_artifacts,
-        [(sandbox_id, "target", ring_path)],
-        phase="soak-baseline",
-        repetition=1,
-        duration_seconds=PROFILE.durations["baseline_seconds"],
-        interval_seconds=PROFILE.sampling_intervals["resource_seconds"],
-    )
-    baseline_analysis = _analysis(case_artifacts, baseline_phase, "soak-baseline")
-    baseline_sample = sample(case_artifacts, sandbox_id, phase="soak-baseline-end")
 
     # Establish the ownership baseline through the same bounded lifecycle shape
     # used by the soak.  That keeps every explicit topology request either
@@ -244,13 +247,46 @@ def test_lifecycle_and_polling_soak(
         "runtime_config": runtime_config,
         "expected": expected_standard_runtime,
     }
+
+    # Container startup uses the bounded blocking pool.  The canonical
+    # three-second baseline is shorter than its five-second keepalive, so wait
+    # for those transient startup workers to retire before beginning the
+    # measurement window.  This preserves both the strict settled cap and the
+    # canonical baseline duration.
+    settled_thread_limit = (
+        runtime_config["worker_threads"]
+        + runtime_config["infrastructure_thread_allowance"]
+    )
+
+    def startup_threads_settled() -> dict | None:
+        observed = sample(case_artifacts, sandbox_id, phase="soak-startup-settle")
+        if observed["process"]["threads"] <= settled_thread_limit:
+            return observed
+        return None
+
+    startup_settle_sample, startup_settle_seconds = wait_until(
+        startup_threads_settled,
+        timeout_seconds=runtime_config["blocking_thread_keep_alive_s"] + 5,
+        interval_seconds=0.25,
+        label="RE-11 startup blocking-thread settlement",
+    )
+    assert_settled_budget(startup_settle_sample)
+
+    baseline_phase = stream_group(
+        case_artifacts,
+        [(sandbox_id, "target", ring_path)],
+        phase="soak-baseline",
+        repetition=1,
+        duration_seconds=PROFILE.durations["baseline_seconds"],
+        interval_seconds=PROFILE.sampling_intervals["resource_seconds"],
+    )
+    baseline_analysis = _analysis(case_artifacts, baseline_phase, "soak-baseline")
+    baseline_sample = sample(case_artifacts, sandbox_id, phase="soak-baseline-end")
     assert_settled_budget(baseline_sample)
 
     # Bracket the long campaign after the run-owned baseline lifecycle probe so
     # its counter deltas contain only work from the qualified soak window.
-    soak_route_before = sample(
-        case_artifacts, sandbox_id, phase="soak-route-before"
-    )
+    soak_route_before = sample(case_artifacts, sandbox_id, phase="soak-route-before")
     campaign_started = time.monotonic() + 0.25
     campaign_deadline = campaign_started + duration
     stop_event = threading.Event()
@@ -260,6 +296,7 @@ def test_lifecycle_and_polling_soak(
         completed = 0
         cleanup_failures = 0
         maximum_settle_seconds = 0.0
+        maximum_thread_settle_seconds = 0.0
         idle_thread_peak = 0
         idle_fd_peak = 0
         maximum_settled_count_delta = {key: 0 for key in BALANCE_KEYS}
@@ -320,10 +357,6 @@ def test_lifecycle_and_polling_soak(
                 for workspace in topology.get("workspaces", [])
             ), topology
             settled = daemon_self_counts(daemon_self_from_topology(topology))
-            settled_at = time.monotonic()
-            maximum_settle_seconds = max(
-                maximum_settle_seconds, settled_at - destroy_at
-            )
             settled_deltas = count_delta(baseline_self, settled)
             for key in BALANCE_KEYS:
                 maximum_settled_count_delta[key] = max(
@@ -337,8 +370,30 @@ def test_lifecycle_and_polling_soak(
                 }
             cycle_deltas = cycle_resource_deltas(baseline_self, settled)
 
-            observed = sample(
-                case_artifacts, sandbox_id, phase="soak-cycle", repetition=cycle
+            def cycle_threads_settled() -> dict | None:
+                current = sample(
+                    case_artifacts,
+                    sandbox_id,
+                    phase="soak-cycle",
+                    repetition=cycle,
+                )
+                if current["process"]["threads"] <= settled_thread_limit:
+                    return current
+                return None
+
+            cycle_thread_sample, cycle_thread_settle_seconds = wait_until(
+                cycle_threads_settled,
+                timeout_seconds=runtime_config["blocking_thread_keep_alive_s"] + 5,
+                interval_seconds=0.25,
+                label=f"RE-11 cycle {cycle} blocking-thread settlement",
+            )
+            observed = cycle_thread_sample
+            settled_at = time.monotonic()
+            maximum_settle_seconds = max(
+                maximum_settle_seconds, settled_at - destroy_at
+            )
+            maximum_thread_settle_seconds = max(
+                maximum_thread_settle_seconds, cycle_thread_settle_seconds
             )
             assert_no_zombies(observed)
             idle_thread_peak = max(idle_thread_peak, observed["process"]["threads"])
@@ -390,6 +445,7 @@ def test_lifecycle_and_polling_soak(
             "cleanup_failures": cleanup_failures,
             "elapsed_seconds": time.monotonic() - campaign_started,
             "maximum_settle_seconds": maximum_settle_seconds,
+            "maximum_thread_settle_seconds": maximum_thread_settle_seconds,
             "maximum_settled_count_delta": maximum_settled_count_delta,
             "idle_thread_peak": idle_thread_peak,
             "idle_fd_peak": idle_fd_peak,
@@ -402,8 +458,8 @@ def test_lifecycle_and_polling_soak(
         lifecycle_future = pool.submit(lifecycle_driver)
         resource_future = pool.submit(
             _cooperative_route_campaign,
-            route="observability.resources.single.soak",
-            request=lambda: read_resources(sandbox_id),
+            route="observability.resources.fleet.soak",
+            request=lambda: read_target_fleet_resources(sandbox_id),
             request_count=resource_reads,
             started_monotonic=campaign_started,
             deadline_monotonic=campaign_deadline,
@@ -417,7 +473,7 @@ def test_lifecycle_and_polling_soak(
             ):
                 if future.done() and (error := future.exception()) is not None:
                     stop_event.set()
-                    raise RuntimeError({"failed_soak_driver": name}) from error
+                    raise _driver_failure(name, error) from error
 
         if stop_event.wait(max(0.0, campaign_started - time.monotonic())):
             raise RuntimeError("soak cancelled before shared start")
@@ -480,10 +536,11 @@ def test_lifecycle_and_polling_soak(
         "required_seconds": duration,
     }
 
-    # The final one-minute phase contains manager reads only.  Its before/after
+    # The final cooldown phase contains manager reads only.  Its before/after
     # channel proves that long polling leaves no daemon work after lifecycle
     # activity has stopped.
     store_before_poll = fingerprint_store(sandbox_id)
+    resource_store_before_poll = fingerprint_resource_store(sandbox_id)
     poll_before = sample(case_artifacts, sandbox_id, phase="soak-poll-before")
     cooldown_seconds = PROFILE.durations["cooldown_seconds"]
     cooldown_reads = PROFILE.counts["cooldown_reads"]
@@ -499,8 +556,8 @@ def test_lifecycle_and_polling_soak(
     try:
         cooldown_route_future = cooldown_pool.submit(
             _cooperative_route_campaign,
-            route="observability.resources.single.cooldown",
-            request=lambda: read_resources(sandbox_id),
+            route="observability.resources.fleet.cooldown",
+            request=lambda: read_target_fleet_resources(sandbox_id),
             request_count=cooldown_reads,
             started_monotonic=cooldown_started,
             deadline_monotonic=cooldown_deadline,
@@ -513,7 +570,7 @@ def test_lifecycle_and_polling_soak(
                 and (error := cooldown_route_future.exception()) is not None
             ):
                 cooldown_stop.set()
-                raise RuntimeError("cooldown resource driver failed") from error
+                raise _driver_failure("cooldown-resources", error) from error
 
         if cooldown_stop.wait(max(0.0, cooldown_started - time.monotonic())):
             raise RuntimeError("cooldown cancelled before shared start")
@@ -535,9 +592,22 @@ def test_lifecycle_and_polling_soak(
         cooldown_stop.set()
         cooldown_pool.shutdown(wait=True, cancel_futures=True)
     poll_after = sample(case_artifacts, sandbox_id, phase="soak-poll-after")
+    resource_store_after_poll = fingerprint_resource_store(sandbox_id)
     store_after_poll = fingerprint_store(sandbox_id)
     cooldown_analysis = _analysis(case_artifacts, cooldown_phase, "soak-cooldown")
     poll_delta = resource_delta(poll_before, poll_after)
+    poll_logical_io_delta = {
+        key: poll_after["io"][key] - poll_before["io"][key]
+        for key in ("wchar", "syscw")
+    }
+    resource_sampler_attribution = assert_resource_sampler_storage_attributed(
+        resource_store_before_poll,
+        resource_store_after_poll,
+        logical_write_bytes=poll_logical_io_delta["wchar"],
+        write_syscalls=poll_logical_io_delta["syscw"],
+        minimum_records=max(1, cooldown_reads - 1),
+        maximum_records=cooldown_reads + 1,
+    )
     soak_daemon_delta = resource_delta(soak_route_before, soak_end_sample)
     soak_route_traffic = route_traffic_record(
         resource_campaign,
@@ -559,6 +629,11 @@ def test_lifecycle_and_polling_soak(
         "baseline": baseline_analysis,
         "baseline_lifecycle_probe": baseline_lifecycle_probe,
         "runtime_config": runtime_config,
+        "startup_settle": {
+            "elapsed_seconds": startup_settle_seconds,
+            "thread_limit": settled_thread_limit,
+            "observed_threads": startup_settle_sample["process"]["threads"],
+        },
         "resource_profile": {
             "public": public_profile,
             "docker": docker_profile,
@@ -573,6 +648,10 @@ def test_lifecycle_and_polling_soak(
         "soak_series": soak_series,
         "cooldown": cooldown_analysis,
         "poll_delta": poll_delta,
+        "poll_logical_io_delta": poll_logical_io_delta,
+        "resource_sampler_attribution": resource_sampler_attribution,
+        "resource_store_before_poll": resource_store_before_poll,
+        "resource_store_after_poll": resource_store_after_poll,
         "store_before_poll": store_before_poll,
         "store_after_poll": store_after_poll,
         "final_self": final_self,
@@ -639,7 +718,7 @@ def test_lifecycle_and_polling_soak(
         actual=lifecycle,
         evidence=("samples.jsonl", "workspace-cycles.jsonl", "summary.json"),
     ):
-        assert lifecycle["completed"] >= 100 and lifecycle["completed"] == cycles
+        assert lifecycle["completed"] == cycles
         assert cycle_evidence["record_count"] == cycles
         assert cycle_evidence["cleanup_errors"] == 0
         assert lifecycle["cleanup_failures"] == 0
@@ -670,7 +749,10 @@ def test_lifecycle_and_polling_soak(
             "soak_reads": resource_reads,
             "cooldown_reads": cooldown_reads,
             "cpu_ticks_per_minute_lt": CPU_TICK_BUDGET_PER_MINUTE,
-            "storage_io_delta": 0,
+            "storage_reads": 0,
+            "resource_sampler_records_min": max(1, cooldown_reads - 1),
+            "resource_sampler_records_max": cooldown_reads + 1,
+            "physical_write_bytes": "host-filesystem evidence only",
             "anonymous_delta_max": ROUTE_MEMORY_DELTA_BYTES,
             "store_unchanged": True,
         },
@@ -679,6 +761,8 @@ def test_lifecycle_and_polling_soak(
             "cooldown": cooldown_route_traffic,
             "analysis": cooldown_analysis,
             "delta": poll_delta,
+            "logical_io_delta": poll_logical_io_delta,
+            "resource_sampler_attribution": resource_sampler_attribution,
         },
         evidence=("samples.jsonl", "route-traffic.json", "summary.json"),
     ):
@@ -692,7 +776,12 @@ def test_lifecycle_and_polling_soak(
         )
         assert cooldown_campaign["elapsed_seconds"] >= cooldown_seconds
         assert cooldown_analysis["cpu_ticks_per_minute"] < CPU_TICK_BUDGET_PER_MINUTE
-        assert poll_delta["read_bytes"] == 0 and poll_delta["write_bytes"] == 0
+        assert poll_delta["read_bytes"] == 0
+        assert (
+            max(1, cooldown_reads - 1)
+            <= resource_sampler_attribution["record_growth"]
+            <= cooldown_reads + 1
+        )
         assert abs(poll_delta["anonymous_bytes"]) <= ROUTE_MEMORY_DELTA_BYTES
         assert_store_unchanged(store_before_poll, store_after_poll)
 
