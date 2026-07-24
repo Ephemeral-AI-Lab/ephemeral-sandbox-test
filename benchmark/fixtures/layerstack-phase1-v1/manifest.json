@@ -1,0 +1,40 @@
+{
+  "corpus_version": "v1",
+  "files": {
+    "history_payloads": {
+      "content_bytes": 131169,
+      "content_sha256": "sha256:3075fc5ad993541bc345f411b59ea3185700eb37e96e5ae24474043ad0463420",
+      "gzip_sha256": "sha256:84a74acf75bca38eb496cdce775a87fc3d270761453833441109924c12181855",
+      "path": "history_payloads.gz"
+    },
+    "incompressible": {
+      "content_bytes": 1048576,
+      "content_sha256": "sha256:57eb093c47e016022178a337ea81c2d0caf6f7d9b744af004595c4030c636e48",
+      "gzip_sha256": "sha256:62c4c2c1de65f8336693d056a6ff68d4b35ddfcb19f8f600b78918bb4308909b",
+      "path": "incompressible.gz"
+    },
+    "localized_base": {
+      "content_bytes": 1048576,
+      "content_sha256": "sha256:b4709953541aebfe17aadb2d674b9a374840bc9fc6b3de8eafb71b4d5890baab",
+      "gzip_sha256": "sha256:ba470283356908a2f46f2be04d3889048625847787cf5497c8a9c7213c787d96",
+      "path": "localized_base.gz"
+    },
+    "small_source": {
+      "content_bytes": 1048576,
+      "content_sha256": "sha256:d8546f02a1a7d186dbd42fc55939c3e29c4621f3293018bedd8a7f9fa99846f1",
+      "gzip_sha256": "sha256:76effee5550a07772917c628a320993049bbbc80a54390ba7045bb4cd9aaf49f",
+      "path": "small_source.gz"
+    }
+  },
+  "history_depths": [
+    1,
+    8,
+    32
+  ],
+  "localized_marker_bytes": 1024,
+  "localized_marker_offset": 524288,
+  "schema_version": 1,
+  "seed": 20260724,
+  "small_file_bytes": 4096,
+  "small_file_count": 256
+}

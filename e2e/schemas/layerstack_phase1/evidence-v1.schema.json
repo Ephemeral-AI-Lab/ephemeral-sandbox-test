@@ -1,0 +1,480 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ephemeralos.local/e2e/layerstack-phase1/evidence-v1.schema.json",
+  "title": "LayerStack Phase 1 Stage 00 evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "case_id",
+    "fixture_version",
+    "content",
+    "revision",
+    "route",
+    "resources",
+    "storage",
+    "recovery",
+    "lifecycle"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "case_id": {
+      "enum": [
+        "layerstack.phase1.baseline.legacy-route",
+        "layerstack.phase1.baseline.restart-cleanup"
+      ]
+    },
+    "fixture_version": {
+      "const": "v1"
+    },
+    "content": {
+      "$ref": "#/$defs/content"
+    },
+    "revision": {
+      "$ref": "#/$defs/revision"
+    },
+    "route": {
+      "$ref": "#/$defs/route"
+    },
+    "resources": {
+      "$ref": "#/$defs/resources"
+    },
+    "storage": {
+      "$ref": "#/$defs/storage"
+    },
+    "recovery": {
+      "$ref": "#/$defs/recovery"
+    },
+    "lifecycle": {
+      "$ref": "#/$defs/lifecycle"
+    }
+  },
+  "$defs": {
+    "nonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nullableNonNegativeInteger": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fixture_key",
+        "bytes",
+        "sha256",
+        "public_read_exact",
+        "public_execute_exact"
+      ],
+      "properties": {
+        "fixture_key": {
+          "const": "regular_file"
+        },
+        "bytes": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "public_read_exact": {
+          "type": "boolean"
+        },
+        "public_execute_exact": {
+          "type": "boolean"
+        }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_version_before",
+        "manifest_version_after",
+        "layer_count_before",
+        "layer_count_after",
+        "root_changed"
+      ],
+      "properties": {
+        "manifest_version_before": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "manifest_version_after": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "layer_count_before": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "layer_count_after": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "root_changed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "observation_epoch",
+        "configured_mode",
+        "write_authority",
+        "read_authority",
+        "fallback_count",
+        "fallback_reason_counts",
+        "mismatch_count",
+        "shadow_comparison_count",
+        "shadow_completed_count",
+        "bytes_scanned",
+        "bytes_read",
+        "bytes_written",
+        "bytes_hashed",
+        "bytes_reused",
+        "bytes_newly_retained",
+        "last_quiescence_epoch",
+        "counter_saturated"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "observation_epoch": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "configured_mode": {
+          "const": "legacy"
+        },
+        "write_authority": {
+          "const": "legacy_v1"
+        },
+        "read_authority": {
+          "const": "legacy_v1"
+        },
+        "fallback_count": {
+          "const": 0
+        },
+        "fallback_reason_counts": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "mismatch_count": {
+          "const": 0
+        },
+        "shadow_comparison_count": {
+          "const": 0
+        },
+        "shadow_completed_count": {
+          "const": 0
+        },
+        "bytes_scanned": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "bytes_read": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "bytes_written": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "bytes_hashed": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "bytes_reused": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "bytes_newly_retained": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "last_quiescence_epoch": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "counter_saturated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "observation_epoch",
+        "live_owned_bytes",
+        "high_water_owned_bytes",
+        "active_operations",
+        "high_water_active_operations",
+        "active_publications",
+        "high_water_active_publications",
+        "active_buffers",
+        "high_water_active_buffers",
+        "active_tasks",
+        "high_water_active_tasks",
+        "active_workers",
+        "high_water_active_workers",
+        "queued_items",
+        "high_water_queued_items",
+        "queued_bytes",
+        "high_water_queued_bytes",
+        "byte_permits_in_use",
+        "high_water_byte_permits_in_use",
+        "active_leases",
+        "high_water_active_leases",
+        "open_transactions",
+        "high_water_open_transactions",
+        "staging_owners",
+        "high_water_staging_owners",
+        "cache_entries",
+        "high_water_cache_entries",
+        "registry_entries",
+        "high_water_registry_entries",
+        "open_file_descriptors",
+        "high_water_open_file_descriptors",
+        "mapped_bytes",
+        "high_water_mapped_bytes",
+        "logical_cleanup_complete",
+        "quiescence_ms",
+        "counter_saturated"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "observation_epoch": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "live_owned_bytes": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_owned_bytes": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "active_operations": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_active_operations": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "active_publications": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_active_publications": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "active_buffers": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_active_buffers": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "active_tasks": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_active_tasks": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "active_workers": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_active_workers": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "queued_items": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_queued_items": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "queued_bytes": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_queued_bytes": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "byte_permits_in_use": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_byte_permits_in_use": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "active_leases": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_active_leases": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "open_transactions": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_open_transactions": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "staging_owners": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_staging_owners": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "cache_entries": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_cache_entries": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "registry_entries": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "high_water_registry_entries": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "open_file_descriptors": {
+          "$ref": "#/$defs/nullableNonNegativeInteger"
+        },
+        "high_water_open_file_descriptors": {
+          "$ref": "#/$defs/nullableNonNegativeInteger"
+        },
+        "mapped_bytes": {
+          "$ref": "#/$defs/nullableNonNegativeInteger"
+        },
+        "high_water_mapped_bytes": {
+          "$ref": "#/$defs/nullableNonNegativeInteger"
+        },
+        "logical_cleanup_complete": {
+          "type": "boolean"
+        },
+        "quiescence_ms": {
+          "$ref": "#/$defs/nullableNonNegativeInteger"
+        },
+        "counter_saturated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "storage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_sha256",
+        "staging_entry_count",
+        "layer_entry_count",
+        "metadata_entry_count",
+        "logical_bytes",
+        "allocated_bytes",
+        "mode"
+      ],
+      "properties": {
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "staging_entry_count": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "layer_entry_count": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "metadata_entry_count": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "logical_bytes": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "allocated_bytes": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "mode": {
+          "type": "string",
+          "pattern": "^[0-7]{3,4}$"
+        }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outcome",
+        "boundary",
+        "failure_kind",
+        "manifest_unchanged_before_retry",
+        "layer_count_unchanged_before_retry",
+        "metadata_count_unchanged_before_retry",
+        "staging_residue_count",
+        "gateway_restarted",
+        "retry_succeeded"
+      ],
+      "properties": {
+        "outcome": {
+          "enum": [
+            "not_exercised",
+            "recovered"
+          ]
+        },
+        "boundary": {
+          "enum": [
+            "none",
+            "before_staging"
+          ]
+        },
+        "failure_kind": {
+          "enum": [
+            "not_applicable",
+            "operation_failed"
+          ]
+        },
+        "manifest_unchanged_before_retry": {
+          "type": "boolean"
+        },
+        "layer_count_unchanged_before_retry": {
+          "type": "boolean"
+        },
+        "metadata_count_unchanged_before_retry": {
+          "type": "boolean"
+        },
+        "staging_residue_count": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "gateway_restarted": {
+          "type": "boolean"
+        },
+        "retry_succeeded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workspace_sessions_created",
+        "workspace_sessions_released",
+        "workspace_sessions_observed_after",
+        "logical_cleanup_complete",
+        "quiescence_ms"
+      ],
+      "properties": {
+        "workspace_sessions_created": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "workspace_sessions_released": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "workspace_sessions_observed_after": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "logical_cleanup_complete": {
+          "const": true
+        },
+        "quiescence_ms": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        }
+      }
+    }
+  }
+}

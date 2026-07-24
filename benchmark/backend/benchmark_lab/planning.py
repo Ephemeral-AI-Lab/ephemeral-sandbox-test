@@ -115,9 +115,19 @@ _FAMILIES = {
     "file_blame": "files",
     "create_workspace": "workspace_lifecycle",
     "squash_layerstack": "layer_stack",
+    "layerstack_phase1_baseline": "layer_stack",
 }
 _FAMILY_ORDER = ("command", "files", "workspace_lifecycle", "layer_stack")
-_OPERATION_ORDER = ("exec_command", "file_read", "file_write", "file_edit", "file_blame", "create_workspace", "squash_layerstack")
+_OPERATION_ORDER = (
+    "exec_command",
+    "file_read",
+    "file_write",
+    "file_edit",
+    "file_blame",
+    "create_workspace",
+    "squash_layerstack",
+    "layerstack_phase1_baseline",
+)
 _FAMILY_SEEDS = {
     "command": 0x434F4D4D414E4401,
     "files": 0x46494C4553000002,
@@ -132,6 +142,10 @@ _ACCESS = {
     "file_blame": ("public_gateway", "file_blame"),
     "create_workspace": ("internal_workspace", "create_no_op_session"),
     "squash_layerstack": ("public_gateway", "squash_layerstacks"),
+    "layerstack_phase1_baseline": (
+        "existing_campaign_runner",
+        "legacy_raw_control_and_reclamation",
+    ),
 }
 _COUNT = {
     "exec_command": {"kind": "concurrent_requests", "factor": "concurrent_requests"},
@@ -141,6 +155,10 @@ _COUNT = {
     "file_blame": {"kind": "concurrent_requests", "factor": "concurrent_requests"},
     "create_workspace": {"kind": "concurrent_workspace_creates", "factor": "workspace_count"},
     "squash_layerstack": {"kind": "single_request_with_prepared_load", "load_factor": "live_sessions"},
+    "layerstack_phase1_baseline": {
+        "kind": "internal_paired_protocol",
+        "factor": "measured_pairs",
+    },
 }
 _CLEANUP = {
     "exec_command": "resolve_from_isolation",
@@ -150,6 +168,7 @@ _CLEANUP = {
     "file_blame": "verify_fixture_unchanged",
     "create_workspace": "destroy_sessions_and_verify_baseline",
     "squash_layerstack": "destroy_topology_and_verify_baseline",
+    "layerstack_phase1_baseline": "destroy_sandbox_after_same_daemon_sentinel",
 }
 _EXPECTED_FACTORS = {
     "exec_command": {"concurrent_requests", "workspace_profile", "session_mode", "command_case"},
@@ -159,6 +178,18 @@ _EXPECTED_FACTORS = {
     "file_blame": {"concurrent_requests", "line_count", "ownership_segments", "auditability_event_count"},
     "create_workspace": {"workspace_count", "workspace_profile", "network_profile"},
     "squash_layerstack": {"live_sessions", "requested_migration_ratio", "remount_parallelism", "squashable_blocks", "layers_per_block", "payload_bytes", "session_activity"},
+    "layerstack_phase1_baseline": {
+        "corpus_version",
+        "pair_warmups",
+        "measured_pairs",
+        "sentinel_warmups",
+        "sentinel_cycles",
+        "noise_band_bytes",
+        "registry_entry_cap",
+        "poll_interval_ms",
+        "settle_timeout_ms",
+        "remount_parallelism",
+    },
 }
 _CHOICES = {
     "workspace_profile": None,
@@ -169,6 +200,7 @@ _CHOICES = {
     "destination": {"session", "publish"},
     "network_profile": {"shared", "isolated"},
     "session_activity": {"idle", "active"},
+    "corpus_version": {"v1"},
 }
 _NON_NEGATIVE = {"live_sessions"}
 _RATIOS = {"match_density", "requested_migration_ratio"}
@@ -187,6 +219,14 @@ _BOUNDS = {
     "squashable_blocks": 1_024,
     "layers_per_block": 1_024,
     "payload_bytes": 16 * 1024 * 1024,
+    "pair_warmups": 100,
+    "measured_pairs": 100,
+    "sentinel_warmups": 100,
+    "sentinel_cycles": 100,
+    "noise_band_bytes": 1024 * 1024 * 1024,
+    "registry_entry_cap": 4096,
+    "poll_interval_ms": 60_000,
+    "settle_timeout_ms": 60_000,
 }
 _MAX_PREPARED_LAYERS = 4_096
 _BASE_CATALOG_OPERATIONS = {
@@ -200,6 +240,16 @@ _OPERATION_CATALOG_OPERATIONS = {
     "file_blame": {"file_blame"},
     "create_workspace": set(),
     "squash_layerstack": {"squash_layerstacks", "trace", "layerstack"},
+    "layerstack_phase1_baseline": {
+        "exec_command",
+        "file_read",
+        "file_write",
+        "file_edit",
+        "publish_workspace_session",
+        "cgroup",
+        "snapshot",
+        "layerstack",
+    },
 }
 
 
@@ -262,7 +312,11 @@ def expand_plan(
                     findings.append(_finding("error", "unknown_workspace_profile", profile_name, "operations"))
                     continue
                 selected_names.add(profile_name)
-            destructive = operation_id in {"create_workspace", "squash_layerstack"}
+            destructive = operation_id in {
+                "create_workspace",
+                "squash_layerstack",
+                "layerstack_phase1_baseline",
+            }
             trial_kind = "destructive" if destructive else "fast"
             trial_counts = canonical["protocol"]["trial_defaults"][trial_kind]
             timeout_key = "squash_layerstack" if operation_id == "squash_layerstack" else "default"
@@ -308,7 +362,7 @@ def expand_plan(
         "gateway_mode": "isolated",
     }
     lifecycle = {"lifecycle_revision": 1, "failure_revision": 1, "stabilization_revision": 1, "automatic_retries": 0, "one_active_campaign": True, "sequential_families": True}
-    revisions = [{"operation_id": name, "semantic_revision": 1, "factor_schema_revision": 1, "comparison_projection_revision": 1} for name in ("exec_command", "file_read", "file_write", "file_edit", "file_blame", "create_workspace", "squash_layerstack")]
+    revisions = [{"operation_id": name, "semantic_revision": 1, "factor_schema_revision": 1, "comparison_projection_revision": 1} for name in _OPERATION_ORDER]
     hash_environment = {key: value for key, value in effective.items() if key != "free_space_bytes"}
     plan_hash = _sha_json({"schema_version": 1, "plan_hash_revision": 2, "definition_schema_version": 2, "canonical_plan": canonical, "effective_environment": hash_environment, "fixed_lifecycle_policy": lifecycle, "definition_revisions": revisions, "selected_workspace_profiles": selected, "cells": cells, "execution_blocks": blocks})
     trial_batches = sum(cell["protocol"]["warmups"] + cell["protocol"]["measured_trials"] for cell in cells)
@@ -424,6 +478,27 @@ def _validate_plan(
                     "requested eligible sessions cannot form every block boundary",
                     path,
                 ))
+        if operation_id == "layerstack_phase1_baseline":
+            values = factors
+            frozen = {
+                "pair_warmups": 1,
+                "measured_pairs": 5,
+                "sentinel_warmups": 3,
+                "sentinel_cycles": 20,
+                "noise_band_bytes": 16 * 1024 * 1024,
+                "registry_entry_cap": 64,
+                "poll_interval_ms": 100,
+                "settle_timeout_ms": 5_000,
+            }
+            if any(values[name]["values"] != [expected] for name, expected in frozen.items()):
+                findings.append(
+                    _finding(
+                        "error",
+                        "invalid_phase1_baseline_protocol",
+                        "Stage00 tiny baseline protocol factors must equal their frozen values",
+                        path,
+                    )
+                )
     if catalog_operations is not None:
         missing = sorted(required_catalog - set(catalog_operations))
         if missing:
@@ -473,6 +548,9 @@ def _operation_cell(operation: str, raw: dict[str, Any]) -> tuple[dict[str, Any]
         isolation = "reusable_verified_fixture"
         body["resolved_isolation"] = isolation
     elif operation == "create_workspace":
+        isolation = "prepared_sandbox_per_cell"
+        body["resolved_isolation"] = isolation
+    elif operation == "layerstack_phase1_baseline":
         isolation = "prepared_sandbox_per_cell"
         body["resolved_isolation"] = isolation
     else:

@@ -65,7 +65,7 @@ async def test_api_security_and_definition_contract(tmp_path: Path) -> None:
 
         definitions = (await client.get("/api/v1/definitions")).json()
         assert definitions["schema_version"] == 1
-        assert len(definitions["catalog"]["operations"]) == 7
+        assert len(definitions["catalog"]["operations"]) == 8
         assert {item["configuration_base"]["scope"] for item in definitions["defaults"]} == {
             "all", "command", "files", "workspace", "layerstack"
         }

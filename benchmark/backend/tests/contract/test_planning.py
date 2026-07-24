@@ -60,6 +60,33 @@ def test_expansion_is_deterministic_and_counts_requests() -> None:
     assert first["estimates"]["issued_operation_request_count"] == 96
 
 
+def test_phase1_tiny_baseline_expands_as_one_frozen_existing_runner_cell() -> None:
+    preset = load_preset(ROOT / "presets/layerstack-phase1-tiny-baseline.yml")
+    expanded = expand_plan(
+        preset.plan,
+        environment=RuntimeEnvironment("/tmp/benchmark", None, None, None),
+        profiles=load_workspace_profiles(ROOT / "defaults/workspace-profiles"),
+        catalog_operations=_catalog_operations() | {"publish_workspace_session"},
+    )
+
+    assert expanded["runnable"], expanded["validation"]
+    assert len(expanded["cells"]) == 1
+    cell = expanded["cells"][0]
+    assert cell["operation_id"] == "layerstack_phase1_baseline"
+    assert cell["comparison_key"]["count_semantics"] == {
+        "kind": "internal_paired_protocol",
+        "factor": "measured_pairs",
+    }
+    assert cell["comparison_key"]["product_access"] == {
+        "kind": "existing_campaign_runner",
+        "action": "legacy_raw_control_and_reclamation",
+    }
+    assert cell["protocol"]["warmups"] == 0
+    assert cell["protocol"]["measured_trials"] == 1
+    assert cell["protocol"]["timeout_ms"] == 3_600_000
+    assert expanded["estimates"]["issued_operation_request_count"] == 1
+
+
 def test_unknown_profile_prevents_run() -> None:
     preset = load_preset(ROOT / "presets/quick-smoke.yml")
     preset.plan.operations[0].configuration.factors["workspace_profile"].values = ["missing"]

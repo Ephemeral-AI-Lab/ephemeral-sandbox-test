@@ -11,7 +11,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from .models import StrictModel
-from .product import ProductAccess, ProductAccessError, _identity
+from .product import ProductAccess, ProductAccessError, PublishedSession, _identity
 from .transport import MAX_WIRE_BYTES, TimedGatewayResponse
 
 
@@ -91,6 +91,24 @@ class SessionLifecycle:
             raise SessionError("destroy session response violated lifecycle contract")
         del self._sessions[session.session_id]
         return response
+
+    async def publish(
+        self,
+        session: Session,
+        *,
+        request_id: str,
+        timeout_ms: int = 120000,
+    ) -> tuple[PublishedSession, TimedGatewayResponse]:
+        if self._sessions.get(session.session_id) != session.sandbox_id:
+            raise SessionError("session is not owned by this lifecycle")
+        published, response = await self._product.publish_workspace_session(
+            session.sandbox_id,
+            session_id=session.session_id,
+            timeout_ms=timeout_ms,
+            request_id=request_id,
+        )
+        self.retire_product_destroyed(session)
+        return published, response
 
 
 async def _lookup_auth(sandbox_id: str) -> str:

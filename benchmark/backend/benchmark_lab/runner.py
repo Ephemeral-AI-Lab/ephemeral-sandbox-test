@@ -22,6 +22,7 @@ from .fixtures import materialize_workspace
 from .metadata import collect_environment
 from .models import OwnedPathMarker
 from .paths import BenchmarkRoots
+from .phase1_baseline import run_phase1_baseline
 from .product import ProductAccess
 from .resource_sampling import TrialResourceSampler
 from .safety import OwnershipLedger
@@ -908,7 +909,7 @@ class CampaignRunner:
             body["workspace_count"]
             if operation == "create_workspace"
             else 1
-            if operation == "squash_layerstack"
+            if operation in {"squash_layerstack", "layerstack_phase1_baseline"}
             else body["concurrent_requests"]
         )
         request_ids = (
@@ -997,6 +998,23 @@ class CampaignRunner:
             return await self._run_request_batch(
                 run_id, cell_id, trial_id, request_ids, [squash]
             )
+        if operation == "layerstack_phase1_baseline":
+            responses, evidence = await run_phase1_baseline(
+                product=product,
+                sessions=sessions,
+                sandbox=sandbox,
+                body=body,
+                timeout_ms=timeout,
+                trial_id=trial_id,
+                corpus_root=(
+                    self._roots.benchmark_source_root
+                    / "fixtures"
+                    / "layerstack-phase1-v1"
+                ),
+                check_cancelled=self._check_cancelled,
+            )
+            context.data["phase1_evidence"] = evidence
+            return responses
         raise CampaignError(f"operation {operation} is not implemented")
 
     async def _run_request_batch(
@@ -1195,6 +1213,29 @@ class CampaignRunner:
                 if not _read_matches(observed.value, path, context.data["contents"][index]):
                     raise CampaignError("squash content equivalence check failed")
             context.data["content_equivalent"] = True
+        if operation == "layerstack_phase1_baseline":
+            evidence = context.data.get("phase1_evidence")
+            if (
+                not isinstance(evidence, dict)
+                or evidence.get("schema_version") != 1
+                or evidence.get("pair_protocol", {}).get("warmup_pairs")
+                != body["pair_warmups"]
+                or evidence.get("measured_summary", {}).get("sample_count")
+                != body["measured_pairs"]
+                or evidence.get("reclamation", {}).get("settled_sample_count")
+                != body["sentinel_cycles"]
+                or evidence.get("reclamation", {}).get("verdict")
+                not in {
+                    "bounded-and-released",
+                    "bounded-retained-by-design",
+                    "allocator-or-page-cache-retained",
+                    "suspected-leak",
+                    "confirmed-leak",
+                    "measurement-unavailable",
+                }
+                or evidence.get("reclamation", {}).get("exit_blocking") is not False
+            ):
+                raise CampaignError("phase1 baseline evidence contract failed")
 
     async def _read_exact(
         self,
@@ -1723,6 +1764,7 @@ class CampaignRunner:
                     "mutation_attribution",
                     "workspace_registry_baseline",
                     "layerstack_residue",
+                    "phase1_residue",
                 }
                 if check["id"] not in cleanup_ids:
                     continue
@@ -2108,6 +2150,8 @@ def _operation_evidence(
             "content_equivalent": context.data.get("content_equivalent") is True,
             "usable_session_count": len(context.sessions),
         }
+    elif operation == "layerstack_phase1_baseline":
+        detail = context.data["phase1_evidence"]
     else:  # pragma: no cover - closed by planning and _operate
         raise CampaignError(f"operation {operation} has no evidence contract")
     return {"operation": operation, "evidence": detail}

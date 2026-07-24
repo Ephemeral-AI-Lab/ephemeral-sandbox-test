@@ -40,13 +40,53 @@ class SharedBase(StrictModel):
     readonly: bool
 
 
+class SandboxResourceProfile(StrictModel):
+    name: str = Field(min_length=1)
+    nano_cpus: int
+    memory_high_bytes: int
+    memory_max_bytes: int
+    pids_max: int
+    workload_memory_high_bytes: int
+    workload_memory_max_bytes: int
+    workload_pids_max: int
+    control_plane_pids_reserve: int
+    daemon_runtime_profile: str = Field(min_length=1)
+    separate_workload_cgroup: bool
+
+
 class SandboxRecord(StrictModel):
     id: str
     workspace_root: str
     state: str
+    activity_revision: int = Field(ge=0)
     daemon: DaemonEndpoint | None
     daemon_http: DaemonEndpoint | None
     shared_base: SharedBase | None
+    resource_profile: SandboxResourceProfile | None
+
+
+class PublishedRevision(StrictModel):
+    manifest_version: int = Field(gt=0)
+    root_hash: str = Field(min_length=1)
+    layer_count: int = Field(ge=0)
+
+
+class PublishRouteSummary(StrictModel):
+    source_count: int = Field(ge=0)
+    ignored_count: int = Field(ge=0)
+
+
+class PublishedDetails(StrictModel):
+    no_op: bool
+    revision: PublishedRevision
+    route_summary: PublishRouteSummary
+
+
+class PublishedSession(StrictModel):
+    workspace_session_id: str = Field(min_length=1)
+    publish: PublishedDetails
+    destroyed: bool
+    evicted_upperdir_bytes: int = Field(ge=0)
 
 
 class ProductAccess:
@@ -113,6 +153,37 @@ class ProductAccess:
 
     async def file_blame(self, sandbox_id: str, *, path: str, timeout_ms: int, request_id: str) -> TimedGatewayResponse:
         return await self._sandbox_request("file_blame", sandbox_id, None, {"path": _product_path(path)}, timeout_ms, request_id)
+
+    async def publish_workspace_session(
+        self,
+        sandbox_id: str,
+        *,
+        session_id: str,
+        timeout_ms: int,
+        request_id: str,
+    ) -> tuple[PublishedSession, TimedGatewayResponse]:
+        response = await self._sandbox_request(
+            "publish_workspace_session",
+            sandbox_id,
+            None,
+            {"workspace_session_id": _identity(session_id)},
+            timeout_ms,
+            request_id,
+        )
+        try:
+            published = PublishedSession.model_validate(response.value)
+            _identity(published.workspace_session_id)
+        except (ValidationError, ProductAccessError) as error:
+            raise ProductAccessError("publish session response schema is invalid") from error
+        if (
+            published.workspace_session_id != session_id
+            or not published.destroyed
+            or published.publish.route_summary.source_count
+            + published.publish.route_summary.ignored_count
+            > 1_000_000
+        ):
+            raise ProductAccessError("publish session response violated lifecycle contract")
+        return published, response
 
     async def squash_layerstacks(self, sandbox_id: str, *, timeout_ms: int, request_id: str) -> TimedGatewayResponse:
         self._require_owned(sandbox_id)

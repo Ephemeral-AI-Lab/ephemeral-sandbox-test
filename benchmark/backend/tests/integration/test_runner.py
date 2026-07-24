@@ -91,6 +91,8 @@ class FakeProduct:
         return parse_cgroup({
             "view": "cgroup",
             "scope": "sandbox",
+            "availability": "available",
+            "errors": [],
             "series": [{
                 "ts": 1,
                 "sample_delta_ms": None,
@@ -104,6 +106,15 @@ class FakeProduct:
                 },
                 "deltas": {},
             }],
+            "topology": {
+                "schema_version": 2,
+                "available": False,
+                "source": None,
+                "error": "fake topology is unavailable",
+                "truncated": False,
+                "warnings": [],
+                "workspaces": [],
+            },
         })
 
     async def observe_snapshot(self, sandbox, *, request_id):
@@ -113,7 +124,15 @@ class FakeProduct:
             "availability": "available",
             "sampled_at_unix_ms": 1,
             "errors": [],
-            "daemon": {"daemon_pid": 7, "runtime_dir": "/run/fake"},
+            "daemon": {
+                "daemon_pid": 7,
+                "runtime_dir": "/run/fake",
+                "event_store": {
+                    "dropped_storage": 0,
+                    "dropped_oversized": 0,
+                    "truncated_records": 0,
+                },
+            },
             "resources": {"latest": None, "history": []},
             "workspaces": [],
             "stack": None,

@@ -53,7 +53,10 @@ class CliError(Exception):
     """The CLI produced output that was not a JSON line."""
 
 
-_SENSITIVE_FLAG = re.compile(r"(?:token|secret|password|credential|authorization|auth)", re.IGNORECASE)
+_SENSITIVE_FLAG = re.compile(
+    r"(?:token|secret|password|credential|authorization|auth(?!ority))",
+    re.IGNORECASE,
+)
 _SENSITIVE_TEXT = re.compile(r"(?i)((?:token|secret|password|credential|authorization|auth)[_-]?(?:token)?\s*[=:]\s*)([^\s,}\]\"']+)")
 _SENSITIVE_JSON = re.compile(r"(?i)([\"']?(?:token|secret|password|credential|authorization|auth)(?:[_-]?token)?[\"']?\s*:\s*[\"']?)([^,\s}\]\"']+)")
 _URL_CREDENTIAL = re.compile(r"(?i)([a-z][a-z0-9+.-]*://)([^/@\s]+)@")

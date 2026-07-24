@@ -33,13 +33,232 @@ class CgroupSample(StrictModel):
     deltas: CgroupDeltas
 
 
+class AppliedCgroupLimits(StrictModel):
+    nano_cpus: int = Field(ge=0)
+    memory_high_bytes: int = Field(ge=0)
+    memory_max_bytes: int = Field(ge=0)
+    pids_max: int = Field(ge=0)
+
+
+class TopologyProcess(StrictModel):
+    pid: int = Field(gt=0)
+    namespace_pid: int = Field(gt=0)
+    parent_pid: int = Field(ge=0)
+    name: str = Field(min_length=1)
+    state: str = Field(min_length=1)
+    kind: Literal["namespace_init", "process"]
+    cgroup_memberships: list[str] = Field(max_length=4096)
+    resident_memory_bytes: int | None = Field(ge=0)
+    cpu_time_us: int | None = Field(ge=0)
+    start_time_ticks: int | None = Field(ge=0)
+
+
+class TopologyWorkspace(StrictModel):
+    workspace_id: str = Field(min_length=1)
+    state: Literal["active", "idle", "partial"]
+    holder_pid: int = Field(gt=0)
+    cgroup_path: str | None
+    applied_cgroup_limits: AppliedCgroupLimits | None
+    workload_cgroup_state: str = Field(min_length=1)
+    workload_cgroup_reason: str | None
+    pid_namespace: str | None
+    mount_namespace: str | None
+    processes: list[TopologyProcess] = Field(max_length=512)
+
+
+class DaemonRuntimeConfig(StrictModel):
+    worker_threads: int | None = Field(ge=0)
+    max_blocking_threads: int | None = Field(ge=0)
+    blocking_thread_keep_alive_s: float | None = Field(ge=0)
+    max_concurrent_connections: int | None = Field(ge=0)
+    max_active_commands: int | None = Field(ge=0)
+    max_blocking_queue_depth: int | None = Field(ge=0)
+    max_command_queue_depth: int | None = Field(ge=0)
+    infrastructure_thread_allowance: int | None = Field(ge=0)
+
+
+class DaemonRuntimeUsage(StrictModel):
+    active_async_tasks: int | None = Field(ge=0)
+    active_blocking_tasks: int | None = Field(ge=0)
+    blocking_queue_depth: int | None = Field(ge=0)
+    blocking_admission_in_use: int | None = Field(ge=0)
+    connection_admission_in_use: int | None = Field(ge=0)
+    active_commands: int | None = Field(ge=0)
+    command_queue_depth: int | None = Field(ge=0)
+
+
+class DaemonOwnership(StrictModel):
+    open_workspaces: int = Field(ge=0)
+    live_holders: int = Field(ge=0)
+    exited_unreaped_holders: int | None = Field(ge=0)
+    namespace_fd_count: int | None = Field(ge=0)
+    control_fd_count: int | None = Field(ge=0)
+    namespace_control_fd_count: int | None = Field(ge=0)
+    active_scratch_directories: int | None = Field(ge=0)
+    persisted_workspace_handles: int | None = Field(ge=0)
+    active_layer_leases: int | None = Field(ge=0)
+
+
+class DaemonLifecycle(StrictModel):
+    holder_exit_total: int = Field(ge=0)
+    cleanup_attempt_total: int = Field(ge=0)
+    cleanup_failure_total: int = Field(ge=0)
+    cleanup_terminal_total: int = Field(ge=0)
+    dropped_event_total: int = Field(ge=0)
+    retained_event_count: int = Field(ge=0)
+    last_holder_exit_reason: str | None
+    last_cleanup_failure: str | None
+    last_cleanup_result: str | None
+    last_cleanup_duration_ms: int | None = Field(ge=0)
+
+
+class DaemonAllocator(StrictModel):
+    supported: bool
+    allocated_bytes: int | None = Field(ge=0)
+    active_bytes: int | None = Field(ge=0)
+    mapped_bytes: int | None = Field(ge=0)
+    resident_bytes: int | None = Field(ge=0)
+
+
+class DiagnosticWindow(StrictModel):
+    trigger: Literal["cpu", "anonymous_memory", "exited_unreaped_holder"] | None
+    started_at_unix_ms: int | None = Field(ge=0)
+    elapsed_ms: int = Field(ge=0)
+
+
+class DiagnosticCooldown(StrictModel):
+    active: bool
+    until_unix_ms: int | None = Field(ge=0)
+    remaining_ms: int = Field(ge=0)
+
+
+class DiagnosticCpuInterval(StrictModel):
+    elapsed_ms: int = Field(ge=0)
+    cpu_time_delta_us: int | None = Field(ge=0)
+    percent_of_one_core: float | None = Field(ge=0)
+
+
+class DiagnosticMemory(StrictModel):
+    resident_memory_bytes: int | None = Field(ge=0)
+    proportional_set_size_bytes: int | None = Field(ge=0)
+    anonymous_memory_bytes: int | None = Field(ge=0)
+    private_dirty_bytes: int | None = Field(ge=0)
+    anonymous_huge_pages_bytes: int | None = Field(ge=0)
+
+
+class DiagnosticRedaction(StrictModel):
+    workspace_file_content_excluded: bool
+    environment_variables_excluded: bool
+    authentication_material_excluded: bool
+    full_command_lines_excluded: bool
+
+
+class DiagnosticWorkspaceHolder(StrictModel):
+    workspace_id: str = Field(min_length=1)
+    holder_pid: int = Field(gt=0)
+
+
+class DiagnosticSummary(StrictModel):
+    id: str = Field(min_length=1)
+    fingerprint: str = Field(min_length=1)
+    size_bytes: int = Field(ge=0)
+    captured_at_unix_ms: int = Field(ge=0)
+    trigger: Literal["cpu", "anonymous_memory", "exited_unreaped_holder"]
+    activity_classes: list[str]
+    cpu_interval: DiagnosticCpuInterval
+    memory: DiagnosticMemory
+    thread_count: int | None = Field(ge=0)
+    runtime_config: DaemonRuntimeConfig
+    runtime_usage: DaemonRuntimeUsage
+    ownership: DaemonOwnership
+    workspace_ids: list[str]
+    workspace_holders: list[DiagnosticWorkspaceHolder]
+    workspace_ids_truncated: bool
+    omitted_workspace_id_count: int = Field(ge=0)
+    redaction: DiagnosticRedaction
+
+
+class DaemonDiagnostics(StrictModel):
+    enabled: bool
+    max_artifact_bytes: int = Field(ge=0)
+    trigger_count: int = Field(ge=0)
+    active_window: DiagnosticWindow
+    cooldown: DiagnosticCooldown
+    latest: DiagnosticSummary | None
+    last_error: str | None
+
+
+class TopologyDaemon(StrictModel):
+    available: bool
+    error: str | None
+    sampled_at_unix_ms: int = Field(ge=0)
+    pid: int = Field(gt=0)
+    name: str | None
+    state: str | None
+    virtual_memory_bytes: int | None = Field(ge=0)
+    resident_memory_bytes: int | None = Field(ge=0)
+    peak_resident_memory_bytes: int | None = Field(ge=0)
+    proportional_set_size_bytes: int | None = Field(ge=0)
+    unique_set_size_bytes: int | None = Field(ge=0)
+    private_dirty_bytes: int | None = Field(ge=0)
+    anonymous_huge_pages_bytes: int | None = Field(ge=0)
+    anonymous_memory_bytes: int | None = Field(ge=0)
+    file_memory_bytes: int | None = Field(ge=0)
+    shared_memory_bytes: int | None = Field(ge=0)
+    data_memory_bytes: int | None = Field(ge=0)
+    swap_bytes: int | None = Field(ge=0)
+    cpu_time_us: int | None = Field(ge=0)
+    start_time_ticks: int | None = Field(ge=0)
+    thread_count: int | None = Field(ge=0)
+    file_descriptor_count: int | None = Field(ge=0)
+    io_read_bytes: int | None = Field(ge=0)
+    io_write_bytes: int | None = Field(ge=0)
+    read_syscalls: int | None = Field(ge=0)
+    write_syscalls: int | None = Field(ge=0)
+    voluntary_context_switches: int | None = Field(ge=0)
+    involuntary_context_switches: int | None = Field(ge=0)
+    cgroup_memberships: list[str] = Field(max_length=4096)
+    cgroup_path: str | None
+    warnings: list[str] = Field(max_length=16)
+    runtime_config: DaemonRuntimeConfig
+    runtime_usage: DaemonRuntimeUsage
+    ownership: DaemonOwnership
+    lifecycle: DaemonLifecycle
+    allocator: DaemonAllocator
+    diagnostics: DaemonDiagnostics
+
+
+class CgroupTopology(StrictModel):
+    schema_version: Literal[2]
+    available: bool
+    source: str | None
+    error: str | None
+    truncated: bool
+    warnings: list[str] = Field(max_length=16)
+    workspaces: list[TopologyWorkspace] = Field(max_length=4096)
+    daemon: TopologyDaemon | None = None
+
+    @model_validator(mode="after")
+    def validate_availability(self) -> "CgroupTopology":
+        if self.available == (self.error is not None):
+            raise ValueError("cgroup topology availability and error disagree")
+        return self
+
+
 class CgroupView(StrictModel):
     view: Literal["cgroup"]
     scope: Literal["sandbox"]
-    series: list[CgroupSample] = Field(min_length=1, max_length=4096)
+    availability: Literal["available", "partial"]
+    errors: list[str]
+    series: list[CgroupSample] = Field(max_length=4096)
+    topology: CgroupTopology
 
     @model_validator(mode="after")
     def validate_series(self) -> "CgroupView":
+        if (self.availability == "available") != (not self.errors):
+            raise ValueError("cgroup availability and errors disagree")
+        if self.availability == "available" and not self.series:
+            raise ValueError("available cgroup response has no samples")
         previous: CgroupSample | None = None
         for sample in self.series:
             expected_interval = None if previous is None else sample.ts - previous.ts
@@ -105,11 +324,13 @@ class NamespaceExecution(StrictModel):
     namespace_execution_id: str = Field(min_length=1)
     operation: str = Field(min_length=1)
     lifecycle_state: Literal["running"]
+    command: str | None = None
 
 
 class SnapshotWorkspace(StrictModel):
     workspace_id: str = Field(min_length=1)
     lifecycle_state: Literal["active"]
+    finalization_state: Literal["active", "finalizing", "finalize_failed"] | None = None
     network_profile: str = Field(min_length=1)
     finalize_policy: str = Field(min_length=1)
     layers: SnapshotLayers
@@ -125,11 +346,20 @@ class SnapshotStack(StrictModel):
     storage_allocated_bytes: int | None = Field(ge=0)
     staging_entry_count: int | None = Field(ge=0)
     active_leases: int = Field(ge=0)
+    route: LayerstackRoute
+    resources: LayerstackResources
+
+
+class EventStoreStats(StrictModel):
+    dropped_storage: int = Field(ge=0)
+    dropped_oversized: int = Field(ge=0)
+    truncated_records: int = Field(ge=0)
 
 
 class SnapshotDaemon(StrictModel):
     daemon_pid: int = Field(gt=0)
     runtime_dir: str = Field(min_length=1)
+    event_store: EventStoreStats
 
 
 class SnapshotView(StrictModel):
@@ -165,6 +395,67 @@ class Layer(StrictModel):
     booked_by: list[str]
 
 
+class LayerstackRoute(StrictModel):
+    schema_version: Literal[1]
+    observation_epoch: int = Field(ge=0)
+    configured_mode: Literal["legacy"]
+    write_authority: Literal["legacy_v1"]
+    read_authority: Literal["legacy_v1"]
+    fallback_count: int = Field(ge=0)
+    fallback_reason_counts: list[int] = Field(max_length=0)
+    mismatch_count: int = Field(ge=0)
+    shadow_comparison_count: int = Field(ge=0)
+    shadow_completed_count: int = Field(ge=0)
+    bytes_scanned: int = Field(ge=0)
+    bytes_read: int = Field(ge=0)
+    bytes_written: int = Field(ge=0)
+    bytes_hashed: int = Field(ge=0)
+    bytes_reused: int = Field(ge=0)
+    bytes_newly_retained: int = Field(ge=0)
+    last_quiescence_epoch: int = Field(ge=0)
+    counter_saturated: bool
+
+
+class LayerstackResources(StrictModel):
+    schema_version: Literal[1]
+    observation_epoch: int = Field(ge=0)
+    live_owned_bytes: int = Field(ge=0)
+    high_water_owned_bytes: int = Field(ge=0)
+    active_operations: int = Field(ge=0)
+    high_water_active_operations: int = Field(ge=0)
+    active_publications: int = Field(ge=0)
+    high_water_active_publications: int = Field(ge=0)
+    active_buffers: int = Field(ge=0)
+    high_water_active_buffers: int = Field(ge=0)
+    active_tasks: int = Field(ge=0)
+    high_water_active_tasks: int = Field(ge=0)
+    active_workers: int = Field(ge=0)
+    high_water_active_workers: int = Field(ge=0)
+    queued_items: int = Field(ge=0)
+    high_water_queued_items: int = Field(ge=0)
+    queued_bytes: int = Field(ge=0)
+    high_water_queued_bytes: int = Field(ge=0)
+    byte_permits_in_use: int = Field(ge=0)
+    high_water_byte_permits_in_use: int = Field(ge=0)
+    active_leases: int = Field(ge=0)
+    high_water_active_leases: int = Field(ge=0)
+    open_transactions: int = Field(ge=0)
+    high_water_open_transactions: int = Field(ge=0)
+    staging_owners: int = Field(ge=0)
+    high_water_staging_owners: int = Field(ge=0)
+    cache_entries: int = Field(ge=0)
+    high_water_cache_entries: int = Field(ge=0)
+    registry_entries: int = Field(ge=0)
+    high_water_registry_entries: int = Field(ge=0)
+    open_file_descriptors: int | None = Field(ge=0)
+    high_water_open_file_descriptors: int | None = Field(ge=0)
+    mapped_bytes: int | None = Field(ge=0)
+    high_water_mapped_bytes: int | None = Field(ge=0)
+    logical_cleanup_complete: bool
+    quiescence_ms: int | None = Field(ge=0)
+    counter_saturated: bool
+
+
 class LayerstackView(StrictModel):
     view: Literal["layerstack"]
     manifest_version: int = Field(ge=0)
@@ -175,6 +466,8 @@ class LayerstackView(StrictModel):
     storage_logical_bytes: int | None = Field(ge=0)
     storage_allocated_bytes: int | None = Field(ge=0)
     staging_entry_count: int | None = Field(ge=0)
+    route: LayerstackRoute
+    resources: LayerstackResources
     layers: list[Layer]
 
     @model_validator(mode="after")
@@ -182,6 +475,12 @@ class LayerstackView(StrictModel):
         identities = [item.layer_id for item in self.layers]
         if len(identities) != len(set(identities)):
             raise ValueError("layerstack identities are duplicated")
+        if self.route.observation_epoch != self.resources.observation_epoch:
+            raise ValueError("layerstack observation epochs disagree")
+        if self.active_lease_count != self.resources.active_leases:
+            raise ValueError("layerstack lease gauges disagree")
+        if any(self.route.fallback_reason_counts):
+            raise ValueError("legacy route unexpectedly contains fallback reasons")
         for total, field in (
             (self.total_bytes, "bytes"),
             (self.total_allocated_bytes, "allocated_bytes"),

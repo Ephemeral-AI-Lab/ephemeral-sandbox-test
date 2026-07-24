@@ -1020,3 +1020,675 @@ the green suite and did not change its persisted case or cleanup evidence.
 binary rebuild or any sandbox mutation.
 
 ---
+
+### Iteration 46 - Stage 00 focused packaged gate intent
+
+**Intent recorded before execution** - `2026-07-24T15:14:03+0800`.
+
+**Git state** - Product
+`upgrade-2.0-phase-1@7e8f4562f9079f27dcb5b514f6e4546b87e5aa04` is dirty
+with patch SHA-256
+`5c98c2d5b6ab2140df2a3f705c05286ca6bbfe1510efed92feade8381dcc3ec0`:
+
+```text
+ M config/bench.yml
+ M config/linux-amd64.yml
+ M config/macos-arm64.yml
+ M config/prd.yml
+ M config/windows-amd64.yml
+ M crates/sandbox-cli/tests/fixtures/observability-help.txt
+ M crates/sandbox-cli/tests/observability.rs
+ M crates/sandbox-config/src/configs/runtime.rs
+ M crates/sandbox-config/tests/unit/configs/runtime.rs
+ M crates/sandbox-daemon/src/serve.rs
+ M crates/sandbox-observability/query/src/response.rs
+ M crates/sandbox-observability/query/tests/query.rs
+ M crates/sandbox-operations/catalog/src/runtime.rs
+ M crates/sandbox-operations/catalog/tests/runtime.rs
+ M crates/sandbox-runtime/layerstack/src/observability.rs
+ M crates/sandbox-runtime/layerstack/src/service/mod.rs
+ M crates/sandbox-runtime/layerstack/src/service/model.rs
+ M crates/sandbox-runtime/layerstack/src/stack/dir_list.rs
+ M crates/sandbox-runtime/layerstack/src/stack/file_read.rs
+ M crates/sandbox-runtime/layerstack/src/stack/mod.rs
+ M crates/sandbox-runtime/layerstack/src/stack/ops/publish.rs
+ M crates/sandbox-runtime/layerstack/src/stack/ops/read.rs
+ M crates/sandbox-runtime/operation/src/lib.rs
+ M crates/sandbox-runtime/operation/src/services.rs
+?? crates/sandbox-runtime/layerstack/src/stack/observation.rs
+?? crates/sandbox-runtime/layerstack/tests/baseline_v1_golden.rs
+?? crates/sandbox-runtime/layerstack/tests/fixtures/v1/
+?? crates/sandbox-runtime/layerstack/tests/resource_observation.rs
+?? crates/sandbox-runtime/operation/tests/storage_route_observation.rs
+```
+
+Test
+`upgrade-2.0-phase-1@d594f0c72083c39f95334fac685399bca20193f0` is dirty
+with patch SHA-256
+`a9be727618a305e2ee40cf3edf98385c17711382e1719ba9e2a1344bd70a301b`:
+
+```text
+ M benchmark/backend/benchmark_lab/observability.py
+ M benchmark/backend/benchmark_lab/planning.py
+ M benchmark/backend/benchmark_lab/product.py
+ M benchmark/backend/benchmark_lab/runner.py
+ M benchmark/backend/benchmark_lab/sessions.py
+ M benchmark/backend/tests/contract/test_api.py
+ M benchmark/backend/tests/contract/test_planning.py
+ M benchmark/backend/tests/unit/test_runner_squash.py
+ M benchmark/defaults/definition-catalog.json
+?? benchmark/backend/benchmark_lab/phase1_baseline.py
+?? benchmark/backend/tests/unit/test_phase1_baseline.py
+?? benchmark/fixtures/
+?? benchmark/presets/layerstack-phase1-tiny-baseline.yml
+?? benchmark/tools/
+?? e2e/fixtures/
+?? e2e/runtime/layerstack_baseline/
+?? e2e/schemas/
+```
+
+**Command**
+
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test
+E2E_IMAGE=ubuntu@sha256:4fbb8e6a8395de5a7550b33509421a2bafbc0aab6c06ba2cef9ebffbc7092d90 \
+E2E_REBUILD_BINARY=1 \
+PYTHONPATH=e2e \
+.venv/bin/python -m pytest \
+  e2e/runtime/layerstack_baseline/test_baseline_route.py \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+```
+
+**Cases and timeout** -
+`layerstack.phase1.baseline.legacy-route` and
+`layerstack.phase1.baseline.restart-cleanup`; each declaration has a
+600,000 ms timeout. The first changed-product gate requests the repository's
+normal rebuild path with `E2E_REBUILD_BINARY=1`.
+
+**Image and source identity** - The immutable image index is
+`sha256:4fbb8e6a8395de5a7550b33509421a2bafbc0aab6c06ba2cef9ebffbc7092d90`.
+Raw entry evidence at
+`.e2e-state/evidence/stage00-entry-20260724T134437+0800/` proves the expected
+ARM64 platform digest
+`sha256:7f622ca8766bccb22f04242ecb6f19f770b2f08827d7c5425fb57681140e6efb`
+does not exist and the index actually selects
+`sha256:7f622ca8766bccb22f04242ecb6f19f770b2f08827dc4b8c707de5e78a6da7ab`.
+This remains an artifact-validation blocker regardless of the functional
+result. Pre-run product config `config/prd.yml` is SHA-256
+`42e970f1c1e9151dd710d576e4d3f4f3d044b046bf3ee0d71b4e20a25a716157`;
+pre-run CLI hashes are manager
+`cae893d1cc9c411a6d0319f307ef5122ad5406d027b1127deb426d41a1cee228`,
+runtime
+`b3dcd0c44caf2f7e52dc5e94dfa70e98ccb0a6d1d776c0e23199f5f872f481a9`,
+and observability
+`d2b7948a79e3561367cbdec97745ad1f56fed235b598409ac8a98a8fb8872f55`.
+The focused E2E sources are SHA-256
+`47784d498da3ad07bb71fa7ac1f4711fcb52b3f8656f172e517633f3cb057f89`
+for `conftest.py` and
+`079a7b05f607ceac5fa9f206eccb549a4e27faaecd462aa1707176e1a4ad2878`
+for `test_baseline_route.py`.
+
+**Expected evidence** - Exact packaged public create/write/publish/read/execute
+/destroy behavior, `legacy_v1` read and write authority, zero
+fallback/mismatch/shadow counters, one-shot previsibility failure with
+unchanged manifest/layer/metadata state, gateway recovery and one successful
+retry, zero staging residue, no case workspace or execution residue, and
+logical resource quiescence within five seconds. Each case must write a
+bounded schema-v1 evidence artifact.
+
+**Custody and cleanup scope** - The module fixture owns the temporary gateway
+configuration, requests the product rebuild, and restores the checked-in
+baseline gateway in LIFO teardown. Registered-sandbox and workspace-registry
+fixtures own only IDs created by these two cases; each case destroys or
+publishes only its own sessions. No global Docker prune, broad cleanup, or
+mutation of pre-existing sandbox IDs is authorized.
+
+---
+
+## 2026-07-24 - Iteration 46 - Stage 00 focused packaged gate result
+
+**Result** - Failed: 2 cases failed during their call phase, and the
+validation-plugin teardown errors were consequent to those early call
+failures because the terminal validation checkpoints were never reached.
+The command completed in approximately 80 seconds.
+
+**What worked** - The run exercised the requested rebuild path
+(`E2E_REBUILD_BINARY=1`) and reached the packaged public create, write,
+publish, read, execute, observation, failpoint, gateway-recovery, and retry
+surfaces. The previsibility failpoint was consumed once, preserved the
+retained workspace for retry, and the retry succeeded after gateway
+recovery before the route assertion stopped the case.
+
+**Defects exposed** -
+
+- `layerstack.phase1.baseline.legacy-route` received a successful public
+  execute response, but its `output` did not exactly match the test's
+  newline-bearing expectation. The exact transport output contract must be
+  traced before changing the assertion or product.
+- `layerstack.phase1.baseline.restart-cleanup` received
+  `write_authority: "[REDACTED]"` from the harness. The public CLI response
+  passes through `e2e/harness/runner/cli.py`, whose broad `auth` key matcher
+  treats the non-secret word `authority` as a credential. This prevents the
+  test from observing the expected `legacy_v1` route value.
+
+**Cleanup** - Passed for both cases. The run-owned sandboxes
+`eos-3623dceb-6cf6-4bec-b68c-7399e4c11736` and
+`eos-6b236f69-158a-4edb-b347-6cb26ff806fd` were each registered and
+destroyed exactly once with zero cleanup failures. The pre-run baseline
+gateway was restored. The post-run sandbox inventory contained the same
+seven pre-existing sandbox IDs and neither run-owned ID.
+
+**Artifacts** -
+
+- `.e2e-state/observability/20260724T071601.101621Z-48363/layerstack.phase1.baseline.legacy-route/`
+- `.e2e-state/observability/20260724T071604.567269Z-48363/layerstack.phase1.baseline.restart-cleanup/`
+- `.e2e-state/metrics/operation-timing/latest.md`
+
+Both observability directories record `evidence_state: early_failure` and
+`cleanup_complete: true`. Entry-dependency evidence remains at
+`.e2e-state/evidence/stage00-entry-20260724T134437+0800/`.
+
+**Disposition** - Trace the exact public execute response and add focused
+regression coverage for route-authority redaction, make only the
+source-level fixes those reproductions justify, then rerun the two focused
+cases. The immutable ARM64 image-manifest mismatch remains an independent
+artifact-validation blocker.
+
+---
+
+## 2026-07-24 - Iteration 47 - Stage 00 focused packaged gate rerun intent
+
+**Git state** - Product
+`upgrade-2.0-phase-1@7e8f4562f9079f27dcb5b514f6e4546b87e5aa04` and test
+`upgrade-2.0-phase-1@d594f0c72083c39f95334fac685399bca20193f0`
+remain dirty. The SHA-256 of the sorted changed-file names and contents is
+`fba5866ca90ca99b9de92d37a50ef8c70fb9c5499fc97ab33374dd3b91f92f4f`
+for product and, excluding this append-only report,
+`eb2c48f63cc865bf6cc889f3463099261e923951cb6b89df69aab04ced7235f5`
+for test.
+
+**Fix identity** - The CLI sanitizer is SHA-256
+`d06dccc22795983a48bac000986f50b319a842691b599daae072e226e9d55820`;
+its new offline regression is
+`5abb16e47d71c5c91566404f765bc32eb88a46aef5109b4cce83c940474ea60f`.
+The focused test is
+`bee55438ea3952e3e60b002a4029641a94702023c925b41c267720a4eac92cca`
+and the unchanged gateway fixture is
+`47784d498da3ad07bb71fa7ac1f4711fcb52b3f8656f172e517633f3cb057f89`.
+The redaction regression passed 1/1, the existing direct-daemon
+credential-safety tests passed 8/8, focused collection found 2/2 cases, and
+all three changed Python modules compile.
+
+**Command**
+
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test
+E2E_IMAGE=ubuntu@sha256:4fbb8e6a8395de5a7550b33509421a2bafbc0aab6c06ba2cef9ebffbc7092d90 \
+E2E_REBUILD_BINARY=1 \
+PYTHONPATH=e2e \
+.venv/bin/python -m pytest \
+  e2e/runtime/layerstack_baseline/test_baseline_route.py \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox
+```
+
+**Cases and timeout** -
+`layerstack.phase1.baseline.legacy-route` and
+`layerstack.phase1.baseline.restart-cleanup`; each declaration has a
+600,000 ms timeout. The rerun deliberately requests
+`E2E_REBUILD_BINARY=1` rather than inferring packaged-binary identity.
+
+**Expected evidence** - Both cases pass the exact public
+create/write/publish/read/execute/destroy flow. Read and write authority are
+observable as `legacy_v1`; fallback, mismatch, and shadow counters remain
+zero; the one-shot previsibility failure leaves manifest, layer, metadata,
+and staging state unchanged before one successful retry; all case-owned
+workspace and logical resource gauges quiesce within five seconds. Each
+case writes bounded schema-v1 evidence.
+
+**Image and custody** - The pinned image and its known ARM64 manifest
+mismatch are unchanged from Iteration 46. The module fixture owns only its
+temporary gateway configuration and restores the checked-in baseline
+gateway. Per-case fixtures own only their registered sandbox and workspace
+IDs. No pre-existing sandbox, broad Docker state, or unrelated repository
+state is in cleanup scope.
+
+---
+
+## 2026-07-24 - Iteration 47 - Stage 00 focused packaged gate rerun result
+
+**Result** - Passed: 2/2 cases in 53.20 seconds after the requested product
+rebuild. `layerstack.phase1.baseline.legacy-route` passed in 43.623 seconds,
+including rebuild setup, and
+`layerstack.phase1.baseline.restart-cleanup` passed in 9.395 seconds,
+including gateway restoration.
+
+**Evidence** -
+
+- `.e2e-state/observability/20260724T072355.899293Z-52477/layerstack.phase1.baseline.legacy-route/`
+  records `evidence_state: passed`, exact public read and execute content,
+  one manifest revision and one added layer, `legacy_v1` read/write
+  authority, zero fallback/mismatch/shadow counters, zero active logical
+  gauges, and zero-millisecond quiescence. Its evidence SHA-256 is
+  `cd153eccc41ab5725e75dec0dda40f69a050d14e9d255bd179457540374d072d`.
+- `.e2e-state/observability/20260724T072358.601433Z-52477/layerstack.phase1.baseline.restart-cleanup/`
+  records `evidence_state: passed`, a one-shot `before_staging`
+  `operation_failed`, unchanged manifest/layer/metadata counts before retry,
+  zero staging residue, gateway recovery, one successful retry, exact public
+  read content, `legacy_v1` authority, zero alternate-route counters, zero
+  active logical gauges, and zero-millisecond quiescence. Its evidence
+  SHA-256 is
+  `ee3d11b9855c1007860c8089ddf5e23140cd20938e70648ba7db400e300da1c0`.
+
+Both schema-v1 evidence artifacts are bounded at less than 4.3 KiB. The
+fixed observation bookkeeping allocation is 176 bytes at quiescence and
+equals its measured high-water value; no active owner, lease, task, worker,
+queue, transaction, staging owner, cache, or registry entry remains.
+
+**Cleanup** - Passed. Sandboxes
+`eos-da18183a-501e-45cb-af3a-5ecb3cfefc69` and
+`eos-e57b7593-d326-439b-832f-4bdd5015842d` were each registered and
+destroyed exactly once with zero failures. The post-run inventory contains
+the same seven pre-existing sandboxes and neither run-owned ID. The
+checked-in baseline gateway was restored.
+
+**Artifact blocker** - Functional packaged validation is green, but the
+frozen ARM64 fixture still cannot be validated against the prompt's expected
+platform manifest: the pinned index selects
+`sha256:7f622ca8766bccb22f04242ecb6f19f770b2f08827dc4b8c707de5e78a6da7ab`,
+not the expected
+`sha256:7f622ca8766bccb22f04242ecb6f19f770b2f08827d7c5425fb57681140e6efb`.
+Raw dependency evidence remains at
+`.e2e-state/evidence/stage00-entry-20260724T134437+0800/`.
+
+---
+
+## 2026-07-24 - Iteration 48 - Stage 00 tiny benchmark rerun intent
+
+**Git state** - Product and test repositories are both on
+`upgrade-2.0-phase-1` with the Stage 00 working changes uncommitted. The
+frozen entry image and its known ARM64 platform-manifest mismatch are
+unchanged.
+
+**Preflight** - Exact plan validation passes for
+`layerstack-phase1-tiny-baseline`, resolving one runnable cell with one
+warmup pair, five measured pairs, three sentinel warmups, and twenty
+measured sentinel cycles. Focused strict-schema regressions pass 14/14.
+They cover the current sandbox record, manager-owned cgroup response,
+initial partial resource-ring availability, snapshot event-store counters,
+and Stage 00 route/resource observations.
+
+**Command**
+
+```bash
+cd /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test/benchmark
+../.benchmark-state/test-venv/bin/sandbox-benchmark run \
+  --plan layerstack-phase1-tiny-baseline \
+  --test-repository-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox-test \
+  --product-root /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox \
+  --product-bin-dir /Users/yifanxu/Ephemeral-AI-Lab/ephemeral-sandbox/bin
+```
+
+**Expected evidence** - Preserve all five measured raw/control pairs and all
+twenty measured sentinel cycles, prove legacy-only route authority and
+bounded logical-resource reclamation, and emit an explicit verdict without
+zero-filling unavailable resource samples.
+
+**Custody** - The benchmark runner owns only its generated run directory,
+gateway process, workspace, and registered sandbox. The two product
+executables staged in `bin/` did not exist before this gate and will be
+removed only after their recorded SHA-256 identities are revalidated.
+Pre-existing sandboxes, Docker objects, result corpora, and repository
+changes are outside cleanup scope.
+
+---
+
+## 2026-07-24 - Iteration 48 - Stage 00 tiny benchmark rerun result
+
+**Result** - Failed after 2.11 seconds. Run
+`019f9316-3076-7cd3-af43-b01a948f02ff` reached the operation stage, where
+the first internal baseline request returned a typed product error. The
+summary records one attempted trial, one `product_failed` trial, zero
+successful trials, and zero completed public request observations. This is
+no longer an observability-schema failure: 175 strict resource observations
+were accepted, including explicit unavailable values instead of fabricated
+zeroes.
+
+**Evidence** -
+`.benchmark-state/results/019f9316-3076-7cd3-af43-b01a948f02ff/` contains
+the immutable plan hash
+`sha256:153e556767e3f027bfb74a8be1fd3845fef0f88dceaa12de8cb8d3342272e5fd`,
+the failed summary and report, 192 lifecycle events, and 175 resource
+observations. The runner retained only redacted gateway-log digests.
+
+**Cleanup** - Passed. The runner destroyed its owned sandbox, terminated
+its isolated gateway, removed its runtime directory, and retained only the
+bounded result corpus and ownership marker. No pre-existing sandbox or
+Docker resource entered cleanup scope.
+
+**Disposition** - Capture the sanitized product-error kind and message at
+the existing gateway client boundary in one otherwise exact rerun. Use that
+evidence to identify the first failing control-arm operation before making a
+source change.
+
+---
+
+## 2026-07-24 - Iteration 49 - Stage 00 tiny benchmark diagnostic rerun intent
+
+**Scope** - Repeat the exact validated tiny plan with an in-memory diagnostic
+wrapper around `GatewayClient.request`. The wrapper prints only
+`GatewayProductError.kind` and the already-sanitized public detail; it does
+not print credentials, request arguments, response bodies, or gateway
+configuration.
+
+**Expected evidence** - Identify the exact closed product operation and
+sanitized error responsible for the first control-arm failure. Preserve the
+normal runner's ownership ledger, isolated gateway lifecycle, resource
+sampling, result persistence, and cleanup behavior.
+
+**Custody** - Identical to Iteration 48. The diagnostic is process-local and
+does not edit benchmark or product source. Cleanup remains limited to the
+new run's registered sandbox, gateway, workspace, and runtime directory.
+
+---
+
+## 2026-07-24 - Iteration 49 - Stage 00 tiny benchmark diagnostic rerun result
+
+**Result** - The diagnostic run
+`019f9319-3078-7f47-84b8-0ca9e1a56056` isolated the first failure to
+`file_read`: `invalid_request`, because the control arm selected a 1 MiB
+single-line file while the public read response cap is 262,144 bytes. No
+credential, request argument, raw response, or configuration value was
+printed.
+
+**Root cause** - `_verify_file` requested up to 2,000 lines and assumed that
+all frozen corpus members fit in one public response. The localized and
+incompressible fixtures are each one 1 MiB line, so no line window can make
+their selected output fit the product cap.
+
+**Cleanup** - Passed through the unchanged benchmark runner. The run-owned
+sandbox and isolated gateway were removed; only the bounded result corpus
+and ownership marker remain.
+
+**Regression and fix** - A failing focused regression first reproduced that
+the 1 MiB single-line verifier incorrectly called `file_read`. The verifier
+now uses bounded `wc -c` plus `sha256sum` output for content above 256 KiB,
+compares both exact byte length and digest, and retains public `file_read`
+verification for smaller files. The full focused module passes 11/11. The
+implementation SHA-256 is
+`8d0c57ffc53f399605d2bd5bea74cf01e3cb959d2003d8adb7ca78b5f7d86fa5`;
+the regression SHA-256 is
+`3e022c3cd2998b91309e87f3806bf2e53d0b00c5225fd7d3fb6006c30fac8ced`.
+
+---
+
+## 2026-07-24 - Iteration 50 - Stage 00 tiny benchmark rerun intent
+
+**Command** - Repeat the exact `layerstack-phase1-tiny-baseline` run command
+from Iteration 48 after the bounded large-file verification regression
+passes 11/11.
+
+**Expected evidence** - Advance past the first raw-arm 1 MiB content
+verification, preserve exact corpus byte/digest checks, then complete all
+five measured pairs and twenty measured sentinel cycles or isolate the next
+single public-contract failure.
+
+**Custody** - Unchanged from Iteration 48. Cleanup may affect only the new
+run's ownership-registered sandbox, workspace, gateway, and runtime
+directory.
+
+---
+
+## 2026-07-24 - Iteration 50 - Stage 00 tiny benchmark rerun result
+
+**Result** - Run `019f931b-1ed3-7770-ab05-d0be2c6495e5` advanced beyond
+the 1 MiB public-read failure and ran for 3.29 seconds, then stopped on a
+benchmark-side operation assertion. Its single trial is
+`infrastructure_failed`, with zero product failures and cleanup restored.
+The runner accepted 294 resource observations before teardown.
+
+**Evidence** -
+`.benchmark-state/results/019f931b-1ed3-7770-ab05-d0be2c6495e5/` contains
+the result corpus. The trial records 2,541,056,334 ns in the operation stage
+and 613,875 ns in teardown; all six baseline checks are conservatively
+failed because the internal protocol did not complete.
+
+**Cleanup** - Passed. The run-owned sandbox and gateway were removed under
+the existing ownership ledger. No pre-existing resource entered cleanup
+scope.
+
+**Disposition** - Capture only the typed benchmark assertion message in one
+process-local diagnostic repeat, then add a focused regression for the
+specific assertion before changing source.
+
+---
+
+## 2026-07-24 - Iteration 51 - Stage 00 assertion diagnostic rerun intent
+
+**Scope** - Repeat the validated tiny plan with an in-memory wrapper around
+`run_phase1_baseline` that prints only the `Phase1BaselineError` message.
+The wrapper does not print corpus content, product payloads, credentials,
+gateway configuration, or raw responses.
+
+**Expected evidence** - Identify the exact benchmark assertion reached after
+the bounded 1 MiB digest verification and preserve normal result persistence
+and owned cleanup.
+
+**Custody** - Identical to Iteration 50; the diagnostic wrapper is
+process-local and makes no source change.
+
+---
+
+## 2026-07-24 - Iteration 51 - Stage 00 assertion diagnostic rerun result
+
+**Result** - Run `019f931c-17c3-7355-9f6d-182b50d85a3e` isolated the
+assertion to `small-file corpus count or byte total is incorrect`. The
+already-sanitized assertion message was the only added diagnostic output.
+
+**Root cause** - The product's successful execute projection normalizes away
+the terminal newline. The benchmark required exact output
+`256 1048576\n`, and the same obsolete newline assumption also existed in
+the later sentinel byte-count check.
+
+**Regression and fix** - A failing focused regression first demonstrated
+the missing output matcher. Command assertions now require exit code zero
+and exact whitespace-delimited tokens, accepting both normalized and
+newline-terminated output while rejecting wrong tokens or a nonzero exit.
+The digest, small-file, and sentinel checks share the matcher. Focused
+benchmark tests pass 27/27. The implementation SHA-256 is
+`e831af5e175c2e1d30bcb2f01225a82b9d7cb8e88f4405aa20d454cfd784fe9c`;
+the unit regression SHA-256 is
+`0b6e93269be68f4c8dda75bb6b186ff299de7ec847f8536299b8bfb4ea042403`.
+
+**Cleanup** - Passed through the unchanged benchmark runner. No
+pre-existing resource entered cleanup scope.
+
+---
+
+## 2026-07-24 - Iteration 52 - Stage 00 tiny benchmark rerun intent
+
+**Command** - Repeat the exact validated
+`layerstack-phase1-tiny-baseline` command after all 27 focused benchmark
+tests pass.
+
+**Expected evidence** - Complete all six raw/control pairs and twenty-three
+sentinel cycles, retain five measured pairs and twenty measured sentinel
+cycles, prove the legacy-only route and logical release, and emit a bounded
+memory verdict without zero-filled unavailable metrics.
+
+**Custody** - Unchanged. Only the new run's ownership-registered resources
+are eligible for cleanup.
+
+---
+
+## 2026-07-24 - Iteration 52 - Stage 00 tiny benchmark rerun result
+
+**Result** - Run `019f931d-abb0-73be-b8cc-ee54e8d8871c` advanced beyond
+the corrected small-file assertion, then stopped on the next benchmark-side
+operation assertion after 3.38 seconds. The trial records
+`infrastructure_failed`, zero product failures, 2,577,876,000 ns in the
+operation stage, and cleanup restored.
+
+**Cleanup** - Passed. The run-owned sandbox and gateway were removed through
+the ownership ledger; no pre-existing resource entered scope.
+
+**Disposition** - Capture only the next `Phase1BaselineError` message in a
+process-local diagnostic repeat before changing source.
+
+---
+
+## 2026-07-24 - Iteration 53 - Stage 00 assertion diagnostic rerun intent
+
+**Scope and custody** - Repeat the exact validated tiny plan with the same
+message-only `Phase1BaselineError` wrapper used in Iteration 51. It makes no
+source change and preserves normal ownership, persistence, and cleanup.
+
+**Expected evidence** - Name the first assertion reached after successful
+large-file digest and small-file total verification.
+
+---
+
+## 2026-07-24 - Iteration 53 - Stage 00 assertion diagnostic rerun result
+
+**Result** - Run `019f931e-4702-745a-9e87-56fb4ae98cff` confirmed that
+the remaining failure was still the small-file count/byte-total assertion,
+not a later protocol step.
+
+**Root cause** - The newline fix exposed a separate arithmetic error in the
+verification command. `find ... -exec wc -c {} +` invokes `wc` with multiple
+files, which emits both each file size and an aggregate `total` line. The
+following `awk` summed both and therefore double-counted the corpus bytes.
+
+**Regression and fix** - A focused shell-backed unit regression creates
+three selected files plus one ignored file and proves the generated command
+returns exactly three files and nine bytes. The command now emits one byte
+count per selected file through a bounded `sh` batch, then derives count and
+sum from those rows. Focused benchmark tests pass 28/28. The implementation
+SHA-256 is
+`59927617ef1da63b562b87228644b219be37499b6c14274cdfae2e32be62d5a6`;
+the unit regression SHA-256 is
+`bc3d34f0d6c32a4daf89c4d484de985e8ace5aae6ece89833760ae7a3cf6ba35`.
+
+**Cleanup** - Passed through the unchanged runner. No pre-existing resource
+entered cleanup scope.
+
+---
+
+## 2026-07-24 - Iteration 54 - Stage 00 tiny benchmark rerun intent
+
+**Command** - Repeat the exact validated tiny baseline after all 28 focused
+benchmark tests pass.
+
+**Expected evidence** - Advance beyond the corrected 256-file verification
+and complete the paired and sentinel protocols, or isolate one next
+contract failure with cleanup restored.
+
+**Custody** - Unchanged. Cleanup remains limited to the run's
+ownership-registered sandbox, gateway, workspace, and runtime directory.
+
+---
+
+## 2026-07-24 - Iteration 54 - Stage 00 tiny benchmark rerun result
+
+**Result** - Passed. Run `019f9320-08ea-7d6f-9f8e-f086d972a927`
+completed in 78.22 seconds with correctness `pass`, one reportable
+successful trial, zero product/correctness/infrastructure/cleanup failures,
+and all six declared checks passing.
+
+**Protocol evidence** - The bounded operation artifact retains one warmup
+pair, five measured counterbalanced pairs, three sentinel warmups, and
+twenty measured sentinel cycles. It records 1,109 timed public requests,
+7,294 resource observations, exact corpus digests and shapes, and a
+246,917-byte bounded evidence artifact with SHA-256
+`97ac576a6e31658d986204ffd5453a879c5c8a4967831f22f78aa0ccba36a2d6`.
+No warning was emitted.
+
+**Route and reclamation** - Final authority is `legacy_v1` for reads and
+writes under configured mode `legacy`. Fallback, mismatch, shadow, and
+saturation counters are zero. Every measured sentinel cycle released its
+workspace, namespace execution, lease, registry entry, transaction,
+staging owner, task, worker, queue, and buffer. Final fixed bookkeeping is
+176 live bytes, equal to its high-water value, with zero active logical
+resources and zero-millisecond quiescence.
+
+The twenty settled cgroup samples are complete. Their first-five median is
+48,340,992 bytes, last-five median is 49,332,224 bytes, delta is 991,232
+bytes, and robust slope is 74,988.31 bytes/cycle. The frozen non-blocking
+verdict is `allocator-or-page-cache-retained`; logical release is complete
+and neither route nor resource counters saturated.
+
+**Cleanup** - Passed. The trial records
+`cleanup_baseline_restored: true`; its owned sandbox, gateway, workspace,
+and runtime directory were removed. Pre-existing resources were untouched.
+
+**Evidence** -
+`.benchmark-state/results/019f9320-08ea-7d6f-9f8e-f086d972a927/`.
+
+---
+
+## 2026-07-24 - Iteration 55 - Stage 00 post-run dependency comparison intent
+
+**Scope** - Capture the same dependency, supported-invocation, tool,
+machine, platform, runtime-inventory, and immutable image-fixture surfaces
+recorded at entry, then compare the frozen entry and post-run records
+without installing or updating dependencies.
+
+**Expected evidence** - Prove an exact dependency-graph delta of zero across
+all supported invocations. Treat record ordering, Docker's observation
+clock, and filesystem usage counters as volatile only after proving their
+stable inventory and identity fields are exact. Preserve the five planned
+`rollout_mode: legacy` configuration additions as source-authority changes,
+not dependency changes.
+
+**Custody** - Read-only capture and comparison. No product, test, Docker, or
+host resource is eligible for cleanup.
+
+---
+
+## 2026-07-24 - Iteration 55 - Stage 00 post-run dependency comparison result
+
+**Result** - Dependency delta is zero and semantic environment-inventory
+delta is zero. The complete dependency contract is exact across all 16
+supported invocations: invocation metadata, 1,143 external package records,
+2,179 enabled external package-feature pairs, 116 direct external manifest
+edges, and both product and test contract-file inventories are unchanged.
+The static tool surface, machine, platform, mounts, system observation,
+product route listeners, and product process names are exact.
+
+**Volatile runtime observations** - The same 43 Docker image records appear
+in a different order. Docker information has 59 stable fields exact and
+differs only in `SystemTime`. Filesystem identity, mount, total capacity,
+and utilization percentage are exact; used/free block and inode counters
+changed as expected while the focused tests and benchmark wrote and removed
+run-owned evidence. These raw observations are therefore not byte-equal,
+but their canonical inventory and stable identity are exact.
+
+**Source-authority scope** - All 17 authority paths are still present.
+Exactly five changed:
+`config/bench.yml`, `config/linux-amd64.yml`,
+`config/macos-arm64.yml`, `config/prd.yml`, and
+`config/windows-amd64.yml`. Each change is the planned explicit
+`rollout_mode: legacy` setting; every other authority file is exact.
+
+**Immutable blocker** - The image-fixture record is exact between entry and
+post-run and remains invalid. Index
+`sha256:4fbb8e6a8395de5a7550b33509421a2bafbc0aab6c06ba2cef9ebffbc7092d90`
+expects Linux arm64 digest
+`sha256:7f622ca8766bccb22f04242ecb6f19f770b2f08827d7c5425fb57681140e6efb`,
+but the pinned local artifact resolves to
+`sha256:7f622ca8766bccb22f04242ecb6f19f770b2f08827dc4b8c707de5e78a6da7ab`.
+The Stage 00 verdict is therefore `blocked`, not passed.
+
+**Evidence** -
+`.e2e-state/evidence/stage00-post-20260724T155849+0800/`.
+`stage00-post-baseline.json` has SHA-256
+`f5cd3c8eb4f06b7360302c6d12b26632197a04de88c8ad3c3ac3181fb4f0f511`;
+`stage00-dependency-comparison.json` has SHA-256
+`5f00ed4ce892f2bb7069f0f9c084dbe5e224a393ea6992275dab08187896d503`.
+All four post-capture artifacts pass the recorded `SHA256SUMS`.
+
+**Cleanup** - Not applicable. The comparison is read-only and changed no
+runtime or host state.
+
+---

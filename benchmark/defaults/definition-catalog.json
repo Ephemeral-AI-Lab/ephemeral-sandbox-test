@@ -1097,6 +1097,206 @@
           "session_activity"
         ]
       }
+    },
+    {
+      "id": "layerstack_phase1_baseline",
+      "family": "layer_stack",
+      "label": "Phase1 Stage00 baseline",
+      "help": "Runs the frozen legacy-only raw/control microbenchmark and same-daemon reclamation sentinel through the existing campaign runner.",
+      "measured_boundary": "One destructive trial runs one warmup and five measured counterbalanced pairs over the immutable v1 corpus, then three warmup and twenty measured reclamation cycles without restarting the daemon.",
+      "count_semantics_help": "The measured-pairs factor counts internal raw/control pairs; the campaign itself still contains one bounded destructive trial.",
+      "semantic_revision": 1,
+      "factor_schema_revision": 1,
+      "count_semantics": {
+        "kind": "internal_paired_protocol",
+        "factor": "measured_pairs"
+      },
+      "execution_shape": "single_cell_internal_paired_protocol",
+      "isolation": "prepared_sandbox_per_cell",
+      "cleanup": "destroy_sandbox_after_same_daemon_sentinel",
+      "product_access": {
+        "kind": "existing_campaign_runner",
+        "action": "legacy_raw_control_and_reclamation"
+      },
+      "supported_cohorts": [
+        "direct_client"
+      ],
+      "security_class": "destructive_bounded_baseline",
+      "factors": [
+        {
+          "id": "corpus_version",
+          "label": "Corpus version",
+          "help": "Immutable deterministic Stage00 corpus identity.",
+          "value_kind": "choice",
+          "unit": null,
+          "constraint": {
+            "kind": "choices",
+            "values": [
+              "v1"
+            ]
+          },
+          "comparison": "scientific_invariant"
+        },
+        {
+          "id": "pair_warmups",
+          "label": "Warmup pairs",
+          "help": "Counterbalanced raw/control pairs excluded from summaries.",
+          "value_kind": "unsigned_integer",
+          "unit": "pairs",
+          "constraint": {
+            "kind": "positive"
+          },
+          "comparison": "scientific_invariant"
+        },
+        {
+          "id": "measured_pairs",
+          "label": "Measured pairs",
+          "help": "Counterbalanced raw/control pairs retained as raw evidence.",
+          "value_kind": "unsigned_integer",
+          "unit": "pairs",
+          "constraint": {
+            "kind": "positive"
+          },
+          "comparison": "scientific_invariant"
+        },
+        {
+          "id": "sentinel_warmups",
+          "label": "Sentinel warmups",
+          "help": "Same-daemon reclamation cycles excluded from the verdict.",
+          "value_kind": "unsigned_integer",
+          "unit": "cycles",
+          "constraint": {
+            "kind": "positive"
+          },
+          "comparison": "scientific_invariant"
+        },
+        {
+          "id": "sentinel_cycles",
+          "label": "Sentinel measured cycles",
+          "help": "Same-daemon reclamation cycles retained for release and memory-trend evidence.",
+          "value_kind": "unsigned_integer",
+          "unit": "cycles",
+          "constraint": {
+            "kind": "positive"
+          },
+          "comparison": "scientific_invariant"
+        },
+        {
+          "id": "noise_band_bytes",
+          "label": "Raw/control noise band",
+          "help": "Predeclared absolute memory-current noise band used by the reclamation verdict.",
+          "value_kind": "unsigned_integer",
+          "unit": "bytes",
+          "constraint": {
+            "kind": "positive"
+          },
+          "comparison": "scientific_invariant"
+        },
+        {
+          "id": "registry_entry_cap",
+          "label": "Registry entry cap",
+          "help": "Maximum bounded retained cache and registry entry count after each cycle.",
+          "value_kind": "unsigned_integer",
+          "unit": "count",
+          "constraint": {
+            "kind": "positive"
+          },
+          "comparison": "scientific_invariant"
+        },
+        {
+          "id": "poll_interval_ms",
+          "label": "Settle poll interval",
+          "help": "Fixed interval between logical-release observations.",
+          "value_kind": "unsigned_integer",
+          "unit": "milliseconds",
+          "constraint": {
+            "kind": "positive"
+          },
+          "comparison": "scientific_invariant"
+        },
+        {
+          "id": "settle_timeout_ms",
+          "label": "Settle timeout",
+          "help": "Maximum bounded wait for logical resource release in each cycle.",
+          "value_kind": "unsigned_integer",
+          "unit": "milliseconds",
+          "constraint": {
+            "kind": "positive"
+          },
+          "comparison": "scientific_invariant"
+        },
+        {
+          "id": "remount_parallelism",
+          "label": "Remount parallelism W",
+          "help": "Frozen LayerStack remount width included in the comparison identity.",
+          "value_kind": "unsigned_integer",
+          "unit": "count",
+          "constraint": {
+            "kind": "positive"
+          },
+          "comparison": "scientific_invariant"
+        }
+      ],
+      "checks": [
+        {
+          "id": "phase1_corpus_correctness",
+          "label": "Immutable corpus correctness",
+          "help": "Every corpus member and workload result matches its frozen digest and shape.",
+          "semantic_revision": 1,
+          "evidence_limit": 32
+        },
+        {
+          "id": "phase1_legacy_route",
+          "label": "Legacy-only route",
+          "help": "Every bounded route observation remains legacy-only with zero fallback, shadow, mismatch, or saturation.",
+          "semantic_revision": 1,
+          "evidence_limit": 32
+        },
+        {
+          "id": "phase1_raw_control_pairs",
+          "label": "Raw/control pair protocol",
+          "help": "One warmup and five measured pairs are counterbalanced and retained without normative p95 claims.",
+          "semantic_revision": 1,
+          "evidence_limit": 32
+        },
+        {
+          "id": "phase1_reclamation_release",
+          "label": "Logical reclamation",
+          "help": "All twenty measured same-daemon cycles release logical owners, work, leases, transactions, and staging.",
+          "semantic_revision": 1,
+          "evidence_limit": 64
+        },
+        {
+          "id": "phase1_reclamation_measurement",
+          "label": "Reclamation verdict",
+          "help": "Memory evidence produces a non-blocking frozen verdict with twenty complete samples and unsaturated counters.",
+          "semantic_revision": 1,
+          "evidence_limit": 32
+        },
+        {
+          "id": "phase1_residue",
+          "label": "Stage00 residue",
+          "help": "The sentinel retains no owned session and the campaign destroys its sandbox during cleanup.",
+          "semantic_revision": 1,
+          "evidence_limit": 32
+        }
+      ],
+      "phases": [],
+      "comparison": {
+        "semantic_revision": 1,
+        "factors": [
+          "corpus_version",
+          "pair_warmups",
+          "measured_pairs",
+          "sentinel_warmups",
+          "sentinel_cycles",
+          "noise_band_bytes",
+          "registry_entry_cap",
+          "poll_interval_ms",
+          "settle_timeout_ms",
+          "remount_parallelism"
+        ]
+      }
     }
   ]
 }

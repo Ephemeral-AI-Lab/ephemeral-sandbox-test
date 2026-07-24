@@ -35,6 +35,13 @@ def test_reads_strict_frozen_catalog_and_required_operations() -> None:
         read_catalog(GOLDEN.read_bytes().replace(b'"schema_version": 1', b'"schema_version": 2', 1))
 
 
+def test_accepts_product_float_argument_kind() -> None:
+    value = json.loads(GOLDEN.read_bytes())
+    timeout = value["domains"]["runtime"]["operations"][0]["args"][2]
+    timeout["kind"] = "float"
+    assert read_catalog(json.dumps(value).encode()).domains.runtime.operations[0].args[2].kind == "float"
+
+
 def test_invokes_only_canonical_prebuilt_exporter_and_hashes_exact_bytes(tmp_path: Path) -> None:
     benchmark_roots = roots(tmp_path)
     fake_exporter(benchmark_roots, f'exec /bin/cat "{GOLDEN}"\n')

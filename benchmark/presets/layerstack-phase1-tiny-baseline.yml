@@ -1,0 +1,38 @@
+schema_version: 1
+id: layerstack-phase1-tiny-baseline
+version: 1
+plan:
+  schema_version: 1
+  name: LayerStack Phase1 Stage00 tiny baseline
+  configuration_base:
+    id: layerstack-phase1-tiny-baseline
+    version: 1
+    scope: layerstack
+  seed: 20260724
+  environment:
+    image: ubuntu:24.04@sha256:4fbb8e6a8395de5a7550b33509421a2bafbc0aab6c06ba2cef9ebffbc7092d90
+    client_cohort: direct_client
+  protocol:
+    order: randomized_blocks
+    resource_interval_ms: 100
+    trial_defaults:
+      fast: {warmups: 0, measured_trials: 1}
+      destructive: {warmups: 0, measured_trials: 1}
+    timeout_ms:
+      default: 3600000
+      squash_layerstack: 600000
+  operations:
+    - operation: layerstack_phase1_baseline
+      configuration:
+        enabled: true
+        factors:
+          corpus_version: {role: controlled, values: [v1]}
+          pair_warmups: {role: controlled, values: [1]}
+          measured_pairs: {role: controlled, values: [5]}
+          sentinel_warmups: {role: controlled, values: [3]}
+          sentinel_cycles: {role: controlled, values: [20]}
+          noise_band_bytes: {role: controlled, values: [16777216]}
+          registry_entry_cap: {role: controlled, values: [64]}
+          poll_interval_ms: {role: controlled, values: [100]}
+          settle_timeout_ms: {role: controlled, values: [5000]}
+          remount_parallelism: {role: controlled, values: [4]}
